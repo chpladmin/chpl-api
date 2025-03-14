@@ -12,10 +12,13 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceGroundsForInitiatingMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceProcessTypeMapEntity;
+import gov.healthit.chpl.surveillance.report.entity.SurveillanceGroundsForInitiatingEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -37,6 +40,8 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
             + " LEFT JOIN FETCH map.surveillanceOutcome "
             + " LEFT JOIN FETCH map.surveillanceProcessTypeMaps procTypeMaps "
             + " LEFT JOIN FETCH procTypeMaps.surveillanceProcessType "
+            + " LEFT JOIN FETCH map.surveillanceGroundsForInitiatingMaps groundsMaps "
+            + " LEFT JOIN FETCH groundsMaps.surveillanceGroundsForInitiating "
             + " JOIN FETCH map.quarterlyReport qr "
             + " JOIN FETCH qr.quarter "
             + " JOIN FETCH qr.acb acb "
@@ -145,6 +150,14 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<SurveillanceGroundsForInitiating> getSurveillanceGroundsForInitiating() {
+        List<SurveillanceGroundsForInitiatingEntity> entities =
+                entityManager.createQuery("SELECT e FROM SurveillanceGroundsForInitiatingEntity e WHERE deleted = false").getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public Long create(Long quarterlyReportId, PrivilegedSurveillance toCreate)
             throws EntityCreationException {
         QuarterlyReportSurveillanceMapEntity entity = new QuarterlyReportSurveillanceMapEntity();
@@ -155,7 +168,6 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         }
         entity.setSurveillanceOutcomeOther(toCreate.getSurveillanceOutcomeOther());
         entity.setK1Reviewed(toCreate.getK1Reviewed());
-        entity.setGroundsForInitiating(toCreate.getGroundsForInitiating());
         entity.setNonconformityCauses(toCreate.getNonconformityCauses());
         entity.setNonconformityNature(toCreate.getNonconformityNature());
         entity.setStepsToSurveil(toCreate.getStepsToSurveil());
@@ -166,6 +178,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
         entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
+        entity.setSurveillanceGroundsForInitiatingOther(toCreate.getSurveillanceGroundsForInitiatingOther());
         entity.setSurveillanceFindings(toCreate.getSurveillanceFindings());
         entity.setDeleted(false);
         create(entity);
@@ -173,6 +186,8 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         Long qrSurveillanceMapEntityId = entity.getId();
         toCreate.getSurveillanceProcessTypes().stream()
             .forEach(procType -> createSurveillanceProcessTypeMaps(qrSurveillanceMapEntityId, procType));
+        toCreate.getSurveillanceGroundsForInitiating().stream()
+            .forEach(grounds -> createSurveillanceGroundForInitiatingMaps(qrSurveillanceMapEntityId, grounds));
         return qrSurveillanceMapEntityId;
     }
 
@@ -182,6 +197,14 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
                 .surveillanceProcessTypeId(toCreate.getId())
                 .build();
         create(procTypeMapEntity);
+    }
+
+    private void createSurveillanceGroundForInitiatingMaps(Long parentId, SurveillanceGroundsForInitiating toCreate) {
+        QuarterlyReportSurveillanceGroundsForInitiatingMapEntity groundsMapEntity = QuarterlyReportSurveillanceGroundsForInitiatingMapEntity.builder()
+                .quarterlyReportSurveillanceMapId(parentId)
+                .surveillanceGroundsForInitiatingId(toCreate.getId())
+                .build();
+        create(groundsMapEntity);
     }
 
     public void update(PrivilegedSurveillance existing, PrivilegedSurveillance toUpdate)
@@ -207,7 +230,6 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         }
         entity.setSurveillanceOutcomeOther(toUpdate.getSurveillanceOutcomeOther());
         entity.setK1Reviewed(toUpdate.getK1Reviewed());
-        entity.setGroundsForInitiating(toUpdate.getGroundsForInitiating());
         entity.setNonconformityCauses(toUpdate.getNonconformityCauses());
         entity.setNonconformityNature(toUpdate.getNonconformityNature());
         entity.setStepsToSurveil(toUpdate.getStepsToSurveil());
@@ -218,11 +240,15 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
         entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
+        entity.setSurveillanceGroundsForInitiatingOther(toUpdate.getSurveillanceGroundsForInitiatingOther());
         entity.setSurveillanceFindings(toUpdate.getSurveillanceFindings());
         update(entity);
         updateSurveillanceProcessTypes(entity,
                 existing.getSurveillanceProcessTypes(),
                 toUpdate.getSurveillanceProcessTypes());
+        updateSurveillanceGroundsForInitiating(entity,
+                existing.getSurveillanceGroundsForInitiating(),
+                toUpdate.getSurveillanceGroundsForInitiating());
     }
 
     private void updateSurveillanceProcessTypes(QuarterlyReportSurveillanceMapEntity qrSurvMapEntity,
@@ -246,6 +272,32 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
             QuarterlyReportSurveillanceProcessTypeMapEntity toCreate = QuarterlyReportSurveillanceProcessTypeMapEntity.builder()
                     .quarterlyReportSurveillanceMapId(qrSurvMapId)
                     .surveillanceProcessTypeId(procType.getId())
+                    .build();
+            create(toCreate);
+        }
+    }
+
+    private void updateSurveillanceGroundsForInitiating(QuarterlyReportSurveillanceMapEntity qrSurvMapEntity,
+            List<SurveillanceGroundsForInitiating> existingGroundsForInitiating,
+            List<SurveillanceGroundsForInitiating> updatedGroundForInitiating) {
+        Long qrSurvMapId = qrSurvMapEntity.getId();
+        List<SurveillanceGroundsForInitiating> addedGrounds = SurveillanceGroundsForInitiatingHelper.getAddedSurveillanceGroundsForInitiating(
+                existingGroundsForInitiating, updatedGroundForInitiating);
+        List<SurveillanceGroundsForInitiating> removedGrounds = SurveillanceGroundsForInitiatingHelper.getRemovedSurveillanceGroundsForInitiating(
+                existingGroundsForInitiating, updatedGroundForInitiating);
+
+        for (SurveillanceGroundsForInitiating grounds : removedGrounds) {
+            QuarterlyReportSurveillanceGroundsForInitiatingMapEntity toRemove = qrSurvMapEntity.getSurveillanceGroundsForInitiatingMaps().stream()
+                    .filter(entity -> grounds.getId().equals(entity.getSurveillanceGroundsForInitiatingId()))
+                    .findAny().get();
+            toRemove.setDeleted(true);
+            update(toRemove);
+        }
+
+        for (SurveillanceGroundsForInitiating grounds : addedGrounds) {
+            QuarterlyReportSurveillanceGroundsForInitiatingMapEntity toCreate = QuarterlyReportSurveillanceGroundsForInitiatingMapEntity.builder()
+                    .quarterlyReportSurveillanceMapId(qrSurvMapId)
+                    .surveillanceGroundsForInitiatingId(grounds.getId())
                     .build();
             create(toCreate);
         }

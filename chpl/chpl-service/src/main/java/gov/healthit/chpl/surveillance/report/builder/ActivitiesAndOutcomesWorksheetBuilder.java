@@ -88,16 +88,17 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     protected static final int COL_SURV_PROCESS_TYPE = 30;
     protected static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
     protected static final int COL_SURV_GROUNDS = 32;
-    protected static final int COL_SURV_FINDINGS = 33;
-    protected static final int COL_NONCONFORMITY_CAUSES = 34;
-    protected static final int COL_NONCONFORMITY_NATURES = 35;
-    protected static final int COL_SURV_STEPS = 36;
-    protected static final int COL_ENGAGEMENT_STEPS = 37;
-    protected static final int COL_ADDITIONAL_COSTS = 38;
-    protected static final int COL_LIMITATIONS_EVAL = 39;
-    protected static final int COL_NONDISCLOSURE_EVAL = 40;
-    protected static final int COL_DEV_RESOLUTION = 41;
-    protected static final int COL_COMPLETED_CAP = 42;
+    protected static final int COL_SURV_GROUNDS_OTHER = 33;
+    protected static final int COL_SURV_FINDINGS = 34;
+    protected static final int COL_NONCONFORMITY_CAUSES = 35;
+    protected static final int COL_NONCONFORMITY_NATURES = 36;
+    protected static final int COL_SURV_STEPS = 37;
+    protected static final int COL_ENGAGEMENT_STEPS = 38;
+    protected static final int COL_ADDITIONAL_COSTS = 39;
+    protected static final int COL_LIMITATIONS_EVAL = 40;
+    protected static final int COL_NONDISCLOSURE_EVAL = 41;
+    protected static final int COL_DEV_RESOLUTION = 42;
+    protected static final int COL_COMPLETED_CAP = 43;
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
@@ -191,7 +192,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
-        sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
+        sheet.setColumnWidth(COL_SURV_GROUNDS, workbook.getColumnWidth(30.67));
+        sheet.setColumnWidth(COL_SURV_GROUNDS_OTHER, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_FINDINGS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_NATURES, longTextColWidth);
@@ -234,6 +236,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         reference = "Lists!$D$1:$D$2";
         booleanNamedCell.setRefersToFormula(reference);
 
+        Name groundsForInitiatingNamedCell = workbook.getWorkbook().createName();
+        groundsForInitiatingNamedCell.setNameName("GroundsForInitiatingList");
+        reference = "Lists!$E$1:$E$7";
+        groundsForInitiatingNamedCell.setRefersToFormula(reference);
+
         //k1 reviewed is a dropdown list of choices
         CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(), COL_K1_REVIEWED, COL_K1_REVIEWED);
         XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint)
@@ -262,6 +269,14 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         //process type is a dropdown list of choices
         addressList = new CellRangeAddressList(2, getLastDataRow(), COL_SURV_PROCESS_TYPE, COL_SURV_PROCESS_TYPE);
         dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("ProcessTypeList");
+        validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
+        validation.setSuppressDropDownArrow(true);
+        validation.setShowErrorBox(false);
+        sheet.addValidationData(validation);
+
+        //grounds for initiating is a dropdown list of choices
+        addressList = new CellRangeAddressList(2, getLastDataRow(), COL_SURV_GROUNDS, COL_SURV_GROUNDS);
+        dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint("GroundsForInitiatingList");
         validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
@@ -326,6 +341,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         String cellTitle = "Grounds for Initiating Surveillance";
         String cellSubtitle = getGroundsForInitiatingSurveillanceDescription();
         addRichTextHeadingCell(workbook, row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
+        addHeadingCell(workbook, row, COL_SURV_GROUNDS_OTHER, "Grounds for Initiating Surveillance - Other Explanation");
 
         cellTitle = "Surveillance Findings";
         cellSubtitle = getSurveillanceFindingsDescription();
@@ -596,6 +612,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_SURV_GROUNDS,
                 generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_GROUNDS_OTHER,
+                generateGroundsForInitiatingOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_SURV_FINDINGS,
                 generateSurveillanceFindingsValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
@@ -848,25 +866,68 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             QuarterlyReport report = quarterlyReports.get(0);
             for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                 if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
-                        && currSurv.getGroundsForInitiating() != null) {
-                    result = currSurv.getGroundsForInitiating();
+                        && !CollectionUtils.isEmpty(currSurv.getSurveillanceGroundsForInitiating())) {
+                    result = MultiLineWorksheetRecordUtil.buildMultiLineString(getGroundsForInitiatingNames(currSurv));
                 }
             }
         } else {
             //there are multiple reports... combine the values for this field in a nice way for the user
-            //key is grounds for initiating str and value is applicable quarter name(s) like 'Q1, Q2'
+            //key is surveillance grounds for intiating and value is applicable quarter name(s) like 'Q1, Q2'
             Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
             for (QuarterlyReport currReport : quarterlyReports) {
                 for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                     if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
-                            && currSurv.getGroundsForInitiating() != null) {
-                        String survGroundsVal = currSurv.getGroundsForInitiating();
+                            && !CollectionUtils.isEmpty(currSurv.getSurveillanceGroundsForInitiating())) {
+                        String survGroundsVal = MultiLineWorksheetRecordUtil.buildMultiLineString(getGroundsForInitiatingNames(currSurv));
                         if (valueMap.get(survGroundsVal) != null) {
                             valueMap.get(survGroundsVal).add(currReport.getQuarter());
                         } else {
                             ArrayList<String> quarterNameList = new ArrayList<String>();
                             quarterNameList.add(currReport.getQuarter());
                             valueMap.put(survGroundsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    private Set<String> getGroundsForInitiatingNames(PrivilegedSurveillance privSurv) {
+        return privSurv.getSurveillanceGroundsForInitiating().stream()
+            .map(grounds -> grounds.getName())
+            .collect(Collectors.toSet());
+    }
+
+    private String generateGroundsForInitiatingOtherValue(List<QuarterlyReport> quarterlyReports,
+            List<PrivilegedSurveillance> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReport report = quarterlyReports.get(0);
+            for (PrivilegedSurveillance currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && !StringUtils.isEmpty(currSurv.getSurveillanceGroundsForInitiatingOther())) {
+                    result = currSurv.getSurveillanceGroundsForInitiatingOther();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance grounds for initiating other and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReport currReport : quarterlyReports) {
+                for (PrivilegedSurveillance currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()) {
+                        String survGroundsVal = currSurv.getSurveillanceGroundsForInitiatingOther();
+                        if (!StringUtils.isEmpty(survGroundsVal)) {
+                            if (valueMap.get(survGroundsVal) != null) {
+                                valueMap.get(survGroundsVal).add(currReport.getQuarter());
+                            } else {
+                                ArrayList<String> quarterNameList = new ArrayList<String>();
+                                quarterNameList.add(currReport.getQuarter());
+                                valueMap.put(survGroundsVal, quarterNameList);
+                            }
                         }
                     }
                 }

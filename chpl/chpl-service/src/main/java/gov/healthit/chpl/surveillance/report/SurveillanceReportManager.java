@@ -30,7 +30,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
@@ -50,7 +49,6 @@ import lombok.extern.log4j.Log4j2;
 public class SurveillanceReportManager extends SecuredManager {
 
     private ActivityManager activityManager;
-    private UserManager userManager;
     private SchedulerManager schedulerManager;
     private QuarterlyReportDAO quarterlyDao;
     private PrivilegedSurveillanceDAO quarterlySurvMapDao;
@@ -61,14 +59,12 @@ public class SurveillanceReportManager extends SecuredManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public SurveillanceReportManager(ActivityManager activityManager,
-            UserManager userManager,
             SchedulerManager schedulerManager,
             QuarterlyReportDAO quarterlyDao,
             PrivilegedSurveillanceDAO quarterlySurvMapDao,
             AnnualReportDAO annualDao, QuarterDAO quarterDao,
             ErrorMessageUtil msgUtil) {
         this.activityManager = activityManager;
-        this.userManager = userManager;
         this.schedulerManager = schedulerManager;
         this.quarterlyDao = quarterlyDao;
         this.quarterlySurvMapDao = quarterlySurvMapDao;
@@ -477,7 +473,6 @@ public class SurveillanceReportManager extends SecuredManager {
                         if (nextReportSurv.getId().equals(prevReportSurv.getId())) {
                             nextReportSurv.setQuarterlyReport(nextReport);
                             nextReportSurv.setK1Reviewed(prevReportSurv.getK1Reviewed());
-                            nextReportSurv.setGroundsForInitiating(prevReportSurv.getGroundsForInitiating());
                             nextReportSurv.setNonconformityCauses(prevReportSurv.getNonconformityCauses());
                             nextReportSurv.setNonconformityNature(prevReportSurv.getNonconformityNature());
                             nextReportSurv.setStepsToSurveil(prevReportSurv.getStepsToSurveil());
@@ -485,12 +480,14 @@ public class SurveillanceReportManager extends SecuredManager {
                             nextReportSurv.setAdditionalCostsEvaluation(prevReportSurv.getAdditionalCostsEvaluation());
                             nextReportSurv.setLimitationsEvaluation(prevReportSurv.getLimitationsEvaluation());
                             nextReportSurv.setNondisclosureEvaluation(prevReportSurv.getNondisclosureEvaluation());
-                            nextReportSurv.setDirectionDeveloperResolution(
-                                    prevReportSurv.getDirectionDeveloperResolution());
+                            nextReportSurv.setDirectionDeveloperResolution(prevReportSurv.getDirectionDeveloperResolution());
                             nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
                             nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
                             nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
                             nextReportSurv.setSurveillanceProcessTypes(prevReportSurv.getSurveillanceProcessTypes());
+                            nextReportSurv.setSurveillanceProcessTypeOther(prevReportSurv.getSurveillanceProcessTypeOther());
+                            nextReportSurv.setSurveillanceGroundsForInitiating(prevReportSurv.getSurveillanceGroundsForInitiating());
+                            nextReportSurv.setSurveillanceGroundsForInitiatingOther(prevReportSurv.getSurveillanceGroundsForInitiatingOther());
                             nextReportSurv.setSurveillanceFindings(prevReportSurv.getSurveillanceFindings());
                             try {
                                 quarterlySurvMapDao.create(nextReport.getId(), nextReportSurv);

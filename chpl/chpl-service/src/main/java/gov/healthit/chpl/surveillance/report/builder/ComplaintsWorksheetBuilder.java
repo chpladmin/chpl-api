@@ -166,12 +166,12 @@ public class ComplaintsWorksheetBuilder {
         // names for the list constraints
         Name complainantTypeNamedCell = workbook.getWorkbook().createName();
         complainantTypeNamedCell.setNameName("ComplainantTypeList");
-        String reference = "Lists!$E$1:$E$" + getNumberOfComplainantTypes();
+        String reference = "Lists!$F$1:$F$" + getNumberOfComplainantTypes();
         complainantTypeNamedCell.setRefersToFormula(reference);
 
         Name complaintStatusTypeNamedCell = workbook.getWorkbook().createName();
         complaintStatusTypeNamedCell.setNameName("ComplaintStatusTypeList");
-        reference = "Lists!$F$1:$F$" + Complaint.NUMBER_OF_STATES;
+        reference = "Lists!$G$1:$G$" + Complaint.NUMBER_OF_STATES;
         complaintStatusTypeNamedCell.setRefersToFormula(reference);
 
         Name booleanNamedCell = workbook.getWorkbook().createName();

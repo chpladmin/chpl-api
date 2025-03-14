@@ -24,8 +24,7 @@ public class ActivitiesAndOutcomesWorksheetBuilder2025 extends ActivitiesAndOutc
     protected String getGroundsForInitiatingSurveillanceDescription() {
         return "On what grounds did the ONC-ACB initiate surveillance (i.e., the particular facts and "
                 + "circumstances from which a reasonable person would have had grounds to question the "
-                + "continued conformity of the Health IT Module)? For randomized surveillance, it is "
-                + "acceptable to state it was chosen randomly.";
+                + "continued conformity of the Health IT Module)? Please select all that apply.";
     }
 
     @Override

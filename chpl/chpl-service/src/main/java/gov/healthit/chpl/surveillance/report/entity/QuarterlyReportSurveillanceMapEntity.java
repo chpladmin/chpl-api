@@ -12,6 +12,7 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -84,14 +85,21 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "surveillance_process_type_other")
     private String surveillanceProcessTypeOther;
 
+    @Singular
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
+    @Basic(optional = false)
+    @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
+    @SQLRestriction("deleted <> 'true'")
+    private Set<QuarterlyReportSurveillanceGroundsForInitiatingMapEntity> surveillanceGroundsForInitiatingMaps = new HashSet<QuarterlyReportSurveillanceGroundsForInitiatingMapEntity>();
+
+    @Column(name = "surveillance_grounds_for_initiating_other")
+    private String surveillanceGroundsForInitiatingOther;
+
     @Column(name = "surveillance_findings")
     private String surveillanceFindings;
 
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
-
-    @Column(name = "grounds_for_initiating")
-    private String groundsForInitiating;
 
     @Column(name = "nonconformity_causes")
     private String nonconformityCauses;
@@ -124,6 +132,9 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
         List<SurveillanceProcessType> processTypes = this.getSurveillanceProcessTypeMaps().stream()
                 .map(procTypeMap -> procTypeMap.toDomain())
                 .collect(Collectors.toList());
+        List<SurveillanceGroundsForInitiating> groundsForInitiating = this.getSurveillanceGroundsForInitiatingMaps().stream()
+                .map(groundsMap -> groundsMap.toDomain())
+                .collect(Collectors.toList());
 
         PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
                 .id(this.getSurveillanceId())
@@ -132,7 +143,6 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
                 .completedCapVerification(this.getCompletedCapVerification())
                 .directionDeveloperResolution(this.getDirectionDeveloperResolution())
-                .groundsForInitiating(this.getGroundsForInitiating())
                 .k1Reviewed(this.getK1Reviewed())
                 .limitationsEvaluation(this.getLimitationsEvaluation())
                 .nonconformityCauses(this.getNonconformityCauses())
@@ -144,6 +154,8 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
                 .surveillanceProcessTypes(processTypes)
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
+                .surveillanceGroundsForInitiating(groundsForInitiating)
+                .surveillanceGroundsForInitiatingOther(this.getSurveillanceGroundsForInitiatingOther())
                 .surveillanceFindings(this.getSurveillanceFindings())
                 .build();
 

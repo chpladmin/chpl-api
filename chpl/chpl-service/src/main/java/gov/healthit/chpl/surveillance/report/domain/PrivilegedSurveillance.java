@@ -28,9 +28,11 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     @Builder.Default
     private List<SurveillanceProcessType> surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
     private String surveillanceProcessTypeOther;
+    @Builder.Default
+    private List<SurveillanceGroundsForInitiating> surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>();
+    private String surveillanceGroundsForInitiatingOther;
     private String surveillanceFindings;
     private Boolean k1Reviewed;
-    private String groundsForInitiating;
     private String nonconformityCauses;
     private String nonconformityNature;
     private String stepsToSurveil;
@@ -44,7 +46,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     public void copyPrivilegedFields(PrivilegedSurveillance another) {
         this.mappingId = another.getMappingId();
         this.k1Reviewed = another.getK1Reviewed();
-        this.groundsForInitiating = another.getGroundsForInitiating();
         this.nonconformityCauses = another.getNonconformityCauses();
         this.nonconformityNature = another.getNonconformityNature();
         this.stepsToSurveil = another.getStepsToSurveil();
@@ -60,6 +61,9 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>(
                 another.getSurveillanceProcessTypes());
         this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
+        this.surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>(
+                another.getSurveillanceGroundsForInitiating());
+        this.surveillanceGroundsForInitiatingOther = another.getSurveillanceGroundsForInitiatingOther();
         this.surveillanceFindings = another.getSurveillanceFindings();
     }
 }
