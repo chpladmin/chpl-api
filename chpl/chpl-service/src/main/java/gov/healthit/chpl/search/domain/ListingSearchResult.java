@@ -82,6 +82,7 @@ public class ListingSearchResult implements Serializable {
     private String rwtPlansUrl;
     private String rwtResultsUrl;
     private String svapNoticeUrl;
+    private Set<Long> standardsMet;
 
     public ListingSearchResult() {
         this.setDirectReviewCount(0);
@@ -102,6 +103,7 @@ public class ListingSearchResult implements Serializable {
         statusEvents = new HashSet<StatusEventSearchResult>();
         apiDocumentation = new HashSet<CertificationCriterionSearchResultWithStringField>();
         svaps = new HashSet<CertificationCriterionSearchResultWithLongFields>();
+        standardsMet = new HashSet<Long>();
     }
 
     @Override

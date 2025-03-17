@@ -12,9 +12,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("listingUploadAdditionalSoftwareFrameworkReviewer")
-public class AdditionalSoftwareReviewer {
+@Component("listingUploadAdditionalSoftwareReviewer")
+public class AdditionalSoftwareReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -41,6 +42,7 @@ public class AdditionalSoftwareReviewer {
         reviewAdditionalSoftwareListMatchesAdditionalSoftwareBoolean(listing, certResult);
         reviewAdditionalSoftwareHasEitherNameOrListing(listing, certResult);
         reviewAdditionalSoftwareListingsAreValid(listing, certResult);
+        reviewAdditionalSoftwareGroupingsPresent(listing, certResult);
     }
 
     private void reviewCriteriaCanHaveAdditionalSoftware(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -94,6 +96,19 @@ public class AdditionalSoftwareReviewer {
                             "listing.criteria.invalidAdditionalSoftware",
                             additionalSoftware.getCertifiedProductNumber(),
                             Util.formatCriteriaNumber(certResult.getCriterion()))));
+        }
+    }
+
+    private void reviewAdditionalSoftwareGroupingsPresent(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())
+                && certResult.getAdditionalSoftware().size() > 1) {
+            long additionalSoftwareWithoutGroupings = certResult.getAdditionalSoftware().stream()
+                    .filter(additionalSoftware -> StringUtils.isEmpty(additionalSoftware.getGrouping()))
+                    .count();
+            if (additionalSoftwareWithoutGroupings > 0) {
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.additionalSoftwareRequiresGrouping",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
         }
     }
 }

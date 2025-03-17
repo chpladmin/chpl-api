@@ -49,7 +49,8 @@ public class ActivityMetadataBuilder {
                 .id(dto.getActivityObjectId())
                 .build());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
+        metadata.setResponsibleUser(dto.getUser() != null ? dto.getUser()
+                : chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
         metadata.setDescription(dto.getDescription());
         metadata.getCategories().add(getCrudCategory(dto));
     }

@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 50.1.0
+_17 March 2025_
+
+### Features
+* Add the ability to search for Listings by Standards
+* Add endpoints to support SVAP Usage Power BI reports
+* Stop filling in CHPL Product Number in listing activity metadata
+* Support different quarterly report formats in 2025
+
+### Bug Fixes
+* Put back /criterion_product endpoint accidentally removed
+* Remove invalid SVAPs during listing edit with a warning
+* Correct column for multiple accessibility standards in "Current CSV"
+* Listing upload gives error if > 1 additional software & no group
+* Detect invalid functionalities tested on upload-edit
+
+---
+
 ## Version 50.0.0
 _3 March 2025_
 

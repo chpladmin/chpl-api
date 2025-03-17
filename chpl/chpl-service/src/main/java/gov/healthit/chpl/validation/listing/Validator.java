@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -17,6 +18,7 @@ public abstract class Validator {
     public abstract List<ComparisonReviewer> getComparisonReviewers();
     public abstract List<ComparisonReviewer> getComparisonReviewersToAlwaysCheck();
 
+    @Transactional
     public synchronized void validate(CertifiedProductSearchDetails listing) {
         if (CollectionUtils.isEmpty(listing.getCertificationEvents()) || listing.isCertificateActive()) {
             for (Reviewer reviewer : getReviewers()) {
