@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -27,7 +26,7 @@ public class CertificationStatusIdHelper {
         suspendedStatusIds = CertificationStatusUtil.getSuspendedStatuses().stream()
                 .map(status -> getStatusId(status))
                 .collect(Collectors.toList());
-        withdrawnByDeveloperStatusIds = Stream.of(CertificationStatusType.WithdrawnByDeveloper)
+        withdrawnByDeveloperStatusIds = CertificationStatusUtil.getWithdrawnStatuses().stream()
                 .map(status -> getStatusId(status))
                 .collect(Collectors.toList());
     }

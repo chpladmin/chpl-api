@@ -2,7 +2,11 @@ package gov.healthit.chpl.report.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +98,7 @@ public class ProductReportsService {
                             .acb(searchResult.getCertificationBody())
                             .developer(searchResult.getDeveloper())
                             .build())
-                    .distinct()
+                    .filter(distinctByKey(pba -> pba.getProduct().getId().toString() + "|" + pba.getAcb().getId().toString()))
                     .collect(Collectors.toSet());
 
             return new ArrayList<ProductByAcb>(productsByAcbs);
@@ -102,6 +106,11 @@ public class ProductReportsService {
             LOGGER.error("Error validating SearchRequest: {}", e.getMessage(), e);
             return List.of();
         }
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     private StatisticsSnapshot getStatistics() {
