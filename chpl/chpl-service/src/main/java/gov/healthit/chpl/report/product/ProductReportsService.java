@@ -94,6 +94,7 @@ public class ProductReportsService {
                             .acb(searchResult.getCertificationBody())
                             .developer(searchResult.getDeveloper())
                             .build())
+                    .distinct()
                     .collect(Collectors.toSet());
 
             return new ArrayList<ProductByAcb>(productsByAcbs);
