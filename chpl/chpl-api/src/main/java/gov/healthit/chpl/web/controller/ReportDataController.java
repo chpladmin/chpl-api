@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
+import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -28,6 +29,7 @@ import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,11 +43,15 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/report-data")
 public class ReportDataController {
     private ReportDataManager reportDataManager;
+    private StatisticsManager statisticsManager;
     private DeveloperSearchService developerSearchService;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager, DeveloperSearchService developerSearchService) {
+    public ReportDataController(ReportDataManager reportDataManager,
+            StatisticsManager statisticsManager,
+            DeveloperSearchService developerSearchService) {
         this.reportDataManager = reportDataManager;
+        this.statisticsManager = statisticsManager;
         this.developerSearchService = developerSearchService;
     }
 
@@ -430,5 +436,18 @@ public class ReportDataController {
     @RequestMapping(value = "/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AttestationReport> getAttestationReports() {
         return reportDataManager.getAttestationReports();
+    }
+
+    @Operation(summary = "Get count of Criteria certified to by unique Product.",
+            description = "Retrieves and returns the Criterion/Product counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/criterion-product", method = RequestMethod.GET,
+        produces = "application/json; charset=utf-8")
+    public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
+        CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
+        response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
+        return response;
     }
 }

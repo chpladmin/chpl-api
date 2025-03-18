@@ -1,5 +1,8 @@
 package gov.healthit.chpl.surveillance.report.builder2019;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +24,23 @@ public class ActivitiesAndOutcomesWorksheetBuilder2019 extends ActivitiesAndOutc
     }
 
     @Override
+    protected List<Integer> getHiddenColumnsIndices() {
+        return Stream.of(COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4, COL_SURV_FINDINGS,
+                COL_NONCONFORMITY_NATURES, COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS,
+                COL_LIMITATIONS_EVAL, COL_NONDISCLOSURE_EVAL, COL_DEV_RESOLUTION).toList();
+    }
+
+    @Override
     protected String getGroundsForInitiatingSurveillanceDescription() {
         return "On what grounds did the ONC-ACB initiate surveillance "
                 + "(i.e., the particular facts and circumstances from which a reasonable person would "
                 + "have had grounds to question the continued conformity of the Complete EHR or "
                 + "Health IT Module)? For randomized surveillance, it is acceptable to state it was chosen randomly.";
+    }
+
+    @Override
+    protected String getSurveillanceFindingsDescription() {
+        return "";
     }
 
     @Override

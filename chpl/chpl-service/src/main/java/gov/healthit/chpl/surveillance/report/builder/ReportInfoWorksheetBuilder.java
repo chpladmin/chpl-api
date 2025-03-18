@@ -21,24 +21,90 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 
 public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
-    private static final int MIN_TEXT_AREA_LINES = 4;
+    protected static final int MIN_TEXT_AREA_LINES = 4;
     private int lastDataRow;
     protected PropertyTemplate pt;
 
-    protected abstract int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReport> reports, int beginRow);
+    protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
 
     protected abstract String getReportingAcbDescription();
 
-    protected abstract String getSurveillanceActivitiesAndOutcomesDescription();
+    protected String getRandomizedSurveillanceActivitiesAndOutcomesTitle() {
+        return "";
+    }
+    protected abstract String getRandomizedSurveillanceActivitiesAndOutcomesDescription();
+
+    protected String getAllSurveillanceActivitiesAndOutcomesTitle() {
+        return "";
+    }
+    protected String getAllSurveillanceActivitiesAndOutcomesDescription() {
+        return "Please log the surveillance activities and their outcomes to the "
+                + "\"Activities and Outcomes\" sheet of this workbook.";
+    }
 
     protected abstract String getReactiveSummaryTitle();
-
     protected abstract String getReactiveSummaryDescription();
 
-    protected abstract String getDisclosureSummaryTitle();
+    protected String getIcsSummaryTitle() {
+        return "";
+    }
+    protected String getIcsSummaryDescription() {
+        return "";
+    }
+    protected int createIcsSurveillanceSubsection(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+    protected String getPrioritizedSurveillanceDescription() {
+        return "";
+    }
 
+    protected abstract String getPrioritizedCriteriaTitle();
+    protected abstract String getPrioritizedCriteriaDescription();
+
+    protected abstract String getDisclosureSummaryTitle();
     protected abstract String getDisclosureSummaryDescription();
+
+    protected String getDeveloperComplaintsLogReviewTitle() {
+        return "";
+    }
+    protected String getDeveloperComplaintsLogReviewDescription() {
+        return "";
+    }
+    protected int createDeveloperComplaintsLogReviewSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
+    protected String getPostCertificationPerformanceTitle() {
+        return "";
+    }
+    protected String getPostCertificationPerformanceDescription() {
+        return "";
+    }
+    protected int createPostCertificationPerformanceSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
+    protected String getAppropriateUseOfMarkTitle() {
+        return "";
+    }
+    protected String getAppropriateUseOfMarkDescription() {
+        return "";
+    }
+    protected int createAppropriateUseOfMarkSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
+    protected abstract String getComplaintsReportingTitle();
+    protected String getComplaintsReportingDescription() {
+        return "Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.";
+    }
 
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
@@ -80,7 +146,7 @@ public abstract class ReportInfoWorksheetBuilder {
         nextRow = createAcbSection(workbook, sheet, reports, nextRow) + 1;
         nextRow = createReportingPeriodSection(workbook, sheet, reports, nextRow) + 1;
         nextRow = createActivitiesAndOutcomesSection(workbook, sheet, reports, nextRow) + 1;
-        nextRow = createSelectingAndSamplingSection(workbook, sheet, reports, nextRow) + 1;
+        nextRow = createSamplingAndSelectingSection(workbook, sheet, reports, nextRow) + 1;
         nextRow = createPrioritizedSurveillanceSection(workbook, sheet, reports, nextRow) + 1;
         lastDataRow = createComplaintsSection(workbook, sheet, nextRow) + 1;
 
@@ -121,7 +187,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue(buf.toString());
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createReportingPeriodSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -154,7 +220,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createActivitiesAndOutcomesSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -165,10 +231,15 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue("III.");
         cell = workbook.createCell(row, 1, workbook.getSectionHeadingStyle());
         cell.setCellValue("Surveillance Activities and Outcomes");
+        if (!StringUtils.isEmpty(getRandomizedSurveillanceActivitiesAndOutcomesTitle())) {
+            row = workbook.getRow(sheet, currRow++);
+            cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+            cell.setCellValue(getRandomizedSurveillanceActivitiesAndOutcomesTitle());
+        }
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-        cell.setCellValue(getSurveillanceActivitiesAndOutcomesDescription());
+        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        cell.setCellValue(getRandomizedSurveillanceActivitiesAndOutcomesDescription());
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         row = workbook.getRow(sheet, currRow++);
@@ -197,15 +268,19 @@ public abstract class ReportInfoWorksheetBuilder {
 
         //skip a row
         currRow++;
+        if (!StringUtils.isEmpty(getAllSurveillanceActivitiesAndOutcomesTitle())) {
+            row = workbook.getRow(sheet, currRow++);
+            cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+            cell.setCellValue(getAllSurveillanceActivitiesAndOutcomesTitle());
+        }
         row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1);
-        cell.setCellValue("Please log the surveillance activities and their outcomes to "
-                + "the \"Activities and Outcomes\" sheet of this workbook.");
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        cell.setCellValue(getAllSurveillanceActivitiesAndOutcomesDescription());
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
-    private int createSelectingAndSamplingSection(SurveillanceReportWorkbookWrapper workbook,
+    private int createSamplingAndSelectingSection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
@@ -214,8 +289,16 @@ public abstract class ReportInfoWorksheetBuilder {
         cell = workbook.createCell(row, 1, workbook.getSectionHeadingStyle());
         cell.setCellValue("Sampling and Selecting");
         currRow = addExclusionAndExhaustionSection(workbook, sheet, reports, currRow);
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+        currRow = createReactiveSurveillanceSubsection(workbook, sheet, reports, currRow);
+        currRow = createIcsSurveillanceSubsection(workbook, sheet, reports, currRow);
+        return currRow + 1;
+    }
+
+    private int createReactiveSurveillanceSubsection(SurveillanceReportWorkbookWrapper workbook,
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
         cell.setCellValue(getReactiveSummaryTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
@@ -247,7 +330,7 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createPrioritizedSurveillanceSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -258,16 +341,44 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue("V.");
         cell = workbook.createCell(row, 1, workbook.getSectionHeadingStyle());
         cell.setCellValue("Prioritized Surveillance");
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
-        cell.setCellValue("Prioritized Elements");
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
-        cell.setCellValue("The ONC-ACB undertook the following activities and implemented the "
-                + "following measures to evaluate and address the prioritized elements of "
-                + "surveillance referred to in Program Policy Resource #18-03 (October 5, 2018).");
-        row.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
-        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+
+        if (!StringUtils.isEmpty(getPrioritizedSurveillanceDescription())) {
+            row = workbook.getRow(sheet, currRow++);
+            cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+            cell.setCellValue(getPrioritizedSurveillanceDescription());
+            row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+            currRow++;
+        }
+
+        currRow = createPrioritizedCriteriaSubsection(workbook, sheet, reports, currRow);
+        currRow = createDisclosureRequirementsSubsection(workbook, sheet, reports, currRow);
+        currRow = createDeveloperComplaintsLogReviewSubsection(workbook, sheet, reports, currRow);
+        currRow = createPostCertificationPerformanceSubsection(workbook, sheet, reports, currRow);
+        currRow = createAppropriateUseOfMarkSubsection(workbook, sheet, reports, currRow);
+        return currRow;
+    }
+
+    private int createPrioritizedCriteriaSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+
+        Row row = null;
+        Cell cell = null;
+        int currRow = beginRow;
+        if (!StringUtils.isEmpty(getPrioritizedCriteriaTitle())) {
+            row = workbook.getRow(sheet, currRow++);
+            cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+            cell.setCellValue(getPrioritizedCriteriaTitle());
+        }
+
+        if (!StringUtils.isEmpty(getPrioritizedCriteriaDescription())) {
+            row = workbook.getRow(sheet, currRow++);
+            cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+            cell.setCellValue(getPrioritizedCriteriaDescription());
+            row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        }
+
         //skip row
         currRow++;
         row = workbook.getRow(sheet, currRow++);
@@ -292,11 +403,14 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum() + 1;
+    }
 
-        //skip row
-        currRow++;
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+    private int createDisclosureRequirementsSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
         cell.setCellValue(getDisclosureSummaryTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
@@ -323,12 +437,12 @@ public abstract class ReportInfoWorksheetBuilder {
         }
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
-        lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createComplaintsSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, int beginRow) {
@@ -337,11 +451,11 @@ public abstract class ReportInfoWorksheetBuilder {
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
         cell.setCellValue("VI.");
         cell = workbook.createCell(row, 1, workbook.getSectionHeadingStyle());
-        cell.setCellValue("Complaints Reporting");
+        cell.setCellValue(getComplaintsReportingTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1);
-        cell.setCellValue("Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.");
-        return row.getRowNum()+1;
+        cell.setCellValue(getComplaintsReportingDescription());
+        return row.getRowNum() + 1;
     }
 
     protected int determineYear(List<QuarterlyReport> quarterlyReports) {
