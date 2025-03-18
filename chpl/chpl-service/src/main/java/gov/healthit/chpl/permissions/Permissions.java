@@ -39,6 +39,7 @@ import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestToolDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UcdProcessDomainPermissions;
+import gov.healthit.chpl.permissions.domains.UrlCheckerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
@@ -79,6 +80,7 @@ public class Permissions {
     public static final String STANDARD = "STANDARD";
     public static final String CODE_SET = "CODE_SET";
     public static final String API_KEY = "API_KEY";
+    public static final String URL_CHECKER = "URL_CHECKER";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -116,7 +118,8 @@ public class Permissions {
             FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
             StandardDomainPermissions standardDomainPermissions,
             CodeSetDomainPermissions codeSetPermissions,
-            ApiKeyDomainPermissions apiKeyPermissions) {
+            ApiKeyDomainPermissions apiKeyPermissions,
+            UrlCheckerDomainPermissions urlCheckerDomainPermissions) {
 
         domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);
@@ -151,6 +154,7 @@ public class Permissions {
         domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
         domainPermissions.put(API_KEY, apiKeyPermissions);
+        domainPermissions.put(URL_CHECKER, urlCheckerDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

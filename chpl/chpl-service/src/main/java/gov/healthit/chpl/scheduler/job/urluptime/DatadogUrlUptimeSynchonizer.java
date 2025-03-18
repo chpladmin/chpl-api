@@ -22,6 +22,7 @@ import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
 import com.datadog.api.client.v1.model.SyntheticsApiTestFailureCode;
 import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 
+import gov.healthit.chpl.datadog.OnDemandUrlCheckerManager;
 import gov.healthit.chpl.domain.Developer;
 import lombok.extern.log4j.Log4j2;
 
@@ -204,11 +205,14 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void addUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
-        try {
-            LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
-            urlUptimeMonitorDAO.create(urlUptimeMonitor);
-        } catch (Exception e) {
-            LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
+        // Ignore monitors URL monitors with a developer of -99.  These are from the On Demand Checker.
+        if (urlUptimeMonitor.getDeveloper().getId() != OnDemandUrlCheckerManager.TEMP_DEVELOPER_ID) {
+            try {
+                LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
+                urlUptimeMonitorDAO.create(urlUptimeMonitor);
+            } catch (Exception e) {
+                LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
+            }
         }
     }
 
