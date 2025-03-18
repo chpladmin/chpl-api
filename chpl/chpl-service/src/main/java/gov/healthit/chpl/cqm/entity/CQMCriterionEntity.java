@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.cqm.entity;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -10,8 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

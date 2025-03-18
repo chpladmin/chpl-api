@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.TestData;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 

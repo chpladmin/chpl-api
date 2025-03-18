@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.cqm.dao;
 
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
@@ -10,13 +10,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultDTO;
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.cqm.entity.CQMResultCriteriaEntity;
+import gov.healthit.chpl.cqm.entity.CQMResultEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
-import gov.healthit.chpl.entity.listing.CQMResultEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;

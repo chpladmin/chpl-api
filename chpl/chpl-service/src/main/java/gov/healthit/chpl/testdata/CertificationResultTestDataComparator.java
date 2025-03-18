@@ -1,11 +1,10 @@
-package gov.healthit.chpl.domain.comparator;
+package gov.healthit.chpl.testdata;
 
 import java.io.Serializable;
 import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

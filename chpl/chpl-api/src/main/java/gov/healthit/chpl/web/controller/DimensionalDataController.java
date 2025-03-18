@@ -27,6 +27,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -212,6 +213,9 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/test_data", message = "This is deprecated and will be removed. Please GET from /test-data.",
+        removalDate = "2025-10-01")
     @Operation(summary = "Get all possible test data options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

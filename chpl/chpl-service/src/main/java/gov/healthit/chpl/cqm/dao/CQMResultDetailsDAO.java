@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.cqm.dao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.cqm.entity.CQMResultDetailsEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 import jakarta.persistence.Query;
 
 @Repository(value = "cqmResultDetailsDAO")
