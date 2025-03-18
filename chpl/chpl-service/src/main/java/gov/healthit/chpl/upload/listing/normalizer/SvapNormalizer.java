@@ -60,6 +60,8 @@ public class SvapNormalizer {
             certResultSvap.setReplaced(matchedSvap.get().getSvap().isReplaced());
             certResultSvap.setSvapId(matchedSvap.get().getSvap().getSvapId());
         } else {
+            certResultSvap.setId(null);
+            certResultSvap.setSvapId(null);
             LOGGER.warn("Could not find SVAP for criteria " + Util.formatCriteriaNumber(criterion) + " and Regulatory Text " + certResultSvap.getRegulatoryTextCitation());
         }
     }

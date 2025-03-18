@@ -32,6 +32,7 @@ public class CertificationResultReviewer {
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
+    private SvapIcsReviewer svapIcsReviewer;
     private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     private SedG32015Reviewer sedG3Reviewer;
     private CertificationResultRules certResultRules;
@@ -43,7 +44,7 @@ public class CertificationResultReviewer {
     public CertificationResultReviewer(@Qualifier("listingUploadUnavailableCriteriaReviewer") UnavailableCriteriaReviewer unavailableCriteriaReviewer,
             @Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
-            @Qualifier("listingUploadAdditionalSoftwareFrameworkReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
+            @Qualifier("listingUploadAdditionalSoftwareReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
             @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
@@ -54,6 +55,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
+            @Qualifier("listingUploadSvapIcsReviewer") SvapIcsReviewer svapIcsReviewer,
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
@@ -71,6 +73,7 @@ public class CertificationResultReviewer {
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
         this.svapReviewer = svapReviewer;
+        this.svapIcsReviewer = svapIcsReviewer;
         this.unattestedCriteriaWithDataReviewer = unattestedCriteriaWithDataReviewer;
         this.sedG3Reviewer = sedG3Reviewer;
         this.certResultRules = certResultRules;
@@ -110,6 +113,7 @@ public class CertificationResultReviewer {
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
         svapReviewer.review(listing);
+        svapIcsReviewer.review(listing);
         sedG3Reviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
     }

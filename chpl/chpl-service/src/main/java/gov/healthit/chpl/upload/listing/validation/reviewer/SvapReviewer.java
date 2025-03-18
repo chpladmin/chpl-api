@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,11 +14,12 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadSvapReviewer")
 @Log4j2
-public class SvapReviewer {
+public class SvapReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -86,7 +86,6 @@ public class SvapReviewer {
     private void reviewSvapFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
         reviewRegulatoryTextCitationRequired(listing, certResult, svap);
-        reviewSvapMarkedAsReplaced(listing, certResult, svap);
     }
 
     private void reviewRegulatoryTextCitationRequired(CertifiedProductSearchDetails listing,
@@ -96,19 +95,5 @@ public class SvapReviewer {
                     msgUtil.getMessage("listing.criteria.svap.missingCitation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
-    }
-
-    private void reviewSvapMarkedAsReplaced(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultSvap svap) {
-        if (svap.getSvapId() != null
-                && BooleanUtils.isTrue(svap.isReplaced())
-                && !doesListingHaveIcs(listing)) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
-                    svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
-        }
-    }
-
-    private boolean doesListingHaveIcs(CertifiedProductSearchDetails listing) {
-        return listing.getIcs().getInherits();
     }
 }

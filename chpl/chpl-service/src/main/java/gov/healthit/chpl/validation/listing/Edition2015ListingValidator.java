@@ -11,12 +11,15 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.FunctionalityTestedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.SvapReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -37,7 +40,6 @@ import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
@@ -46,7 +48,6 @@ import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
@@ -59,6 +60,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.SvapComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -99,8 +101,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired
-    @Qualifier("validDataReviewer")
-    private ValidDataReviewer validDataReviewer;
+    @Qualifier("listingUploadAdditionalSoftwareReviewer")
+    private AdditionalSoftwareReviewer additionalSoftwareReviewer;
 
     @Autowired
     @Qualifier("sedG32015Reviewer")
@@ -147,8 +149,12 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
+    @Qualifier("listingUploadFunctionalityTestedReviewer")
+    private FunctionalityTestedReviewer functionalityTestedReviewer;
+
+    @Autowired
     @Qualifier("functionalityTestedAllowedByCriteriaReviewer")
-    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedReviewer;
+    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedAllowedByCriteriaReviewer;
 
     @Autowired
     @Qualifier("duplicateDataReviewer")
@@ -165,6 +171,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("measureComparisonReviewer")
     private MeasureComparisonReviewer measureComparisonReviewer;
+
+    @Autowired
+    @Qualifier("svapComparisonReviewer")
+    private SvapComparisonReviewer svapComparisonReviewer;
 
     @Autowired
     @Qualifier("oldCriteriaWithoutIcsReviewer")
@@ -206,7 +216,7 @@ public class Edition2015ListingValidator extends Validator {
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
     @Autowired
-    @Qualifier("svapReviewer")
+    @Qualifier("listingUploadSvapReviewer")
     private SvapReviewer svapReviewer;
 
     @Autowired
@@ -277,7 +287,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(requiredAndRelatedCriteriaReviewer);
         reviewers.add(unavailableCriteriaReviewer);
         reviewers.add(testingLabReviewer);
-        reviewers.add(validDataReviewer);
+        reviewers.add(additionalSoftwareReviewer);
         reviewers.add(sedG3Reviewer);
         reviewers.add(sedReviewer);
         reviewers.add(ucdProcessReviewer);
@@ -292,6 +302,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
+        reviewers.add(functionalityTestedAllowedByCriteriaReviewer);
         reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(cqmResultReviewer);
@@ -306,6 +317,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(icsCodeReviewer);
         reviewers.add(additionalSoftwareCodeReviewer);
         reviewers.add(codeSetReviewer);
+        reviewers.add(svapReviewer);
         return reviewers;
     }
 
@@ -315,12 +327,12 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(chplNumberComparisonReviewer);
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
+        comparisonReviewers.add(svapComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaTestTaskComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-        comparisonReviewers.add(svapReviewer);
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);
         comparisonReviewers.add(testingLabComparisonReviewer);
