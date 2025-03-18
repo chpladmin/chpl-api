@@ -32,13 +32,12 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     @Builder.Default
     private List<SurveillanceGroundsForInitiating> surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>();
     private String surveillanceGroundsForInitiatingOther;
-    private String surveillanceFindings;
-    private Boolean k1Reviewed;
-
     @Deprecated
     @DeprecatedResponseField(message = "Please use surveillanceGroundsForInitiating and surveillanceGroundsForInitiatingOther.",
         removalDate = "2025-10-01")
     private String groundsForInitiating;
+    private String surveillanceFindings;
+    private Boolean k1Reviewed;
     private String nonconformityCauses;
     private String nonconformityNature;
     private String stepsToSurveil;
@@ -47,6 +46,12 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String limitationsEvaluation;
     private String nondisclosureEvaluation;
     private String directionDeveloperResolution;
+
+    @Builder.Default
+    private List<SurveillanceCapStatus> capStatus = new ArrayList<SurveillanceCapStatus>();
+    private String capStatusOther;
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use capStatus and capStatusOther.", removalDate = "2025-10-01")
     private String completedCapVerification;
 
     public void copyPrivilegedFields(PrivilegedSurveillance another) {
@@ -70,6 +75,8 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>(
                 another.getSurveillanceGroundsForInitiating());
         this.surveillanceGroundsForInitiatingOther = another.getSurveillanceGroundsForInitiatingOther();
+        this.capStatus = new ArrayList<SurveillanceCapStatus>(another.getCapStatus());
+        this.capStatusOther = another.getCapStatusOther();
         this.surveillanceFindings = another.getSurveillanceFindings();
     }
 }

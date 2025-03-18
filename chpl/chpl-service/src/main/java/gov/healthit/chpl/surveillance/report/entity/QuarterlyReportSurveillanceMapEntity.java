@@ -12,6 +12,7 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import jakarta.persistence.Basic;
@@ -95,6 +96,16 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "surveillance_grounds_for_initiating_other")
     private String surveillanceGroundsForInitiatingOther;
 
+    @Singular
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
+    @Basic(optional = false)
+    @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
+    @SQLRestriction("deleted <> 'true'")
+    private Set<QuarterlyReportSurveillanceCapStatusMapEntity> surveillanceCapStatusMaps = new HashSet<QuarterlyReportSurveillanceCapStatusMapEntity>();
+
+    @Column(name = "surveillance_cap_status_other")
+    private String surveillanceCapStatusOther;
+
     @Column(name = "surveillance_findings")
     private String surveillanceFindings;
 
@@ -125,9 +136,6 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "direction_developer_resolution")
     private String directionDeveloperResolution;
 
-    @Column(name = "completed_cap_verification")
-    private String completedCapVerification;
-
     public PrivilegedSurveillance toDomain() {
         List<SurveillanceProcessType> processTypes = this.getSurveillanceProcessTypeMaps().stream()
                 .map(procTypeMap -> procTypeMap.toDomain())
@@ -135,13 +143,15 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
         List<SurveillanceGroundsForInitiating> groundsForInitiating = this.getSurveillanceGroundsForInitiatingMaps().stream()
                 .map(groundsMap -> groundsMap.toDomain())
                 .collect(Collectors.toList());
+        List<SurveillanceCapStatus> capStatuses = this.getSurveillanceCapStatusMaps().stream()
+                .map(capMap -> capMap.toDomain())
+                .collect(Collectors.toList());
 
         PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
                 .id(this.getSurveillanceId())
                 .mappingId(this.getId())
                 .quarterlyReport(this.getQuarterlyReport().toDomain())
                 .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
-                .completedCapVerification(this.getCompletedCapVerification())
                 .directionDeveloperResolution(this.getDirectionDeveloperResolution())
                 .k1Reviewed(this.getK1Reviewed())
                 .limitationsEvaluation(this.getLimitationsEvaluation())
@@ -156,6 +166,8 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
                 .surveillanceGroundsForInitiating(groundsForInitiating)
                 .surveillanceGroundsForInitiatingOther(this.getSurveillanceGroundsForInitiatingOther())
+                .capStatus(capStatuses)
+                .capStatusOther(this.getSurveillanceCapStatusOther())
                 .surveillanceFindings(this.getSurveillanceFindings())
                 .build();
 
