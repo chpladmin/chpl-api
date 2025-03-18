@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.TestDataDTO;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.TestData;
+import gov.healthit.chpl.testdata.TestDataDAO;
 
 @Component
 public class TestDataNormalizer {
@@ -63,9 +63,9 @@ public class TestDataNormalizer {
         if (testData != null && testData.getTestData() != null
                 && !StringUtils.isEmpty(testData.getTestData().getName())) {
 
-            List<TestDataDTO> allowedTestData = testDataDao.getByCriterionId(criterion.getId());
+            List<TestData> allowedTestData = testDataDao.getByCriterionId(criterion.getId());
             if (allowedTestData != null && allowedTestData.size() > 0) {
-                for (TestDataDTO allowedTd : allowedTestData) {
+                for (TestData allowedTd : allowedTestData) {
                     if (allowedTd.getName().equalsIgnoreCase(testData.getTestData().getName())) {
                         testData.getTestData().setId(allowedTd.getId());
                     }

@@ -12,6 +12,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +49,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultConformanceMethodEntity> conformanceMethods;
     private List<CertificationResultTestProcedureDTO> testProcedures;
-    private List<CertificationResultTestDataDTO> testData;
+    private List<CertificationResultTestData> testData;
     private List<CertificationResultTestTool> testTools;
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
@@ -87,7 +88,7 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultTestData() != null) {
             this.testData = entity.getCertificationResultTestData().stream()
-                    .map(e -> new CertificationResultTestDataDTO(e))
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
 

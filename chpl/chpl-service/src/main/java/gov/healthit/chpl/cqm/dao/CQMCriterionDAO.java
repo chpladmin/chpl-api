@@ -1,14 +1,14 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.cqm.dao;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.entity.CQMCriterionEntity;
+import gov.healthit.chpl.cqm.entity.CQMVersionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.entity.CQMCriterionEntity;
-import gov.healthit.chpl.entity.CQMVersionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
 

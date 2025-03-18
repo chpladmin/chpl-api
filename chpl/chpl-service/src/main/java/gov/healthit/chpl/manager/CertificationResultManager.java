@@ -20,7 +20,6 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -45,6 +43,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.util.CertifiedProductUtil;
 import lombok.extern.log4j.Log4j2;
@@ -629,12 +628,7 @@ public class CertificationResultManager extends SecuredManager {
 
         numChanges = testDataToAdd.size() + idsToRemove.size();
         for (CertificationResultTestData toAdd : testDataToAdd) {
-            CertificationResultTestDataDTO toAddDto = new CertificationResultTestDataDTO();
-            toAddDto.setCertificationResultId(certResult.getId());
-            toAddDto.setTestDataId(toAdd.getTestData().getId());
-            toAddDto.setAlteration(toAdd.getAlteration());
-            toAddDto.setVersion(toAdd.getVersion());
-            certResultDAO.addTestDataMapping(toAddDto);
+            certResultDAO.addTestDataMapping(certResult.getId(), toAdd);
         }
 
         for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
@@ -647,13 +641,7 @@ public class CertificationResultManager extends SecuredManager {
             }
 
             if (hasChanged) {
-                CertificationResultTestDataDTO toUpdateDto = new CertificationResultTestDataDTO();
-                toUpdateDto.setId(toUpdate.getOrig().getId());
-                toUpdateDto.setCertificationResultId(certResult.getId());
-                toUpdateDto.setTestDataId(toUpdate.getUpdated().getTestData().getId());
-                toUpdateDto.setAlteration(toUpdate.getUpdated().getAlteration());
-                toUpdateDto.setVersion(toUpdate.getUpdated().getVersion());
-                certResultDAO.updateTestDataMapping(toUpdateDto);
+                certResultDAO.updateTestDataMapping(toUpdate.getUpdated());
                 numChanges++;
             }
         }

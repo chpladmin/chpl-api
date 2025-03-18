@@ -15,12 +15,11 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.TestData;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -188,7 +187,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFAULT_TEST_DATA)
+                        .name(TestData.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -225,7 +224,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFAULT_TEST_DATA)
+                        .name(TestData.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -718,7 +717,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestDataDTO.DEFAULT_TEST_DATA)
+                        .name(TestData.DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.cqm.entity;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;

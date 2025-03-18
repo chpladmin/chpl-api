@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.cqm.entity;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -21,7 +21,7 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
-import gov.healthit.chpl.dao.CQMResultDAO;
+import gov.healthit.chpl.cqm.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
