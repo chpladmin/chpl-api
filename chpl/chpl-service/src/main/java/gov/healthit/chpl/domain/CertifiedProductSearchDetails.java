@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;

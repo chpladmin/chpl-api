@@ -14,15 +14,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.cqm.CqmCriterionService;
+import gov.healthit.chpl.cqm.dao.CQMResultDAO;
+import gov.healthit.chpl.cqm.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.domain.comparator.CQMCriteriaComparator;
 import gov.healthit.chpl.domain.comparator.CQMResultComparator;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.service.CqmCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Component

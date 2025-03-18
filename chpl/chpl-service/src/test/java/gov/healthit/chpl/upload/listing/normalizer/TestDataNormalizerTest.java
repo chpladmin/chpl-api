@@ -15,12 +15,11 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.dto.TestDataDTO;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.TestData;
+import gov.healthit.chpl.testdata.TestDataDAO;
 
 public class TestDataNormalizerTest {
 
@@ -31,10 +30,10 @@ public class TestDataNormalizerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         testDataDao = Mockito.mock(TestDataDAO.class);
-        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(TestDataDTO.DEFAULT_TEST_DATA)))
-            .thenReturn(TestDataDTO.builder()
+        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(TestData.DEFAULT_TEST_DATA)))
+            .thenReturn(TestData.builder()
                     .id(5L)
-                    .name(TestDataDTO.DEFAULT_TEST_DATA)
+                    .name(TestData.DEFAULT_TEST_DATA)
                     .build());
         normalizer = new TestDataNormalizer(testDataDao);
     }
@@ -103,12 +102,12 @@ public class TestDataNormalizerTest {
                         .testDataUsed(testData)
                         .build())
                 .build();
-        List<TestDataDTO> foundTestData = new ArrayList<TestDataDTO>();
-        foundTestData.add(TestDataDTO.builder()
+        List<TestData> foundTestData = new ArrayList<TestData>();
+        foundTestData.add(TestData.builder()
                 .id(1L)
                 .name("a name")
                 .build());
-        foundTestData.add(TestDataDTO.builder()
+        foundTestData.add(TestData.builder()
                 .id(2L)
                 .name("b name")
                 .build());
@@ -139,12 +138,12 @@ public class TestDataNormalizerTest {
                         .testDataUsed(testData)
                         .build())
                 .build();
-        List<TestDataDTO> foundTestData = new ArrayList<TestDataDTO>();
-        foundTestData.add(TestDataDTO.builder()
+        List<TestData> foundTestData = new ArrayList<TestData>();
+        foundTestData.add(TestData.builder()
                 .id(1L)
                 .name("a name")
                 .build());
-        foundTestData.add(TestDataDTO.builder()
+        foundTestData.add(TestData.builder()
                 .id(2L)
                 .name("b name")
                 .build());
@@ -177,10 +176,10 @@ public class TestDataNormalizerTest {
                         .testDataUsed(testData)
                         .build())
                 .build();
-        List<TestDataDTO> foundTestData = new ArrayList<TestDataDTO>();
-        foundTestData.add(TestDataDTO.builder()
+        List<TestData> foundTestData = new ArrayList<TestData>();
+        foundTestData.add(TestData.builder()
                 .id(5L)
-                .name(TestDataDTO.DEFAULT_TEST_DATA)
+                .name(TestData.DEFAULT_TEST_DATA)
                 .build());
         Mockito.when(testDataDao.getByCriterionId(ArgumentMatchers.eq(1L))).thenReturn(foundTestData);
 

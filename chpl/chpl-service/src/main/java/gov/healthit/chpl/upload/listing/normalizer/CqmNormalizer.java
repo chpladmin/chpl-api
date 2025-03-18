@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
-import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.cqm.CqmCriterionService;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
-import gov.healthit.chpl.service.CqmCriterionService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
