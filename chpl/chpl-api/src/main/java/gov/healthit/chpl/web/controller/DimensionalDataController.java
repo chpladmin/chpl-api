@@ -106,6 +106,19 @@ public class DimensionalDataController {
         return survReportManager.getSurveillanceGroundsForInitiating();
     }
 
+    @Operation(summary = "Get a list of options for Corrective Action Plan (CAP) status values.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/cap-statuses", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getSurveillanceCapStatuses() {
+        return survReportManager.getSurveillanceCapStatuses();
+    }
+
     @Operation(summary = "Get all possible classifications in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

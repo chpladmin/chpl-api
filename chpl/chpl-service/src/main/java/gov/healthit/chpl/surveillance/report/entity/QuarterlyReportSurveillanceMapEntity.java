@@ -166,7 +166,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
                 .surveillanceGroundsForInitiating(groundsForInitiating)
                 .surveillanceGroundsForInitiatingOther(this.getSurveillanceGroundsForInitiatingOther())
-                .capStatus(capStatuses)
+                .capStatuses(capStatuses)
                 .capStatusOther(this.getSurveillanceCapStatusOther())
                 .surveillanceFindings(this.getSurveillanceFindings())
                 .build();

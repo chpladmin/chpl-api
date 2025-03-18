@@ -12,12 +12,15 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceCapStatusMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceGroundsForInitiatingMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceProcessTypeMapEntity;
+import gov.healthit.chpl.surveillance.report.entity.SurveillanceCapStatusEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceGroundsForInitiatingEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
@@ -158,6 +161,14 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<SurveillanceCapStatus> getSurveillanceCapStatuses() {
+        List<SurveillanceCapStatusEntity> entities =
+                entityManager.createQuery("SELECT e FROM SurveillanceCapStatusEntity e WHERE deleted = false").getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public Long create(Long quarterlyReportId, PrivilegedSurveillance toCreate)
             throws EntityCreationException {
         QuarterlyReportSurveillanceMapEntity entity = new QuarterlyReportSurveillanceMapEntity();
@@ -176,7 +187,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setLimitationsEvaluation(toCreate.getLimitationsEvaluation());
         entity.setNondisclosureEvaluation(toCreate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
-        entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
+        entity.setSurveillanceCapStatusOther(toCreate.getCapStatusOther());
         entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
         entity.setSurveillanceGroundsForInitiatingOther(toCreate.getSurveillanceGroundsForInitiatingOther());
         entity.setSurveillanceFindings(toCreate.getSurveillanceFindings());
@@ -188,6 +199,8 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
             .forEach(procType -> createSurveillanceProcessTypeMaps(qrSurveillanceMapEntityId, procType));
         toCreate.getSurveillanceGroundsForInitiating().stream()
             .forEach(grounds -> createSurveillanceGroundForInitiatingMaps(qrSurveillanceMapEntityId, grounds));
+        toCreate.getCapStatuses().stream()
+            .forEach(capStatus -> createCapStatusMaps(qrSurveillanceMapEntityId, capStatus));
         return qrSurveillanceMapEntityId;
     }
 
@@ -205,6 +218,14 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
                 .surveillanceGroundsForInitiatingId(toCreate.getId())
                 .build();
         create(groundsMapEntity);
+    }
+
+    private void createCapStatusMaps(Long parentId, SurveillanceCapStatus toCreate) {
+        QuarterlyReportSurveillanceCapStatusMapEntity capStatusMapEntity = QuarterlyReportSurveillanceCapStatusMapEntity.builder()
+                .quarterlyReportSurveillanceMapId(parentId)
+                .surveillanceCapStatusId(toCreate.getId())
+                .build();
+        create(capStatusMapEntity);
     }
 
     public void update(PrivilegedSurveillance existing, PrivilegedSurveillance toUpdate)
@@ -238,7 +259,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setLimitationsEvaluation(toUpdate.getLimitationsEvaluation());
         entity.setNondisclosureEvaluation(toUpdate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
-        entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
+        entity.setSurveillanceCapStatusOther(toUpdate.getCapStatusOther());
         entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
         entity.setSurveillanceGroundsForInitiatingOther(toUpdate.getSurveillanceGroundsForInitiatingOther());
         entity.setSurveillanceFindings(toUpdate.getSurveillanceFindings());
@@ -249,6 +270,9 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         updateSurveillanceGroundsForInitiating(entity,
                 existing.getSurveillanceGroundsForInitiating(),
                 toUpdate.getSurveillanceGroundsForInitiating());
+        updateSurveillanceCapStatuses(entity,
+                existing.getCapStatuses(),
+                toUpdate.getCapStatuses());
     }
 
     private void updateSurveillanceProcessTypes(QuarterlyReportSurveillanceMapEntity qrSurvMapEntity,
@@ -298,6 +322,32 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
             QuarterlyReportSurveillanceGroundsForInitiatingMapEntity toCreate = QuarterlyReportSurveillanceGroundsForInitiatingMapEntity.builder()
                     .quarterlyReportSurveillanceMapId(qrSurvMapId)
                     .surveillanceGroundsForInitiatingId(grounds.getId())
+                    .build();
+            create(toCreate);
+        }
+    }
+
+    private void updateSurveillanceCapStatuses(QuarterlyReportSurveillanceMapEntity qrSurvMapEntity,
+            List<SurveillanceCapStatus> existingCapStatuses,
+            List<SurveillanceCapStatus> updatedCapStatuses) {
+        Long qrSurvMapId = qrSurvMapEntity.getId();
+        List<SurveillanceCapStatus> addedCapStatuses = SurveillanceCapStatusHelper.getAddedSurveillanceCapStatuses(
+                existingCapStatuses, updatedCapStatuses);
+        List<SurveillanceCapStatus> removedCapStatuses = SurveillanceCapStatusHelper.getRemovedSurveillanceCapStatuses(
+                existingCapStatuses, updatedCapStatuses);
+
+        for (SurveillanceCapStatus capStatus : removedCapStatuses) {
+            QuarterlyReportSurveillanceCapStatusMapEntity toRemove = qrSurvMapEntity.getSurveillanceCapStatusMaps().stream()
+                    .filter(entity -> capStatus.getId().equals(entity.getSurveillanceCapStatusId()))
+                    .findAny().get();
+            toRemove.setDeleted(true);
+            update(toRemove);
+        }
+
+        for (SurveillanceCapStatus capStatus : addedCapStatuses) {
+            QuarterlyReportSurveillanceCapStatusMapEntity toCreate = QuarterlyReportSurveillanceCapStatusMapEntity.builder()
+                    .quarterlyReportSurveillanceMapId(qrSurvMapId)
+                    .surveillanceCapStatusId(capStatus.getId())
                     .build();
             create(toCreate);
         }

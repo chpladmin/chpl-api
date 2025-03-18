@@ -48,7 +48,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String directionDeveloperResolution;
 
     @Builder.Default
-    private List<SurveillanceCapStatus> capStatus = new ArrayList<SurveillanceCapStatus>();
+    private List<SurveillanceCapStatus> capStatuses = new ArrayList<SurveillanceCapStatus>();
     private String capStatusOther;
     @Deprecated
     @DeprecatedResponseField(message = "Please use capStatus and capStatusOther.", removalDate = "2025-10-01")
@@ -65,7 +65,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.limitationsEvaluation = another.getLimitationsEvaluation();
         this.nondisclosureEvaluation = another.getNondisclosureEvaluation();
         this.directionDeveloperResolution = another.getDirectionDeveloperResolution();
-        this.completedCapVerification = another.getCompletedCapVerification();
         this.quarterlyReport = another.getQuarterlyReport();
         this.surveillanceOutcome = another.getSurveillanceOutcome();
         this.surveillanceOutcomeOther = another.getSurveillanceOutcomeOther();
@@ -75,7 +74,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>(
                 another.getSurveillanceGroundsForInitiating());
         this.surveillanceGroundsForInitiatingOther = another.getSurveillanceGroundsForInitiatingOther();
-        this.capStatus = new ArrayList<SurveillanceCapStatus>(another.getCapStatus());
+        this.capStatuses = new ArrayList<SurveillanceCapStatus>(another.getCapStatuses());
         this.capStatusOther = another.getCapStatusOther();
         this.surveillanceFindings = another.getSurveillanceFindings();
     }

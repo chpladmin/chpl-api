@@ -38,6 +38,7 @@ import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
@@ -115,6 +116,21 @@ public class SurveillanceReportManager extends SecuredManager {
             currGround.setId(ground.getId());
             currGround.setName(ground.getName());
             result.add(currGround);
+        }
+        return result;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
+    public Set<KeyValueModel> getSurveillanceCapStatuses() {
+        List<SurveillanceCapStatus> capStatuses = quarterlySurvMapDao.getSurveillanceCapStatuses();
+        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
+        for (SurveillanceCapStatus capStatus : capStatuses) {
+            KeyValueModel currCapStatus = new KeyValueModel();
+            currCapStatus.setId(capStatus.getId());
+            currCapStatus.setName(capStatus.getName());
+            result.add(currCapStatus);
         }
         return result;
     }
@@ -497,13 +513,14 @@ public class SurveillanceReportManager extends SecuredManager {
                             nextReportSurv.setLimitationsEvaluation(prevReportSurv.getLimitationsEvaluation());
                             nextReportSurv.setNondisclosureEvaluation(prevReportSurv.getNondisclosureEvaluation());
                             nextReportSurv.setDirectionDeveloperResolution(prevReportSurv.getDirectionDeveloperResolution());
-                            nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
                             nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
                             nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
                             nextReportSurv.setSurveillanceProcessTypes(prevReportSurv.getSurveillanceProcessTypes());
                             nextReportSurv.setSurveillanceProcessTypeOther(prevReportSurv.getSurveillanceProcessTypeOther());
                             nextReportSurv.setSurveillanceGroundsForInitiating(prevReportSurv.getSurveillanceGroundsForInitiating());
                             nextReportSurv.setSurveillanceGroundsForInitiatingOther(prevReportSurv.getSurveillanceGroundsForInitiatingOther());
+                            nextReportSurv.setCapStatuses(prevReportSurv.getCapStatuses());
+                            nextReportSurv.setCapStatusOther(prevReportSurv.getCapStatusOther());
                             nextReportSurv.setSurveillanceFindings(prevReportSurv.getSurveillanceFindings());
                             try {
                                 quarterlySurvMapDao.create(nextReport.getId(), nextReportSurv);
