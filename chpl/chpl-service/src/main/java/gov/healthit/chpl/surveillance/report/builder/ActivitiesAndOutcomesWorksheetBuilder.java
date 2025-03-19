@@ -83,13 +83,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     protected static final int COL_NC_CAP_MUST_COMPLETE_DATE = 25;
     protected static final int COL_NC_CAP_WAS_COMPLETE_DATE = 26;
     protected static final int COL_NC_FINDINGS = 27;
-    protected static final int COL_CERT_STATUS_RESULTANT = 28;
-    protected static final int COL_SUSPENDED = 29;
-    protected static final int COL_SURV_PROCESS_TYPE = 30;
-    protected static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
-    protected static final int COL_SURV_GROUNDS = 32;
-    protected static final int COL_SURV_GROUNDS_OTHER = 33;
-    protected static final int COL_SURV_FINDINGS = 34;
+    protected static final int COL_SURV_FINDINGS = 28;
+    protected static final int COL_CERT_STATUS_RESULTANT = 29;
+    protected static final int COL_SUSPENDED = 30;
+    protected static final int COL_SURV_PROCESS_TYPE = 31;
+    protected static final int COL_SURV_PROCESS_TYPE_OTHER = 32;
+    protected static final int COL_SURV_GROUNDS = 33;
+    protected static final int COL_SURV_GROUNDS_OTHER = 34;
     protected static final int COL_NONCONFORMITY_CAUSES = 35;
     protected static final int COL_CAP_STATUS = 36;
     protected static final int COL_CAP_STATUS_OTHER = 37;
@@ -370,7 +370,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addRichTextHeadingCell(workbook, row, COL_NONCONFORMITY_CAUSES, cellTitle, cellSubtitle);
 
         cellTitle = "CAP Status";
-        cellSubtitle = "Please provide the current status of this listing's CAP. If an  Corrective Action Plan was "
+        cellSubtitle = "Please provide the current status of this listing's CAP. If a Corrective Action Plan was "
                 + "received, approved and completed, please select all actions to verify that the developer completed "
                 + "all requirements. If no CAP was provided, select \"No CAP\"";
         addRichTextHeadingCell(workbook, row, COL_CAP_STATUS, cellTitle, cellSubtitle);
