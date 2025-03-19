@@ -149,7 +149,9 @@ public class ListingUploadManager {
         }
 
         ListingUpload existingListing = listingUploadDao.getByChplProductNumber(uploadMetadata.getChplProductNumber());
-        if (existingListing != null) {
+        //leave any uploads that were confirmed or rejected alone
+        //but mark as deleted an upload that was in an earlier state (the "replace" of this method)
+        if (existingListing != null && !existingListing.getStatus().isFinalStatus()) {
             listingUploadDao.delete(existingListing.getId());
         }
         ListingUpload created = listingUploadDao.create(uploadMetadata);
@@ -324,8 +326,7 @@ public class ListingUploadManager {
                 LOGGER.error("Could not confirm pending listing " + id, ex);
                 throw ex;
             }
-            listingUploadDao.updateStatus(id, ListingUploadStatus.CONFIRMED);
-            listingUploadDao.updateConfirmedListingId(id, confirmedListing.getId());
+            listingUploadDao.updateStatusAndConfirmedListingId(id, ListingUploadStatus.CONFIRMED, confirmedListing.getId());
             return confirmedListing;
         }
     }
@@ -349,11 +350,11 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).DELETE, #id)")
     public void reject(Long id) throws ObjectMissingValidationException, EntityRetrievalException, ActivityException {
         if (isListingUploadAvailableForRejection(id)) {
-            ListingUpload listingUploadBeforeDelete = listingUploadDao.getById(id);
+            ListingUpload listingUploadBeforeRejection = listingUploadDao.getById(id);
             listingUploadDao.updateStatus(id, ListingUploadStatus.REJECTED);
-            String activityMsg = "Listing upload " + listingUploadBeforeDelete.getChplProductNumber() + " has been rejected.";
-            activityManager.addActivity(ActivityConcept.LISTING_UPLOAD, listingUploadBeforeDelete.getId(),
-                    activityMsg, listingUploadBeforeDelete, null);
+            String activityMsg = "Listing upload " + listingUploadBeforeRejection.getChplProductNumber() + " has been rejected.";
+            activityManager.addActivity(ActivityConcept.LISTING_UPLOAD, listingUploadBeforeRejection.getId(),
+                    activityMsg, listingUploadBeforeRejection, null);
         }
     }
 
@@ -361,8 +362,7 @@ public class ListingUploadManager {
             throws EntityRetrievalException, ObjectMissingValidationException {
 
         ListingUploadEntity entity = listingUploadDao.getEntityByIdIncludingDeleted(id);
-        if (entity.getStatus().equals(ListingUploadStatus.CONFIRMED)
-                || entity.getStatus().equals(ListingUploadStatus.REJECTED)
+        if (ListingUploadStatus.getFinalStatuses().contains(entity.getStatus())
                 || BooleanUtils.isTrue(entity.getDeleted())) {
             ObjectMissingValidationException alreadyHandledEx =
                     new ObjectMissingValidationException(
