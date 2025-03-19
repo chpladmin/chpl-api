@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.sql.SQLException;
 
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
-
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -63,7 +62,10 @@ public class ApiKeyActivityAuditDataRetentionService extends AuditDataRetentionS
         }
 
         CopyManager cm = getPgConnection().getCopyAPI();
-        try (FileWriter fw = new FileWriter(new File(fileName))) {
+        File fileToWrite = new File(fileName);
+        fileToWrite.setReadable(true, false);
+
+        try (FileWriter fw = new FileWriter(fileToWrite)) {
             cm.copyOut(copyCmd, fw);
         } catch (Exception e) {
             LOGGER.catching(e);
