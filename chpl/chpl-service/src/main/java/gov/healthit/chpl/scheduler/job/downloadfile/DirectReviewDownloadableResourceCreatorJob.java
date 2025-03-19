@@ -15,6 +15,7 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.presenter.DirectReviewCsvPresenter;
+import gov.healthit.chpl.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -22,6 +23,9 @@ import lombok.extern.log4j.Log4j2;
 public class DirectReviewDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     @Autowired
     private Environment env;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     @Autowired
     private DeveloperManager devManager;
@@ -57,13 +61,10 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                 return;
             }
 
-            File downloadFolder = getDownloadFolder();
-            String csvFilename = downloadFolder.getAbsolutePath()
-                    + File.separator
-                    + env.getProperty("directReviewsReportName") + "-"
+            String csvFilename = env.getProperty("directReviewsReportName") + "-"
                     + getFilenameTimestampFormat().format(new Date())
                     + ".csv";
-            File csvFile = getFile(csvFilename);
+            File csvFile = fileUtils.createDownloadFile(csvFilename);
             DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager, drSearchService);
             LOGGER.info("Writing Direct Review data to CSV file.");
             csvPresenter.presentAsFile(csvFile);

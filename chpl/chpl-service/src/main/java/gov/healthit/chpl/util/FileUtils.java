@@ -85,6 +85,7 @@ public final class FileUtils {
         if (!newDownloadFile.createNewFile()) {
             throw new IOException(msgUtil.getMessage("util.file.cannotCreate", absoluteFilename));
         }
+        newDownloadFile.setReadable(true, false);
         return newDownloadFile;
     }
 
