@@ -6,9 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -116,12 +121,22 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
+        tempDir.toFile().deleteOnExit();
+
+        Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>();
+        permissions.add(PosixFilePermission.OTHERS_READ);
+        permissions.add(PosixFilePermission.GROUP_READ);
+        permissions.add(PosixFilePermission.OWNER_READ);
+        permissions.add(PosixFilePermission.OWNER_WRITE);
+        final FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
 
         presenters.forEach(presenter -> {
             try {
                 presenter.setLogger(LOGGER);
-                presenter.setTempFile(Files.createTempFile(tempDir, presenter.getFileName() + "-"
-                    + getFilenameTimestampFormat().format(new Date()), ".csv").toFile());
+                presenter.setTempFile(Files.createTempFile(tempDir,
+                        presenter.getFileName() + "-" + getFilenameTimestampFormat().format(new Date()),
+                        ".csv",
+                        fileAttributes).toFile());
                 presenter.open();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);

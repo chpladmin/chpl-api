@@ -6,9 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -236,13 +241,21 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
+        this.tempDirectory.deleteOnExit();
         String filenamePart = getFilenamePart();
 
-        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json");
+        Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>();
+        permissions.add(PosixFilePermission.OTHERS_READ);
+        permissions.add(PosixFilePermission.GROUP_READ);
+        permissions.add(PosixFilePermission.OWNER_READ);
+        permissions.add(PosixFilePermission.OWNER_WRITE);
+        FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
+
+        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json", fileAttributes);
         tempJsonFile = jsonPath.toFile();
-        Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
+        Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv", fileAttributes);
         tempCsvDataFile = csvDataPath.toFile();
-        Path csvDefinitionPath = Files.createTempFile(tempDir, "chpl-" + filenamePart + "-definition", ".csv");
+        Path csvDefinitionPath = Files.createTempFile(tempDir, "chpl-" + filenamePart + "-definition", ".csv", fileAttributes);
         tempCsvDefinitionFile = csvDefinitionPath.toFile();
     }
 
