@@ -6,14 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -123,20 +118,12 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         tempDir.toFile().deleteOnExit();
 
-        Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>();
-        permissions.add(PosixFilePermission.OTHERS_READ);
-        permissions.add(PosixFilePermission.GROUP_READ);
-        permissions.add(PosixFilePermission.OWNER_READ);
-        permissions.add(PosixFilePermission.OWNER_WRITE);
-        final FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
-
         presenters.forEach(presenter -> {
             try {
                 presenter.setLogger(LOGGER);
                 presenter.setTempFile(Files.createTempFile(tempDir,
                         presenter.getFileName() + "-" + getFilenameTimestampFormat().format(new Date()),
-                        ".csv",
-                        fileAttributes).toFile());
+                        ".csv").toFile());
                 presenter.open();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
@@ -164,6 +151,8 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                     Path targetFile = Files.move(presenter.getTempFile().toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
                     if (targetFile == null) {
                         LOGGER.warn(presenter.getPresenterName() + " CSV file move may not have succeeded. Check file system.");
+                    } else {
+                        targetFile.toFile().setReadable(true, false);
                     }
                 } else {
                     LOGGER.warn("Temp " + presenter.getPresenterName() + " Surveillance All CSV File was null and could not be moved.");
@@ -178,6 +167,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         LOGGER.info("Deleting temporary files.");
         presenters.forEach(presenter -> {
             if (presenter.getTempFile() != null && presenter.getTempFile().exists()) {
+                LOGGER.info("Deleting " + presenter.getTempFile().getAbsolutePath());
                 presenter.getTempFile().delete();
             } else {
                 LOGGER.warn("Temp " + presenter.getPresenterName() + " CSV File was null and could not be deleted.");
