@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.auditdata;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -14,7 +15,7 @@ public abstract class AuditDataRetentionService extends BaseDAOImpl {
 
     public abstract Long getAuditDataCount(Integer month, Integer year);
     public abstract void deleteAuditData(Integer month, Integer year);
-    public abstract void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders)
+    public abstract void archiveDataToFile(Integer month, Integer year, File file, boolean includeHeaders)
             throws SQLException;
     public abstract String getProposedFilename(Integer month, Integer year);
     public abstract String getAuditTableNme();
