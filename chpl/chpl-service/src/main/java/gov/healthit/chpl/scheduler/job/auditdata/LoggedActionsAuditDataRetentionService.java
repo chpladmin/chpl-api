@@ -50,7 +50,7 @@ public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionS
     }
 
     @Override
-    public void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders) throws SQLException {
+    public void archiveDataToFile(Integer month, Integer year, File file, boolean includeHeaders) throws SQLException {
         String copyCmd = "COPY "
                 + "(SELECT * "
                 + "FROM audit.logged_actions "
@@ -62,10 +62,7 @@ public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionS
         }
 
         CopyManager cm = getPgConnection().getCopyAPI();
-        File fileToWrite = new File(fileName);
-        fileToWrite.setReadable(true, false);
-
-        try (FileWriter fw = new FileWriter(fileToWrite)) {
+        try (FileWriter fw = new FileWriter(file)) {
             cm.copyOut(copyCmd, fw);
         } catch (Exception e) {
             LOGGER.catching(e);

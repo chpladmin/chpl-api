@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.auditdata;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "auditDataRetentionJobLogger")
@@ -38,6 +40,9 @@ public class AuditDataRetentionJob implements Job {
 
     @Autowired
     private JpaTransactionManager txManager;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     @Autowired
     private Environment env;
@@ -94,8 +99,8 @@ public class AuditDataRetentionJob implements Job {
                     boolean doesArchiveExist = auditDataFile.doesFileAlreadyExist(fileName);
                     if (doesArchiveExist) {
                         LOGGER.info("Archive file already exists: " + fileName);
-                        fileName = auditDataFile.getRandomFilename();
-                        currentAuditDataRetentionService.archiveDataToFile(month, year, fileName, false);
+                        File file = fileUtils.createFile(auditDataFile.getRandomFilename());
+                        currentAuditDataRetentionService.archiveDataToFile(month, year, file, false);
                         //Append the temporary file to the existing file
                         LOGGER.info("Appending results to: " + currentAuditDataRetentionService.getProposedFilename(month, year));
                         appendFiles(currentAuditDataRetentionService.getProposedFilename(month, year), fileName);
@@ -104,7 +109,8 @@ public class AuditDataRetentionJob implements Job {
                         deleteFile(fileName);
                     } else {
                         LOGGER.info("Archiving data to: " + fileName);
-                        currentAuditDataRetentionService.archiveDataToFile(month, year, fileName, true);
+                        File file = fileUtils.createFile(fileName);
+                        currentAuditDataRetentionService.archiveDataToFile(month, year, file, true);
                     }
                     LOGGER.info("Deleting archived data from table");
                     currentAuditDataRetentionService.deleteAuditData(month, year);
