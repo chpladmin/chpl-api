@@ -6,14 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -241,21 +236,13 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
-        this.tempDirectory.deleteOnExit();
         String filenamePart = getFilenamePart();
 
-        Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>();
-        permissions.add(PosixFilePermission.OTHERS_READ);
-        permissions.add(PosixFilePermission.GROUP_READ);
-        permissions.add(PosixFilePermission.OWNER_READ);
-        permissions.add(PosixFilePermission.OWNER_WRITE);
-        FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
-
-        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json", fileAttributes);
+        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json");
         tempJsonFile = jsonPath.toFile();
-        Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv", fileAttributes);
+        Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
         tempCsvDataFile = csvDataPath.toFile();
-        Path csvDefinitionPath = Files.createTempFile(tempDir, "chpl-" + filenamePart + "-definition", ".csv", fileAttributes);
+        Path csvDefinitionPath = Files.createTempFile(tempDir, "chpl-" + filenamePart + "-definition", ".csv");
         tempCsvDefinitionFile = csvDefinitionPath.toFile();
     }
 
@@ -270,6 +257,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempJsonFile.toPath(), Paths.get(jsonFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("JSON file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp JSON File was null and could not be moved.");
@@ -282,6 +271,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempCsvDataFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp CSV File was null and could not be moved.");
@@ -293,6 +284,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempCsvDefinitionFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV definition file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp CSV definition File was null and could not be moved.");
@@ -302,24 +295,28 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private void cleanupTempFiles() {
         LOGGER.info("Deleting temporary files.");
         if (tempJsonFile != null && tempJsonFile.exists()) {
+            LOGGER.info("Deleting " + tempJsonFile.getAbsolutePath());
             tempJsonFile.delete();
         } else {
             LOGGER.warn("Temp JSON File was null and could not be deleted.");
         }
 
         if (tempCsvDataFile != null && tempCsvDataFile.exists()) {
+            LOGGER.info("Deleting " + tempCsvDataFile.getAbsolutePath());
             tempCsvDataFile.delete();
         } else {
             LOGGER.warn("Temp CSV Data File was null and could not be deleted.");
         }
 
         if (tempCsvDefinitionFile != null && tempCsvDefinitionFile.exists()) {
+            LOGGER.info("Deleting " + tempCsvDefinitionFile.getAbsolutePath());
             tempCsvDefinitionFile.delete();
         } else {
             LOGGER.warn("Temp CSV Definition File was null and could not be deleted.");
         }
 
         if (tempDirectory != null && tempDirectory.exists()) {
+            LOGGER.info("Deleting " + tempDirectory.getAbsolutePath());
             tempDirectory.delete();
         } else {
             LOGGER.warn("Temp directory for download files was null and could not be deleted.");
