@@ -6,15 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -157,14 +152,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         this.tempDirectory = tempDir.toFile();
         this.tempDirectory.deleteOnExit();
 
-        Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>();
-        permissions.add(PosixFilePermission.OTHERS_READ);
-        permissions.add(PosixFilePermission.GROUP_READ);
-        permissions.add(PosixFilePermission.OWNER_READ);
-        permissions.add(PosixFilePermission.OWNER_WRITE);
-        FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
-
-        Path csvPath = Files.createTempFile(tempDir, sedDownloadFilename, ".csv", fileAttributes);
+        Path csvPath = Files.createTempFile(tempDir, sedDownloadFilename, ".csv");
         tempCsvFile = csvPath.toFile();
     }
 

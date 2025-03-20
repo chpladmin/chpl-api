@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.downloadfile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 import org.quartz.DisallowConcurrentExecution;
@@ -74,19 +73,5 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         } finally {
             LOGGER.info("********* Completed the Direct Review Downloadable Resource Creator job. *********");
         }
-    }
-
-    private File getFile(final String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (!file.delete()) {
-                throw new IOException("File exists; cannot delete");
-            }
-        }
-        if (!file.createNewFile()) {
-            throw new IOException("File can not be created");
-        }
-        LOGGER.info("Created file " + file.getAbsolutePath());
-        return file;
     }
 }
