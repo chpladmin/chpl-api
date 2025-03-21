@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class ProductByAcb {
     private IdNamePair product;
     private IdNamePair acb;

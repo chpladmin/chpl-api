@@ -7,12 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.report.SummaryStatisticsReportBaseService;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -24,14 +23,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class SurveillanceReportsService {
+public class SurveillanceReportsService extends SummaryStatisticsReportBaseService {
 
-    private SummaryStatisticsDAO summaryStatisticsDAO;
     private ListingSearchService listingSearchService;
 
     @Autowired
-    public SurveillanceReportsService(SummaryStatisticsDAO summaryStatisticsDAO, ListingSearchService listingSearchService) {
-        this.summaryStatisticsDAO = summaryStatisticsDAO;
+    public SurveillanceReportsService(SummaryStatisticsDAO summaryStatisticsDAO, ListingSearchService listingSearchService, CertificationBodyManager certificationBodyManager) {
+        super(summaryStatisticsDAO, certificationBodyManager);
         this.listingSearchService = listingSearchService;
     }
 
@@ -48,7 +46,12 @@ public class SurveillanceReportsService {
     }
 
     public List<CertificationBodyStatistic> getOpenSurveillanceActivityCountsByAcb() {
-        return getStatistics().getSurveillanceOpenStatus().getAcbStatistics();
+        return getStatistics().getSurveillanceOpenStatus().getAcbStatistics().stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
+
     }
 
     public List<ListingSearchResult> getListingsWithOpenSurveillance() {
@@ -61,6 +64,8 @@ public class SurveillanceReportsService {
                         .build())
                     .stream()
                     .filter(result -> result.getOpenSurveillanceCount() > 0)
+                    .map(result -> result.toBuilder()
+                            .certificationBody(updateAcbNameBasedOnRetired(result.getCertificationBody())).build())
                     .toList();
         } catch (ValidationException e) {
             LOGGER.error("Could not retrieve listing search for listings with open surveillance.", e);
@@ -84,7 +89,11 @@ public class SurveillanceReportsService {
     }
 
     public List<CertificationBodyStatistic> getOpenNonconformityCountsByAcb() {
-        return getStatistics().getNonConfStatusOpen().getAcbStatistics();
+        return getStatistics().getNonConfStatusOpen().getAcbStatistics().stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<ListingSearchResult> getListingsWithOpenNonconformity() {
@@ -97,6 +106,8 @@ public class SurveillanceReportsService {
                         .build())
                     .stream()
                     .filter(result -> result.getOpenSurveillanceNonConformityCount() > 0)
+                    .map(result -> result.toBuilder()
+                            .certificationBody(updateAcbNameBasedOnRetired(result.getCertificationBody())).build())
                     .toList();
         } catch (ValidationException e) {
             LOGGER.error("Could not retrieve listing search for listings with open surveillance.", e);
@@ -116,11 +127,19 @@ public class SurveillanceReportsService {
     }
 
     public List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
-        return getStatistics().getNonConfCAPStatusOpen();
+        return getStatistics().getNonConfCAPStatusOpen().stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
-        return getStatistics().getNonConfCAPStatusClosed();
+        return getStatistics().getNonConfCAPStatusClosed().stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<ListingSearchResult> getListingsWithOpenCap() {
@@ -141,6 +160,8 @@ public class SurveillanceReportsService {
                                 .build())
                         .build())
                     .stream()
+                    .map(result -> result.toBuilder()
+                            .certificationBody(updateAcbNameBasedOnRetired(result.getCertificationBody())).build())
                     .toList();
         } catch (ValidationException e) {
             LOGGER.error("Could not retrieve listing search for listings with open CAP.", e);
@@ -166,21 +187,12 @@ public class SurveillanceReportsService {
                                 .build())
                         .build())
                     .stream()
+                    .map(result -> result.toBuilder()
+                            .certificationBody(updateAcbNameBasedOnRetired(result.getCertificationBody())).build())
                     .toList();
         } catch (ValidationException e) {
             LOGGER.error("Could not retrieve listing search for listings with closed CAP.", e);
             return List.of();
-        }
-    }
-
-    private StatisticsSnapshot getStatistics() {
-        try {
-            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(summaryStatistics.getSummaryStatistics(), StatisticsSnapshot.class);
-        } catch (Exception e) {
-            LOGGER.error("Error retrieving summary statistics: {}", e.getMessage());
-            return null;
         }
     }
 }
