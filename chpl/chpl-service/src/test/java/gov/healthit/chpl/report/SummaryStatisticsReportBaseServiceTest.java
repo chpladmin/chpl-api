@@ -34,18 +34,6 @@ public class SummaryStatisticsReportBaseServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    public void testGetStatistics_Success() throws Exception {
-//        SummaryStatisticsEntity summaryStatisticsEntity = mock(SummaryStatisticsEntity.class);
-//        when(summaryStatisticsDAO.getCurrentSummaryStatistics()).thenReturn(summaryStatisticsEntity);
-//        when(summaryStatisticsEntity.getSummaryStatistics()).thenReturn("{\"someField\":\"someValue\"}");
-//
-//        StatisticsSnapshot result = summaryStatisticsReportBaseService.getStatistics();
-//
-//        assertNotNull(result);
-//        assertEquals("someValue", result.getSomeField());
-//    }
-
     @Test
     public void testGetStatistics_Exception() throws Exception {
         when(summaryStatisticsDAO.getCurrentSummaryStatistics()).thenThrow(new RuntimeException("Database error"));
