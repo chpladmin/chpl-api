@@ -41,8 +41,26 @@ public class SummaryStatisticsReportBaseService {
         }
     }
 
+    private CertificationBody getAcb(String acbName) {
+        return certificationBodyManager.getAll().stream()
+                .filter(acb -> acb.getName().equals(acbName))
+                .findFirst()
+                .orElse(null);
+    }
+
     protected String getGeneratedAcbName(Long acbId) {
         CertificationBody certificationBody = getAcb(acbId);
+        if (certificationBody == null) {
+            return "Unknown";
+        }
+        return certificationBody.getName() + (certificationBody.isRetired() ? " (Retired)" : "");
+    }
+
+    protected String getGeneratedAcbName(String acbName) {
+        CertificationBody certificationBody = getAcb(acbName);
+        if (certificationBody == null) {
+            return "Unknown";
+        }
         return certificationBody.getName() + (certificationBody.isRetired() ? " (Retired)" : "");
     }
 

@@ -48,7 +48,7 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
     public List<CertificationBodyStatistic> getOpenSurveillanceActivityCountsByAcb() {
         return getStatistics().getSurveillanceOpenStatus().getAcbStatistics().stream()
                 .map(stat -> stat.toBuilder()
-                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .acbName(getGeneratedAcbName(stat.getAcbName()))
                         .build())
                 .toList();
 
@@ -91,7 +91,7 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
     public List<CertificationBodyStatistic> getOpenNonconformityCountsByAcb() {
         return getStatistics().getNonConfStatusOpen().getAcbStatistics().stream()
                 .map(stat -> stat.toBuilder()
-                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .acbName(getGeneratedAcbName(stat.getAcbName()))
                         .build())
                 .toList();
     }
@@ -129,7 +129,7 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
     public List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
         return getStatistics().getNonConfCAPStatusOpen().stream()
                 .map(stat -> stat.toBuilder()
-                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .acbName(getGeneratedAcbName(stat.getAcbName()))
                         .build())
                 .toList();
     }
@@ -137,7 +137,7 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
     public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
         return getStatistics().getNonConfCAPStatusClosed().stream()
                 .map(stat -> stat.toBuilder()
-                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .acbName(getGeneratedAcbName(stat.getAcbName()))
                         .build())
                 .toList();
     }
