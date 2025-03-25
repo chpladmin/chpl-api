@@ -29,6 +29,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private static final String CRITERIA_REQUIRED_ERROR = "%s is required but was not found.";
     private static final String CRITERIA_COMPLEMENT_NOT_FOUND_KEY = "listing.criteria.complementaryCriteriaRequired";
     private static final String CRITERIA_COMPLEMENT_NOT_FOUND = "Certification criterion %s was found so %s is required but was not found.";
+    private static final String CRITERIA_COMPLEMENT_NOT_FOUND_B11_KEY = "listing.criteria.complementaryCriteriaRequiredB11";
+    private static final String CRITERIA_COMPLEMENT_NOT_FOUND_B11 = "Certification criterion 170.315 (b)(11) was found with a P&S value so %s is required but was not found.";
 
     private CertificationCriterionService certificationCriterionService;
     private ValidationUtils validationUtil;
@@ -38,7 +40,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
 
     private CertificationCriterion a1, a2, a3, a4, a5, a6, a9, a10, a12, a13, a14, a15,
         b1, b1Cures, b2, b2Cures, b3, b3Cures, b4, b6, b7, b7Cures, b8, b8Cures, b9, b9Cures, b10, b11,
-        c1, c2, c3, c3Cures, c4, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures,
+        c1, c2, c3, c3Cures, c4, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures, d12, d13,
         e1, e1Cures, e2, e3, f1, f2, f3, f4, f5, f5Cures, f6, f7, g6, g6Cures, g7, g8, g9, g9Cures, g10, h1, h2;
 
     @Before
@@ -90,6 +92,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         d9 = getCriterion(37L, "170.315 (d)(9)", "d9 title", false);
         d10 = getCriterion(38L, "170.315 (d)(10)", "d10 old title", true);
         d10Cures = getCriterion(175L, "170.315 (d)(10)", "d10 title", false);
+        d12 = getCriterion(176L, "170.315 (d)(12)", "d12 title", false);
+        d13 = getCriterion(177L, "170.315 (d)(13)", "d13 title", false);
         e1 = getCriterion(40L, "170.315 (e)(1)", "e1 title", true);
         e1Cures = getCriterion(178L, "170.315 (e)(1)", "e1 title", false);
         e2 = getCriterion(41L, "170.315 (e)(2)", "e2 title", true);
@@ -162,6 +166,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.D_9)).thenReturn(d9);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_10_OLD)).thenReturn(d10);
         Mockito.when(certificationCriterionService.get(Criteria2015.D_10_CURES)).thenReturn(d10Cures);
+        Mockito.when(certificationCriterionService.get(Criteria2015.D_12)).thenReturn(d12);
+        Mockito.when(certificationCriterionService.get(Criteria2015.D_13)).thenReturn(d13);
         Mockito.when(certificationCriterionService.get(Criteria2015.E_1_OLD)).thenReturn(e1);
         Mockito.when(certificationCriterionService.get(Criteria2015.E_1_CURES)).thenReturn(e1Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.E_2)).thenReturn(e2);
@@ -195,6 +201,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_COMPLEMENT_NOT_FOUND_KEY),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(CRITERIA_COMPLEMENT_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_COMPLEMENT_NOT_FOUND_B11_KEY), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, i.getArgument(1), ""));
 
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
@@ -713,6 +721,116 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_b11CriteriaWithoutPAndSAttestedWithNoDependencies_hasNoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_b11CriteriaWithPAndSAttestedWithNoDependencies_hasCorrectErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
+                        .success(Boolean.TRUE)
+                        .privacySecurityFramework("Test")
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(8, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d12))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND_B11, Util.formatCriteriaNumber(d13))));
+
+    }
+
+    @Test
+    public void review_b11CriteriaAttestedWithAllDependencies_hasNoErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d12)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d13)
                         .success(Boolean.TRUE)
                         .build())
                 .build();

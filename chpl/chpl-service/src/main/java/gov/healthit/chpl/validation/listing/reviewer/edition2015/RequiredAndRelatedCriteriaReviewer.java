@@ -172,8 +172,6 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
     }
 
     private void checkB11HasRequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
-        //this logic can most likely be altered/maybe combined with the method above
-        //after Jan 2028 when b11 P&S value is no  longer optional
         CertificationCriterion b11 = criterionService.get(Criteria2015.B_11);
         List<CertificationCriterion> requiredByBCriteria = Stream.of(
                 criterionService.get(Criteria2015.D_1),
@@ -181,20 +179,29 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 criterionService.get(Criteria2015.D_3_CURES),
                 criterionService.get(Criteria2015.D_5),
                 criterionService.get(Criteria2015.D_6),
-                criterionService.get(Criteria2015.D_7))
+                criterionService.get(Criteria2015.D_7),
+                //After Jan 2028, these two D-criteria should be removed from this list.
+                //The ID for b11 (which is 210) should be added to the property "privacyAndSecurityCriteria"
+                //in environment.properties. At that point, the PrivacyAndSecurityCriteriaReviewer will
+                //handle the d12/d13 check as it does for all other criteria.
+                criterionService.get(Criteria2015.D_12),
+                criterionService.get(Criteria2015.D_13))
                 .collect(Collectors.toList());
 
         CertificationResult b11CertResult = listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion().getId().equals(b11.getId()))
             .findAny()
             .orElse(null);
+        //After Jan 2028, this logic should be changed to not consider the presence of P&S Framework value.
+        //The error message should be changed to listing.criteria.complementaryCriteriaRequired
+        //and the listing.criteria.complementaryCriteriaRequiredB11 error message should be deleted from the
+        //errors.properties file.
         if (b11CertResult != null && !StringUtils.isEmpty(b11CertResult.getPrivacySecurityFramework())) {
             requiredByBCriteria.stream()
                     .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
-                            msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
-                                    Util.formatCriteriaNumber(b11),
+                            msgUtil.getMessage("listing.criteria.complementaryCriteriaRequiredB11",
                                     Util.formatCriteriaNumber(missingRequiredCriterion))));
         }
     }

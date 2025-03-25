@@ -242,7 +242,7 @@ public class ValidationUtils {
             if (subordinateCriteriaIds.contains(attestedToCriterionId)) {
                 for (Long requiredCriterionId : requiredCriteriaIds) {
                     if (!attestedToCriteriaIds.contains(requiredCriterionId)) {
-                        errors.add(errorMessageUtil.getMessage("listing.criteria.dependentCriteriaRequired",
+                        errors.add(errorMessageUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
                                 Util.formatCriteriaNumber(
                                         findCertificationCriterion(attestedToCriteria, attestedToCriterionId)),
                                 Util.formatCriteriaNumber(
