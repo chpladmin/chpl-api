@@ -14,8 +14,8 @@ import jakarta.persistence.Query;
 @Component
 public class AttestationReportDAO extends BaseDAOImpl {
 
-    public void insert(AttestationReport attestationReport) {
-        create(AttestationReportEntity.builder()
+    public AttestationReport insert(AttestationReport attestationReport) {
+        AttestationReportEntity entity = AttestationReportEntity.builder()
                 .approvedCount(attestationReport.getApprovedCount())
                 .reportDate(attestationReport.getReportDate())
                 .attestationPeriod(AttestationPeriodEntity.builder()
@@ -28,7 +28,9 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .noSubmissionCount(attestationReport.getNoSubmissionCount())
                 .pendingAcbActionCount(attestationReport.getPendingAcbActionCount())
                 .pendingDeveloperActionCount(attestationReport.getPendingDeveloperActionCount())
-                .build());
+                .build();
+        create(entity);
+        return entity.toDomain();
     }
 
     public List<AttestationReport> getAttestationReportByDate(LocalDate date) {
@@ -43,11 +45,24 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<AttestationReportDeveloper> getAttestationReportDeveloperByAttestationPeriod(AttestationPeriod period) {
+        return getAttestationReportDeveloperEntitiesByAttestationPeriod(period).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
     public void deleteAttestationReportByDate(LocalDate date) {
         getEntitiesByDate(date).forEach(entity -> {
             entity.setDeleted(true);
             update(entity);
         });
+    }
+
+    public void deleteAttestationReportDeveloperByAttestationReportId(Long attestationReportId) {
+        Query query = entityManager.createQuery(
+                "delete from AttestationReportDeveloperEntity where attestationReport.id = :attestationReportId");
+        query.setParameter("attestationReportId", attestationReportId);
+        query.executeUpdate();
     }
 
     private List<AttestationReportEntity> getEntitiesByDate(LocalDate date) {
@@ -60,6 +75,15 @@ public class AttestationReportDAO extends BaseDAOImpl {
     private List<AttestationReportEntity> getEntitiesByAttestationPeriod(AttestationPeriod period) {
         Query query = entityManager.createQuery(
                 "from AttestationReportEntity where (NOT deleted = true) and attestationPeriod.id = :attestationPeriodId", AttestationReportEntity.class);
+        query.setParameter("attestationPeriodId", period.getId());
+        return query.getResultList();
+    }
+
+    private List<AttestationReportDeveloperEntity> getAttestationReportDeveloperEntitiesByAttestationPeriod(AttestationPeriod period) {
+        Query query = entityManager.createQuery(
+                "from AttestationReportDeveloperEntity ard "
+                + "where (NOT deleted = true) "
+                + "and ard.attestationReport.attestationPeriod.id = :attestationPeriodId", AttestationReportEntity.class);
         query.setParameter("attestationPeriodId", period.getId());
         return query.getResultList();
     }

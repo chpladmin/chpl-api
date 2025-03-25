@@ -1,5 +1,7 @@
 package gov.healthit.chpl.changerequest.entity;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,8 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,4 +37,10 @@ public class ChangeRequestStatusTypeEntity extends EntityAudit {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public ChangeRequestStatusType toDomain() {
+        return ChangeRequestStatusType.builder()
+                .id(this.id)
+                .name(this.name)
+                .build();
+    }
 }
