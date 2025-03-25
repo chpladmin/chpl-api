@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -26,7 +26,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     private CertificationCriterionService certificationCriterionService;
     private ErrorMessageUtil msgUtil;
-    private SpecialProperties specialProperties;
     private ValidationUtils validationUtil;
     private PrivacyAndSecurityCriteriaReviewer reviewer;
 
@@ -39,6 +38,10 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(17L)).thenReturn(getCriterion(17L, "170.315 (b)(2)", true));
         Mockito.when(certificationCriterionService.get(166L)).thenReturn(getCriterion(166L, "170.315 (d)(12)", false));
         Mockito.when(certificationCriterionService.get(167L)).thenReturn(getCriterion(167L, "170.315 (d)(13)", false));
+        Mockito.when(certificationCriterionService.get(210L)).thenReturn(getCriterion(210L, "170.315 (b)(11)", false));
+        Mockito.when(certificationCriterionService.get(ArgumentMatchers.eq(Criteria2015.B_11)))
+            .thenReturn(getCriterion(210L, "170.315 (b)(11)", false));
+
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.dependentCriteriaRequired"),
@@ -47,7 +50,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
         validationUtil = new ValidationUtils(certificationCriterionService);
 
-        reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionService, msgUtil, validationUtil, "1,2", "166,167");
+        reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionService, msgUtil, validationUtil, "1,2,210", "166,167");
     }
 
     @Test
@@ -94,6 +97,36 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         assertEquals(2, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (a)(1)", "170.315 (d)(13)")));
         assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (a)(2)", "170.315 (d)(13)")));
+    }
+
+    @Test
+    public void review_missingPAndSCriteriaOnB11WithPandSValue_hasErrorMessages() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(System.currentTimeMillis())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(getCriterion(210L, "170.315 (b)(11)", false))
+                        .privacySecurityFramework("Approach 1")
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (b)(11)", "170.315 (d)(12)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (b)(11)", "170.315 (d)(13)")));
+    }
+
+    @Test
+    public void review_missingPAndSCriteriaOnB11WithoutPandSValue_noErrorMessages() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(System.currentTimeMillis())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(getCriterion(210L, "170.315 (b)(11)", false))
+                        .privacySecurityFramework(null)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

@@ -37,7 +37,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private RequiredAndRelatedCriteriaReviewer reviewer;
 
     private CertificationCriterion a1, a2, a3, a4, a5, a6, a9, a10, a12, a13, a14, a15,
-        b1, b1Cures, b2, b2Cures, b3, b3Cures, b4, b6, b7, b7Cures, b8, b8Cures, b9, b9Cures, b10,
+        b1, b1Cures, b2, b2Cures, b3, b3Cures, b4, b6, b7, b7Cures, b8, b8Cures, b9, b9Cures, b10, b11,
         c1, c2, c3, c3Cures, c4, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures,
         e1, e1Cures, e2, e3, f1, f2, f3, f4, f5, f5Cures, f6, f7, g6, g6Cures, g7, g8, g9, g9Cures, g10, h1, h2;
 
@@ -71,6 +71,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         b9 = getCriterion(24L, "170.315 (b)(9)", "b9 title", true);
         b9Cures = getCriterion(170L, "170.315 (b)(9)", "b9 title", false);
         b10 = getCriterion(171L, "170.315 (b)(10)", "b10 title", false);
+        b11 = getCriterion(210L, "170.315 (b)(11)", "b11 title", false);
         c1 = getCriterion(25L, "170.315 (c)(1)", "c1 title", false);
         c2 = getCriterion(26L, "170.315 (c)(2)", "c2 title", true);
         c3 = getCriterion(27L, "170.315 (c)(3)", "c3 title", true);
@@ -142,6 +143,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.B_9_OLD)).thenReturn(b9);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_9_CURES)).thenReturn(b9Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_10)).thenReturn(b10);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_11)).thenReturn(b11);
         Mockito.when(certificationCriterionService.get(Criteria2015.C_1)).thenReturn(c1);
         Mockito.when(certificationCriterionService.get(Criteria2015.C_2)).thenReturn(c2);
         Mockito.when(certificationCriterionService.get(Criteria2015.C_3_OLD)).thenReturn(c3);
@@ -235,13 +237,13 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(7, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d4))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d4))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(1)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -262,12 +264,12 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(6, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(*)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (a)(9)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -587,13 +589,13 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(7, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d5))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d7))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d8))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(7)", Util.formatCriteriaNumber(d8))));
     }
 
     @Test
@@ -622,11 +624,52 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(5, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d6))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d7))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(*)", Util.formatCriteriaNumber(d8))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(3)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(3)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(3)", Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(3)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(3)", Util.formatCriteriaNumber(d8))));
+    }
+
+    @Test
+    public void review_b1CuresAndb3CuresCriteriaAttestedWithD1AndD5Dependencies_hasCorrectErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g6Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b1Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(5, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(1) and 170.315 (b)(3)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(1) and 170.315 (b)(3)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(1) and 170.315 (b)(3)", Util.formatCriteriaNumber(d6))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(1) and 170.315 (b)(3)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (b)(1) and 170.315 (b)(3)", Util.formatCriteriaNumber(d8))));
     }
 
     @Test
@@ -711,10 +754,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(4, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(*)", Util.formatCriteriaNumber(d5))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(1)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(1)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(1)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (c)(1)", Util.formatCriteriaNumber(d5))));
     }
 
     @Test
@@ -1246,10 +1289,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(4, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(1)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(1)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(1)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(1)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -1270,10 +1313,10 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(4, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d3Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(*)", Util.formatCriteriaNumber(d7))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(5)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(5)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(5)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (f)(5)", Util.formatCriteriaNumber(d7))));
     }
 
     @Test
@@ -2041,9 +2084,9 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d1))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d2Cures))));
-        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(*)", Util.formatCriteriaNumber(d3Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(1)", Util.formatCriteriaNumber(d1))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(1)", Util.formatCriteriaNumber(d2Cures))));
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, "170.315 (h)(1)", Util.formatCriteriaNumber(d3Cures))));
     }
 
     @Test
