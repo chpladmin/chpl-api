@@ -30,6 +30,7 @@ import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
 import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.Synchronized;
@@ -280,6 +281,12 @@ public class ReportDataManager {
         return attestationReportService.getAttestationReports();
     }
 
+    @Synchronized("lock")
+    public List<AttestationReportDeveloper> getAttestationReportDevelopers() {
+        return attestationReportService.getAttestationReportDevelopers();
+    }
+
+    @Synchronized("lock")
     public SvapReportService getSvapReportService() {
         return svapReportService;
     }
