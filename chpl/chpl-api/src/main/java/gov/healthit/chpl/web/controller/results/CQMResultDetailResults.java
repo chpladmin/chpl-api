@@ -3,7 +3,7 @@ package gov.healthit.chpl.web.controller.results;
 import java.io.Serializable;
 import java.util.List;
 
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 
 /**
  * Represents a list of CQMResultDetails domain objects.

@@ -34,6 +34,8 @@ import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchroniza
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
 import gov.healthit.chpl.certifiedproduct.service.SedSynchronizationService;
+import gov.healthit.chpl.cqm.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -44,8 +46,6 @@ import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;

@@ -18,14 +18,12 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -36,7 +34,6 @@ import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEnt
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
@@ -47,6 +44,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import gov.healthit.chpl.testtool.TestToolDAO;
@@ -808,16 +807,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestData> getTestDataForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestDataEntity> entities = getTestDataForCertification(certificationResultId);
-        List<CertificationResultTestDataDTO> dtos = new ArrayList<CertificationResultTestDataDTO>();
-
-        for (CertificationResultTestDataEntity entity : entities) {
-            CertificationResultTestDataDTO dto = new CertificationResultTestDataDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public Long createTestDataMapping(Long certResultId, CertificationResultTestData testData)
@@ -835,24 +830,22 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CertificationResultTestDataDTO addTestDataMapping(CertificationResultTestDataDTO dto)
+    public void addTestDataMapping(Long certResultId, CertificationResultTestData crtd)
             throws EntityCreationException {
         CertificationResultTestDataEntity mapping = new CertificationResultTestDataEntity();
         mapping = new CertificationResultTestDataEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestDataId(dto.getTestDataId());
-        mapping.setTestDataVersion(dto.getVersion());
-        mapping.setAlterationDescription(dto.getAlteration());
+        mapping.setCertificationResultId(certResultId);
+        mapping.setTestDataId(crtd.getTestData().getId());
+        mapping.setTestDataVersion(crtd.getVersion());
+        mapping.setAlterationDescription(crtd.getAlteration());
         try {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestData", dto.getVersion());
+            String msg = msgUtil.getMessage("listing.criteria.badTestData", crtd.getVersion());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
-
-        return new CertificationResultTestDataDTO(mapping);
     }
 
     public void deleteTestDataMapping(Long mappingId) {
@@ -864,19 +857,19 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public void updateTestDataMapping(CertificationResultTestDataDTO dto) throws EntityRetrievalException {
-        CertificationResultTestDataEntity toUpdate = getCertificationResultTestDataById(dto.getId());
+    public void updateTestDataMapping(CertificationResultTestData crtd) throws EntityRetrievalException {
+        CertificationResultTestDataEntity toUpdate = getCertificationResultTestDataById(crtd.getId());
         if (toUpdate == null) {
-            throw new EntityRetrievalException("Could not find test data mapping with id " + dto.getId());
+            throw new EntityRetrievalException("Could not find test data mapping with id " + crtd.getId());
         }
-        toUpdate.setTestDataId(dto.getTestDataId());
-        toUpdate.setAlterationDescription(dto.getAlteration());
-        toUpdate.setTestDataVersion(dto.getVersion());
+        toUpdate.setTestDataId(crtd.getTestData().getId());
+        toUpdate.setAlterationDescription(crtd.getAlteration());
+        toUpdate.setTestDataVersion(crtd.getVersion());
         try {
             entityManager.persist(toUpdate);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestData", dto.getVersion());
+            String msg = msgUtil.getMessage("listing.criteria.badTestData", crtd.getVersion());
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);
         }

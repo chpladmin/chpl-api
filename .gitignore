@@ -278,4 +278,5 @@ ready-for-integration.sh
 update-pr.sh
 /chpl/chpl-api/e2e/env/*.postman_environment.json
 newman/
+/Servers
 Servers/

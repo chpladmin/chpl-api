@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultCertification;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.NoArgsConstructor;
 

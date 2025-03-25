@@ -1,11 +1,10 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.testdata;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,20 +31,6 @@ public class CertificationResultTestData implements Serializable {
 
     public CertificationResultTestData() {
         super();
-    }
-
-    public CertificationResultTestData(CertificationResultTestDataDTO dto) {
-        this.id = dto.getId();
-        TestData td = new TestData();
-        if (dto.getTestData() == null) {
-            td.setId(dto.getTestDataId());
-        } else {
-            td.setId(dto.getTestData().getId());
-            td.setName(dto.getTestData().getName());
-        }
-        this.testData = td;
-        this.version = dto.getVersion();
-        this.alteration = dto.getAlteration();
     }
 
     public boolean matches(final CertificationResultTestData anotherTestData) {

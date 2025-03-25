@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.cqm.entity;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -12,7 +12,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultCertification;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

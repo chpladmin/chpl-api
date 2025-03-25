@@ -1,29 +1,29 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.testdata;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import lombok.Data;
 
 @Data
-public class TestDataCriteriaMapDTO implements Serializable {
+@Deprecated
+public class TestDataCriteriaMap implements Serializable {
     private static final long serialVersionUID = -1863384619196377463L;
     private Long id;
     private Long criteriaId;
     private CertificationCriterion criteria;
     private Long testDataId;
-    private TestDataDTO testData;
+    private TestData testData;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
 
-    public TestDataCriteriaMapDTO() {
+    public TestDataCriteriaMap() {
     }
 
-    public TestDataCriteriaMapDTO(TestDataCriteriaMapEntity entity) {
+    public TestDataCriteriaMap(TestDataCriteriaMapEntity entity) {
         this();
 
         this.id = entity.getId();
@@ -33,7 +33,7 @@ public class TestDataCriteriaMapDTO implements Serializable {
         }
         this.testDataId = entity.getTestDataId();
         if (entity.getTestData() != null) {
-            this.testData = new TestDataDTO(entity.getTestData());
+            this.testData = entity.getTestData().toDomain();
         }
 
         this.creationDate = entity.getCreationDate();

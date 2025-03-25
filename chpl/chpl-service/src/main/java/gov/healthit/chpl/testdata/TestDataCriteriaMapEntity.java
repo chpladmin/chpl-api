@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.testdata;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -11,8 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.TestDataEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,19 +27,22 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "certification_result_test_data")
-public class CertificationResultTestDataEntity extends EntityAudit {
-    private static final long serialVersionUID = -4768045394136032323L;
+@Table(name = "test_data_criteria_map")
+public class TestDataCriteriaMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 1825593902908350647L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "certification_result_test_data_id")
+    @Column(name = "id")
     private Long id;
 
-    @Basic(optional = false)
-    @Column(name = "certification_result_id", nullable = false)
-    private Long certificationResultId;
+    @Column(name = "criteria_id")
+    private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterion;
 
     @Column(name = "test_data_id")
     private Long testDataId;
@@ -48,9 +51,4 @@ public class CertificationResultTestDataEntity extends EntityAudit {
     @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
     private TestDataEntity testData;
 
-    @Column(name = "version")
-    private String testDataVersion;
-
-    @Column(name = "alteration")
-    private String alterationDescription;
 }
