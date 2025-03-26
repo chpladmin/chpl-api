@@ -163,7 +163,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         cell.setCellValue(getDeveloperComplaintsLogReviewDescription());
-        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        row.setHeightInPoints((4 * sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         //skip row
