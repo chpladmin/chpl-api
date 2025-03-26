@@ -4,12 +4,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
@@ -18,10 +23,14 @@ public class ServiceBaseUrlListUptimeCalculator {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
 
+    private List<CertificationBody> activeAcbs;
+
     @Autowired
-    public ServiceBaseUrlListUptimeCalculator(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
+    public ServiceBaseUrlListUptimeCalculator(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO, CertificationBodyManager certificationBodyManager) {
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
+
+        activeAcbs = certificationBodyManager.getAllActive();
     }
 
     @Transactional(readOnly =  true)
@@ -63,7 +72,24 @@ public class ServiceBaseUrlListUptimeCalculator {
                 .pastWeekSuccessfulTestCount(allTestsForPastWeek.stream()
                         .filter(test -> test.getPassed())
                         .count())
+                .applicableAcbsMap(getApplicableAcbsMap(urlUptimeMonitor))
                 .build();
+    }
+
+    private Map<Long, Boolean> getApplicableAcbsMap(UrlUptimeMonitor urlUptimeMonitor) {
+        List<Long> acbIds = Arrays.asList(urlUptimeMonitor.getDelimitedAcbIds()
+                .split(","))
+                .stream()
+                .map(id -> Long.valueOf(id))
+                .toList();
+
+        return activeAcbs.stream()
+                .collect(Collectors.toMap(
+                        acb -> acb.getId(),
+                        acb -> acbIds.stream()
+                        .filter(acbId -> acbId.equals(acb.getId()))
+                        .findAny()
+                        .isPresent()));
     }
 
     private List<UrlUptimeMonitorTest> getEligibleTestsForPastWeek(List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {

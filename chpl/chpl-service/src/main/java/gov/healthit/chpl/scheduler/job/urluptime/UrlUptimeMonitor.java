@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 public class UrlUptimeMonitor {
     private Long id;
     private Developer developer;
+    private String delimitedAcbIds;
     private String url;
     private String datadogPublicId;
 }
