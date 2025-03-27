@@ -299,18 +299,6 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="updateListingStatusJob"
-        fileName="${logDir}/scheduler/updateListingStatusJob.log"
-        filePattern="${logDir}/scheduler/history/updateListingStatusJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
     <RollingFile name="directReviewCacheRefreshJob"
         fileName="${logDir}/scheduler/directReviewCacheRefreshJob.log"
         filePattern="${logDir}/scheduler/history/directReviewCacheRefreshJob-%d{yyyy-MM-dd}.log"
