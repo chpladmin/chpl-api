@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.downloadfile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 import org.quartz.DisallowConcurrentExecution;
@@ -15,6 +14,7 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.presenter.DirectReviewCsvPresenter;
+import gov.healthit.chpl.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -22,6 +22,9 @@ import lombok.extern.log4j.Log4j2;
 public class DirectReviewDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     @Autowired
     private Environment env;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     @Autowired
     private DeveloperManager devManager;
@@ -57,13 +60,10 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                 return;
             }
 
-            File downloadFolder = getDownloadFolder();
-            String csvFilename = downloadFolder.getAbsolutePath()
-                    + File.separator
-                    + env.getProperty("directReviewsReportName") + "-"
+            String csvFilename = env.getProperty("directReviewsReportName") + "-"
                     + getFilenameTimestampFormat().format(new Date())
                     + ".csv";
-            File csvFile = getFile(csvFilename);
+            File csvFile = fileUtils.createDownloadFile(csvFilename);
             DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager, drSearchService);
             LOGGER.info("Writing Direct Review data to CSV file.");
             csvPresenter.presentAsFile(csvFile);
@@ -73,19 +73,5 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         } finally {
             LOGGER.info("********* Completed the Direct Review Downloadable Resource Creator job. *********");
         }
-    }
-
-    private File getFile(final String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (!file.delete()) {
-                throw new IOException("File exists; cannot delete");
-            }
-        }
-        if (!file.createNewFile()) {
-            throw new IOException("File can not be created");
-        }
-        LOGGER.info("Created file " + file.getAbsolutePath());
-        return file;
     }
 }

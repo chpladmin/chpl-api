@@ -116,12 +116,14 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
+        tempDir.toFile().deleteOnExit();
 
         presenters.forEach(presenter -> {
             try {
                 presenter.setLogger(LOGGER);
-                presenter.setTempFile(Files.createTempFile(tempDir, presenter.getFileName() + "-"
-                    + getFilenameTimestampFormat().format(new Date()), ".csv").toFile());
+                presenter.setTempFile(Files.createTempFile(tempDir,
+                        presenter.getFileName() + "-" + getFilenameTimestampFormat().format(new Date()),
+                        ".csv").toFile());
                 presenter.open();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e);
@@ -149,6 +151,8 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                     Path targetFile = Files.move(presenter.getTempFile().toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
                     if (targetFile == null) {
                         LOGGER.warn(presenter.getPresenterName() + " CSV file move may not have succeeded. Check file system.");
+                    } else {
+                        targetFile.toFile().setReadable(true, false);
                     }
                 } else {
                     LOGGER.warn("Temp " + presenter.getPresenterName() + " Surveillance All CSV File was null and could not be moved.");
@@ -163,6 +167,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         LOGGER.info("Deleting temporary files.");
         presenters.forEach(presenter -> {
             if (presenter.getTempFile() != null && presenter.getTempFile().exists()) {
+                LOGGER.info("Deleting " + presenter.getTempFile().getAbsolutePath());
                 presenter.getTempFile().delete();
             } else {
                 LOGGER.warn("Temp " + presenter.getPresenterName() + " CSV File was null and could not be deleted.");
