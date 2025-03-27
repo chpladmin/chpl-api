@@ -199,7 +199,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     protected String getPostCertificationPerformanceDescription() {
         return "The assessment of potential non-conformities resulting from implementation or business practices "
-                + "of a developer that could affect the performance of certified capabilities in the field";
+                + "of a developer that could affect the performance of certified capabilities in the field.";
     }
 
     @Override
