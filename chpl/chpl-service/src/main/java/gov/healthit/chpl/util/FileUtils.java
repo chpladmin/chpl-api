@@ -76,16 +76,21 @@ public final class FileUtils {
         File downloadFolder = getDownloadFolder();
         String absoluteFilename = downloadFolder.getAbsolutePath()
                 + File.separator + filename;
-        File newDownloadFile = new File(absoluteFilename);
-        if (newDownloadFile.exists()) {
-            if (!newDownloadFile.delete()) {
-                throw new IOException(msgUtil.getMessage("util.file.cannotDelete", absoluteFilename));
+        return createFile(absoluteFilename);
+    }
+
+    public File createFile(String fileAbsolutePath) throws IOException {
+        File newFile = new File(fileAbsolutePath);
+        if (newFile.exists()) {
+            if (!newFile.delete()) {
+                throw new IOException(msgUtil.getMessage("util.file.cannotDelete", newFile));
             }
         }
-        if (!newDownloadFile.createNewFile()) {
-            throw new IOException(msgUtil.getMessage("util.file.cannotCreate", absoluteFilename));
+        if (!newFile.createNewFile()) {
+            throw new IOException(msgUtil.getMessage("util.file.cannotCreate", newFile));
         }
-        return newDownloadFile;
+        newFile.setReadable(true, false);
+        return newFile;
     }
 
     public byte[] readDownloadFile(String filename) throws IOException {
