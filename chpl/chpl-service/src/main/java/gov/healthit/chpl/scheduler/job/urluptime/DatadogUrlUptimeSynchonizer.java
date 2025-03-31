@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -22,7 +23,13 @@ import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
 import com.datadog.api.client.v1.model.SyntheticsApiTestFailureCode;
 import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 
+import gov.healthit.chpl.datadog.OnDemandUrlCheckerManager;
+import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
+import gov.healthit.chpl.developer.search.DeveloperSearchResponse;
+import gov.healthit.chpl.developer.search.DeveloperSearchService;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
@@ -40,17 +47,20 @@ public class DatadogUrlUptimeSynchonizer {
     private ServiceBaseUrlListService serviceBaseUrlListService;
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
+    private DeveloperSearchService developerSearchService;
 
     private List<String> errorsToIgnore;
 
 
     public DatadogUrlUptimeSynchonizer(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService,
-            ServiceBaseUrlListService serviceBaseUrlListGatherer, UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
+            ServiceBaseUrlListService serviceBaseUrlListGatherer, UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO,
+            DeveloperSearchService developerSearchService) {
         this.datadogSyntheticsTestService = datadogSyntheticsTestService;
         this.datadogSyntheticsTestResultService = datadogSyntheticsTestResultService;
         this.serviceBaseUrlListService = serviceBaseUrlListGatherer;
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
+        this.developerSearchService = developerSearchService;
 
         errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");
     }
@@ -69,16 +79,15 @@ public class DatadogUrlUptimeSynchonizer {
 
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
-                .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor ->  {
+                .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor -> {
                         String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
-
                         datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
-                            urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
-                                    .urlUptimeMonitorId(urlUptimeMonitor.getId())
-                                    .datadogTestKey(syntheticsTestResult.getResultId())
-                                    .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
-                                    .passed(calculatePassed(syntheticsTestResult, publicId))
-                                    .build());
+                                urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
+                                        .urlUptimeMonitorId(urlUptimeMonitor.getId())
+                                        .datadogTestKey(syntheticsTestResult.getResultId())
+                                        .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
+                                        .passed(calculatePassed(syntheticsTestResult, publicId))
+                                        .build());
                         });
                 }));
     }
@@ -159,8 +168,26 @@ public class DatadogUrlUptimeSynchonizer {
         addMissingUrlMonitors(urlUptimeMonitors, expectedUrlUptimeMonitors);
         urlUptimeMonitors = urlUptimeMonitorDAO.getAll();
         removeOutdatedUrlMonitors(urlUptimeMonitors, expectedUrlUptimeMonitors);
+
+        updateAcbsForUrlUptimeMonitors(urlUptimeMonitors);
+
     }
 
+    private void updateAcbsForUrlUptimeMonitors(List<UrlUptimeMonitor> urlUptimeMonitors) {
+        try {
+            urlUptimeMonitors.forEach(monitor -> updateAcbsForUrlUptimeMonitor(monitor));
+        } catch (Exception e) {
+            LOGGER.error("Could not update ACBs for URL Uptime Monitors", e);
+        }
+    }
+
+    private void updateAcbsForUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
+        try {
+            urlUptimeMonitorDAO.updateAcbsForMonitor(urlUptimeMonitor, getCertificationBodies(urlUptimeMonitor.getDeveloper().getId()));
+        } catch (Exception e) {
+            LOGGER.error("Could not update ACBs for URL Uptime Monitor with Id: {}", urlUptimeMonitor.getId(), e);
+        }
+    }
     private void addMissingUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
         expected.stream()
                 .filter(uum -> !contains(existing, uum))
@@ -172,8 +199,8 @@ public class DatadogUrlUptimeSynchonizer {
         existing.stream()
                 .filter(uum -> !contains(expected, uum))
                 .forEach(urlMonitor -> {
-                    LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
-                    urlUptimeMonitorDAO.delete(urlMonitor);
+                        LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
+                        urlUptimeMonitorDAO.delete(urlMonitor);
                 });
     }
 
@@ -192,6 +219,7 @@ public class DatadogUrlUptimeSynchonizer {
                                 .developer(Developer.builder()
                                         .id(devId)
                                         .build())
+                                .delimitedAcbIds(null)
                                 .build()))
                 .filter(distinctByKey(o -> o.getUrl() + " | " + o.getDeveloper().getId()))
                 .toList();
@@ -204,11 +232,14 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void addUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
-        try {
-            LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
-            urlUptimeMonitorDAO.create(urlUptimeMonitor);
-        } catch (Exception e) {
-            LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
+        // Ignore monitors URL monitors with a developer of -99.  These are from the On Demand Checker.
+        if (urlUptimeMonitor.getDeveloper().getId() != OnDemandUrlCheckerManager.TEMP_DEVELOPER_ID) {
+            try {
+                LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
+                urlUptimeMonitorDAO.create(urlUptimeMonitor);
+            } catch (Exception e) {
+                LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
+            }
         }
     }
 
@@ -252,5 +283,23 @@ public class DatadogUrlUptimeSynchonizer {
                 TimeZone.getDefault().toZoneId());
     }
 
+    private List<CertificationBody> getCertificationBodies(Long developerId) {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+                .developerIds(Set.of(developerId))
+                .build();
+
+        try {
+            DeveloperSearchResponse response = developerSearchService.findDevelopers(request);
+            return response.getResults().get(0).getAcbsForActiveListings().stream()
+                    .map(acb -> CertificationBody.builder()
+                            .id(acb.getId())
+                            .name(acb.getName())
+                            .build())
+                    .toList();
+        } catch (ValidationException e) {
+            LOGGER.error("Could not get ACBs for developer with ID: {}", developerId, e);
+            return List.of();
+        }
+    }
 
 }

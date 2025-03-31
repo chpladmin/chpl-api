@@ -10,7 +10,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -18,6 +17,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.util.CertificationResultRules;
 

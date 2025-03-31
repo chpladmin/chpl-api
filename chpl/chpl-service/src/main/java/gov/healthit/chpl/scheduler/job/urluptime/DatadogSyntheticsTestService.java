@@ -38,7 +38,6 @@ public class DatadogSyntheticsTestService {
     private static final Long SECONDS_IN_A_MINUTE = 60L;
 
     private DatadogSyntheticsTestApiProvider apiProvider;
-    private Boolean datadogIsReadOnly;
     private String datadogTestStartTime;
     private String datadogTestEndTime;
     private Long datadogCheckEveryMinutes;
@@ -46,14 +45,12 @@ public class DatadogSyntheticsTestService {
     private String datadogTestLocation;
 
     public DatadogSyntheticsTestService(DatadogSyntheticsTestApiProvider apiProvider,
-            @Value("${datadog.syntheticsTest.readOnly}") Boolean datadogIsReadOnly,
             @Value("${datadog.syntheticsTest.startTime}") String datadogTestStartTime,
             @Value("${datadog.syntheticsTest.endTime}") String datadogTestEndTime,
             @Value("${datadog.syntheticsTest.checkEveryMinutes}") Long datadogCheckEveryMinutes,
             @Value("${datadog.syntheticsTest.timeout}") Integer datadogTestTimeout,
             @Value("${datadog.syntheticsTest.location}") String datadogTestLocation) {
         this.apiProvider = apiProvider;
-        this.datadogIsReadOnly = datadogIsReadOnly;
         this.datadogTestStartTime = datadogTestStartTime;
         this.datadogTestEndTime = datadogTestEndTime;
         this.datadogCheckEveryMinutes = datadogCheckEveryMinutes;
@@ -61,7 +58,7 @@ public class DatadogSyntheticsTestService {
         this.datadogTestLocation = datadogTestLocation;
     }
 
-    protected DatadogSyntheticsTestApiProvider getApiProvider() {
+    public DatadogSyntheticsTestApiProvider getApiProvider() {
         return apiProvider;
     }
 
@@ -86,12 +83,7 @@ public class DatadogSyntheticsTestService {
 
     public void deleteSyntheticsTests(List<String> publicIds) {
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not deleting from datadog (due to environment setting) with Public Ids: {}", publicIds);
-            } else {
-                apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
-            }
-
+            apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
         } catch (ApiException e) {
             LOGGER.error("Could not delete Synthetic Tests from Datadog: {}", publicIds, e);
         }
@@ -114,8 +106,8 @@ public class DatadogSyntheticsTestService {
                                         .target(NOT_EMPTY_REGEX)
                                         .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
-                                    .url(url)
-                                    .method(HTTP_METHOD_GET)))
+                                .url(url)
+                                .method(HTTP_METHOD_GET)))
                 .options(new SyntheticsTestOptions()
                         .httpVersion(SyntheticsTestOptionsHTTPVersion.ANY)
                         .minFailureDuration(0L)
@@ -150,13 +142,8 @@ public class DatadogSyntheticsTestService {
                 .tags(developerIdsToTags(developerIds));
 
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not updating datadog (due to environment setting) with Developers: {} and URL: {}", developerIds, url);
-                return body;
-            } else {
-                LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
-                return apiProvider.getApiInstance().createSyntheticsAPITest(body);
-            }
+            LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
+            return apiProvider.getApiInstance().createSyntheticsAPITest(body);
         } catch (ApiException e) {
             LOGGER.error("Could not create Synthetics Test for URL: {}", url, e);
             return null;
@@ -174,11 +161,7 @@ public class DatadogSyntheticsTestService {
                         .path("/tags")
                         .value(test.getTags()));
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not adding Developer(s) (due to environment setting) to existing Synthetics Test {}", developerIds);
-            } else {
-                apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
-            }
+            apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
         } catch (ApiException e) {
             LOGGER.error("Could not add Developer(s) to existing Synthetics Test {}", developerIds, e);
         }

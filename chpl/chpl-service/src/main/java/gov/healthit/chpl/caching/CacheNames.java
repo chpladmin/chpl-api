@@ -13,7 +13,6 @@ public final class CacheNames {
     public static final String CLASSIFICATION_NAMES = "classificationNames";
     public static final String MEASURES = "measures";
     public static final String MEASURE_TYPES = "measureTypes";
-    public static final String CQM_CRITERION = "cqmCriterion";
     public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
     public static final String CERTIFICATION_CRITERIA = "certificationCriteria";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
@@ -22,7 +21,6 @@ public final class CacheNames {
     public static final String FIND_SURVEILLANCE_RESULT_TYPE = "findSurveillanceResultType";
     public static final String STANDARDS = "standards";
     public static final String TEST_PROCEDURES = "testProcedures";
-    public static final String TEST_DATA = "testData";
     public static final String FUNCTIONALITY_TESTED_MAPS = "functionalityTestedMaps";
     public static final String TEST_TOOL_MAPS = "testToolMaps";
     public static final String COMPLAINTS = "complaints";

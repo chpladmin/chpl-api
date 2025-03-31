@@ -7,13 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testdata.TestData;
+import gov.healthit.chpl.testdata.TestDataDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -106,27 +105,26 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                                 || (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
                                         && StringUtils.isEmpty(crTestData.getTestData().getName()))) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.missingTestDataNameReplaced",
-                                    Util.formatCriteriaNumber(cert.getCriterion()), TestDataDTO.DEFAULT_TEST_DATA));
-                            TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    TestDataDTO.DEFAULT_TEST_DATA);
-                            TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
-                            crTestData.setTestData(foundTestDataDomain);
+                                    Util.formatCriteriaNumber(cert.getCriterion()), TestData.DEFAULT_TEST_DATA));
+                            TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
+                                    TestData.DEFAULT_TEST_DATA);
+                            crTestData.setTestData(foundTestData);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
                                 && !StringUtils.isEmpty(crTestData.getTestData().getName())) {
-                            TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
+                            TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     crTestData.getTestData().getName());
                             if (foundTestData == null || foundTestData.getId() == null) {
                                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.badTestDataName",
                                                 crTestData.getTestData().getName(), Util.formatCriteriaNumber(cert.getCriterion()),
-                                                TestDataDTO.DEFAULT_TEST_DATA));
+                                                TestData.DEFAULT_TEST_DATA));
                                 foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                        TestDataDTO.DEFAULT_TEST_DATA);
+                                        TestData.DEFAULT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() != null) {
-                            List<TestDataDTO> criterionTestData = testDataDao.getByCriterionId(cert.getCriterion().getId());
+                            List<TestData> criterionTestData = testDataDao.getByCriterionId(cert.getCriterion().getId());
                             boolean hasMatchingTestDatum = criterionTestData.stream()
                                     .filter(testDatum -> testDatum.getId().equals(crTestData.getTestData().getId()))
                                     .findAny().isPresent();

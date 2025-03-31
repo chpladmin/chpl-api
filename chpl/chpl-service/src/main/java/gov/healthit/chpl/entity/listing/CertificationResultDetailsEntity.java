@@ -20,6 +20,7 @@ import gov.healthit.chpl.codeset.CertificationResultCodeSetEntity;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedEntity;
 import gov.healthit.chpl.standard.CertificationResultStandardEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import lombok.Data;
 

@@ -12,6 +12,8 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -84,14 +86,31 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "surveillance_process_type_other")
     private String surveillanceProcessTypeOther;
 
+    @Singular
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
+    @Basic(optional = false)
+    @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
+    @SQLRestriction("deleted <> 'true'")
+    private Set<QuarterlyReportSurveillanceGroundsForInitiatingMapEntity> surveillanceGroundsForInitiatingMaps = new HashSet<QuarterlyReportSurveillanceGroundsForInitiatingMapEntity>();
+
+    @Column(name = "surveillance_grounds_for_initiating_other")
+    private String surveillanceGroundsForInitiatingOther;
+
+    @Singular
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
+    @Basic(optional = false)
+    @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
+    @SQLRestriction("deleted <> 'true'")
+    private Set<QuarterlyReportSurveillanceCapStatusMapEntity> surveillanceCapStatusMaps = new HashSet<QuarterlyReportSurveillanceCapStatusMapEntity>();
+
+    @Column(name = "surveillance_cap_status_other")
+    private String surveillanceCapStatusOther;
+
     @Column(name = "surveillance_findings")
     private String surveillanceFindings;
 
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
-
-    @Column(name = "grounds_for_initiating")
-    private String groundsForInitiating;
 
     @Column(name = "nonconformity_causes")
     private String nonconformityCauses;
@@ -117,12 +136,15 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "direction_developer_resolution")
     private String directionDeveloperResolution;
 
-    @Column(name = "completed_cap_verification")
-    private String completedCapVerification;
-
     public PrivilegedSurveillance toDomain() {
         List<SurveillanceProcessType> processTypes = this.getSurveillanceProcessTypeMaps().stream()
                 .map(procTypeMap -> procTypeMap.toDomain())
+                .collect(Collectors.toList());
+        List<SurveillanceGroundsForInitiating> groundsForInitiating = this.getSurveillanceGroundsForInitiatingMaps().stream()
+                .map(groundsMap -> groundsMap.toDomain())
+                .collect(Collectors.toList());
+        List<SurveillanceCapStatus> capStatuses = this.getSurveillanceCapStatusMaps().stream()
+                .map(capMap -> capMap.toDomain())
                 .collect(Collectors.toList());
 
         PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
@@ -130,9 +152,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .mappingId(this.getId())
                 .quarterlyReport(this.getQuarterlyReport().toDomain())
                 .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
-                .completedCapVerification(this.getCompletedCapVerification())
                 .directionDeveloperResolution(this.getDirectionDeveloperResolution())
-                .groundsForInitiating(this.getGroundsForInitiating())
                 .k1Reviewed(this.getK1Reviewed())
                 .limitationsEvaluation(this.getLimitationsEvaluation())
                 .nonconformityCauses(this.getNonconformityCauses())
@@ -144,6 +164,10 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
                 .surveillanceProcessTypes(processTypes)
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
+                .surveillanceGroundsForInitiating(groundsForInitiating)
+                .surveillanceGroundsForInitiatingOther(this.getSurveillanceGroundsForInitiatingOther())
+                .capStatuses(capStatuses)
+                .capStatusOther(this.getSurveillanceCapStatusOther())
                 .surveillanceFindings(this.getSurveillanceFindings())
                 .build();
 

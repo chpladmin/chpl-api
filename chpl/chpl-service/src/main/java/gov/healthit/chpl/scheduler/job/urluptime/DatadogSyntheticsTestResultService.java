@@ -24,7 +24,6 @@ public class DatadogSyntheticsTestResultService {
 
     private DatadogSyntheticsTestApiProvider apiProvider;
 
-
     @Autowired
     public DatadogSyntheticsTestResultService(DatadogSyntheticsTestApiProvider apiProvider) {
         this.apiProvider = apiProvider;
@@ -56,6 +55,15 @@ public class DatadogSyntheticsTestResultService {
         }
 
         return testResults;
+    }
+
+    public SyntheticsGetAPITestLatestResultsResponse getSyntheticsTestResults(String publicTestKey) {
+        try {
+           return apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
+        } catch (ApiException e) {
+            LOGGER.error("Could not retrieve results for test key: {}", publicTestKey, e);
+            return null;
+        }
     }
 
     public SyntheticsAPITestResultFull getDetailedTestResult(String publicTestKey, String resultId) {
