@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 50.2.0
+_31 March 2025_
+
+### Features
+* Modify 'Associated ONC-ACB' in Service Base URL Report to only be active listings
+* Set global read bit on all generated downloadable files
+* Convert quarterly report cap status field to multi-select w/other option
+* Add Service Base URL real-time validator
+* Convert grounds for initiating to multi-select w/other option
+* Create GET /test-data endpoint
+* Create new GET /cqms endpoint
+
+---
+
 ## Version 50.1.0
 _17 March 2025_
 
