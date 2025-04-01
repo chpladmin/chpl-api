@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.sql.SQLException;
 
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
-
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -51,7 +50,7 @@ public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionS
     }
 
     @Override
-    public void archiveDataToFile(Integer month, Integer year, String fileName, boolean includeHeaders) throws SQLException {
+    public void archiveDataToFile(Integer month, Integer year, File file, boolean includeHeaders) throws SQLException {
         String copyCmd = "COPY "
                 + "(SELECT * "
                 + "FROM audit.logged_actions "
@@ -63,7 +62,7 @@ public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionS
         }
 
         CopyManager cm = getPgConnection().getCopyAPI();
-        try (FileWriter fw = new FileWriter(new File(fileName))) {
+        try (FileWriter fw = new FileWriter(file)) {
             cm.copyOut(copyCmd, fw);
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -72,7 +71,7 @@ public class LoggedActionsAuditDataRetentionService  extends AuditDataRetentionS
 
     @Override
     public String getProposedFilename(Integer month, Integer year) {
-        return getAuditDataFilePath() + "logged-actions-" + year.toString() + "-" + month.toString() + ".csv";
+        return getAuditDataFilePath() + "logged-actions-" + year.toString() + "-" + String.format("%02d", month) + ".csv";
     }
 
     @Override

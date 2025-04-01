@@ -64,11 +64,10 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected String getIcsSummaryDescription() {
-        return "To fulfill requirements to conduct reactive surveillance on listings with multiple "
-                + "ICS requests, the ONC-ACB conducted the following ICS related surveillance activities. "
-                + "Please detail the number of ICS-related surveillances conducted, the method used to "
-                + "surveil these products and the approach taken to incorporate prioritized elements "
-                + "as outlined in the Surveillance Resource.";
+        return "In order to meet requirements to conduct reactive surveillance on listings with multiple ICS "
+                + "requests, the ONC-ACB conducted the following ICS related surveillance. Please outline the "
+                + "number of ICS-related surveillances conducted, the method to surveil these products and "
+                + "the approach to include prioritized elements as outlined in the Surveillance Resource. ";
     }
 
     @Override
@@ -113,9 +112,9 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected String getPrioritizedSurveillanceDescription() {
-        return "The ONC-ACB undertook the following activities and implemented specific "
-                + "measures to evaluate and address the prioritized elements of surveillance as outlined "
-                + "in Program Policy Resource #18-03 (October 5, 2018).";
+        return "The ONC-ACB undertook the following activities and implemented the following measures "
+                + "to evaluate and address the prioritized elements of surveillance referred to in Program Policy "
+                + "Resource #18-03 (October 5, 2018).";
     }
 
     @Override
@@ -126,7 +125,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
     @Override
     protected String getPrioritizedCriteriaDescription() {
         return "Please describe which prioritized criteria were surveilled, how and with what frequency. "
-                + "Provide the approach taken to conduct surveillance on these prioritized criteria.";
+                + "Summarize the approach taken to conduct surveillance on these prioritized criteria.";
     }
 
     @Override
@@ -136,9 +135,9 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected String getDisclosureSummaryDescription() {
-        return "The ONC-ACB undertook the following activities and implemented the following measures "
-                + "to ensure adherence by developers to disclose additional types of costs or fees "
-                + "requirements, as required of the ONC-ACB under 45 CFR § 170.523(k):";
+        return "The ONC-ACB undertook the following activities and implemented the following measures to "
+                + "ensure adherence by developers to disclose additional types of costs or fees requirements, "
+                + "as required of the ONC-ACB under 45 CFR § 170.523(k):";
     }
 
     protected String getDeveloperComplaintsLogReviewTitle() {
@@ -146,12 +145,12 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
     }
 
     protected String getDeveloperComplaintsLogReviewDescription() {
-        return "Describe the activities conducted in the past quarter related to the review of developers' "
-                + "complaints logs. In your description, include an assessment of the extent to which the developer "
-                + "followed its internal complaints process and any deficiencies in that process. Additionally, "
-                + "specify the frequency of complaints received that relate to each prioritized elements outlined "
-                + "in the Surveillance Resource. Additional insights on individual findings can be included in "
-                + "the Surveillance Activities and Outcomes under \"Surveillance Findings\".";
+        return "Describe the activities conducted in the past quarter related to the review of developers' complaints logs. "
+                + "In your description be sure to discuss the extent to which the developer followed its internal complaints "
+                + "process and any deficiencies with its process. Please also indicate the frequency of complaints that the "
+                + "developer received that are associated with each of the prioritized elements as specified by "
+                + "ONC/ASTP. Additional insights on individual findings can be included in the Surveillance Activities "
+                + "and Outcomes under \"Surveillance Findings\". ";
     }
 
     @Override
@@ -164,7 +163,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         cell.setCellValue(getDeveloperComplaintsLogReviewDescription());
-        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        row.setHeightInPoints((4 * sheet.getDefaultRowHeightInPoints()));
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
 
         //skip row
@@ -199,8 +198,8 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
     }
 
     protected String getPostCertificationPerformanceDescription() {
-        return "The assessment of potential non-conformities resulting from a developer's implementation or business "
-                + "practices that may impact the performance of certified capabilities in the field.";
+        return "The assessment of potential non-conformities resulting from implementation or business practices "
+                + "of a developer that could affect the performance of certified capabilities in the field.";
     }
 
     @Override
@@ -249,7 +248,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     protected String getAppropriateUseOfMarkDescription() {
         return "Describe activities and frequency of assessment of the appropriate use of the ONC Health IT Certification "
-                + "and Design Mark on developer public-facing materials, if applicable.";
+                + "and Design Mark on developer public-facing materials.";
     }
 
     @Override

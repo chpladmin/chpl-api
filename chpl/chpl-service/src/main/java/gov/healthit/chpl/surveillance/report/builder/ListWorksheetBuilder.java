@@ -14,6 +14,8 @@ import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 
@@ -105,7 +107,25 @@ public class ListWorksheetBuilder {
         choicesCell = choicesRow.createCell(booleanCol);
         choicesCell.setCellValue(BOOLEAN_NO);
 
-        int complainantTypeCol = 4;
+        int groundsCol = 4;
+        int groundsRow = 0;
+        List<SurveillanceGroundsForInitiating> grounds = reportMapDao.getSurveillanceGroundsForInitiating();
+        for (SurveillanceGroundsForInitiating ground : grounds) {
+            choicesRow = workbook.getRow(sheet, groundsRow++);
+            choicesCell = choicesRow.createCell(groundsCol);
+            choicesCell.setCellValue(ground.getName());
+        }
+
+        int capStatusesCol = 5;
+        int capStatusesRow = 0;
+        List<SurveillanceCapStatus> capStatuses = reportMapDao.getSurveillanceCapStatuses();
+        for (SurveillanceCapStatus capStatus : capStatuses) {
+            choicesRow = workbook.getRow(sheet, capStatusesRow++);
+            choicesCell = choicesRow.createCell(capStatusesCol);
+            choicesCell.setCellValue(capStatus.getName());
+        }
+
+        int complainantTypeCol = 6;
         int complainantTypeRow = 0;
         List<ComplainantType> complainantTypes = complaintDao.getComplainantTypes();
         for (ComplainantType complainantType : complainantTypes) {
@@ -114,7 +134,7 @@ public class ListWorksheetBuilder {
             choicesCell.setCellValue(complainantType.getName());
         }
 
-        int complaintStatusTypeCol = 5;
+        int complaintStatusTypeCol = 7;
         int complaintStatusTypeRow = 0;
         choicesRow = workbook.getRow(sheet, complaintStatusTypeRow++);
         choicesCell = choicesRow.createCell(complaintStatusTypeCol);
