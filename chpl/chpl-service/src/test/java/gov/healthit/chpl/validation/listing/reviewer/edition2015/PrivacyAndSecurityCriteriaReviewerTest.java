@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -26,7 +25,6 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
 
     private CertificationCriterionService certificationCriterionService;
     private ErrorMessageUtil msgUtil;
-    private SpecialProperties specialProperties;
     private ValidationUtils validationUtil;
     private PrivacyAndSecurityCriteriaReviewer reviewer;
 
@@ -40,8 +38,9 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(166L)).thenReturn(getCriterion(166L, "170.315 (d)(12)", false));
         Mockito.when(certificationCriterionService.get(167L)).thenReturn(getCriterion(167L, "170.315 (d)(13)", false));
 
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.dependentCriteriaRequired"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.complementaryCriteriaRequired"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PANDS_MISSING_CRITERIA_ERROR, i.getArgument(1), i.getArgument(2)));
 
