@@ -1,6 +1,8 @@
 package gov.healthit.chpl.scheduler.job.report.attestation;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +28,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "attestation_report_developer")
-public class AttestationReportDeveloperEntity {
+public class AttestationReportDeveloperEntity extends EntityAudit {
+    private static final long serialVersionUID = -7652666875873567339L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +44,8 @@ public class AttestationReportDeveloperEntity {
     @JoinColumn(name = "developer_id")
     private DeveloperEntity developer;
 
-    @Column(name = "change_request_status_type_id")
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "change_request_status_type_id", nullable = true)
     private ChangeRequestStatusTypeEntity changeRequestStatusType;
 
     public AttestationReportDeveloper toDomain() {
@@ -49,7 +53,9 @@ public class AttestationReportDeveloperEntity {
                 .id(this.id)
                 .attestationReport(this.attestationReport.toDomain())
                 .developer(this.developer.toDomain())
-                .changeRequestStatusType(this.changeRequestStatusType.toDomain())
+                .changeRequestStatusType(this.changeRequestStatusType == null
+                        ? ChangeRequestStatusType.builder().id(-1L).name("No Submission") .build()
+                        : this.changeRequestStatusType.toDomain())
                 .build();
     }
 }

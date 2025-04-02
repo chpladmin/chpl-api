@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.report.attestation;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,9 +104,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                         applicableDevelopers.forEach(developer -> {
                             LOGGER.info("Processing Developer: {} ({})", developer.getName(), developer.getId());
                             try {
-
                                 ChangeRequest cr = getMostRecentChangeRequest(developer, mostRecentPastAttestationPeriod);
-                                List<AttestationReportDeveloper> attestationReportDevelopers = new ArrayList<AttestationReportDeveloper>();
 
                                 activeAcbs.forEach(acb -> {
                                    if (isDeveloperManagedByAcb(developer, acb, mostRecentPastAttestationPeriod)) {
@@ -122,23 +119,14 @@ public class AttestationReportCreatorJob extends QuartzJob {
                                        AttestationReport report = attestationReportsByAcbId.get(acb.getId());
                                        report.setDeveloperCount(report.getDeveloperCount() + 1);
                                        updateCountsBasedOnChangeRequestStatus(cr, developer, report);
-
-                                       attestationReportDevelopers.add(AttestationReportDeveloper.builder()
-                                               .attestationReport(report)
-                                               .developer(developer)
-                                               .changeRequestStatusType(cr.getCurrentStatus().getChangeRequestStatusType())
-                                               .build());
                                    }
                                 });
+
                             } catch (Exception e) {
                                 LOGGER.error("Could not collect Developer Attestation Report data for Developer: {} ", developer.getName(), e);
                             }
                         });
-
                         attestationReportsByAcbId.entrySet().forEach(entry -> attestationReportDAO.insert(entry.getValue()));
-
-
-
                     } else {
                         LOGGER.info("Not within submission plus approval window");
                     }
@@ -147,7 +135,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 }
             }
 
-            private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, Developer developer,AttestationReport report) {
+            private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, Developer developer, AttestationReport report) {
                 if (cr == null) {
                        report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
                        report.getDevelopersWithNoSubmissionAttestations().add(developer);

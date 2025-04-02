@@ -22,7 +22,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
     private static final Long CHANGE_REQUEST_APPROVED_ID = 3L;
 
 
-    public AttestationReport insert(AttestationReport attestationReport) {
+    public void insert(AttestationReport attestationReport) {
         AttestationReportEntity entity = AttestationReportEntity.builder()
                 .approvedCount(attestationReport.getApprovedCount())
                 .reportDate(attestationReport.getReportDate())
@@ -47,8 +47,6 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 ChangeRequestStatusType.builder().id(CHANGE_REQUEST_PENDING_DEVELOPER_ACTION_ID).build());
         insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithNoSubmissionAttestations(),
                 null);
-
-        return entity.toDomain();
     }
 
     private void insertAttestationReportDeveloper(AttestationReportEntity attestationReportEntity, List<Developer> developers,
@@ -62,7 +60,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
                     .developer(DeveloperEntity.builder()
                             .id(developer.getId())
                             .build())
-                    .changeRequestStatusType(attestationStatus == null? null  : ChangeRequestStatusTypeEntity.builder()
+                    .changeRequestStatusType(attestationStatus == null ? null  : ChangeRequestStatusTypeEntity.builder()
                             .id(attestationStatus.getId())
                             .build())
                     .build();
@@ -121,7 +119,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "from AttestationReportDeveloperEntity ard "
                 + "where (NOT deleted = true) "
-                + "and ard.attestationReport.attestationPeriod.id = :attestationPeriodId", AttestationReportEntity.class);
+                + "and ard.attestationReport.attestationPeriod.id = :attestationPeriodId", AttestationReportDeveloperEntity.class);
         query.setParameter("attestationPeriodId", period.getId());
         return query.getResultList();
     }
