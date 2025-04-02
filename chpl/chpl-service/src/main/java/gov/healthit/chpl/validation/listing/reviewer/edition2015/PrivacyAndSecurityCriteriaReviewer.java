@@ -19,7 +19,6 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("privacyAndSecurityCriteriaReviewer")
 public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
-
     private ErrorMessageUtil errorMessageUtil;
     private ValidationUtils validationUtils;
 
@@ -27,7 +26,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
     private List<CertificationCriterion> privacyAndSecurityRequiredCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
-    public PrivacyAndSecurityCriteriaReviewer(CertificationCriterionService criterionService,
+    public PrivacyAndSecurityCriteriaReviewer(CertificationCriterionService criteriaService,
             ErrorMessageUtil errorMessageUtil, ValidationUtils validationUtils,
             @Value("${privacyAndSecurityCriteria}") String privacyAndSecurityCriteria,
             @Value("${privacyAndSecurityRequiredCriteria}") String privacyAndSecurityRequiredCriteria) {
@@ -35,13 +34,13 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
         this.validationUtils = validationUtils;
 
         this.privacyAndSecurityCriteria = Arrays.asList(privacyAndSecurityCriteria.split(",")).stream()
-                .map(id -> criterionService.get(Long.parseLong(id)))
+                .map(id -> criteriaService.get(Long.parseLong(id)))
                 .filter(criteria -> BooleanUtils.isFalse(criteria.isRemoved()))
                 .collect(Collectors.toList());
 
         this.privacyAndSecurityRequiredCriteria = Arrays
                 .asList(privacyAndSecurityRequiredCriteria.split(",")).stream()
-                .map(id -> criterionService.get(Long.parseLong(id)))
+                .map(id -> criteriaService.get(Long.parseLong(id)))
                 .collect(Collectors.toList());
     }
 

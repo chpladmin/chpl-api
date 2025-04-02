@@ -66,6 +66,9 @@ public class PrivacyAndSecurityFrameworkReviewer  implements Reviewer {
 
     private void reviewPrivacyAndSecurityRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)
+                //After Jan 2028 this check about b11 should be removed. P&S value was made optional for b11
+                //but will begin to be treated the same as all other criteria where it is required if it's
+                //an allowable field.
                 && !b11.getId().equals(certResult.getCriterion().getId())
                 && StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
             listing.addDataErrorMessage(msgUtil.getMessage(
