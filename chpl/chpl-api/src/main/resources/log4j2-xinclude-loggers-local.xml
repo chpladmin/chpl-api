@@ -38,9 +38,6 @@
     <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="chartDataCreatorJob" />
     </Logger>
-    <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="standardsUpdateJob" />
-    </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
     </Logger>
@@ -94,9 +91,6 @@
     </Logger>
     <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
-    </Logger>
-    <Logger name="updateListingStatusJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updateListingStatusJob" />
     </Logger>
     <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAccessEmailJob" />
@@ -205,9 +199,6 @@
     <Logger name="cognitoMassRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cognitoMassRequirePasswordChangeJob" />
     </Logger>
-    <Logger name="updatedSedFriendlyIdsJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedSedFriendlyIdsJob" />
-    </Logger>
     <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
     </Logger>
@@ -216,8 +207,5 @@
     </Logger>
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
-    </Logger>
-    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="fixJobDataJob" />
     </Logger>
 </Loggers>
