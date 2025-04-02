@@ -186,8 +186,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Schema(description = "The standard(s) or lack thereof used to meet the accessibility-centered design certification criterion. "
             + "Please see the 2015 Edition Certification Companion Guide for Accessibility Centered Design for "
-            + "example accessibility standards: "
-            + "https://www.healthit.gov/test-method/accessibility-centered-design#ccg")
+            + "example accessibility standards.")
     @Builder.Default
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
