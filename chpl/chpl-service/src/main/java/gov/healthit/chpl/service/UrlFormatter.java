@@ -9,7 +9,7 @@ import gov.healthit.chpl.FeatureList;
 @Service
 public class UrlFormatter {
     private static final String ONC_FORMAT = "https://www.healthit.gov";
-    private static final String ASTP_FORMAT = "https://astp.hhs.gov";
+    private static final String ASTP_FORMAT = "https://www.astp.hhs.gov";
 
     private FF4j ff4j;
 
