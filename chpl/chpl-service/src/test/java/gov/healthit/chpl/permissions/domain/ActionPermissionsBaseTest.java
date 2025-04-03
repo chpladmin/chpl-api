@@ -7,8 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.TestingUsers;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -68,6 +68,5 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleUserCreator()).thenReturn(false);
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,20 +21,13 @@ import lombok.NoArgsConstructor;
 public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private static final long serialVersionUID = -7558546038256722930L;
 
-    @Deprecated
-    private AuthenticationSystem authenticationSystem;
     private UUID cognitoId;
-    @Deprecated
-    private Long id;
     private List<Long> organizationIds;
     private String subjectName;
     private String fullName;
     private String friendlyName;
     private String email;
     private String passwordResetRequired;
-
-    @Deprecated
-    private UserDTO impersonatingUser;
 
     // UserDetails interface
     private String password;

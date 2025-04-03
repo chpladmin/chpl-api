@@ -64,7 +64,7 @@ public class ChangeRequestManagerTest {
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 resourcePermissionsFactory, null, null, null, ff4j);
 
@@ -87,7 +87,7 @@ public class ChangeRequestManagerTest {
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
@@ -125,7 +125,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -171,7 +171,7 @@ public class ChangeRequestManagerTest {
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -228,7 +228,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -287,7 +287,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null,
                 changeRequestDAO,
                 null,
                 null,

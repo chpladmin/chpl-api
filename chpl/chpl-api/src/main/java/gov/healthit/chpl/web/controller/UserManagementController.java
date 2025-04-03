@@ -1,20 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,47 +17,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
-import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.JWTCreationException;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.InvitationManager;
-import gov.healthit.chpl.manager.auth.AuthenticationManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -72,38 +43,20 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/users")
 public class UserManagementController {
-    private UserManager userManager;
-    private InvitationManager invitationManager;
-    private AuthenticationManager authenticationManager;
-    private ErrorMessageUtil msgUtil;
     private CognitoUserManager cognitoUserManager;
     private CognitoInvitationManager cognitoInvitationManager;
-    private FF4j ff4j;
+    private ErrorMessageUtil msgUtil;
 
-    private long invitationLengthInDays;
-    private long confirmationLengthInDays;
     private long authorizationLengthInDays;
 
     @Autowired
-    public UserManagementController(UserManager userManager, InvitationManager invitationManager,
-            AuthenticationManager authenticationManager,
-            ErrorMessageUtil errorMessageUtil,
-            @Value("${invitationLengthInDays}") Long invitationLengthDays,
-            @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
-            @Value("${authorizationLengthInDays}") Long authorizationLengthInDays,
-            CognitoUserManager cognitoUserManager,
+    public UserManagementController(CognitoUserManager cognitoUserManager,
             CognitoInvitationManager cognitoInvitationManager,
-            FF4j ff4j) {
-        this.userManager = userManager;
-        this.invitationManager = invitationManager;
-        this.authenticationManager = authenticationManager;
+            ErrorMessageUtil errorMessageUtil,
+            @Value("${authorizationLengthInDays}") Long authorizationLengthInDays) {
         this.msgUtil = errorMessageUtil;
         this.cognitoUserManager = cognitoUserManager;
         this.cognitoInvitationManager = cognitoInvitationManager;
-        this.ff4j = ff4j;
-
-        this.invitationLengthInDays = invitationLengthDays;
-        this.confirmationLengthInDays = confirmationLengthDays;
         this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
@@ -134,10 +87,6 @@ public class UserManagementController {
     @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemented");
-        }
-
         return cognitoUserManager.getUserInfo(cognitoUserId);
     }
 
@@ -158,10 +107,6 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemented");
-        }
-
         invitation.setEmail(StringUtils.normalizeSpace(invitation.getEmail()));
 
         CognitoUserInvitation createdInvitiation = null;
@@ -200,9 +145,6 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws InvalidArgumentsException,
         ValidationException, EmailNotSentException, UserRetrievalException, UserCreationException, ActivityException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemented");
-        }
         UUID token = null;
 
         try {
@@ -246,262 +188,10 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User user, @PathVariable("cognitoUserId") UUID cognitoUserId)
             throws ValidationException, UserRetrievalException, ActivityException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemented");
-        }
-
         if (!cognitoUserId.equals(user.getCognitoId())) {
             throw new ValidationException(msgUtil.getMessage("url.body.notMatch"));
         }
         return cognitoUserManager.updateUser(user);
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/create",
-            httpMethod = "POST",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @DeprecatedApiResponseFields(friendlyUrl = "/users/create", responseClass = User.class)
-    @Operation(summary = "Create a new user account from an invitation.",
-            description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
-                    + "That user key along with all the information needed to create a new user's account "
-                    + "can be passed in here. The account is created but cannot be used until that user "
-                    + "confirms that their email address is valid. The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, InvalidArgumentsException, UserCreationException, ActivityException,
-            EntityRetrievalException, UserRetrievalException {
-
-        if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
-            throw new ValidationException(msgUtil.getMessage("user.email.required"));
-        }
-
-        Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
-        if (errors.size() > 0) {
-            throw new ValidationException(errors, null);
-        }
-
-        UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
-        if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
-            throw new ValidationException(msgUtil.getMessage("user.invitation.invalid",
-                    invitationLengthInDays + "",
-                    invitationLengthInDays == 1 ? "" : "s"));
-        }
-
-        return invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
-    }
-
-    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
-        Set<String> validationErrors = new HashSet<String>();
-
-        if (request.getUser().getFullName().length() > msgUtil.getMessageAsInteger("maxLength.fullName")) {
-            validationErrors.add(msgUtil.getMessage("user.fullName.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.fullName")));
-        }
-        if (request.getUser().getEmail().length() > msgUtil.getMessageAsInteger("maxLength.email")) {
-            validationErrors.add(msgUtil.getMessage("user.email.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.email")));
-        }
-        if (!StringUtils.isEmpty(request.getUser().getPhoneNumber())
-                && request.getUser().getPhoneNumber().length() > msgUtil.getMessageAsInteger("maxLength.phoneNumber")) {
-            validationErrors.add(msgUtil.getMessage("user.phoneNumber.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.phoneNumber")));
-        }
-        return validationErrors;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/confirm",
-            httpMethod = "POST",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @DeprecatedApiResponseFields(friendlyUrl = "/confirm", responseClass = User.class)
-    @Operation(summary = "Confirm that a user's email address is valid.",
-            description = "When a new user accepts their invitation to the CHPL they have to provide "
-                    + "an email address. They then receive an email prompting them to confirm "
-                    + "that this email address is valid. Confirming the email address must be done "
-                    + "via this request before the user will be allowed to log in with "
-                    + "the credentials they selected. " + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
-    EntityRetrievalException, JsonProcessingException, EntityCreationException,
-    MultipleUserAccountsException {
-        UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
-
-        if (invitation == null || invitation.isOlderThan(confirmationLengthInDays)) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("user.confirmation.expired",
-                    confirmationLengthInDays + "",
-                    confirmationLengthInDays == 1 ? "" : "s"));
-        }
-        UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
-        return createdUser.toDomain();
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/{userId}/authorize",
-            httpMethod = "POST",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @Operation(summary = "Update an existing user account with new permissions.",
-            description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
-                    + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
-                    + "or ROLE_ONC.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
-            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException,
-            EntityRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
-
-        if (StringUtils.isEmpty(credentials.getHash())) {
-            throw new InvalidArgumentsException("User key is required.");
-        }
-
-        JWTAuthenticatedUser loggedInUser = AuthUtil.getCurrentUser();
-        if (loggedInUser == null
-                && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
-            throw new InvalidArgumentsException(
-                    "Username and Password are required since no user is currently logged in.");
-        }
-
-        UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
-        if (invitation == null || invitation.isOlderThan(authorizationLengthInDays)) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.invalid",
-                    authorizationLengthInDays + "",
-                    authorizationLengthInDays == 1 ? "" : "s"));
-        }
-
-        // Log the user in, if they are not logged in
-        if (Objects.isNull(loggedInUser)) {
-            UserDTO user = authenticationManager.getUser(credentials);
-            if (user == null) {
-                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
-            }
-            Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
-            SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
-            loggedInUser = AuthUtil.getCurrentUser();
-        }
-
-        UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
-        if (loggedInUser.getImpersonatingUser() != null) {
-            userToUpdate = loggedInUser.getImpersonatingUser();
-        }
-        invitationManager.updateUserFromInvitation(new UserInvitationDTO(userToUpdate, invitation));
-        UserDTO updatedUser = userManager.getById(userToUpdate.getId());
-        return "{\"token\": \"" + authenticationManager.getJWT(updatedUser) + "\"}";
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/invite",
-            httpMethod = "POST",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @Operation(summary = "Invite a user to the CHPL.",
-            description = "This request creates an invitation that is sent to the email address provided. "
-                    + "The recipient of this invitation can then choose to create a new account "
-                    + "or add the permissions contained within the invitation to an existing account "
-                    + "if they have one. Said another way, an invitation can be used to create or "
-                    + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
-                    + "ROLE_ACB can add users to their own organization.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
-            throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
-            UserPermissionRetrievalException, EmailNotSentException {
-        UserInvitation createdInvitiation = null;
-        if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
-            createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());
-        } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
-            createdInvitiation = invitationManager.inviteOnc(invitation.getEmailAddress());
-        } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
-            createdInvitiation = invitationManager.inviteCms(invitation.getEmailAddress());
-        } else if (invitation.getRole().equals(Authority.ROLE_ACB)
-                && invitation.getPermissionObjectId() != null) {
-            createdInvitiation = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
-                    invitation.getPermissionObjectId());
-        } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
-                && invitation.getPermissionObjectId() != null) {
-            createdInvitiation = invitationManager.inviteWithDeveloperAccess(invitation.getEmailAddress(),
-                    invitation.getPermissionObjectId());
-        }
-        return createdInvitiation;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/{userId}",
-            httpMethod = "PUT",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @DeprecatedApiResponseFields(friendlyUrl = "/{userId}", responseClass = User.class)
-    @Operation(summary = "Modify user information.", description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{userId:^-?\\d+$}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody User userInfo)
-            throws UserRetrievalException, ValidationException, MultipleUserAccountsException, ActivityException {
-
-        if (userInfo.getUserId() <= 0) {
-            throw new UserRetrievalException("Cannot update user with ID less than 0");
-        }
-
-        UserDTO updated = userManager.update(userInfo);
-        return updated.toDomain();
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/{userId}",
-            httpMethod = "DELETE",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @Operation(summary = "Delete a user.",
-            description = "Deletes a user account and all associated authorities on organizations. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
-    public DeletedUser deleteUser(@PathVariable("userId") Long userId) throws UserRetrievalException, ActivityException {
-
-        if (userId <= 0) {
-            throw new UserRetrievalException("Cannot delete user with ID less than 0");
-        }
-        UserDTO toDelete = userManager.getById(userId);
-
-        if (toDelete == null) {
-            throw new UserRetrievalException("Could not find user with id " + userId);
-        }
-        userManager.delete(toDelete);
-        return new DeletedUser(true);
     }
 
     @Operation(summary = "View users of the system.",
@@ -514,59 +204,9 @@ public class UserManagementController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
-        List<User> users = null;
-        if (ff4j.check(FeatureList.SSO)) {
-            users = getAllCognitoUsers();
-        } else {
-            users = getAllChplUsers();
-        }
-
+        List<User> users = cognitoUserManager.getAll();
         UsersResponse response = new UsersResponse();
         response.setUsers(users);
         return response;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/beta/{id}/details",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @DeprecatedApiResponseFields(friendlyUrl = "/users/beta/{id}/details", responseClass = User.class)
-    @Operation(summary = "View a specific user's details.",
-            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/beta/{id}/details", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody User getUser(@PathVariable("id") Long id)
-            throws UserRetrievalException {
-
-        return userManager.getUserInfo(id);
-    }
-
-    private List<User> getAllChplUsers() {
-        List<UserDTO> userList = userManager.getAll();
-        List<User> users = new ArrayList<User>(userList.size());
-
-        for (UserDTO userDto : userList) {
-            User user = userDto.toDomain();
-            users.add(user);
-        }
-        return users;
-    }
-
-    private List<User> getAllCognitoUsers() {
-        return cognitoUserManager.getAll();
-    }
-
-    private class DeletedUser {
-        @Getter
-        private Boolean deletedUser;
-
-        DeletedUser(Boolean deletedUser) {
-            this.deletedUser = deletedUser;
-        }
     }
 }

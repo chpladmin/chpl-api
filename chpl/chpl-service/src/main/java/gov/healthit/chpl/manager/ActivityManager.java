@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
@@ -51,25 +48,19 @@ public class ActivityManager extends SecuredManager {
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
     private SubscriptionObserver subscriptionObserver;
     private CognitoApiWrapper cognitoApiWrapper;
-    private UserDAO userDAO;
-    private FF4j ff4j;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
             ChplProductNumberChangedListener chplProductNumberChangedListener,
             SubscriptionObserver subscriptionObserver,
-            CognitoApiWrapper cognitoApiWrapper,
-            UserDAO userDAO,
-            FF4j ff4j) {
+            CognitoApiWrapper cognitoApiWrapper) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
         this.chplProductNumberChangedListener = chplProductNumberChangedListener;
         this.subscriptionObserver = subscriptionObserver;
         this.cognitoApiWrapper = cognitoApiWrapper;
-        this.userDAO = userDAO;
-        this.ff4j = ff4j;
     }
 
     @Transactional
@@ -146,11 +137,7 @@ public class ActivityManager extends SecuredManager {
     private User getCurrentUser() throws UserRetrievalException {
         User currentUser = null;
         if (AuthUtil.getCurrentUser() != null) {
-            if (ff4j.check(FeatureList.SSO)) {
-                currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
-            } else {
-                currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
-            }
+            currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         }
         return currentUser;
     }

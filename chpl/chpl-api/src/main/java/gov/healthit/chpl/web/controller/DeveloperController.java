@@ -29,7 +29,6 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
 import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.auth.User;
@@ -48,7 +47,6 @@ import gov.healthit.chpl.insight.InsightService;
 import gov.healthit.chpl.insight.InsightSubmission;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -69,7 +67,6 @@ public class DeveloperController {
 
     private DeveloperManager developerManager;
     private ErrorMessageUtil msgUtil;
-    private UserPermissionsManager userPermissionsManager;
     private AttestationManager attestationManager;
     private InsightService insightsService;
     private DirectReviewCachingService directReviewService;
@@ -79,7 +76,6 @@ public class DeveloperController {
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
-            UserPermissionsManager userPermissionsManager,
             AttestationManager attestationManager,
             InsightService insightsService,
             ErrorMessageUtil msgUtil,
@@ -87,7 +83,6 @@ public class DeveloperController {
             RealWorldTestingManager rwtManager,
             FF4j ff4j) {
         this.developerManager = developerManager;
-        this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
         this.insightsService = insightsService;
         this.msgUtil = msgUtil;
@@ -267,27 +262,6 @@ public class DeveloperController {
 
         ChplOneTimeTrigger splitTrigger = developerManager.split(oldDeveloper, splitRequest.getNewDeveloper(), newDeveloperProductIds);
         return splitTrigger;
-    }
-
-    @Operation(summary = "Remove user permissions from a developer.",
-            description = "The logged in user must have ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or ROLE_DEVELOPER "
-                    + "and have administrative authority on the "
-                    + " specified developer. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified developer.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public PermissionDeletedResponse deleteUserFromDeveloper(@PathVariable Long developerId, @PathVariable Long userId)
-            throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ActivityException {
-
-        // delete all permissions on that developer
-        userPermissionsManager.deleteDeveloperPermission(developerId, userId);
-        PermissionDeletedResponse response = new PermissionDeletedResponse();
-        response.setPermissionDeleted(true);
-        return response;
     }
 
     @DeprecatedApiResponseFields(friendlyUrl = "/{developerId}/users", responseClass = User.class)

@@ -7,6 +7,7 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
+        <!--  Remove after OCD-3438 is deployed to PROD -->
         <delete-job>
             <name>updateSedFriendlyIdsJob</name>
             <group>systemJobs</group>
@@ -26,6 +27,19 @@
         <delete-job>
             <name>updateSingleListingStatusJob</name>
             <group>subordinateJobs</group>
+        </delete-job>
+        <!--  Remove after OCD-4704 is deployed to PROD -->
+        <delete-job>
+            <name>massRequirePasswordChangeJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Developer Access Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>missingAttestationChangeRequestEmailJob</name>
+            <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -333,17 +347,6 @@
             </job-data-map>
         </job>
 
-        <!-- Job used to trigger mass required password change of almost
-           all users -->
-        <job>
-            <name>massRequirePasswordChangeJob</name>
-            <group>systemJobs</group>
-            <description>Require password change, on next login, of all non-super-admin users</description>
-            <job-class>gov.healthit.chpl.scheduler.job.MassRequirePasswordChangeJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
         <!-- Job fired when developer is split -->
         <job>
             <name>splitDeveloperJob</name>
@@ -440,26 +443,6 @@
                 <entry>
                     <key>email</key>
                     <value></value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <!-- Developer Access Report Job -->
-        <job>
-            <name>Developer Access Report</name>
-            <group>chplJobs</group>
-            <description>Sends a report summarizing developer access data per ONC-ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.DeveloperAccessReport</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
                 </entry>
             </job-data-map>
         </job>
@@ -782,15 +765,6 @@
                     <value>true</value>
                 </entry>
             </job-data-map>
-        </job>
-
-        <job>
-            <name>missingAttestationChangeRequestEmailJob</name>
-            <group>systemJobs</group>
-            <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
-            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest.MissingAttestationChangeRequestEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
 
         <job>

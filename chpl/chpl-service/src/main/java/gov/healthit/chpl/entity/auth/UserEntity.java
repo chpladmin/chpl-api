@@ -2,6 +2,8 @@ package gov.healthit.chpl.entity.auth;
 
 import java.util.Date;
 
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,8 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,9 +53,6 @@ public class UserEntity extends EntityAudit {
     @Column(name = "user_permission_id")
     private Long userPermissionId;
 
-    @Column(name = "password")
-    private String password = null;
-
     @Column(name = "account_expired")
     private boolean accountExpired;
 
@@ -84,4 +81,22 @@ public class UserEntity extends EntityAudit {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "contact_id", unique = true, nullable = false)
     private UserContactEntity contact;
+
+    public User toDomain() {
+        User user = new User();
+        user.setUserId(this.getId());
+        if (this.getPermission() != null) {
+            user.setRole(this.getPermission().getAuthority());
+        }
+        user.setSubjectName(this.getSubjectName());
+        user.setFullName(this.getContact().getFullName());
+        user.setEmail(this.getContact().getEmail());
+        user.setPhoneNumber(this.getContact().getPhoneNumber());
+        user.setAccountLocked(this.isAccountLocked());
+        user.setAccountEnabled(this.isAccountEnabled());
+        user.setCredentialsExpired(this.isCredentialsExpired());
+        user.setPasswordResetRequired(this.isPasswordResetRequired());
+        user.setLastLoggedInDate(this.getLastLoggedInDate());
+        return user;
+    }
 }

@@ -91,9 +91,13 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<User> getAllUsersForCurrentUser() {
-        LOGGER.error("Not implemented: getAllUsersForCurrentUser");
-        throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
+    public List<User> getAllCmsUsers() {
+        List<User> allCmsUsers = cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_CMS_STAFF))
+                .collect(Collectors.toList());
+
+        return allCmsUsers;
     }
 
     @Override
@@ -196,21 +200,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     @Override
     public boolean isUserRoleDeveloperAdmin() {
         return doesAuditUserHaveRole(CognitoGroups.CHPL_DEVELOPER);
-    }
-
-    @Override
-    public boolean isUserRoleUserCreator() {
-        return false;
-    }
-
-    @Override
-    public boolean isUserRoleUserAuthenticator() {
-        return false;
-    }
-
-    @Override
-    public boolean isUserRoleInvitedUserCreator() {
-        return false;
     }
 
     @Override

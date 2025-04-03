@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -39,7 +39,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         ErrorMessageUtil errorMessages = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessages.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(ERROR_MESSAGE);
 
-        permissions = Mockito.mock(ChplResourcePermissions.class);
+        permissions = Mockito.mock(CognitoResourcePermissions.class);
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(true);
 
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);

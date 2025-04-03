@@ -14,21 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
@@ -49,18 +43,12 @@ public class CertificationBodyController {
 
     private CertificationBodyManager acbManager;
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private UserPermissionsManager userPermissionsManager;
-    private UserManager userManager;
 
     @Autowired
     public CertificationBodyController(CertificationBodyManager acbManager,
-            ResourcePermissionsFactory resourcePermissionsFactory,
-            UserPermissionsManager userPermissionsManager,
-            UserManager userManager) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.acbManager = acbManager;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
-        this.userPermissionsManager = userPermissionsManager;
-        this.userManager = userManager;
     }
 
     @Operation(summary = "List all certification bodies (ONC-ACBs).",
@@ -178,45 +166,6 @@ public class CertificationBodyController {
             throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
 
         return acbManager.update(acbToUpdate);
-    }
-
-    @Operation(summary = "Remove user permissions from an ONC-ACB.",
-            description = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
-                    + " specified ONC-ACB. The user specified in the request will have all authorities "
-                    + " removed that are associated with the specified ONC-ACB.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The permissions were successfully removed.",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to complete the action.",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID specified in the URL does not exist in the CHPL database.",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "There was an unexpected error updating user permissions.",
-                    content = @Content)
-    })
-    @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException, ActivityException {
-
-        UserDTO user = userManager.getById(userId);
-        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-
-        if (user == null || acb == null) {
-            throw new InvalidArgumentsException("Could not find either ACB or User specified");
-        }
-
-        // delete all permissions on that acb
-        userPermissionsManager.deleteAcbPermission(acb, userId);
-
-        return "{\"userDeleted\" : true}";
     }
 
     @Operation(summary = "List users with permissions on a specified ONC-ACB.",

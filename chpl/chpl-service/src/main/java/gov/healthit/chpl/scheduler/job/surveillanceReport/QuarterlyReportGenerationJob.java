@@ -23,7 +23,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -142,7 +141,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
                 }
             });
         } else {
-            UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
                 sendEmail(user.getEmail(), quarterlyReportFailureSubject,
                         env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"), null);

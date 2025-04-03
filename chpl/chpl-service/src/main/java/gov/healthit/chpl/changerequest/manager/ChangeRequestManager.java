@@ -55,7 +55,6 @@ import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -89,7 +88,6 @@ public class ChangeRequestManager {
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
 
-    private UserManager userManager;
     private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
@@ -114,8 +112,7 @@ public class ChangeRequestManager {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public ChangeRequestManager(UserManager userManager,
-            SchedulerManager schedulerManager,
+    public ChangeRequestManager(SchedulerManager schedulerManager,
             ChangeRequestDAO changeRequestDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
@@ -136,7 +133,6 @@ public class ChangeRequestManager {
             ValidationUtils validationUtils,
             FormValidator formValidator,
             FF4j ff4j) {
-        this.userManager = userManager;
         this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;

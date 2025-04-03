@@ -3,7 +3,7 @@ package gov.healthit.chpl.entity.statistics;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -36,7 +36,7 @@ public class CriterionProductStatisticsEntity extends EntityAudit {
 
     @Override
     public LastModifiedUserStrategy getLastModifiedUserStrategy() {
-        return new CurrentUserThenSystemUserStrategy();
+        return new CurrentUserStrategy();
     }
 
     @Id

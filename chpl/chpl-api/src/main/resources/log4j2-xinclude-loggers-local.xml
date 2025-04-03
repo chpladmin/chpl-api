@@ -89,12 +89,6 @@
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
     </Logger>
-    <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="massRequirePasswordChangeJob" />
-    </Logger>
-    <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="developerAccessEmailJob" />
-    </Logger>
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
     </Logger>
@@ -165,9 +159,6 @@
     </Logger>
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
-    </Logger>
-    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
     </Logger>
     <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="messageDevelopersJob" />

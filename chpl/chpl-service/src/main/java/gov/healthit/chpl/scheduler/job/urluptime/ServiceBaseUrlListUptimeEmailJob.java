@@ -15,11 +15,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,7 +39,7 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private ServiceBaseUrlListUptimeCsvWriter serviceBaseUrlListUptimeCsvWriter;
 
     @Autowired
-    private DeveloperDAO developerDAO;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -68,7 +69,10 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private List<ServiceBaseUrlListUptimeReport> getReportRows() {
         List<ServiceBaseUrlListUptimeReport> reportRows = serviceBaseUrlListUptimeCalculator.calculateRowsForReport();
         reportRows.forEach(row -> {
-            row.setDeveloperEmails(developerDAO.getContactForDeveloperUsers(row.getDeveloperId()));
+            row.setDeveloperUsers(resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                    Developer.builder()
+                        .id(row.getDeveloperId())
+                        .build()));
         });
 
         return reportRows;

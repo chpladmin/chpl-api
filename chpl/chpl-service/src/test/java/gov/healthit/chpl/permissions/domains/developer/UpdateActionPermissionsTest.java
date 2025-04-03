@@ -13,14 +13,14 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
-    private ChplResourcePermissions resourcePermissions;
+    private CognitoResourcePermissions resourcePermissions;
 
     @Mock
     private DeveloperDAO developerDAO;

@@ -39,7 +39,6 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -370,9 +369,8 @@ public class ListingUploadManager {
                             null,
                             entity.getChplProductNumber());
             try {
-                UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
-                if (lastModifiedUserDto != null) {
-                    User lastModifiedUser = lastModifiedUserDto.toDomain();
+                User lastModifiedUser = userDao.getById(entity.getLastModifiedUser());
+                if (lastModifiedUser != null) {
                     alreadyHandledEx.setUser(lastModifiedUser);
                 } else {
                     alreadyHandledEx.setUser(null);

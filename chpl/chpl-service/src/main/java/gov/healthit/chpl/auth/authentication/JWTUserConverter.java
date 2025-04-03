@@ -6,5 +6,4 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 
 public interface JWTUserConverter {
     JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException;
-    JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException;
 }

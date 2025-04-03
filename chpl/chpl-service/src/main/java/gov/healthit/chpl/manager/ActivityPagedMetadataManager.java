@@ -101,15 +101,6 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
-    public ActivityMetadataPage getUserMaintenanceActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
-        return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
-    }
-
-    @Transactional
     public ActivityMetadataPage getAnnouncementActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);

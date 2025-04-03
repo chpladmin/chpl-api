@@ -441,21 +441,6 @@ public class ActivityController {
                 id, startDate, endDate);
     }
 
-    @Operation(summary = "Get metadata about auditable records in the system for users.",
-            description = "All parameters are optional and will default to the first page of user activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForUsers(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for announcements.",
             description = "All parameters are optional and will default to the first page of announcement activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
