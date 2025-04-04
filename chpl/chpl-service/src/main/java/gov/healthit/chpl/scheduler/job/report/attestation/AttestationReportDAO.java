@@ -7,10 +7,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import jakarta.persistence.Query;
@@ -39,29 +37,25 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .build();
         create(entity);
 
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithApprovedAttestations(),
-                ChangeRequestStatusType.builder().id(CHANGE_REQUEST_APPROVED_ID).build());
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithPendingAcbActionAttestations(),
-                ChangeRequestStatusType.builder().id(CHANGE_REQUEST_PENDING_ACB_ACTION_ID).build());
-        insertAttestationReportDeveloper(entity, attestationReport.getDeveloperWithPendingDeveloperActionAttestations(),
-                ChangeRequestStatusType.builder().id(CHANGE_REQUEST_PENDING_DEVELOPER_ACTION_ID).build());
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithNoSubmissionAttestations(),
-                null);
+        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithApprovedAttestations());
+        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithPendingAcbActionAttestations());
+        insertAttestationReportDeveloper(entity, attestationReport.getDeveloperWithPendingDeveloperActionAttestations());
+        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithNoSubmissionAttestations());
     }
 
-    private void insertAttestationReportDeveloper(AttestationReportEntity attestationReportEntity, List<Developer> developers,
-            ChangeRequestStatusType attestationStatus) {
+    private void insertAttestationReportDeveloper(AttestationReportEntity attestationReportEntity,
+            List<DeveloperAttestationStatus> developersWithAttestationStatus) {
 
-        developers.forEach(developer -> {
+        developersWithAttestationStatus.forEach(dwas -> {
             AttestationReportDeveloperEntity entity = AttestationReportDeveloperEntity.builder()
                     .attestationReport(AttestationReportEntity.builder()
                             .id(attestationReportEntity.getId())
                             .build())
                     .developer(DeveloperEntity.builder()
-                            .id(developer.getId())
+                            .id(dwas.getDeveloper().getId())
                             .build())
-                    .changeRequestStatusType(attestationStatus == null ? null  : ChangeRequestStatusTypeEntity.builder()
-                            .id(attestationStatus.getId())
+                    .changeRequestStatus(dwas.getChangeRequestStatus() == null ? null  : ChangeRequestStatusEntity.builder()
+                            .id(dwas.getChangeRequestStatus().getId())
                             .build())
                     .build();
 

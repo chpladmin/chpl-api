@@ -138,20 +138,31 @@ public class AttestationReportCreatorJob extends QuartzJob {
             private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, Developer developer, AttestationReport report) {
                 if (cr == null) {
                        report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
-                       report.getDevelopersWithNoSubmissionAttestations().add(developer);
+                       report.getDevelopersWithNoSubmissionAttestations().add(DeveloperAttestationStatus.builder()
+                               .developer(developer)
+                               .build());
                    } else {
                        switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
                        case "Accepted":
                            report.setApprovedCount(report.getApprovedCount() + 1);
-                           report.getDevelopersWithApprovedAttestations().add(developer);
+                        report.getDevelopersWithApprovedAttestations().add(DeveloperAttestationStatus.builder()
+                                .developer(developer)
+                                .changeRequestStatus(cr.getCurrentStatus())
+                                .build());
                            break;
                        case "Pending Developer Action":
                            report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
-                           report.getDeveloperWithPendingDeveloperActionAttestations().add(developer);
+                           report.getDeveloperWithPendingDeveloperActionAttestations().add(DeveloperAttestationStatus.builder()
+                                   .developer(developer)
+                                   .changeRequestStatus(cr.getCurrentStatus())
+                                   .build());
                            break;
                        case "Pending ONC-ACB Action":
                            report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
-                           report.getDevelopersWithPendingAcbActionAttestations().add(developer);
+                           report.getDevelopersWithPendingAcbActionAttestations().add(DeveloperAttestationStatus.builder()
+                                   .developer(developer)
+                                   .changeRequestStatus(cr.getCurrentStatus())
+                                   .build());
                            break;
                        default:
                            break;

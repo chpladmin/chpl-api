@@ -7,9 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AttestationReportDeveloper {
-    private Long id;
-    private AttestationReport attestationReport;
+public class DeveloperAttestationStatus {
     private Developer developer;
     private ChangeRequestStatus changeRequestStatus;
 }

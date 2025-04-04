@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Builder;
@@ -45,17 +44,17 @@ public class AttestationReport {
 
     @JsonIgnore
     @Builder.Default
-    private List<Developer> developersWithApprovedAttestations = new ArrayList<Developer>();
+    private List<DeveloperAttestationStatus> developersWithApprovedAttestations = new ArrayList<DeveloperAttestationStatus>();
 
     @JsonIgnore
     @Builder.Default
-    private List<Developer> developersWithPendingAcbActionAttestations = new ArrayList<Developer>();
+    private List<DeveloperAttestationStatus> developersWithPendingAcbActionAttestations = new ArrayList<DeveloperAttestationStatus>();
 
     @JsonIgnore
     @Builder.Default
-    private List<Developer> developerWithPendingDeveloperActionAttestations = new ArrayList<Developer>();
+    private List<DeveloperAttestationStatus> developerWithPendingDeveloperActionAttestations = new ArrayList<DeveloperAttestationStatus>();
 
     @JsonIgnore
     @Builder.Default
-    private List<Developer> developersWithNoSubmissionAttestations = new ArrayList<Developer>();
+    private List<DeveloperAttestationStatus> developersWithNoSubmissionAttestations = new ArrayList<DeveloperAttestationStatus>();
 }
