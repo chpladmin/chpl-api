@@ -88,7 +88,7 @@ public class ActivityController {
     }
 
     @Operation(summary = "Get detailed audit data for a specific activity event.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC may view any activity event. "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc may view any activity event. "
                     + "Other users may be restricted in what they can see.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -461,8 +461,8 @@ public class ActivityController {
 
     @Operation(summary = "Get metadata about auditable records in the system for complaints.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all complaints.  "
-                    + "ROLE_ACB can see activity for their own ACBs.",
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc may see activity "
+                    + "for all complaints. Users with role chpl-onc-acb can see activity for their own ONC-aACBs.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -478,8 +478,8 @@ public class ActivityController {
 
     @Operation(summary = "Get metadata about auditable records in the system for quarterly reports.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all quarterly reports.  "
-                    + "ROLE_ACB can see activity for their own ACBs.",
+                    + "Security Restrictions: Users with either roles chpl-admin or chpl-onc may see activity for "
+                    + "all quarterly reports. Users with role chpl-onc-acb can see activity for their own ONC-ACBs.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -505,8 +505,8 @@ public class ActivityController {
 
     @Operation(summary = "Get metadata about auditable records in the system for annual reports.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all annual reports.  "
-                    + "ROLE_ACB can see activity for their own ACBs.",
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc may see activity for "
+                    + "all annual reports. Users with role chpl-onc-acb can see activity for their own ONC-ACBs.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -553,8 +553,9 @@ public class ActivityController {
 
     @Operation(summary = "Get metadata about auditable records in the system for change requests.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all chan ge requests.  "
-                    + "ROLE_ACB can see activity for change requests they are associated with.",
+                    + "Security Restrictions: Users with either roles chpl-admin or chpl-onc may see activity for "
+                    + "all change requests. Users with role chpl-onc-acb can see activity for change requests "
+                    + "they are associated with.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -588,7 +589,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for the management of Functionality Tested.",
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+                    + "with the most recent activity first. "
+                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -604,7 +606,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for the management of Standards.",
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+                    + "with the most recent activity first."
+                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -620,7 +623,8 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for the management of SVAPs.",
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+                    + "with the most recent activity first. "
+                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

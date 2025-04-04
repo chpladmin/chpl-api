@@ -22,7 +22,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FunctionalityTestedAllowedByRoleReviewerTest {
 
-    private static final String RESTRICTED_FUNCTIONALITY_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": [{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"ROLE_ADMIN\",\"ROLE_ONC\"]}]}]";
+    private static final String RESTRICTED_FUNCTIONALITY_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": [{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"chpl-admin\",\"chpl-onc\"]}]}]";
     private static final String ERROR_MESSAGE = "Current user does not have permission to add/remove functionality tested '%s' for Criteria '%s'.";
     private static final Long CERTIFICATION_RESULT_ID = 5L;
     private static final Long CERTIFICATION_EDITION_ID = 4L;

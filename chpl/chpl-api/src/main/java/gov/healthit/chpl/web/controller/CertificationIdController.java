@@ -64,7 +64,7 @@ public class CertificationIdController {
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-cms-staff",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

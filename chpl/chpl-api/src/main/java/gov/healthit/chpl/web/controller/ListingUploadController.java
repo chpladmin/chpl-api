@@ -132,7 +132,7 @@ public class ListingUploadController {
     }
 
     @Operation(summary = "Get the upload file originally used to confirm this listing.",
-            description = "Security Restrictions: ROLE_ADMIN.",
+            description = "Security Restrictions: Users with role chpl-admin",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/{id:^-?\\d+$}/uploaded-file", method = RequestMethod.GET, produces = "text/csv")
@@ -156,7 +156,7 @@ public class ListingUploadController {
 
     @Operation(summary = "Upload a file with certified products",
             description = "Accepts a CSV file with a valid set of fields to upload a listing. "
-                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb "
                     + "and administrative authority on the ONC-ACB(s) specified in the file.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
@@ -216,7 +216,7 @@ public class ListingUploadController {
     @Operation(summary = "Upload a file representing a certified product. "
             + "The listing must be one that exists in the CHPL system currently and the file may contain updates to that listing.",
             description = "Accepts a CSV file with a valid set of fields recognized as listing data. "
-                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb "
                     + "and administrative authority on the ONC-ACB(s) specified in the file.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
@@ -286,8 +286,8 @@ public class ListingUploadController {
 
     @Operation(summary = "Confirm a previously uploaded listing.",
             description = "Creates a new live listing on the CHPL based on the listing information passed in. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB "
-                    + "and administrative authority on the ONC-ACB for the potentially confirmed listing is required.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB for the potentially confirmed listing.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -316,8 +316,8 @@ public class ListingUploadController {
     }
 
     @Operation(summary = "Reject an uploaded listing.",
-            description = "Deletes an uploaded listing. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
-                    + "and administrative authority on the ONC-ACB for each uploaded listing is required.",
+            description = "Deletes an uploaded listing. Security Restrictions: User must have either role chpl-admin"
+                    + "or chpl-onc-acb and administrative authority on the ONC-ACB for each uploaded listing .",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.DELETE,

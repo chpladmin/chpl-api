@@ -37,7 +37,7 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only chpl-admin and chpl-onc have access
         assertTrue(permissions.hasAccess());
 
         // Not used
@@ -49,7 +49,7 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only chpl-admin and chpl-onc have access
         assertTrue(permissions.hasAccess());
 
         // Not used
@@ -61,7 +61,7 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only chpl-admin and chpl-onc have access
         assertFalse(permissions.hasAccess());
 
         // Not used
@@ -73,7 +73,7 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only chpl-admin and chpl-onc have access
         assertFalse(permissions.hasAccess());
 
         // Not used
@@ -85,7 +85,7 @@ public class UnretireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
-        // Only ROLE_ADMIN and ROLE_ONC has access
+        // Only chpl-admin and chpl-onc have access
         assertFalse(permissions.hasAccess());
 
         // Not used

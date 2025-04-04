@@ -78,8 +78,8 @@ public class UserManagementController {
     }
 
     @Operation(summary = "View a specific user's details.",
-            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.",
+            description = "The logged in user must either be the user in the parameters, have role chpl-admin, or "
+                    + "have role chpl-onc-acb.",
                     security = {
                             @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                             @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -97,8 +97,8 @@ public class UserManagementController {
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) POST /users/invitation 2) POST /users or POST users/authorize/{invitationToken}. "
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
-                    + "ROLE_ACB can add users to their own organization.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc to invite users to "
+                    + "any organization. Users with role chpl-onc-acb can add users to their own organization.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -195,8 +195,9 @@ public class UserManagementController {
     }
 
     @Operation(summary = "View users of the system.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
-                    + "and ROLE_CMS_STAFF can see themselves.",
+            description = "Security Restrictions: Users must have either role chpl-admin or chpl-onc to see all users. "
+                    + "Users with role chpl-onc-acb or chpl-developer can see users in their own organizations. "
+                    + "Users with role chpl-cms-staff can see themselves.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

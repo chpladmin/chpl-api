@@ -178,7 +178,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value> <!-- Semi-colon delimited string -->
+                    <value>chpl-admin;chpl-onc</value> <!-- Semi-colon delimited string -->
                 </entry>
             </job-data-map>
         </job>
@@ -194,7 +194,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value> <!-- Semi-colon delimited string -->
+                    <value>chpl-admin;chpl-onc</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
                     <key>editableJobFields</key>
@@ -254,7 +254,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
                 <entry>
                     <key>range</key>
@@ -318,7 +318,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -334,7 +334,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>httpStatusIncludeRegex</key>
@@ -358,7 +358,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -378,7 +378,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -398,7 +398,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -418,7 +418,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -438,7 +438,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>email</key>
@@ -458,7 +458,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>type</key>
@@ -482,7 +482,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -506,7 +506,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -526,7 +526,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -556,7 +556,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -586,7 +586,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -606,7 +606,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;chpl-admin</value>
+                    <value>chpl-admin</value>
                 </entry>
             </job-data-map>
         </job>
@@ -622,7 +622,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -638,7 +638,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB;chpl-admin;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc-acb</value>
                 </entry>
             </job-data-map>
         </job>
@@ -654,7 +654,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -670,7 +670,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -710,7 +710,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -734,7 +734,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -758,7 +758,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
@@ -795,7 +795,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
             </job-data-map>
         </job>
@@ -819,7 +819,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
@@ -843,7 +843,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>

@@ -105,7 +105,7 @@ public class CertificationBodyController {
     }
 
     @Operation(summary = "Create a new ONC-ACB.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -142,7 +142,7 @@ public class CertificationBodyController {
     }
 
     @Operation(summary = "Update an existing ONC-ACB.",
-            description = "Security Restriction: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB with administrative authority.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -169,8 +169,8 @@ public class CertificationBodyController {
     }
 
     @Operation(summary = "List users with permissions on a specified ONC-ACB.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
-                    + "or read authority on the specified ONC-ACB",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

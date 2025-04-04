@@ -172,7 +172,7 @@ public class DeveloperController {
     }
 
     @Operation(summary = "Update a developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -200,7 +200,7 @@ public class DeveloperController {
                     + "with newer-style CHPL Product Numbers will have their CHPL Product Numbers "
                     + "updated using the Developer Code of the developer being joined. This endpoint will "
                     + "cause an email to be sent to the user making the request when the work is complete."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Users with either chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -220,7 +220,7 @@ public class DeveloperController {
     @Operation(
             summary = "Split a developer - some products stay with the existing developer and some products are moved "
                     + "to a new developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -266,8 +266,8 @@ public class DeveloperController {
 
     @DeprecatedApiResponseFields(friendlyUrl = "/{developerId}/users", responseClass = User.class)
     @Operation(summary = "List users with permissions on a specified developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
-                    + "authority on the specified developer.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, "
+                    + ", chpl-onc-acb or chpl-developer with administrative authority on the specified developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -283,8 +283,8 @@ public class DeveloperController {
     }
 
     @Operation(summary = "List attestations for a developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
-                    + "authority on the specified developer.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, "
+                    + ", chpl-onc-acb or chpl-developer with administrative authority on the specified developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -299,7 +299,7 @@ public class DeveloperController {
     }
 
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE+_ONC, or ROLE_ONC_ACB",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -312,7 +312,7 @@ public class DeveloperController {
 
     @Operation(summary = "Sends a message to all developers matching the provided search parameters. "
             + "A report of the message sent and recipients will be sent to the requestor after completion.",
-            description = "Security Restrictions: ADMIN or ONC users.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -326,7 +326,7 @@ public class DeveloperController {
 
     @Operation(summary = "Sends a single message to the logged-in user. "
             + "This allows the logged-in user to preview how an email will appear to developers",
-            description = "Security Restrictions: ADMIN or ONC users.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

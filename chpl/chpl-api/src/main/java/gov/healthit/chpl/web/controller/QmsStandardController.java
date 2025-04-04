@@ -35,7 +35,7 @@ public class QmsStandardController {
 
     @Operation(summary = "Update a QMS Standard.",
             description = "Provides functionality to update the name of a QMS Standard. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -49,7 +49,7 @@ public class QmsStandardController {
 
     @Operation(summary = "Create a QMS Standard.",
             description = "Provides functionality to add a new QMS Standard. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -63,7 +63,7 @@ public class QmsStandardController {
 
     @Operation(summary = "Delete a QMS Standard.",
             description = "Provides functionality to delete an existing QMS Standard. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
