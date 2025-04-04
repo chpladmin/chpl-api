@@ -9,7 +9,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import jakarta.persistence.Query;
 
@@ -24,14 +23,6 @@ public class UserDAO extends BaseDAOImpl {
     @Cacheable(value = CacheNames.CHPL_USERS, key = "#userId")
     public User getById(Long userId, boolean includeDelete) throws UserRetrievalException {
         UserEntity userEntity = this.getEntityById(userId, includeDelete);
-        if (userEntity == null) {
-            return null;
-        }
-        return userEntity.toDomain();
-    }
-
-    public User getByNameOrEmail(String username) throws MultipleUserAccountsException, UserRetrievalException {
-        UserEntity userEntity = this.getEntityByNameOrEmail(username);
         if (userEntity == null) {
             return null;
         }
@@ -57,27 +48,6 @@ public class UserDAO extends BaseDAOImpl {
 
         if (result.size() == 0) {
             return null;
-        }
-        return result.get(0);
-    }
-
-    private UserEntity getEntityByNameOrEmail(String email) throws MultipleUserAccountsException, UserRetrievalException {
-        Query query = entityManager
-                .createQuery("SELECT DISTINCT u "
-                        + "FROM UserEntity u "
-                        + "JOIN FETCH u.contact c "
-                        + "JOIN FETCH u.permission "
-                        + "WHERE u.deleted <> true "
-                        + "AND ((u.subjectName = (:email)) OR c.email = (:email)) ",
-                        UserEntity.class);
-        query.setParameter("email", email);
-        List<UserEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("user.notFound");
-            throw new UserRetrievalException(msg);
-        } else if (result.size() > 1) {
-            throw new MultipleUserAccountsException(msgUtil.getMessage("user.multipleAccountsFound", email));
         }
         return result.get(0);
     }
