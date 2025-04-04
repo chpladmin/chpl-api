@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +15,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -171,12 +169,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException {
-        LOGGER.error("Not implemented: getDeveloperIfPermissionById");
-        throw new NotImplementedException("Not implemented: getDeveloperIfPermissionById");
-    }
-
-    @Override
     public boolean isUserRoleAdmin() {
         return doesAuditUserHaveRole(CognitoGroups.CHPL_ADMIN);
     }
@@ -255,12 +247,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
             LOGGER.error("Could not retrieve Developer: {}", developerId, e);
             return null;
         }
-    }
-
-    @Override
-    public UserPermission getRoleByUser(User user) {
-        LOGGER.error("Not implemented: getRoleByUser");
-        throw new NotImplementedException("Not implemented: getRoleByUser");
     }
 
     @Override

@@ -5,7 +5,6 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ResourcePermissions {
@@ -29,10 +28,6 @@ public interface ResourcePermissions {
     List<Developer> getAllDevelopersForUser(User user);
 
     CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException;
-
-    Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException;
-
-    UserPermission getRoleByUser(User user);
 
     boolean hasPermissionOnUser(User user);
 

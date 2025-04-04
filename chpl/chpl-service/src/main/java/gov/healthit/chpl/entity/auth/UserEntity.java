@@ -84,7 +84,6 @@ public class UserEntity extends EntityAudit {
 
     public User toDomain() {
         User user = new User();
-        user.setUserId(this.getId());
         if (this.getPermission() != null) {
             user.setRole(this.getPermission().getAuthority());
         }

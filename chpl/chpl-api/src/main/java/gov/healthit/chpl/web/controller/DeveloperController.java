@@ -51,7 +51,6 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -264,7 +263,6 @@ public class DeveloperController {
         return splitTrigger;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/{developerId}/users", responseClass = User.class)
     @Operation(summary = "List users with permissions on a specified developer.",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, "
                     + ", chpl-onc-acb or chpl-developer with administrative authority on the specified developer.",
