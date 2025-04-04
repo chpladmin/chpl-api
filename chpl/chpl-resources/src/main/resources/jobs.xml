@@ -13,6 +13,10 @@
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
+            <name>fixJobDataJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
             <name>standardsUpdateJob</name>
             <group>systemJobs</group>
         </delete-job>
