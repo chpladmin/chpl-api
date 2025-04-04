@@ -13,10 +13,6 @@
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>fixJobDataJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
             <name>standardsUpdateJob</name>
             <group>systemJobs</group>
         </delete-job>
@@ -889,6 +885,15 @@
             <group>systemJobs</group>
             <description>Fix Datadog Url Uptime Assertions Job (BEWARE - THIS JOB CAN ONLY BE RUN ONCE IN EACH DATADOG ENVIRONMENT!)</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.FixDatadogUrlUptimeAssertionsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
+            <name>fixJobDataJob</name>
+            <group>systemJobs</group>
+            <description>Fix job data - remove old CHPL Roles</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.jobedit.FixJobDataJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
