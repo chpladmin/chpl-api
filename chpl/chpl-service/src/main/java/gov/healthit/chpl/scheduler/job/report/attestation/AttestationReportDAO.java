@@ -15,10 +15,6 @@ import jakarta.persistence.Query;
 
 @Component
 public class AttestationReportDAO extends BaseDAOImpl {
-    private static final Long CHANGE_REQUEST_PENDING_DEVELOPER_ACTION_ID = 2L;
-    private static final Long CHANGE_REQUEST_PENDING_ACB_ACTION_ID = 1L;
-    private static final Long CHANGE_REQUEST_APPROVED_ID = 3L;
-
 
     public void insert(AttestationReport attestationReport) {
         AttestationReportEntity entity = AttestationReportEntity.builder()
@@ -27,7 +23,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .attestationPeriod(AttestationPeriodEntity.builder()
                         .id(attestationReport.getAttestationPeriod().getId())
                         .build())
-                .certificationBody(CertificationBodyEntity.builder()
+                .certificationBody(attestationReport.getCertificationBody().getId() == 0L ? null : CertificationBodyEntity.builder()
                         .id(attestationReport.getCertificationBody().getId())
                         .build())
                 .developerCount(attestationReport.getDeveloperCount())
@@ -37,10 +33,12 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .build();
         create(entity);
 
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithApprovedAttestations());
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithPendingAcbActionAttestations());
-        insertAttestationReportDeveloper(entity, attestationReport.getDeveloperWithPendingDeveloperActionAttestations());
-        insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithNoSubmissionAttestations());
+        if (entity.getCertificationBody() != null) {
+            insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithApprovedAttestations());
+            insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithPendingAcbActionAttestations());
+            insertAttestationReportDeveloper(entity, attestationReport.getDeveloperWithPendingDeveloperActionAttestations());
+            insertAttestationReportDeveloper(entity, attestationReport.getDevelopersWithNoSubmissionAttestations());
+        }
     }
 
     private void insertAttestationReportDeveloper(AttestationReportEntity attestationReportEntity,
