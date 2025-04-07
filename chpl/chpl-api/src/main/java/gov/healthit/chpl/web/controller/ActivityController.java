@@ -462,7 +462,7 @@ public class ActivityController {
     @Operation(summary = "Get metadata about auditable records in the system for complaints.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: Users with either role chpl-admin or chpl-onc may see activity "
-                    + "for all complaints. Users with role chpl-onc-acb can see activity for their own ONC-aACBs.",
+                    + "for all complaints. Users with role chpl-onc-acb can see activity for their own ONC-ACBs.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
