@@ -41,7 +41,8 @@ import lombok.extern.log4j.Log4j2;
 public class EmailBuilder {
     private ChplEmailMessage message;
 
-    private List<String> recipients;
+    private List<String> toRecipients;
+    private List<String> ccRecipients;
     private String subject = "";
     private String htmlBody = "";
     private String htmlFooter = "";
@@ -59,21 +60,40 @@ public class EmailBuilder {
     }
 
     public EmailBuilder recipients(List<String> addresses) {
-        this.recipients = addresses;
+        this.toRecipients = addresses;
         return this;
     }
 
     public EmailBuilder recipients(String[] addresses) {
-        this.recipients = Arrays.asList(addresses);
+        this.toRecipients = Arrays.asList(addresses);
         return this;
     }
 
     public EmailBuilder recipient(String address) {
-        if (this.recipients == null) {
-            this.recipients = new ArrayList<String>();
+        if (this.toRecipients == null) {
+            this.toRecipients = new ArrayList<String>();
         }
-        this.recipients.clear();
-        this.recipients.add(address);
+        this.toRecipients.clear();
+        this.toRecipients.add(address);
+        return this;
+    }
+
+    public EmailBuilder ccRecipients(List<String> addresses) {
+        this.ccRecipients = addresses;
+        return this;
+    }
+
+    public EmailBuilder ccRecipients(String[] addresses) {
+        this.ccRecipients = Arrays.asList(addresses);
+        return this;
+    }
+
+    public EmailBuilder ccRecipients(String address) {
+        if (this.ccRecipients == null) {
+            this.ccRecipients = new ArrayList<String>();
+        }
+        this.ccRecipients.clear();
+        this.ccRecipients.add(address);
         return this;
     }
 
@@ -129,7 +149,8 @@ public class EmailBuilder {
         message.setFileAttachments(fileAttachments);
         message.setBody(htmlBody + htmlFooter);
         message.setSubject(subject);
-        message.setRecipients(recipients);
+        message.setToRecipients(toRecipients);
+        message.setCcRecipients(ccRecipients);
         return this;
     }
 
@@ -141,7 +162,7 @@ public class EmailBuilder {
                 build();
                 scheduleOneTimeTrigger(getOneTimeTrigger());
             } catch (Exception ex) {
-                String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
+                String failureMessage = "Email could not be sent to " + toRecipients.stream().collect(Collectors.joining(",")) + ".";
                 LOGGER.fatal(failureMessage, ex);
                 throw new EmailNotSentException(failureMessage);
             }

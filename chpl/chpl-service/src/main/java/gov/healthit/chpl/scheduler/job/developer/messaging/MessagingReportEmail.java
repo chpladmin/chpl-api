@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessagingReportEmail {
-    private List<String> recipients;
+    private List<String> toRecipients;
+    private List<String> ccRecipieints;
     private String subject;
     private String message;
 }

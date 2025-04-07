@@ -107,7 +107,7 @@ public class SendEmailJob implements Job {
         }
 
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
-        if (CollectionUtils.isEmpty(message.getRecipients())) {
+        if (CollectionUtils.isEmpty(message.getToRecipients())) {
             LOGGER.fatal("No recipients found in the message with subject: " + message.getSubject()
                 + ". The message will not be sent.");
             sendInternalErrorEmail(message);
@@ -119,7 +119,7 @@ public class SendEmailJob implements Job {
                 uploadAttachments(graphMessage, message.getFileAttachments());
                 sendMessage(graphMessage);
                 LOGGER.info("Email successfully sent to: "
-                        + message.getRecipients().stream().
+                        + message.getToRecipients().stream().
                                 map(addr -> addr.toString())
                                 .collect(Collectors.joining(", ")));
                 LOGGER.info("With subject: " + message.getSubject());
@@ -132,7 +132,7 @@ public class SendEmailJob implements Job {
                 deleteMessage(graphMessage);
                 //log the failure
                 String failureMessage = "Error sending email to "
-                        + message.getRecipients().stream()
+                        + message.getToRecipients().stream()
                                 .map(addr -> addr.toString())
                                 .collect(Collectors.joining(", "));
                 LOGGER.info(failureMessage);
@@ -148,7 +148,7 @@ public class SendEmailJob implements Job {
                 } else {
                     // This should trigger a Datadog alert
                     String error = "Email could not be sent to "
-                            + message.getRecipients().stream()
+                            + message.getToRecipients().stream()
                                     .map(addr -> addr.toString())
                                     .collect(Collectors.joining(", "));
                     LOGGER.error(error);
@@ -173,12 +173,12 @@ public class SendEmailJob implements Job {
         final Message draftMessage = new Message();
         draftMessage.setSubject(message.getSubject());
         ItemBody body = new ItemBody();
-        body.setContent(overrider.getBody(message.getBody(), message.getRecipients()));
+        body.setContent(overrider.getBody(message.getBody(), message.getToRecipients()));
         body.setContentType(BodyType.Html);
         draftMessage.setBody(body);
 
         draftMessage.setToRecipients(new ArrayList<Recipient>());
-        List<String> recipientAddresses = overrider.getRecipients(message.getRecipients());
+        List<String> recipientAddresses = overrider.getRecipients(message.getToRecipients());
         recipientAddresses.stream()
             .forEach(recipientAddress -> {
                 final Recipient recipient = new Recipient();
@@ -187,6 +187,19 @@ public class SendEmailJob implements Job {
                 recipient.setEmailAddress(emailAddress);
                 draftMessage.getToRecipients().add(recipient);
             });
+
+        if (!CollectionUtils.isEmpty(message.getCcRecipients())) {
+            draftMessage.setCcRecipients(new ArrayList<Recipient>());
+            List<String> ccRecipientAddresses = overrider.getRecipients(message.getCcRecipients());
+            ccRecipientAddresses.stream()
+                .forEach(ccRecipientAddress -> {
+                    final Recipient recipient = new Recipient();
+                    EmailAddress emailAddress = new EmailAddress();
+                    emailAddress.setAddress(ccRecipientAddress);
+                    recipient.setEmailAddress(emailAddress);
+                    draftMessage.getCcRecipients().add(recipient);
+                });
+        }
 
         LOGGER.debug("Saving the draft message");
         MessagesRequestBuilder messageBuilder = graphServiceClient

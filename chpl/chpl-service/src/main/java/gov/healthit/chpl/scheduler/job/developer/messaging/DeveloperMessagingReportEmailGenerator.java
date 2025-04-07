@@ -33,11 +33,13 @@ public class DeveloperMessagingReportEmailGenerator {
         this.emailParagraph = emailParagraph;
     }
 
-    public MessagingReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
+    public MessagingReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject,
+            User submittedUser, List<String> additionalRecipients) {
         return MessagingReportEmail.builder()
                 .subject(String.format(emailSubject, developerMessageSubject))
                 .message(getMessage(developerEmails, developerMessageSubject, submittedUser))
-                .recipients(List.of(submittedUser.getEmail()))
+                .toRecipients(List.of(submittedUser.getEmail()))
+                .ccRecipieints(additionalRecipients)
                 .build();
     }
 
