@@ -159,6 +159,7 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
         try {
             emailFactory.emailBuilder()
                 .recipients(statusReportEmail.getToRecipients())
+                .ccRecipients(statusReportEmail.getCcRecipieints())
                 .subject(statusReportEmail.getSubject())
                 .htmlMessage(statusReportEmail.getMessage())
                 .sendEmail();

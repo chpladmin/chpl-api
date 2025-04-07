@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -119,7 +120,7 @@ public class SendEmailJob implements Job {
                 uploadAttachments(graphMessage, message.getFileAttachments());
                 sendMessage(graphMessage);
                 LOGGER.info("Email successfully sent to: "
-                        + message.getToRecipients().stream().
+                        + Stream.concat(message.getToRecipients().stream(), message.getCcRecipients().stream()).
                                 map(addr -> addr.toString())
                                 .collect(Collectors.joining(", ")));
                 LOGGER.info("With subject: " + message.getSubject());
@@ -183,7 +184,7 @@ public class SendEmailJob implements Job {
             .forEach(recipientAddress -> {
                 final Recipient recipient = new Recipient();
                 EmailAddress emailAddress = new EmailAddress();
-                emailAddress.setAddress(recipientAddress);
+                emailAddress.setAddress(recipientAddress.trim());
                 recipient.setEmailAddress(emailAddress);
                 draftMessage.getToRecipients().add(recipient);
             });
@@ -195,7 +196,7 @@ public class SendEmailJob implements Job {
                 .forEach(ccRecipientAddress -> {
                     final Recipient recipient = new Recipient();
                     EmailAddress emailAddress = new EmailAddress();
-                    emailAddress.setAddress(ccRecipientAddress);
+                    emailAddress.setAddress(ccRecipientAddress.trim());
                     recipient.setEmailAddress(emailAddress);
                     draftMessage.getCcRecipients().add(recipient);
                 });
