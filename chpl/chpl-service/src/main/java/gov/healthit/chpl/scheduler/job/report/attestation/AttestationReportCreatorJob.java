@@ -188,6 +188,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                         .name("All ACBs")
                         .build())
                 .reportDate(LocalDate.now())
+                .developerCount(Long.valueOf(applicableDevelopers.size()))
                 .build();
 
         applicableDevelopers.forEach(developer -> {
