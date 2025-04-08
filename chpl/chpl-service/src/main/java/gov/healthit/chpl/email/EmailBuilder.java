@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
@@ -150,7 +151,7 @@ public class EmailBuilder {
         message.setBody(htmlBody + htmlFooter);
         message.setSubject(subject);
         message.setToRecipients(toRecipients);
-        message.setCcRecipients(ccRecipients);
+        message.setCcRecipients(CollectionUtils.isEmpty(ccRecipients) ? new ArrayList<String>() : ccRecipients);
         return this;
     }
 
