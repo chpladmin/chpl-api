@@ -189,8 +189,8 @@ public class SendEmailJob implements Job {
                 draftMessage.getToRecipients().add(recipient);
             });
 
+        draftMessage.setCcRecipients(new ArrayList<Recipient>());
         if (!CollectionUtils.isEmpty(message.getCcRecipients())) {
-            draftMessage.setCcRecipients(new ArrayList<Recipient>());
             List<String> ccRecipientAddresses = overrider.getRecipients(message.getCcRecipients());
             ccRecipientAddresses.stream()
                 .forEach(ccRecipientAddress -> {
