@@ -86,13 +86,6 @@ public class AttestationReportDAO extends BaseDAOImpl {
         });
     }
 
-    public void deleteAttestationReportDeveloperByAttestationReportId(Long attestationReportId) {
-        Query query = entityManager.createQuery(
-                "delete from AttestationReportDeveloperEntity where attestationReport.id = :attestationReportId");
-        query.setParameter("attestationReportId", attestationReportId);
-        query.executeUpdate();
-    }
-
     private List<AttestationReportEntity> getEntitiesByDate(LocalDate date) {
         Query query = entityManager.createQuery(
                 "from AttestationReportEntity where (NOT deleted = true) and reportDate = :date", AttestationReportEntity.class);

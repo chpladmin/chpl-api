@@ -24,6 +24,7 @@ import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusConcept;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -153,22 +154,22 @@ public class AttestationReportCreatorJob extends QuartzJob {
                        .developer(developer)
                        .build());
        } else {
-           switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
-           case "Accepted":
+           switch (ChangeRequestStatusConcept.valueOf(cr.getCurrentStatus().getChangeRequestStatusType().getName())) {
+           case ACCEPTED:
                report.setApprovedCount(report.getApprovedCount() + 1);
             report.getDevelopersWithApprovedAttestations().add(DeveloperAttestationStatus.builder()
                     .developer(developer)
                     .changeRequestStatus(cr.getCurrentStatus())
                     .build());
                break;
-           case "Pending Developer Action":
+           case PENDING_DEVELOPER_ACTION:
                report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
                report.getDeveloperWithPendingDeveloperActionAttestations().add(DeveloperAttestationStatus.builder()
                        .developer(developer)
                        .changeRequestStatus(cr.getCurrentStatus())
                        .build());
                break;
-           case "Pending ONC-ACB Action":
+           case PENDING_ONC_ACB_ACTION:
                report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
                report.getDevelopersWithPendingAcbActionAttestations().add(DeveloperAttestationStatus.builder()
                        .developer(developer)
