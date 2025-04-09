@@ -180,12 +180,13 @@ public class AttestationReportCreatorJob extends QuartzJob {
            }
        }
     }
+
     private AttestationReport getSummarizedAttestationReportForAllAcbs(List<Developer> applicableDevelopers, Map<Long, ChangeRequest> changeRequestsByDeveloperId) {
         AttestationReport attestationReportForAllAcbs = AttestationReport.builder()
                 .attestationPeriod(attestationPeriodService.getMostRecentPastAttestationPeriod())
                 .certificationBody(CertificationBody.builder()
                         .id(0L)
-                        .name("All ACBs")
+                        .name("All ONC-ACBs")
                         .build())
                 .reportDate(LocalDate.now())
                 .developerCount(Long.valueOf(applicableDevelopers.size()))
