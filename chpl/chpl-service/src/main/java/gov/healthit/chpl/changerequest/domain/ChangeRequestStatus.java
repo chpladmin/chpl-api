@@ -31,4 +31,5 @@ public class ChangeRequestStatus implements Serializable {
     private String comment;
     private CertificationBody certificationBody;
     private String userGroupName;
+    private String actingUser;
 }

@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.dao;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -16,12 +17,18 @@ import gov.healthit.chpl.util.DateUtil;
 
 @Repository("changeRequestStatusDAO")
 public class ChangeRequestStatusDAO extends BaseDAOImpl {
+    private ChangeRequestConverter changeRequestConverter;
+
+    @Autowired
+    public ChangeRequestStatusDAO(ChangeRequestConverter changeRequestConverter) {
+        this.changeRequestConverter = changeRequestConverter;
+    }
 
     public ChangeRequestStatus create(ChangeRequest cr, ChangeRequestStatus crStatus)
             throws EntityRetrievalException {
         ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
         create(entity);
-        return ChangeRequestConverter.convert(getEntityById(entity.getId()));
+        return changeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
     private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {

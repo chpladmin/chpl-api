@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
@@ -15,35 +17,41 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import gov.healthit.chpl.util.DateUtil;
 
+@Component
 public final class ChangeRequestConverter {
 
-    private ChangeRequestConverter() {
-        // not called
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+
+    @Autowired
+    public ChangeRequestConverter(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
     }
 
-    public static ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
+    public ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
         ChangeRequestStatusType status = new ChangeRequestStatusType();
         status.setId(entity.getId());
         status.setName(entity.getName());
         return status;
     }
 
-    public static ChangeRequestType convert(ChangeRequestTypeEntity entity) {
+    public ChangeRequestType convert(ChangeRequestTypeEntity entity) {
         ChangeRequestType status = new ChangeRequestType();
         status.setId(entity.getId());
         status.setName(entity.getName());
         return status;
     }
 
-    public static ChangeRequestSearchResult toSearchResult(ChangeRequestAttestationSubmissionEntity entity) {
+    public ChangeRequestSearchResult toSearchResult(ChangeRequestAttestationSubmissionEntity entity) {
         ChangeRequestEntity cr = entity.getChangeRequest();
         return toSearchResult(cr);
     }
 
-    public static ChangeRequestSearchResult toSearchResult(ChangeRequestEntity entity) {
+    public ChangeRequestSearchResult toSearchResult(ChangeRequestEntity entity) {
         return ChangeRequestSearchResult.builder()
         .id(entity.getId())
         .changeRequestType(IdNamePair.builder()
@@ -65,7 +73,7 @@ public final class ChangeRequestConverter {
         .build();
     }
 
-    public static CurrentStatusSearchResult convertSearchResult(ChangeRequestStatusEntity entity) {
+    public CurrentStatusSearchResult convertSearchResult(ChangeRequestStatusEntity entity) {
         return CurrentStatusSearchResult.builder()
                 .id(entity.getChangeRequestStatusType().getId())
                 .name(entity.getChangeRequestStatusType().getName())
@@ -73,7 +81,7 @@ public final class ChangeRequestConverter {
                 .build();
     }
 
-    public static ChangeRequest convert(ChangeRequestEntity entity) {
+    public ChangeRequest convert(ChangeRequestEntity entity) {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
@@ -89,7 +97,7 @@ public final class ChangeRequestConverter {
         return cr;
     }
 
-    private static ChangeRequestStatus getLatestStatus(List<ChangeRequestStatus> statuses) {
+    private ChangeRequestStatus getLatestStatus(List<ChangeRequestStatus> statuses) {
         if (CollectionUtils.isEmpty(statuses)) {
             return null;
         }
@@ -102,7 +110,7 @@ public final class ChangeRequestConverter {
         return newest;
     }
 
-    private static ChangeRequestStatusEntity getLatestStatus(Set<ChangeRequestStatusEntity> statuses) {
+    private ChangeRequestStatusEntity getLatestStatus(Set<ChangeRequestStatusEntity> statuses) {
         if (CollectionUtils.isEmpty(statuses)) {
             return null;
         }
@@ -117,7 +125,8 @@ public final class ChangeRequestConverter {
         return newest;
     }
 
-    public static ChangeRequestStatus convert(ChangeRequestStatusEntity entity) {
+    public ChangeRequestStatus convert(ChangeRequestStatusEntity entity) {
+        User lastModifiedUser = chplUserToCognitoUserUtil.getUser(entity.getLastModifiedUser(), entity.getLastModifiedSsoUser());
         return ChangeRequestStatus.builder()
                 .id(entity.getId())
                 .changeRequestStatusType(convert(entity.getChangeRequestStatusType()))
@@ -125,10 +134,11 @@ public final class ChangeRequestConverter {
                 .statusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()))
                 .certificationBody(entity.getCertificationBody() != null ? entity.getCertificationBody().toDomain() : null)
                 .userGroupName(entity.getUserGroupName())
+                .actingUser(lastModifiedUser != null ? lastModifiedUser.getEmail() : null)
                 .build();
     }
 
-    public static ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {
+    public ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {
         ChangeRequestDeveloperDemographics crDev = new ChangeRequestDeveloperDemographics();
         crDev.setId(entity.getId());
         crDev.setSelfDeveloper(entity.getSelfDeveloper());
