@@ -24,7 +24,7 @@
       <microsoft-graph.version>6.16.0</microsoft-graph.version>
       <netty.version>1.1.13</netty.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
-      <poi.version>5.2.3</poi.version>
+      <poi.version>5.4.0</poi.version>
       <postgresql.version>42.7.2</postgresql.version>
       <quartz.version>2.5.0-rc1</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
