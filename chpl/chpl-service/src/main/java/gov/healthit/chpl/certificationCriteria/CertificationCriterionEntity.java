@@ -3,6 +3,9 @@ package gov.healthit.chpl.certificationCriteria;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.CertificationEditionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,10 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
-import gov.healthit.chpl.entity.CertificationEditionEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -85,23 +84,7 @@ public class CertificationCriterionEntity extends EntityAudit implements Seriali
     @Column(name = "certification_companion_guide_link")
     private String companionGuideLink;
 
-    public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
-        CertificationEditionEntity editionEntity = new CertificationEditionEntity();
-        editionEntity.setId(criterion.getCertificationEditionId());
-
-        return CertificationCriterionEntity.builder()
-                .id(criterion.getId())
-                .certificationEditionId(criterion.getCertificationEditionId())
-                .certificationEdition(editionEntity)
-                .startDay(criterion.getStartDay())
-                .endDay(criterion.getEndDay())
-                .ruleId(criterion.getRule() != null ? criterion.getRule().getId() : null)
-                .description(criterion.getDescription())
-                .number(criterion.getNumber())
-                .title(criterion.getTitle())
-                .build();
-    }
-
+    @UrlFormattingNeeded
     public CertificationCriterion toDomain() {
         return CertificationCriterion.builder()
                 .id(this.getId())
