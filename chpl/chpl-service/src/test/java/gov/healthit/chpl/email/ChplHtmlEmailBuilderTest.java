@@ -10,16 +10,20 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.email.footer.ChplEmailFooterBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
+import gov.healthit.chpl.service.UrlFormatter;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 
@@ -43,10 +47,14 @@ public class ChplHtmlEmailBuilderTest {
         Mockito.when(env.getProperty("chplUrlBegin")).thenReturn("http://www.unsubscribe.com");
         Mockito.when(env.getProperty("subscriptions.unsubscribe.url")).thenReturn("/%s");
 
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.DOMAIN))).thenReturn(false);
+        UrlFormatter urlFormatter = new UrlFormatter(ff4j);
+
         SubscriptionLookupUtil lookupUtil = new SubscriptionLookupUtil(env);
         ChplEmailFooterBuilder footerBuilder = new ChplEmailFooterBuilder(htmlFooterResource, env, lookupUtil);
         emailBuilder = new ChplHtmlEmailBuilder(htmlSkeletonResource, htmlHeadingResource, htmlParagraphResource,
-               htmlTableResource, htmlButtonBarResource, footerBuilder);
+               htmlTableResource, htmlButtonBarResource, footerBuilder, urlFormatter);
 
        assertNotNull(emailBuilder);
     }

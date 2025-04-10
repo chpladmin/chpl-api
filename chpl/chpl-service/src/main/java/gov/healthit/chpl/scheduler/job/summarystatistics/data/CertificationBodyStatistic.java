@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class CertificationBodyStatistic implements Serializable {
     private static final long serialVersionUID = 4312495564762293030L;
