@@ -2,18 +2,21 @@ package gov.healthit.chpl.report.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.report.SummaryStatisticsReportBaseService;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.CertificationStatusIdHelper;
@@ -25,13 +28,15 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ProductReportsService {
+public class ProductReportsService extends SummaryStatisticsReportBaseService {
     private SummaryStatisticsDAO summaryStatisticsDAO;
     private CertificationStatusIdHelper statusIdHelper;
     private ListingSearchService listingSearchService;
 
     @Autowired
-    public ProductReportsService(SummaryStatisticsDAO summaryStatisticsDAO, CertificationStatusDAO certificationStatusDao, ListingSearchService listingSearchService) {
+    public ProductReportsService(SummaryStatisticsDAO summaryStatisticsDAO, CertificationStatusDAO certificationStatusDao, ListingSearchService listingSearchService,
+            CertificationBodyManager certificationBodyManager) {
+        super(summaryStatisticsDAO, certificationBodyManager);
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
         this.listingSearchService = listingSearchService;
@@ -49,37 +54,53 @@ public class ProductReportsService {
 
     public List<CertificationBodyStatistic> getActiveProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
-        return stats.getProductCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds());
+        return stats.getProductCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds()).stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<CertificationBodyStatistic> getSuspendedProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
-        return stats.getProductCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds());
+        return stats.getProductCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds()).stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<CertificationBodyStatistic> getWithdrawnProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
-        return stats.getProductCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds());
+        return stats.getProductCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds()).stream()
+                .map(stat -> stat.toBuilder()
+                        .acbName(getGeneratedAcbName(stat.getAcbId()))
+                        .build())
+                .toList();
     }
 
     public List<ProductByAcb> getActiveProductsAndAcb() {
-        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getActiveStatusNames()
-                .stream()
-                .collect(Collectors.toSet()));
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet())).stream()
+                .map(result -> result.toBuilder()
+                        .acb(updateAcbNameBasedOnRetired(result.getAcb()))
+                        .build())
+                .toList();
     }
 
     public List<ProductByAcb> getSuspendedProductsAndAcb() {
-        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getSuspendedStatuses()
-                .stream()
-                .map(status -> status.getName())
-                .collect(Collectors.toSet()));
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getSuspendedStatuses().stream().map(status -> status.getName()).collect(Collectors.toSet())).stream()
+                .map(result -> result.toBuilder()
+                        .acb(updateAcbNameBasedOnRetired(result.getAcb()))
+                        .build())
+                .toList();
     }
 
     public List<ProductByAcb> getWithdrawnProductsAndAcb() {
-        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getWithdrawnStatuses()
-                .stream()
-                .map(status -> status.getName())
-                .collect(Collectors.toSet()));
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getWithdrawnStatuses().stream().map(status -> status.getName()).collect(Collectors.toSet())).stream()
+                .map(result -> result.toBuilder()
+                        .acb(updateAcbNameBasedOnRetired(result.getAcb()))
+                        .build())
+                .toList();
     }
 
     private List<ProductByAcb> getProdutsAndAcbByStatuses(Set<String> statusNames) {
@@ -94,6 +115,7 @@ public class ProductReportsService {
                             .acb(searchResult.getCertificationBody())
                             .developer(searchResult.getDeveloper())
                             .build())
+                    .filter(distinctByKey(pba -> pba.getProduct().getId().toString() + "|" + pba.getAcb().getId().toString()))
                     .collect(Collectors.toSet());
 
             return new ArrayList<ProductByAcb>(productsByAcbs);
@@ -103,14 +125,8 @@ public class ProductReportsService {
         }
     }
 
-    private StatisticsSnapshot getStatistics() {
-        try {
-            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(summaryStatistics.getSummaryStatistics(), StatisticsSnapshot.class);
-        } catch (Exception e) {
-            LOGGER.error("Error retrieving summary statistics: {}", e.getMessage());
-            return null;
-        }
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }

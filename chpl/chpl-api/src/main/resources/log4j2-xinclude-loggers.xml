@@ -206,10 +206,6 @@
         <AppenderRef ref="developerAttestationCheckinReportJob" />
         <AppenderRef ref="developerAttestationCheckinReportJobJson" />
     </Logger>
-    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
-        <AppenderRef ref="missingAttestationChangeRequestEmailJobJson" />
-    </Logger>
     <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="messageDevelopersJob" />
         <AppenderRef ref="messageDevelopersJobJson" />
