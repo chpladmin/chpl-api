@@ -18,6 +18,7 @@ import org.springframework.util.StreamUtils;
 
 import gov.healthit.chpl.email.footer.ChplEmailFooterBuilder;
 import gov.healthit.chpl.email.footer.Footer;
+import gov.healthit.chpl.service.UrlFormatter;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 
 @Component
@@ -44,6 +45,7 @@ public class ChplHtmlEmailBuilder {
     private String htmlButtonBar;
     private String emailContents;
     private ChplEmailFooterBuilder footerBuilder;
+    private UrlFormatter urlFormatter;
 
     @Autowired
     public ChplHtmlEmailBuilder(@Value("classpath:email/chpl-email-skeleton.html") Resource htmlSkeletonResource,
@@ -51,7 +53,8 @@ public class ChplHtmlEmailBuilder {
             @Value("classpath:email/chpl-email-paragraph.html") Resource htmlParagraphResource,
             @Value("classpath:email/chpl-email-table.html") Resource htmlTableResource,
             @Value("classpath:email/chpl-email-button-bar.html") Resource htmlButtonBarResource,
-            ChplEmailFooterBuilder footerBuilder) throws IOException {
+            ChplEmailFooterBuilder footerBuilder,
+            UrlFormatter urlFormatter) throws IOException {
         htmlSkeleton = StreamUtils.copyToString(htmlSkeletonResource.getInputStream(), StandardCharsets.UTF_8);
         htmlHeading = StreamUtils.copyToString(htmlHeadingResource.getInputStream(), StandardCharsets.UTF_8);
         htmlParagraph = StreamUtils.copyToString(htmlParagraphResource.getInputStream(), StandardCharsets.UTF_8);
@@ -59,6 +62,7 @@ public class ChplHtmlEmailBuilder {
         htmlButtonBar = StreamUtils.copyToString(htmlButtonBarResource.getInputStream(), StandardCharsets.UTF_8);
         emailContents = new String(htmlSkeleton);
         this.footerBuilder = footerBuilder;
+        this.urlFormatter = urlFormatter;
     }
 
     public ChplHtmlEmailBuilder initialize() {
@@ -173,6 +177,8 @@ public class ChplHtmlEmailBuilder {
     }
 
     public void addItemToEmailContents(String htmlToAdd) {
+        //put the correct domain on any URLs present in this email
+        htmlToAdd = urlFormatter.format(htmlToAdd);
         emailContents = emailContents.replace(EMAIL_CONTENT_TAG, htmlToAdd + EMAIL_CONTENT_TAG);
     }
 
