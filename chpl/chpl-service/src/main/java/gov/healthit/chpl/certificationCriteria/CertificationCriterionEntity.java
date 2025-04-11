@@ -84,7 +84,6 @@ public class CertificationCriterionEntity extends EntityAudit implements Seriali
     @Column(name = "certification_companion_guide_link")
     private String companionGuideLink;
 
-    @UrlFormattingNeeded
     public CertificationCriterion toDomain() {
         return CertificationCriterion.builder()
                 .id(this.getId())
