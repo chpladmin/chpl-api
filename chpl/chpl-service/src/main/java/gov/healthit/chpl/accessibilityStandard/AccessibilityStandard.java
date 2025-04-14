@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 /**
  * A standard  used to meet accessibility-centered design certification criterion.
  * Please see the 2015 Edition Certification Companion Guide for Accessibility Centered
- * Design for example accessibility standards:
- * https://www.healthit.gov/sites/default/files/2015Ed_CCG_g5-Accessibility-centered-design.pdf
+ * Design for example accessibility standards.
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
