@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 50.3.0
+_14 April 2025_
+
+### Features
+* Remove Missing Attestation Email Report
+* Remove one-time jobs that have been run
+* Require criteria if there is a value in Privacy and Security for 170.315 (b)(11)
+
+## Flagged Features
+* Re-integrate with the Insights API
+
+### Bug Fixes
+* Several minor changes to data gathering for Power BI reports
+  * feat: Filter list of products to be distinct
+  * feat: Get data numbers to match up between query and summary stats
+  * feat: Add "(Retired)" to the name of retired ONC-ACBs in the Summary Stats derived reports
+  * feat: Support getting generated ACB name based on the ONC-ACB Name
+
+---
+
 ## Version 50.2.0
 _31 March 2025_
 
