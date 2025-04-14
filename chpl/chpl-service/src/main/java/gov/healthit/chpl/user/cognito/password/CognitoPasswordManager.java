@@ -40,7 +40,7 @@ public class CognitoPasswordManager {
     @Transactional
     public void sendForgotPasswordEmail(String email) {
         try {
-            if (cognitoApiWrapper.getUserInfo(email) != null) {
+            if (cognitoApiWrapper.getUserInfoNoCache(email) != null) {
                 CognitoForgotPassword forgotPassword = generateForgotPassword(email);
                 cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
             }

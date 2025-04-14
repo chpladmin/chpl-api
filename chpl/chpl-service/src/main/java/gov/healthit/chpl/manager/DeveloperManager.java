@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -300,14 +301,13 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).DELETE)")
     @Transactional(readOnly = false)
+    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public void deleteDeveloperForJoin(Long developerIdToDelete, Developer developerToJoin) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito
@@ -345,14 +345,13 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).JOIN)")
     @Transactional(readOnly = false)
+    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -388,14 +387,13 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @Transactional(readOnly = false)
+    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public void removeUsersForDeveloperSplit(Developer oldDeveloper) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito

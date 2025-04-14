@@ -16,7 +16,7 @@ public abstract class SharedStoreProvider<K, V> {
     public static final Integer UNLIMITED = -1;
     public static final Integer MAX_JSON_LENGTH = 200;
 
-    private SharedStoreDAO sharedStoreDAO;
+    protected SharedStoreDAO sharedStoreDAO;
     private ObjectMapper mapper;
 
     @Autowired
@@ -87,7 +87,7 @@ public abstract class SharedStoreProvider<K, V> {
         LOGGER.info("**** REMOVED ALL {} ****", getDomain());
     }
 
-    private boolean isExpired(SharedStore sharedData) {
+    protected boolean isExpired(SharedStore sharedData) {
         if (getTimeToLive().equals(UNLIMITED)) {
             return false;
         } else {

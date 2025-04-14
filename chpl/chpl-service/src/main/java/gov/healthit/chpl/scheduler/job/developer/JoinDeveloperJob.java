@@ -18,6 +18,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -123,6 +124,7 @@ public class JoinDeveloperJob extends QuartzJob {
         }
     }
 
+    @CognitoUserCacheRefresh
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
@@ -130,8 +132,6 @@ public class JoinDeveloperJob extends QuartzJob {
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.QUESTIONABLE_ACTIVITIES).invalidate();
-        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_EMAIL).invalidate();
-        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_UUID).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer developerJoined, List<Developer> developersJoining,

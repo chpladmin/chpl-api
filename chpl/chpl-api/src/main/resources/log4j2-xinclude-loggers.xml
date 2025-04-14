@@ -108,6 +108,10 @@
         <AppenderRef ref="directReviewCacheRefreshJob" />
         <AppenderRef ref="directReviewCacheRefreshJobJson" />
     </Logger>
+    <Logger name="cognitoUserCacheRefreshJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="cognitoUserCacheRefreshJob" />
+        <AppenderRef ref="cognitoUserCacheRefreshJobJson" />
+    </Logger>
     <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
         <AppenderRef ref="realWorldTestingUploadJobJson" />

@@ -29,8 +29,9 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     private CognitoApiWrapper cognitoApiWrapper;
     private ErrorMessageUtil errorMessageUtil;
 
-
-    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoApiWrapper cognitoApiWrapper,
+    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO,
+            DeveloperDAO developerDAO,
+            CognitoApiWrapper cognitoApiWrapper,
             ErrorMessageUtil errorMessageUtil) {
 
         this.certificationBodyDAO = certificationBodyDAO;
