@@ -154,7 +154,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                        .developer(developer)
                        .build());
        } else {
-           switch (ChangeRequestStatusConcept.valueOf(cr.getCurrentStatus().getChangeRequestStatusType().getName())) {
+           switch (ChangeRequestStatusConcept.findByName(cr.getCurrentStatus().getChangeRequestStatusType().getName())) {
            case ACCEPTED:
                report.setApprovedCount(report.getApprovedCount() + 1);
             report.getDevelopersWithApprovedAttestations().add(DeveloperAttestationStatus.builder()
