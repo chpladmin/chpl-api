@@ -488,6 +488,7 @@ public class DeveloperManager extends SecuredManager {
         }
         if (!CollectionUtils.isEmpty(developerMessageRequest.getAdditionalRecipients())) {
             List<String> invalidAdditionalRecipients = developerMessageRequest.getAdditionalRecipients().stream()
+                    .filter(recipient -> !StringUtils.isEmpty(recipient))
                     .filter(recipient -> !Util.isEmailAddressValidFormat(recipient))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(invalidAdditionalRecipients)) {

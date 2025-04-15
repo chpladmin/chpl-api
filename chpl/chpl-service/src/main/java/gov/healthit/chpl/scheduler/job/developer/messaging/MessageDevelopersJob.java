@@ -154,6 +154,9 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
 
     private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject,
             User submittedUser, List<String> additionalRecipients) {
+        additionalRecipients = additionalRecipients.stream()
+                .filter(recipient -> !StringUtils.isEmpty(recipient))
+                .collect(Collectors.toList());
         MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, developerMessageSubject, submittedUser, additionalRecipients);
 
         try {
