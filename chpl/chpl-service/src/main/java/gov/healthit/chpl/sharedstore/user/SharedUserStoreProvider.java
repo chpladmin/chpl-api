@@ -1,7 +1,6 @@
 package gov.healthit.chpl.sharedstore.user;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -34,8 +33,6 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
     }
 
     public List<User> getAll() {
-        Date start = new Date();
-        System.out.println("Getting all users from Shared Store");
         List<User> allUsers = new ArrayList<User>();
         List<SharedStore> results = sharedStoreDAO.getAll(getDomain());
         if (CollectionUtils.isEmpty(results)) {
@@ -44,8 +41,6 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
         results.stream()
             .filter(result -> result != null && !isExpired(result))
             .forEach(result -> addToUsers(result, allUsers));
-        Date end = new Date();
-        System.out.println("Got and converted all user JSON in " + (end.getTime() - start.getTime()) + "ms. " + allUsers.size() + " users found.");
         return allUsers;
     }
 
