@@ -3,6 +3,7 @@ package gov.healthit.chpl.caching;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,7 @@ public class CognitoUserCacheRefreshAspect {
         trigger.setJob(ChplJob.builder()
                 .name(CognitoUserCacheRefreshJob.JOB_NAME)
                 .group(CognitoUserCacheRefreshJob.JOB_GROUP)
+                .jobDataMap(new JobDataMap())
                 .build());
         trigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
 

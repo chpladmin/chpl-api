@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 public class SharedStoreDAO extends BaseDAOImpl {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-
     public void add(SharedStore data) {
         Query query = entityManager.createNamedQuery("upsert");
         query.setParameter("domain", data.getDomain());

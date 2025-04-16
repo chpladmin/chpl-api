@@ -53,7 +53,7 @@ public abstract class SharedStoreProvider<K, V> {
         return obj;
     }
 
-    private void put(K key, V value) {
+    public void put(K key, V value) {
         if (containsKey(key)) {
             remove(key);
         }

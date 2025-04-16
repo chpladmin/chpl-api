@@ -58,6 +58,11 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
         }
     }
 
+    public void putAll(List<User> users) {
+        users.stream()
+            .forEach(user -> put(user.getCognitoId().toString(), user));
+    }
+
     @Override
     protected String getDomain() {
         return User.class.getName();

@@ -64,7 +64,6 @@ public class CognitoPasswordManager {
         cognitoPasswordChangedEmailer.sendEmail(forgotPassword.getEmail());
     }
 
-
     @Transactional
     public void setPassword(String password, String confirmPassword) throws ValidationException, EmailNotSentException, UserRetrievalException {
         if (!password.equals(confirmPassword)) {

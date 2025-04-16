@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
 import gov.healthit.chpl.PasswordUtil;
-import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -37,9 +36,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.sharedstore.user.RemoveUserBy;
 import gov.healthit.chpl.sharedstore.user.SharedUserStoreProvider;
-import gov.healthit.chpl.sharedstore.user.UserStoreRemove;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallenge;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import lombok.extern.log4j.Log4j2;
@@ -265,8 +262,6 @@ public class CognitoApiWrapper {
         }
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#existingUser.cognitoId.toString()")
     public CognitoCredentials reenableUser(User existingUser) throws UserCreationException {
         try {
             enableUser(existingUser);
@@ -285,8 +280,6 @@ public class CognitoApiWrapper {
         }
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#result.cognitoId.toString()")
     public User setUserPassword(String username, String password, Boolean permanent) {
         AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
                 .username(username)
@@ -316,8 +309,6 @@ public class CognitoApiWrapper {
         return user;
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#result.cognitoId.toString()")
     public User addUserToGroup(String username, String groupName) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
                 .userPoolId(userPoolId)
@@ -336,8 +327,6 @@ public class CognitoApiWrapper {
         return user;
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#cognitoId.toString()")
     public User deleteUser(UUID cognitoId) {
         try {
             User user = getUserInfo(cognitoId);
@@ -402,8 +391,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminUserGlobalSignOut(request);
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
     public void updateUser(User user) throws UserRetrievalException {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
         attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
@@ -419,8 +406,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminUpdateUserAttributes(request);
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
     public void addOrgToUser(User user, Long orgId) throws UserRetrievalException {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
         Set<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
@@ -445,8 +430,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminUpdateUserAttributes(request);
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
     public void removeOrgsFromUser(User user, List<Long> orgIdsToRemove) throws UserRetrievalException {
         Set<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
                 ? new HashSet<Long>()
@@ -472,8 +455,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminUpdateUserAttributes(request);
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
     public void enableUser(User user) {
         //If a user is getting enabled, it's because they were at one time disabled
         //and our workflow is that they can only become re-enabled by receiving a new invitation.
@@ -485,8 +466,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminEnableUser(enableUserRequest);
     }
 
-    @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
     public void disableUser(User user) {
         AdminDisableUserRequest request = AdminDisableUserRequest.builder()
                 .userPoolId(userPoolId)
