@@ -21,8 +21,7 @@ public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
-        } else if (getResourcePermissions().isUserRoleStartup()
-                && obj instanceof ChplOneTimeTrigger) {
+        } else if (getResourcePermissions().isUserRoleStartup() && obj instanceof ChplOneTimeTrigger) {
             ChplOneTimeTrigger trigger = (ChplOneTimeTrigger) obj;
             if (trigger.getJob() != null) {
                 return isDirectReviewCacheRefreshJob(trigger) || isCognitoUserCacheRefreshJob(trigger);

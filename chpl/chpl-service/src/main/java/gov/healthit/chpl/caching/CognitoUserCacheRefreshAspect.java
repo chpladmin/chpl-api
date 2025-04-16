@@ -37,7 +37,7 @@ public class CognitoUserCacheRefreshAspect {
         trigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
 
         try {
-            schedulerManager.createOneTimeTrigger(trigger);
+            schedulerManager.createBackgroundJobTrigger(trigger);
             LOGGER.info("Scheduling background job " + trigger.getJob().getName() + " to run at " + trigger.getRunDateMillis());
         } catch (Exception ex) {
             LOGGER.error("Unable to schedule trigger " + CognitoUserCacheRefreshJob.JOB_NAME, ex);
