@@ -25,13 +25,11 @@ public class AttestationReportService {
 
     @Transactional
     public List<AttestationReport> getAttestationReports() {
-        return attestationReportDAO.getAttestationReportByAttestationPeriod(
-                attestationPeriodService.getMostRecentPastAttestationPeriod());
+        return attestationReportDAO.getAttestationReportByAttestationPeriod();
     }
 
     @Transactional
     public List<AttestationReportDeveloper> getAttestationReportDevelopers() {
-        return attestationReportDAO.getAttestationReportDeveloperByAttestationPeriod(
-                attestationPeriodService.getMostRecentPastAttestationPeriod());
+        return attestationReportDAO.getAttestationReportDeveloperByAttestationPeriod();
     }
 }
