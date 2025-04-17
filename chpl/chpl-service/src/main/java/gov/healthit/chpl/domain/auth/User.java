@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.contact.Person;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -21,9 +23,6 @@ import lombok.NoArgsConstructor;
 public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
 
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2024-11-01")
-    @Deprecated
-    private Long userId;
     private UUID cognitoId;
     private String role;
     private String subjectName;

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
@@ -29,7 +29,7 @@ public class UpdatedPromotingInteroperabilityActivity implements ListingActivity
 
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!resourcePermissionsFactory.get().doesAuditUserHaveRole(Authority.ROLE_ACB)
+        if (!resourcePermissionsFactory.get().doesAuditUserHaveRole(CognitoGroups.CHPL_ACB)
                 || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
             return null;

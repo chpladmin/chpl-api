@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -28,7 +27,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -91,9 +89,6 @@ public class SplitDeveloperJob extends QuartzJob {
 
     @Autowired
     private ChplHtmlEmailBuilder emailBuilder;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -333,17 +328,10 @@ public class SplitDeveloperJob extends QuartzJob {
         }
         productList += "</ul>";
 
-        String userReminder = "";
-        if (ff4j.check(FeatureList.SSO)) {
-            userReminder = String.format("All users associated with %s have had their access removed "
-                    + "and may have been disabled. Users will need to be manually re-invited with the "
-                    + "correct organization access.",
-                    preSplitDeveloper.getName());
-        } else {
-            userReminder = String.format("User access to the developers %s and %s must be manually updated.",
-                    preSplitDeveloper.getName(),
-                    createdDeveloper.getName());
-        }
+        String userReminder = String.format("All users associated with %s have had their access removed "
+            + "and may have been disabled. Users will need to be manually re-invited with the "
+            + "correct organization access.",
+            preSplitDeveloper.getName());
 
         String htmlMessage = emailBuilder.initialize()
                 .heading(title)

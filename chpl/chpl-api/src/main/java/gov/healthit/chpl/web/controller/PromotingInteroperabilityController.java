@@ -37,7 +37,7 @@ public class PromotingInteroperabilityController {
             + "for each CHPL Product Number",
             description = "Accepts a CSV file with chpl_product_number and user_count columns to update "
                     + "the number of promoting interoperability users for each CHPL Product Number."
-                    + " The user uploading the file must have ROLE_ADMIN, ROLE_ONC. ",
+                    + " The user uploading the file must have either role chpl-admin or chpl-onc. ",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

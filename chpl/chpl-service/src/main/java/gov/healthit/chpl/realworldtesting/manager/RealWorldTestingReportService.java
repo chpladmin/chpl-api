@@ -2,6 +2,7 @@ package gov.healthit.chpl.realworldtesting.manager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,14 +16,13 @@ import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.UserDeveloperMapDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligibility;
@@ -36,26 +36,27 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Service
 public class RealWorldTestingReportService {
     private CertifiedProductDAO certifiedProductDAO;
-    private UserDeveloperMapDAO userDeveloperMapDao;
     private ErrorMessageUtil errorMsg;
     private Environment env;
     private CertificationStatusEventsService certificationStatusEventsService;
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
-
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private List<CertificationStatusType> withdrawnStatuses;
 
     @Autowired
-    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, UserDeveloperMapDAO userDeveloperMapDao,
+    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO,
             ErrorMessageUtil errorMsg, Environment env,
-            CertificationStatusEventsService certificationStatusEventsService, CertificationCriterionService certificationCriterionService,
-            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
+            CertificationStatusEventsService certificationStatusEventsService,
+            CertificationCriterionService certificationCriterionService,
+            RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
 
         this.certifiedProductDAO = certifiedProductDAO;
-        this.userDeveloperMapDao = userDeveloperMapDao;
         this.errorMsg = errorMsg;
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
 
         withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
                 CertificationStatusType.WithdrawnByAcb,
@@ -148,17 +149,16 @@ public class RealWorldTestingReportService {
     }
 
     private List<String> getDeveloperUsers(Developer developer) {
-        List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
-        if (CollectionUtils.isEmpty(userDeveloperMaps)) {
-            return null;
+        List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(developer);
+        if (CollectionUtils.isEmpty(usersOnDeveloper)) {
+            return new ArrayList<String>();
         }
-        return userDeveloperMaps.stream()
-                .filter(udm -> udm.getUser() != null)
-                .map(udm -> formatUserData(udm.getUser()))
+        return usersOnDeveloper.stream()
+                .map(user -> formatUserData(user))
                 .collect(Collectors.toList());
     }
 
-    private String formatUserData(UserDTO user) {
+    private String formatUserData(User user) {
         String userContactText = "";
         if (!StringUtils.isEmpty(user.getFullName())) {
             userContactText = user.getFullName();

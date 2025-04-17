@@ -43,7 +43,8 @@ public class CHPLFileController {
     }
 
     @Operation(summary = "Upload an API Documentation file",
-            description = "Uploads a new current API Documentation file.  Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Uploads a new current API Documentation file. "
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

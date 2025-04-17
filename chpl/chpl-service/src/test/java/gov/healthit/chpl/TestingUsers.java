@@ -1,11 +1,13 @@
 package gov.healthit.chpl;
 
+import java.util.UUID;
+
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class TestingUsers {
@@ -17,10 +19,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getAdminUser() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setCognitoId(UUID.randomUUID());
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
-        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
+        adminUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_ADMIN));
         return adminUser;
     }
 
@@ -32,10 +34,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getAcbUser() {
         JWTAuthenticatedUser acbUser = new JWTAuthenticatedUser();
         acbUser.setFullName("Test");
-        acbUser.setId(3L);
+        acbUser.setCognitoId(UUID.randomUUID());
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("testUser3");
-        acbUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ACB));
+        acbUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_ACB));
         return acbUser;
     }
 
@@ -52,10 +54,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getCmsUser() {
         JWTAuthenticatedUser cmsUser = new JWTAuthenticatedUser();
         cmsUser.setFullName("CMS");
-        cmsUser.setId(3L);
+        cmsUser.setCognitoId(UUID.randomUUID());
         cmsUser.setFriendlyName("User");
         cmsUser.setSubjectName("cmsUser");
-        cmsUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_CMS_STAFF));
+        cmsUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_CMS_STAFF));
 
         return cmsUser;
     }
@@ -63,10 +65,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getStartupUser() {
         JWTAuthenticatedUser startupUser = new JWTAuthenticatedUser();
         startupUser.setFullName("Startup User");
-        startupUser.setId(-4L);
+        startupUser.setCognitoId(UUID.randomUUID());
         startupUser.setFriendlyName("Startup");
         startupUser.setSubjectName("startpUser");
-        startupUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_STARTUP));
+        startupUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_STARTUP));
         return startupUser;
     }
 
@@ -78,10 +80,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getOncUser() {
         JWTAuthenticatedUser oncUser = new JWTAuthenticatedUser();
         oncUser.setFullName("ONC");
-        oncUser.setId(3L);
+        oncUser.setCognitoId(UUID.randomUUID());
         oncUser.setFriendlyName("User");
         oncUser.setSubjectName("oncUser");
-        oncUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ONC));
+        oncUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_ONC));
         return oncUser;
     }
 
@@ -93,10 +95,10 @@ public class TestingUsers {
     private JWTAuthenticatedUser getDeveloperUser() {
         JWTAuthenticatedUser developerUser = new JWTAuthenticatedUser();
         developerUser.setFullName("Developer");
-        developerUser.setId(3L);
+        developerUser.setCognitoId(UUID.randomUUID());
         developerUser.setFriendlyName("User");
         developerUser.setSubjectName("developerUser");
-        developerUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_DEVELOPER));
+        developerUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_DEVELOPER));
         return developerUser;
     }
 

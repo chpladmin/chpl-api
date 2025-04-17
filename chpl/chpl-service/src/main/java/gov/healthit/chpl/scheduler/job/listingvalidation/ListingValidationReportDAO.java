@@ -46,11 +46,4 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
                 + "WHERE (lvr.deleted = false)", ListingValidationReportEntity.class)
                 .getResultList();
     }
-
-    private ListingValidationReportEntity deleteEntity(ListingValidationReportEntity entity) {
-        entity.setDeleted(true);
-        entityManager.merge(entity);
-        entityManager.flush();
-        return entity;
-    }
 }

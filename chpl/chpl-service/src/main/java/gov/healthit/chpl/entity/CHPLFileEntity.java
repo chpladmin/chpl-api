@@ -2,6 +2,8 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +34,7 @@ public class CHPLFileEntity extends EntityAudit {
 
     @Override
     public LastModifiedUserStrategy getLastModifiedUserStrategy() {
-        return new CurrentUserThenSystemUserStrategy();
+        return new CurrentUserStrategy();
     }
 
     @Id

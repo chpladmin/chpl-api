@@ -28,7 +28,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.dao.RealWorldTestingByDeveloperDao;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
@@ -48,17 +47,15 @@ public class RealWorldTestingManager {
 
     private RealWorldTestingByDeveloperDao rwtByDeveloperDao;
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public RealWorldTestingManager(RealWorldTestingByDeveloperDao rwtByDeveloperDao,
-            SchedulerManager schedulerManager, UserManager userManager,
+            SchedulerManager schedulerManager,
             ErrorMessageUtil errorMessageUtil) {
 
         this.rwtByDeveloperDao = rwtByDeveloperDao;
         this.schedulerManager = schedulerManager;
-        this.userManager = userManager;
         this.errorMessageUtil = errorMessageUtil;
     }
 

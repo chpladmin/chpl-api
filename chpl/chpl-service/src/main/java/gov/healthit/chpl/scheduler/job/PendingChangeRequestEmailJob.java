@@ -45,7 +45,7 @@ import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDeta
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.PendingChangeRequestPresenter;
 
 /**
- * The PendingChangeRequestEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ONC. When invoked it
+ * The PendingChangeRequestEmailJob implements a Quartz job and is available to chpl-admin and chpl-onc. When invoked it
  * emails configured individuals with the Change Requests that are in a pending state.
  */
 public class PendingChangeRequestEmailJob extends QuartzJob {

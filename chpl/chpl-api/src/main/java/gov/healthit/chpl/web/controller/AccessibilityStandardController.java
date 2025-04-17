@@ -35,7 +35,7 @@ public class AccessibilityStandardController {
 
     @Operation(summary = "Update an Accessibility Standard.",
             description = "Provides functionality to update the name of an Accessibility Standard. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Requires either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -49,7 +49,7 @@ public class AccessibilityStandardController {
 
     @Operation(summary = "Create an Accessibility Standard.",
             description = "Provides functionality to add a new Accessibility Standard. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Requires either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -63,7 +63,7 @@ public class AccessibilityStandardController {
 
     @Operation(summary = "Delete an Accessibility Standard.",
             description = "Provides functionality to delete an existing Accessibility Standard. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Requires either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

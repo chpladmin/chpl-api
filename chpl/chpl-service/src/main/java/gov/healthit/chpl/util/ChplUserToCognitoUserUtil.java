@@ -27,7 +27,7 @@ public class ChplUserToCognitoUserUtil {
         User currentUser = null;
         if (chplUserId != null) {
             try {
-                currentUser = userDAO.getById(chplUserId, true).toDomain();
+                currentUser = userDAO.getById(chplUserId, true);
             } catch (Exception e) {
                 LOGGER.error("Could not retreive user with ID: {}", chplUserId, e);
             }

@@ -37,7 +37,7 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
-        // Only ROLE_ADMIN has access
+        // Only chpl-admin has access
         assertTrue(permissions.hasAccess());
 
         // This should always be false
@@ -50,7 +50,7 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
-        // Only ROLE_ADMIN has access
+        // Only chpl-admin has access
         assertFalse(permissions.hasAccess());
 
         // This should always be false
@@ -62,7 +62,7 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        // Only ROLE_ADMIN has access
+        // Only chpl-admin has access
         assertFalse(permissions.hasAccess());
 
         // This should always be false
@@ -74,7 +74,7 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
-        // Only ROLE_ADMIN has access
+        // Only chpl-admin has access
         assertFalse(permissions.hasAccess());
 
         // This should always be false
@@ -86,7 +86,7 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
-        // Only ROLE_ADMIN has access
+        // Only chpl-admin has access
         assertFalse(permissions.hasAccess());
 
         // This should always be false

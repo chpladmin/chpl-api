@@ -68,7 +68,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of surveillance process types.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -81,7 +81,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of surveillance outcomes.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -94,7 +94,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of options for grounds for initiating surveillance.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -107,7 +107,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of options for Corrective Action Plan (CAP) status values.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

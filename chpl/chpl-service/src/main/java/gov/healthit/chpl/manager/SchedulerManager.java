@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -31,7 +30,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
@@ -61,16 +59,14 @@ public class SchedulerManager extends SecuredManager {
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ChplRepeatableTriggerChangeEmailer emailer;
-    private FF4j ff4j;
 
     @Autowired
-    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissionsFactory resourcePermissionsFactory,
-            ChplRepeatableTriggerChangeEmailer emailer, FF4j ff4j) {
-
+    public SchedulerManager(ChplSchedulerReference chplScheduler,
+            ResourcePermissionsFactory resourcePermissionsFactory,
+            ChplRepeatableTriggerChangeEmailer emailer) {
         this.chplScheduler = chplScheduler;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.emailer = emailer;
-        this.ff4j = ff4j;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
@@ -133,14 +129,8 @@ public class SchedulerManager extends SecuredManager {
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
-        if (ff4j.check(FeatureList.SSO)) {
-            trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getCognitoId());
-        } else {
-            trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
-        }
-
+        trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getCognitoId());
         scheduler.scheduleJob(trigger);
-
         return chplTrigger;
     }
 

@@ -89,12 +89,6 @@
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
     </Logger>
-    <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="massRequirePasswordChangeJob" />
-    </Logger>
-    <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="developerAccessEmailJob" />
-    </Logger>
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
     </Logger>
@@ -204,6 +198,9 @@
     </Logger>
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
+    </Logger>
+    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixJobDataJob" />
     </Logger>
     <Logger name="rwtPopulateMissingDataCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="rwtPopulateMissingDataCreatorJob" />

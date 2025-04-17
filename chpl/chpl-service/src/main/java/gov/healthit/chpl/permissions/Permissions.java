@@ -40,7 +40,6 @@ import gov.healthit.chpl.permissions.domains.TestToolDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UcdProcessDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UrlCheckerDomainPermissions;
-import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
 public class Permissions {
@@ -55,7 +54,6 @@ public class Permissions {
     public static final String SURVEILLANCE_REPORT = "SURVEILLANCE_REPORT";
     public static final String CERTIFICATION_BODY = "CERTIFICATION_BODY";
     public static final String SCHEDULER = "SCHEDULER";
-    public static final String USER_PERMISSIONS = "USER_PERMISSIONS";
     public static final String ACTIVITY = "ACTIVITY";
     public static final String JOB = "JOB";
     public static final String PRODUCT = "PRODUCT";
@@ -95,7 +93,6 @@ public class Permissions {
             SurveillanceDomainPermissions surveillanceDomainPermissions,
             SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
             CertificationBodyDomainPermissions certificationBodyDomainPermissions,
-            UserPermissionsDomainPermissions userPermissionsDomainPermissions,
             ActivityDomainPermissions activityDomainPermissions,
             ProductDomainPermissions productDomainPermissions,
             DeveloperDomainPermissions developerDomainPermissions,
@@ -152,7 +149,6 @@ public class Permissions {
         domainPermissions.put(TEST_TOOL, testToolDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
-        domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
         domainPermissions.put(API_KEY, apiKeyPermissions);
         domainPermissions.put(URL_CHECKER, urlCheckerDomainPermissions);
     }

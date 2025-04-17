@@ -62,7 +62,7 @@ public class ApiKeyController {
     }
 
     @Operation(summary = "Remove an API key.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -85,7 +85,7 @@ public class ApiKeyController {
     }
 
     @Operation(summary = "List all API keys that have been created.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

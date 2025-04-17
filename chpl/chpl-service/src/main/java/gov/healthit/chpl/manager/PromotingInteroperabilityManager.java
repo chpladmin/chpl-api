@@ -21,7 +21,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.scheduler.job.promotingInteroperability.PromotingInteroperabilityUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
@@ -31,14 +30,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class PromotingInteroperabilityManager {
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
     private FileUtils fileUtils;
 
     @Autowired
-    public PromotingInteroperabilityManager(SchedulerManager schedulerManager, UserManager userManager,
+    public PromotingInteroperabilityManager(SchedulerManager schedulerManager,
             FileUtils fileUtils) {
         this.schedulerManager = schedulerManager;
-        this.userManager = userManager;
         this.fileUtils = fileUtils;
     }
 
