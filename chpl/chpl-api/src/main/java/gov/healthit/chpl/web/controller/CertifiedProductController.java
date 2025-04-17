@@ -689,8 +689,8 @@ public class CertifiedProductController {
     @Operation(summary = "Update an existing certified product.",
             description = "Updates the certified product after first validating the request. If a different "
                     + "ACB is passed in as part of the request, an ownership change will take place.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative "
-                    + "authority on the ACB that certified the product.",
+                    + "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and have administrative authority on the ONC-ACB that certified the product.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -738,8 +738,8 @@ public class CertifiedProductController {
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
                     + " to check for errors. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
-                    + "the certified product is required.",
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb and administrative "
+                    + "authority on the ONC-ACB associated with the certified product is required.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -766,8 +766,8 @@ public class CertifiedProductController {
    @Operation(summary = "Update a surveillance activity for a certified product.",
             description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN or ROLE_ACB "
-                    + "and associated with the certified product is required.",
+                    + "validated to check for errors. Security Restrictions: Users with either role chpl-admin or "
+                    + "chpl-onc-acb and associated with the certified product is required.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -799,8 +799,8 @@ public class CertifiedProductController {
 
     @Operation(summary = "Delete a surveillance activity for a certified product.",
             description = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
-                    + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
-                    + "administrative authority on the specified ACB for each pending surveillance is required.",
+                    + "non-conformities in the system. Security Restrictions: Users with either role chpl-admin or "
+                    + "chpl-onc-acb with administrative authority on the specified ONC-ACB for the surveillance.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

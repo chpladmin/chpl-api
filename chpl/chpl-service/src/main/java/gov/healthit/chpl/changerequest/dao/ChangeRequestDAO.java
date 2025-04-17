@@ -27,6 +27,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 public class ChangeRequestDAO extends BaseDAOImpl {
 
     private ChangeRequestDetailsFactory changeRequestDetailsFactory;
+    private ChangeRequestConverter changeRequestConverter;
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbAction;
@@ -38,15 +39,17 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     private Long attestationTypeId;
 
     @Autowired
-    public ChangeRequestDAO(@Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
+    public ChangeRequestDAO(@Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory,
+            ChangeRequestConverter changeRequestConverter) {
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
+        this.changeRequestConverter = changeRequestConverter;
     }
 
     public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
         addCertificationBodies(entity.getId(), cr.getCertificationBodies());
-        return ChangeRequestConverter.convert(getEntityById(entity.getId()));
+        return changeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
     private void addCertificationBodies(Long changeRequestId, List<CertificationBody> certificationBodies) {
@@ -61,31 +64,31 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     }
 
     public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {
-        ChangeRequest cr = ChangeRequestConverter.convert(getEntityById(changeRequestId));
+        ChangeRequest cr = changeRequestConverter.convert(getEntityById(changeRequestId));
         return populateDependentObjects(cr);
     }
 
     public List<ChangeRequestSearchResult> getAll() {
         return getSearchResultEntities().stream()
-                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
+                .map(entity -> changeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) {
         return getSearchResultEntitiesByAcbs(acbIds).stream()
-                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
+                .map(entity -> changeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) {
         return getSearchResultEntitiesByDevelopers(developerIds).stream()
-                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
+                .map(entity -> changeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAttestationChangeRequestsForPeriod(Long periodId) {
         return getSearchResultEntitiesByTypeAndPeriod(attestationTypeId, periodId).stream()
-                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
+                .map(entity -> changeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
@@ -100,7 +103,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
         return getEntitiesByDevelopers(developers).stream()
-                .map(entity -> ChangeRequestConverter.convert(entity))
+                .map(entity -> changeRequestConverter.convert(entity))
                 .map(cr -> includeDependentObjects ? populateDependentObjects(cr) : cr)
                 .collect(Collectors.<ChangeRequest>toList());
     }

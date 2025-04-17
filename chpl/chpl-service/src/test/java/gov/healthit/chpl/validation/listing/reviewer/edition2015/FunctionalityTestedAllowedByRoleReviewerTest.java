@@ -15,14 +15,14 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FunctionalityTestedAllowedByRoleReviewerTest {
 
-    private static final String RESTRICTED_FUNCTIONALITY_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": [{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"ROLE_ADMIN\",\"ROLE_ONC\"]}]}]";
+    private static final String RESTRICTED_FUNCTIONALITY_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": [{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"chpl-admin\",\"chpl-onc\"]}]}]";
     private static final String ERROR_MESSAGE = "Current user does not have permission to add/remove functionality tested '%s' for Criteria '%s'.";
     private static final Long CERTIFICATION_RESULT_ID = 5L;
     private static final Long CERTIFICATION_EDITION_ID = 4L;
@@ -39,7 +39,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         ErrorMessageUtil errorMessages = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessages.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(ERROR_MESSAGE);
 
-        permissions = Mockito.mock(ChplResourcePermissions.class);
+        permissions = Mockito.mock(CognitoResourcePermissions.class);
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(true);
 
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);

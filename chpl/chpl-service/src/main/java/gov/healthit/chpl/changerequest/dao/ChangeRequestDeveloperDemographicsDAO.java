@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.dao;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -15,17 +16,22 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Component
 public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
 
+    private ChangeRequestConverter changeRequestConverter;
+
+    @Autowired
+    public ChangeRequestDeveloperDemographicsDAO(ChangeRequestConverter changeRequestConverter) {
+        this.changeRequestConverter = changeRequestConverter;
+    }
 
     public ChangeRequestDeveloperDemographics create(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev)
             throws EntityRetrievalException {
         ChangeRequestDeveloperDemographicsEntity entity = getNewEntity(cr, crDev);
         create(entity);
-        return ChangeRequestConverter.convert(getEntity(entity.getId()));
+        return changeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-
     public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
+        return changeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
 
@@ -49,7 +55,7 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactPhoneNumber(crDev.getContact().getPhoneNumber());
         }
         update(entity);
-        return ChangeRequestConverter.convert(getEntity(entity.getId()));
+        return changeRequestConverter.convert(getEntity(entity.getId()));
     }
 
     private ChangeRequestDeveloperDemographicsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev) {

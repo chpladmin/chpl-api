@@ -39,8 +39,9 @@ public class AnnouncementController {
     private AnnouncementManager announcementManager;
 
     @Operation(summary = "Get all announcements.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
-                    + "and private announcements.  ROLE_ACB and ROLE_CMS_STAFF can retrieve private "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can retrieve future "
+                    + "scheduled announcements and private announcements. "
+                    + "Users with either role chpl-onc-acb or chpl-cms-staff can retrieve private "
                     + "announcements.  All users can retrieve public announcements.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -64,7 +65,7 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Create a new announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -95,7 +96,7 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Change an existing announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -127,7 +128,7 @@ public class AnnouncementController {
     }
 
     @Operation(summary = "Delete an existing announcement.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

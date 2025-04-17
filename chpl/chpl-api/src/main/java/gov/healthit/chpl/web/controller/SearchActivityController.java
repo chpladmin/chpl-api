@@ -42,7 +42,7 @@ public class SearchActivityController {
     }
 
     @Operation(summary = "Get the list of all things that may have activity recorded about them. Use in the 'concepts' parameter of the search endpoint. "
-            + "This is only available to ROLE_ADMIN and ROLE_ONC users.",
+            + "This is only available to users with either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -52,7 +52,8 @@ public class SearchActivityController {
         return activitySearchService.getAllConcepts();
     }
 
-    @Operation(summary = "Search across all recorded activity in the CHPL. This is only available to ROLE_ADMIN and ROLE_ONC users.",
+    @Operation(summary = "Search across all recorded activity in the CHPL. This is only available to "
+            + "users with either role chpl-admin or chpl-onc.",
             description = "If paging parameters are not specified, the first 20 records are returned by default."
                     + "All parameters are optional. "
                     + "Date parameters are required to be in the format "

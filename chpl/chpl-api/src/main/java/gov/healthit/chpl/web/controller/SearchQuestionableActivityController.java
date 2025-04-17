@@ -11,9 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,6 +39,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "search-questionable-activity", description = "Allows searching for questionable activity.")
@@ -72,7 +71,7 @@ public class SearchQuestionableActivityController {
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
     @Operation(summary = "Get the list of all types of actions that may trigger questionable activity to be recorded. "
-            + "This is only available to ROLE_ADMIN and ROLE_ONC users.",
+            + "This is only available to users with either role chpl-admin or chpl-onc.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -85,7 +84,8 @@ public class SearchQuestionableActivityController {
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
-    @Operation(summary = "Search Questionable Activity in the CHPL. This is only available to ROLE_ADMIN and ROLE_ONC users.",
+    @Operation(summary = "Search Questionable Activity in the CHPL. "
+            + "This is only available to users with either role chpl-admin or chpl-onc.",
             description = "If paging parameters are not specified, the first 20 records are returned by default."
                     + "All parameters are optional. "
                     + "Date parameters are required to be in the format "
@@ -137,7 +137,8 @@ public class SearchQuestionableActivityController {
         return questionableActivitySearchService.searchQuestionableActivities(searchRequest);
     }
 
-    @Operation(summary = "Download Questionable Activity. This is only available to ROLE_ADMIN and ROLE_ONC users.",
+    @Operation(summary = "Download Questionable Activity. "
+            + "This is only available to users with either role chpl-admin or chpl-onc.",
             description = "All parameters are optional. "
                     + "Date parameters are required to be in the format "
                     + SearchRequest.DATE_SEARCH_FORMAT + ". ",

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.domain.auth.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,7 +16,7 @@ import lombok.Data;
 public class ServiceBaseUrlListUptimeReport {
     private String developerName;
     private Long developerId;
-    private List<PointOfContact> developerEmails;
+    private List<User> developerUsers;
     private String url;
     private Long totalTestCount;
     private Long totalSuccessfulTestCount;
@@ -30,7 +30,7 @@ public class ServiceBaseUrlListUptimeReport {
         List<String> stringifiedData = new ArrayList<String>(Arrays.asList(
                 developerName,
                 developerId.toString(),
-                formatContacts(developerEmails),
+                formatContacts(developerUsers),
                 url,
                 totalTestCount.toString(),
                 totalSuccessfulTestCount.toString(),
@@ -61,10 +61,10 @@ public class ServiceBaseUrlListUptimeReport {
         return headers;
     }
 
-    private String formatContacts(List<PointOfContact> userContactList) {
+    private String formatContacts(List<User> users) {
         List<String> contactStrings = new ArrayList<String>();
-        userContactList.stream()
-            .forEach(contact -> contactStrings.add(contact.getFullName() + " <" + contact.getEmail() + ">"));
+        users.stream()
+            .forEach(user -> contactStrings.add(user.getFullName() + " <" + user.getEmail() + ">"));
         return String.join("; ", contactStrings);
     }
 }

@@ -3,9 +3,7 @@ package gov.healthit.chpl.insight;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -32,17 +28,14 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class InsightService {
     private DeveloperDAO developerDao;
-    private ProductDAO productDao;
     private RestTemplate insightRestTemplate;
     private ObjectMapper objectMapper;
     private String unformattedInsightSubmissionsUrl;
 
     @Autowired
     public InsightService(DeveloperDAO developerDao,
-            ProductDAO productDao,
             @Value("${insight.submissionsUrl}") String insightSubmissionsUrl) {
         this.developerDao = developerDao;
-        this.productDao = productDao;
         this.insightRestTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
         this.objectMapper = new ObjectMapper();
         this.unformattedInsightSubmissionsUrl = insightSubmissionsUrl;
@@ -52,7 +45,7 @@ public class InsightService {
     public List<InsightSubmission> getInsightSubmissions(Long developerId) throws EntityRetrievalException, InsightRequestFailedException {
         Developer dev = developerDao.getById(developerId); // throws exception if invalid ID
         JsonNode jsonResults = fetchInsightSubmissionsForDeveloper(dev.getId());
-        return convertInsightSubmissionsForAllProducts(dev.getId(), jsonResults);
+        return convertInsightSubmissionsResponse(dev.getId(), jsonResults);
     }
 
     private JsonNode fetchInsightSubmissionsForDeveloper(Long developerId) throws InsightRequestFailedException {
@@ -84,42 +77,19 @@ public class InsightService {
         return root;
     }
 
-    private List<InsightSubmission> convertInsightSubmissionsForAllProducts(Long developerId, JsonNode rootNode) {
+    private List<InsightSubmission> convertInsightSubmissionsResponse(Long developerId, JsonNode rootNode) {
         List<InsightSubmission> submissions = new ArrayList<InsightSubmission>();
-        List<Product> products = productDao.getByDeveloper(developerId);
-        if (!CollectionUtils.isEmpty(products)) {
-            submissions = products.stream()
-                .map(product -> convertInsightSubmissionsJsonForProduct(product, rootNode))
-                .filter(insightSubmissions -> !CollectionUtils.isEmpty(insightSubmissions))
-                .flatMap(insightSubmissions -> insightSubmissions.stream())
-                .collect(Collectors.toList());
-        }
-
-        return submissions;
-    }
-
-    private List<InsightSubmission> convertInsightSubmissionsJsonForProduct(Product product, JsonNode rootNode) {
-        List<InsightSubmission> insightSubmissions = new ArrayList<InsightSubmission>();
-        if (rootNode != null) {
-            JsonNode productSubmissionItem = rootNode.get(product.getId().toString());
-            if (productSubmissionItem != null && productSubmissionItem.isObject()) {
-                JsonNode productSubmissionsArr = productSubmissionItem.get("submissions");
-                if (productSubmissionsArr != null && productSubmissionsArr.isArray() && productSubmissionsArr.size() > 0) {
-                    for (JsonNode productSubmission : productSubmissionsArr) {
-                        try {
-                            insightSubmissions.add(InsightSubmission.builder()
-                                .productId(product.getId())
-                                .year(productSubmission.get("insight_year").textValue())
-                                .status(productSubmission.get("submission_status").textValue())
-                                .build());
-                        } catch (Exception ex) {
-                            LOGGER.error("Error parsing insight field(s) about product ID " + product.getId(), ex);
-                        }
-                    }
+        if (rootNode != null && rootNode.isArray() && rootNode.size() > 0) {
+            for (JsonNode submissionObj : rootNode) {
+                try {
+                    InsightSubmission is = objectMapper.readValue(submissionObj.toString(), InsightSubmission.class);
+                    submissions.add(is);
+                } catch (IOException ex) {
+                    LOGGER.error("Cannot map submission JSON to InsightSubmission class", ex);
                 }
             }
         }
-        return insightSubmissions;
+        return submissions;
     }
 }
 

@@ -124,7 +124,8 @@ public class ProductController {
                     + "that a new product is created with all of the information provided and all of the versions "
                     + " previously assigned to the productIds specified are reassigned to the newly created product. "
                     + "The old products are then deleted. "
-                    + "Security Restrictions: To merge: ROLE_ADMIN or ROLE_ONC. To update: ROLE_ADMIN, ROLE_ONC or ROLE_ACB.",
+                    + "Security Restrictions: To merge products a user must have either role chpl-admin or chpl-onc. "
+                    + "To update a product a user must have either role chpl-admin, chpl-onc, or chpl-onc-acb.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -295,7 +296,7 @@ public class ProductController {
 
     @Operation(summary = "Split a product - some versions stay with the existing product and some versions are moved "
             + "to a new product.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            description = "Security Restrictions: Users must have either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

@@ -40,7 +40,6 @@ public class TestingLabController {
     }
 
     @Operation(summary = "List all testing labs (ATLs).",
-            description = "ROLE_ADMIN and ROLE_ONC can view and edit ONC-ATLs.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -65,7 +64,7 @@ public class TestingLabController {
     }
 
     @Operation(summary = "Create a new testing lab.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC can create a new testing lab.",
+            description = "Security Restrictions: User must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -90,7 +89,7 @@ public class TestingLabController {
     }
 
     @Operation(summary = "Update an existing ATL.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            description = "Security Restrictions: User must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

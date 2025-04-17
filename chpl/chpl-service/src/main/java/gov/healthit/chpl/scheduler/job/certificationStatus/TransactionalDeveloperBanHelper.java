@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler.job.certificationStatus;
 
 import java.time.LocalDate;
 
-import jakarta.transaction.Transactional;
-
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,6 +27,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -67,7 +66,7 @@ public class TransactionalDeveloperBanHelper {
                 LOGGER.info("Banning developer with ID " + listing.getDeveloper().getId());
                 banDeveloper(listing);
             } else {
-                LOGGER.error("User " + user.getSubjectName() + " does not have ROLE_ADMIN or ROLE_ONC and cannot "
+                LOGGER.error("User " + user.getSubjectName() + " does not have either chpl-admin or chpl-onc roles and cannot "
                         + "change the status of developer for listing with id " + listing.getId());
                 return;
             }

@@ -257,6 +257,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempJsonFile.toPath(), Paths.get(jsonFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("JSON file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp JSON File was null and could not be moved.");
@@ -269,6 +271,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempCsvDataFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp CSV File was null and could not be moved.");
@@ -280,6 +284,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             Path targetFile = Files.move(tempCsvDefinitionFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV definition file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp CSV definition File was null and could not be moved.");
@@ -289,24 +295,28 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private void cleanupTempFiles() {
         LOGGER.info("Deleting temporary files.");
         if (tempJsonFile != null && tempJsonFile.exists()) {
+            LOGGER.info("Deleting " + tempJsonFile.getAbsolutePath());
             tempJsonFile.delete();
         } else {
             LOGGER.warn("Temp JSON File was null and could not be deleted.");
         }
 
         if (tempCsvDataFile != null && tempCsvDataFile.exists()) {
+            LOGGER.info("Deleting " + tempCsvDataFile.getAbsolutePath());
             tempCsvDataFile.delete();
         } else {
             LOGGER.warn("Temp CSV Data File was null and could not be deleted.");
         }
 
         if (tempCsvDefinitionFile != null && tempCsvDefinitionFile.exists()) {
+            LOGGER.info("Deleting " + tempCsvDefinitionFile.getAbsolutePath());
             tempCsvDefinitionFile.delete();
         } else {
             LOGGER.warn("Temp CSV Definition File was null and could not be deleted.");
         }
 
         if (tempDirectory != null && tempDirectory.exists()) {
+            LOGGER.info("Deleting " + tempDirectory.getAbsolutePath());
             tempDirectory.delete();
         } else {
             LOGGER.warn("Temp directory for download files was null and could not be deleted.");

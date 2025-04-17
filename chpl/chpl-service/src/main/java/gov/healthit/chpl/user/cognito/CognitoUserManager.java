@@ -127,8 +127,13 @@ public class CognitoUserManager {
 
         User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
         if (userShouldBeDisabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            //for acb/dev users that lost access to their last org - disable them
+            cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
+        } else if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+            //for admin/onc/cms users that have no orgs but were requested to be disabled - disable them
             cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
         } else if (userShouldBeEnabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            //for acb/dev users that gained access but had none before - enable them
             cognitoApiWrapper.enableUser(userAfterRemovingAndAddingOrgs);
         }
 

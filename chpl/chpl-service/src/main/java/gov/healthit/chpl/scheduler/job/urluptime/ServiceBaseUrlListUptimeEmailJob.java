@@ -2,13 +2,8 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +15,17 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
-
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
@@ -47,19 +39,13 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private ServiceBaseUrlListUptimeCsvWriter serviceBaseUrlListUptimeCsvWriter;
 
     @Autowired
-    private DeveloperDAO developerDAO;
-
-    @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private JpaTransactionManager txManager;
 
     @Autowired
     private Environment env;
-
-    private Map<Long, Set<CertificationBody>> developerIdAndCertificationBodyMap;
-    private List<CertificationBody> activeAcbs;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -71,9 +57,6 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    developerIdAndCertificationBodyMap = getDeveloperIdAndCertificationBodyMap();
-                    activeAcbs = certificationBodyDAO.findAllActive();
-
                     sendEmail(context, getReportRows());
                 } catch (Exception e) {
                     LOGGER.error(e);
@@ -83,37 +66,16 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the Service Base Url List Uptime Email job *********");
     }
 
-    private Map<Long, Set<CertificationBody>> getDeveloperIdAndCertificationBodyMap() {
-        Map<Developer, Set<CertificationBody>> developerAcbMaps = developerDAO.findAllDevelopersWithAcbs();
-        return developerAcbMaps.entrySet().stream()
-            .filter(entry -> !CollectionUtils.isEmpty(entry.getValue()))
-            .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
-    }
-
     private List<ServiceBaseUrlListUptimeReport> getReportRows() {
         List<ServiceBaseUrlListUptimeReport> reportRows = serviceBaseUrlListUptimeCalculator.calculateRowsForReport();
         reportRows.forEach(row -> {
-            row.setDeveloperEmails(developerDAO.getContactForDeveloperUsers(row.getDeveloperId()));
-            row.setApplicableAcbsMap(getApplicableAcbsForDeveloper(row.getDeveloperId()));
+            row.setDeveloperUsers(resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                    Developer.builder()
+                        .id(row.getDeveloperId())
+                        .build()));
         });
 
         return reportRows;
-    }
-
-    private Map<Long, Boolean> getApplicableAcbsForDeveloper(Long developerId) {
-        Set<CertificationBody> acbsForDeveloper = developerIdAndCertificationBodyMap.get(developerId);
-        if (CollectionUtils.isEmpty(acbsForDeveloper)) {
-            LOGGER.warn("The developer " + developerId + " has no associated ACBs and will not be included in the report.");
-            return new HashMap<Long, Boolean>();
-        }
-
-        return activeAcbs.stream()
-                .collect(Collectors.toMap(
-                        acb -> acb.getId(),
-                        acb -> acbsForDeveloper.stream()
-                                .filter(acbForDev -> acbForDev.getId().equals(acb.getId()))
-                                .findAny().isPresent()));
-
     }
 
     private void sendEmail(JobExecutionContext context, List<ServiceBaseUrlListUptimeReport> rows) throws EmailNotSentException, IOException {
@@ -136,4 +98,5 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
                 .footer(AdminFooter.class)
                 .build();
     }
+
 }

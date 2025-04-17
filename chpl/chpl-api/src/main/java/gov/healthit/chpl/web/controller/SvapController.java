@@ -35,7 +35,7 @@ public class SvapController {
 
     @Operation(summary = "Update an Standards Version Advancement Process.",
             description = "Provides functionality to update an SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Users must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -48,7 +48,7 @@ public class SvapController {
 
     @Operation(summary = "Create an Standards Version Advancement Process.",
             description = "Provides functionality to add a new SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Users must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -61,7 +61,7 @@ public class SvapController {
 
     @Operation(summary = "Delete an Standards Version Advancement Process.",
             description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: Users must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

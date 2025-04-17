@@ -53,25 +53,25 @@ public class FixJobDataJob implements Job {
 
                             List<String> authoritiesList = new ArrayList<String>(Arrays.asList(job.getJobDataMap().get("authorities").toString().split(";")));
 
-                            if (authoritiesList.contains("ROLE_ADMIN") && !authoritiesList.contains("chpl-admin")) {
-                                authoritiesList.add("chpl-admin");
-                                LOGGER.info("Added chpl-admin");
+                            if (authoritiesList.contains("ROLE_ADMIN") && authoritiesList.contains("chpl-admin")) {
+                                authoritiesList.remove("ROLE_ADMIN");
+                                LOGGER.info("Removing ROLE_ADMIN from " + job.getName());
                             }
-                            if (authoritiesList.contains("ROLE_ONC") && !authoritiesList.contains("chpl-onc")) {
-                                authoritiesList.add("chpl-onc");
-                                LOGGER.info("Added chpl-onc");
+                            if (authoritiesList.contains("ROLE_ONC") && authoritiesList.contains("chpl-onc")) {
+                                authoritiesList.remove("ROLE_ONC");
+                                LOGGER.info("Removed ROLE_ONC from " + job.getName());
                             }
-                            if (authoritiesList.contains("ROLE_ACB") && !authoritiesList.contains("chpl-onc-acb")) {
-                                authoritiesList.add("chpl-onc-acb");
-                                LOGGER.info("Added chpl-onc-acb");
+                            if (authoritiesList.contains("ROLE_ACB") && authoritiesList.contains("chpl-onc-acb")) {
+                                authoritiesList.remove("ROLE_ACB");
+                                LOGGER.info("Removed ROLE_ACB from " + job.getName());
                             }
-                            if (authoritiesList.contains("ROLE_CMS_STAFF") && !authoritiesList.contains("chpl-cms-staff")) {
-                                authoritiesList.add("chpl-cms-staff");
-                                LOGGER.info("Added chpl-cms-staff");
+                            if (authoritiesList.contains("ROLE_CMS_STAFF") && authoritiesList.contains("chpl-cms-staff")) {
+                                authoritiesList.remove("ROLE_CMS_STAFF");
+                                LOGGER.info("Removed ROLE_CMS_STAFF from " + job.getName());
                             }
-                            if (authoritiesList.contains("ROLE_DEVELOPER") && !authoritiesList.contains("chpl-developer")) {
-                                authoritiesList.add("chpl-developer");
-                                LOGGER.info("Added chpl-developer");
+                            if (authoritiesList.contains("ROLE_DEVELOPER") && authoritiesList.contains("chpl-developer")) {
+                                authoritiesList.remove("ROLE_DEVELOPER");
+                                LOGGER.info("Removed ROLE_DEVELOPER from " + job.getName());
                             }
                             job.getJobDataMap().put("authorities", String.join(";", authoritiesList));
                             updateJob(job);

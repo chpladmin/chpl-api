@@ -93,8 +93,10 @@ public class SearchChangeRequestsController {
     }
 
     @Operation(summary = "Search change requests accessible to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests. ROLE_ACB can get change requests "
-                    + "for developers where they manage at least one certified product for the developer. ROLE_DEVELOPER can get "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can get all change "
+                    + "requests. Users with role chpl-onc-acb can get change requests "
+                    + "for developers where they manage at least one certified product for the developer. "
+                    + "Users with role chpl-developer can get "
                     + "change requests where they have administrative authority based on the developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

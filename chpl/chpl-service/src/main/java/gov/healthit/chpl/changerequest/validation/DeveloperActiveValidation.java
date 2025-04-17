@@ -9,6 +9,10 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
+        //ONC and ADMIN can make a change regardless of developer status
+        if (context.getResourcePermissionsFactory().get().isUserRoleOnc() || context.getResourcePermissionsFactory().get().isUserRoleAdmin()) {
+            return true;
+        }
 
         // Is this a new or existing CR?
         ChangeRequest crToTest = null;

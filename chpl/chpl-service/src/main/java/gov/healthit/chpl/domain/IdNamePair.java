@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor

@@ -244,9 +244,11 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
+        this.tempDirectory.deleteOnExit();
 
         Path csvPath = Files.createTempFile(tempDir, svapReportName, ".csv");
         tempCsvFile = csvPath.toFile();
+        this.tempCsvFile.deleteOnExit();
     }
 
     private void swapFiles() throws IOException {
@@ -260,6 +262,8 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
             Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV file move may not have succeeded. Check file system.");
+            } else {
+                targetFile.toFile().setReadable(true, false);
             }
         } else {
             LOGGER.warn("Temp CSV File was null and could not be moved.");
@@ -269,12 +273,14 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     private void cleanupTempFiles() {
         LOGGER.info("Deleting temporary files.");
         if (tempCsvFile != null && tempCsvFile.exists()) {
+            LOGGER.info("Deleting " + tempCsvFile.getAbsolutePath());
             tempCsvFile.delete();
         } else {
             LOGGER.warn("Temp CSV File was null and could not be deleted.");
         }
 
         if (tempDirectory != null && tempDirectory.exists()) {
+            LOGGER.info("Deleting " + tempDirectory.getAbsolutePath());
             tempDirectory.delete();
         } else {
             LOGGER.warn("Temp directory for download files was null and could not be deleted.");

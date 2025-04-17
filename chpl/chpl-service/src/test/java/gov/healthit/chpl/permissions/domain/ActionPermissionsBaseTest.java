@@ -7,16 +7,12 @@ import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.TestingUsers;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissionsBaseTest extends TestingUsers {
-    public static final Long ROLE_ONC_ID = 8L;
-    public static final Long ROLE_ADMIN_ID = -2L;
-    public static final Long ROLE_ACB_ID = 2L;
-
     public abstract void hasAccess_Admin() throws Exception;
 
     public abstract void hasAccess_Onc() throws Exception;
@@ -68,6 +64,5 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleUserCreator()).thenReturn(false);
     }
 }

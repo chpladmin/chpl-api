@@ -108,8 +108,8 @@ public class ProductVersionController {
                     + "that a new version is created with all of the information provided and all of the certified "
                     + "products previously assigned to the old versionIds are reassigned to the newly created version."
                     + "  The old versions are then deleted. "
-                    + "Security Restrictions: Must have ROLE_ADMIN to merge or ROLE_ACB and have administrative "
-                    + "authority on the specified ACB to do all actions except merge.",
+                    + "Security Restrictions: To merge versions users must have either role chpl-admin or chpl-onc-acb "
+                    + "and have administrative authority on the specified ACB to do all actions except merge.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -174,7 +174,7 @@ public class ProductVersionController {
 
     @Operation(summary = "Split a version - some listings stay with the existing version and some listings are moved "
             + "to a new version.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
+            description = "Security Restrictions: User must have either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

@@ -36,8 +36,8 @@ public class RealWorldTestingController {
             description = "Accepts a CSV file with very specific fields to update listings with real world testing data. "
                     + "The file will be processed in the background and the user who submitted the file will be "
                     + "notified via email with the results"
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the ACB(s) responsible for the product(s) in the file.",
+                    + "Security Restrictions: User must have either role chpl-admin, chpl-onc, or chpl-onc-acb"
+                    + " and administrative authority on the ONC-ACB(s) responsible for the product(s) in the file.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

@@ -29,6 +29,7 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,8 +52,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Get all annual surveillance reports this user has access to.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -64,8 +65,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Get a specific annual surveillance report by ID.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -79,8 +80,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Create a new annual surveillance report.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -114,9 +115,9 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Update an existing annual surveillance report.",
-            description = "The associated ACB and year of the report cannot be changed. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "The associated ONC-ACB and year of the report cannot be changed. "
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -137,8 +138,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Delete an annual report.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -151,8 +152,8 @@ public class SurveillanceReportController {
 
     @Operation(summary = "Generates an annual report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -173,8 +174,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Get all quarterly surveillance reports this user has access to.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -186,8 +187,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Get a specific quarterly surveillance report by ID.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -200,11 +201,13 @@ public class SurveillanceReportController {
         return report;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportyId}/listings",
+            responseClass = RelevantListing.class)
     @Operation(summary = "Get listings that are relevant to a specific quarterly report. "
             + "These are listings belonging to the ACB associated with the report "
             + "that had an active status at any point during the quarter",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -219,8 +222,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Create a new quarterly surveillance report.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -238,9 +241,12 @@ public class SurveillanceReportController {
         return reportManager.getQuarterlyReport(createdReportId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportyId}/surveillance/{surveillanceId}",
+            httpMethod = "PUT",
+            responseClass = PrivilegedSurveillance.class)
     @Operation(summary = "Updates surveillance data that is tied to the quarterly report. ",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -259,9 +265,9 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Update an existing quarterly surveillance report.",
-            description = "The associated ACB, year, and quarter of the report cannot be changed. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "The associated ONC-ACB, year, and quarter of the report cannot be changed. "
+                    + "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -279,8 +285,8 @@ public class SurveillanceReportController {
     }
 
     @Operation(summary = "Delete a quarterly report.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -293,8 +299,8 @@ public class SurveillanceReportController {
 
     @Operation(summary = "Generates a quarterly report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the ACB associated with the report.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

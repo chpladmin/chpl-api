@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -29,7 +29,7 @@ public class ApiKeyActivityEntity extends EntityAudit {
 
     @Override
     public LastModifiedUserStrategy getLastModifiedUserStrategy() {
-        return new CurrentUserThenSystemUserStrategy();
+        return new CurrentUserStrategy();
     }
 
     @Id

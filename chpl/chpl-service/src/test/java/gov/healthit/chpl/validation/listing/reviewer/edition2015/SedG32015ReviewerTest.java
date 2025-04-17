@@ -14,7 +14,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -36,7 +36,7 @@ public class SedG32015ReviewerTest {
             .thenReturn(NO_G3_HAS_SED);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.foundNoSedCriteriaButAttestingSed")))
             .thenReturn(HAS_G3_NO_SED);
-        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         g3 = CertificationCriterion.builder()
                 .id(52L)

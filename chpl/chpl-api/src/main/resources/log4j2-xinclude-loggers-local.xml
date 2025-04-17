@@ -38,9 +38,6 @@
     <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="chartDataCreatorJob" />
     </Logger>
-    <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="standardsUpdateJob" />
-    </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
     </Logger>
@@ -91,15 +88,6 @@
     </Logger>
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
-    </Logger>
-    <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="massRequirePasswordChangeJob" />
-    </Logger>
-    <Logger name="updateListingStatusJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updateListingStatusJob" />
-    </Logger>
-    <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="developerAccessEmailJob" />
     </Logger>
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
@@ -172,9 +160,6 @@
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
     </Logger>
-    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
-    </Logger>
     <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="messageDevelopersJob" />
     </Logger>
@@ -205,9 +190,6 @@
     <Logger name="cognitoMassRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cognitoMassRequirePasswordChangeJob" />
     </Logger>
-    <Logger name="updatedSedFriendlyIdsJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedSedFriendlyIdsJob" />
-    </Logger>
     <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
     </Logger>
@@ -219,5 +201,8 @@
     </Logger>
     <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixJobDataJob" />
+    </Logger>
+    <Logger name="rwtPopulateMissingDataCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="rwtPopulateMissingDataCreatorJob" />
     </Logger>
 </Loggers>
