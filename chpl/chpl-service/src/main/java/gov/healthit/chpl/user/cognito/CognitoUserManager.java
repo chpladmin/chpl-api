@@ -32,8 +32,8 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.sharedstore.user.RemoveUserBy;
-import gov.healthit.chpl.sharedstore.user.UserStoreRemove;
+import gov.healthit.chpl.sharedstore.user.ReplaceUserBy;
+import gov.healthit.chpl.sharedstore.user.UserStoreReplace;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.util.AuthUtil;
@@ -93,7 +93,7 @@ public class CognitoUserManager {
 
     @Transactional
     @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#user.cognitoId.toString()")
+    @UserStoreReplace(replaceBy = ReplaceUserBy.USER_ID, id = "#user.cognitoId.toString()")
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
     public User updateUser(User user) throws ValidationException, UserRetrievalException, ActivityException {
@@ -317,7 +317,7 @@ public class CognitoUserManager {
 
     @Transactional
     @CognitoUserCacheRefresh
-    @UserStoreRemove(removeBy = RemoveUserBy.USER_ID, id = "#result.cognitoId.toString()")
+    @UserStoreReplace(replaceBy = ReplaceUserBy.USER_ID, id = "#result.cognitoId.toString()")
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).ADD_ORG_TO_USER)")
     public User addOrganizationToUser(UUID invitationToken, String accessToken) throws InvalidArgumentsException, UserRetrievalException, ActivityException {

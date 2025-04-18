@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface UserStoreRemove  {
-    RemoveUserBy removeBy() default RemoveUserBy.USER_ID;
+public @interface UserStoreReplace  {
+    ReplaceUserBy replaceBy() default ReplaceUserBy.USER_ID;
     String id() default "";
 }

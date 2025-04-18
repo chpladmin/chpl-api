@@ -1,6 +1,7 @@
 package gov.healthit.chpl.sharedstore.user;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -12,54 +13,58 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.sharedstore.ExpressionEvaluator;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Aspect
 @Log4j2
-public class UserStoreRemoveAspect {
+public class UserStoreReplaceAspect {
     private ExpressionEvaluator<String> evaluator = new ExpressionEvaluator<String>();
     private SharedUserStoreProvider sharedUserStoreProvider;
+    private CognitoApiWrapper cognitoApiWrapper;
 
     @Autowired
-    public UserStoreRemoveAspect(SharedUserStoreProvider sharedUserStoreProvider) {
+    public UserStoreReplaceAspect(SharedUserStoreProvider sharedUserStoreProvider,
+            CognitoApiWrapper cognitoApiWrapper) {
         this.sharedUserStoreProvider = sharedUserStoreProvider;
+        this.cognitoApiWrapper = cognitoApiWrapper;
     }
 
-    @AfterReturning("execution(* *.*(..)) && @annotation(userStoreRemove)")
+    @AfterReturning("execution(* *.*(..)) && @annotation(userStoreReplace)")
     @Transactional
-    public void userStoreRemove(JoinPoint joinPoint, UserStoreRemove userStoreRemove) {
-        if (userStoreRemove.removeBy().equals(RemoveUserBy.ALL)) {
-            removeAllUsersFromStore();
-        } else {
-            String id = getValue(joinPoint, userStoreRemove.id());
-            removeUsersFromStore(userStoreRemove.removeBy(), id);
+    public void userStoreReplace(JoinPoint joinPoint, UserStoreReplace userStoreReplace) {
+        if (userStoreReplace.replaceBy().equals(ReplaceUserBy.USER_ID)) {
+            String id = getValue(joinPoint, userStoreReplace.id());
+            replaceUsersInStore(userStoreReplace.replaceBy(), id);
         }
     }
 
-    private void removeAllUsersFromStore() {
-        sharedUserStoreProvider.removeAll();
-    }
-
-    private void removeUsersFromStore(RemoveUserBy removeBy, String id) {
+    private void replaceUsersInStore(ReplaceUserBy replaceBy, String id) {
         if (id == null) {
-            LOGGER.error("Attempting to remove user(s) from the shared store by " + removeBy.name()
-                + " but the 'id' field passed into the removeUsersFromStore method was null. "
-                + "Nothing will be removed from the store.");
+            LOGGER.error("Attempting to replace user(s) in the shared store by " + replaceBy.name()
+                + " but the 'id' field passed into the replaceUsersInStore method was null. "
+                + "Nothing will be replaced in the store.");
         }
 
-        switch (removeBy) {
+        switch (replaceBy) {
             case USER_ID:
-                removeUsersFromStoreByUserId(id);
+                replaceUsersInStoreByUserId(id);
                 break;
             //leaving space to possibly "remove by" developer id, acb id later
             default:
         }
     }
 
-    private void removeUsersFromStoreByUserId(String userId) {
+    private void replaceUsersInStoreByUserId(String userId) {
         sharedUserStoreProvider.remove(userId);
+        try {
+            cognitoApiWrapper.getUserInfo(UUID.fromString(userId));
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Unable to get replace user in store with ID " + userId, ex);
+        }
     }
 
     private String getValue(JoinPoint joinPoint, String condition) {
