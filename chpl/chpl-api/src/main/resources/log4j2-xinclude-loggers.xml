@@ -262,4 +262,8 @@
         <AppenderRef ref="fixJobDataJob" />
         <AppenderRef ref="fixJobDataJobJson" />
     </Logger>
+    <Logger name="rwtPopulateMissingDataCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="rwtPopulateMissingDataCreatorJob" />
+        <AppenderRef ref="rwtPopulateMissingDataCreatorJobJson" />
+    </Logger>
 </Loggers>

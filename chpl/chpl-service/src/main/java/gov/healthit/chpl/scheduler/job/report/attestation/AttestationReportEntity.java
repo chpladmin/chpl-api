@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.report.attestation;
 import java.time.LocalDate;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Column;
@@ -68,7 +69,9 @@ public class AttestationReportEntity extends EntityAudit {
                 .id(id)
                 .reportDate(reportDate)
                 .attestationPeriod(attestationPeriod.toDomain())
-                .certificationBody(certificationBody.toDomain())
+                .certificationBody(certificationBody != null
+                        ? certificationBody.toDomain()
+                        : CertificationBody.builder().id(0L).name("All ONC-ACBs").build())
                 .developerCount(developerCount)
                 .approvedCount(approvedCount)
                 .pendingAcbActionCount(pendingAcbActionCount)

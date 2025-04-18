@@ -886,5 +886,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>rwtPopulateMissingDataCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Populate missing data for the RWT Results submission window (2025-01-01 to 2025-03-15)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.RwtPopulateMissingDataCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
