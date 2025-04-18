@@ -68,6 +68,7 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Lazy
@@ -474,6 +475,16 @@ public class DeveloperManager extends SecuredManager {
         if (StringUtils.isEmpty(developerMessageRequest.getSubject())
                 || StringUtils.isEmpty(developerMessageRequest.getBody())) {
             throw new ValidationException(msgUtil.getMessage("developer.messaging.missingSubjectOrBody"));
+        }
+        if (!CollectionUtils.isEmpty(developerMessageRequest.getAdditionalRecipients())) {
+            List<String> invalidAdditionalRecipients = developerMessageRequest.getAdditionalRecipients().stream()
+                    .filter(recipient -> !StringUtils.isEmpty(recipient))
+                    .filter(recipient -> !Util.isEmailAddressValidFormat(recipient))
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(invalidAdditionalRecipients)) {
+                throw new ValidationException(msgUtil.getMessage("developer.messaging.invalidRecipient",
+                        Util.joinListGrammatically(invalidAdditionalRecipients)));
+            }
         }
 
         ChplOneTimeTrigger messageDevelopersTrigger = new ChplOneTimeTrigger();
