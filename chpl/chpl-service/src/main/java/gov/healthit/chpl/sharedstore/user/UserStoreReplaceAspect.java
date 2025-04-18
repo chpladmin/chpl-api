@@ -38,14 +38,14 @@ public class UserStoreReplaceAspect {
     public void userStoreReplace(JoinPoint joinPoint, UserStoreReplace userStoreReplace) {
         if (userStoreReplace.replaceBy().equals(ReplaceUserBy.USER_ID)) {
             String id = getValue(joinPoint, userStoreReplace.id());
-            replaceUsersInStore(userStoreReplace.replaceBy(), id);
+            replaceUserInStore(userStoreReplace.replaceBy(), id);
         }
     }
 
-    private void replaceUsersInStore(ReplaceUserBy replaceBy, String id) {
+    private void replaceUserInStore(ReplaceUserBy replaceBy, String id) {
         if (id == null) {
-            LOGGER.error("Attempting to replace user(s) in the shared store by " + replaceBy.name()
-                + " but the 'id' field passed into the replaceUsersInStore method was null. "
+            LOGGER.error("Attempting to replace user in the shared store by " + replaceBy.name()
+                + " but the 'id' field passed into the replaceUserInStore method was null. "
                 + "Nothing will be replaced in the store.");
         }
 
