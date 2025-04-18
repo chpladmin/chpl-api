@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +21,6 @@ public class ListingValidationReport {
     private String certificationStatusName;
     private String errorMessage;
     private ZonedDateTime reportDate;
-    private Date creationDate;
-    private Date lastModifiedDate;
-    private Long lastModifiedUser;
     private Boolean deleted;
 
     public ListingValidationReport(ListingValidationReportEntity entity) {
@@ -39,9 +35,6 @@ public class ListingValidationReport {
         this.certificationStatusName = entity.getCertificationStatusName();
         this.errorMessage = entity.getErrorMessage();
         this.reportDate = entity.getReportDate();
-        this.creationDate = entity.getCreationDate();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
         this.deleted = entity.getDeleted();
     }
 }

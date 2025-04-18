@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDAO;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
 
 @Component
 public class AttestationReportService {
@@ -25,6 +26,12 @@ public class AttestationReportService {
     @Transactional
     public List<AttestationReport> getAttestationReports() {
         return attestationReportDAO.getAttestationReportByAttestationPeriod(
+                attestationPeriodService.getMostRecentPastAttestationPeriod());
+    }
+
+    @Transactional
+    public List<AttestationReportDeveloper> getAttestationReportDevelopers() {
+        return attestationReportDAO.getAttestationReportDeveloperByAttestationPeriod(
                 attestationPeriodService.getMostRecentPastAttestationPeriod());
     }
 }

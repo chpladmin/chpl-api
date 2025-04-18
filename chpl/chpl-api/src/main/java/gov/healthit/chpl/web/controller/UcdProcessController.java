@@ -35,7 +35,7 @@ public class UcdProcessController {
 
     @Operation(summary = "Update a User-Centered Design Process.",
             description = "Provides functionality to update the name of a UCD Process. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -48,7 +48,7 @@ public class UcdProcessController {
 
     @Operation(summary = "Create a User-Centered Design Process.",
             description = "Provides functionality to add a new UCD Process. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -61,7 +61,7 @@ public class UcdProcessController {
 
     @Operation(summary = "Delete a User-Centered Design Process.",
             description = "Provides functionality to delete an existing UCD Process. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

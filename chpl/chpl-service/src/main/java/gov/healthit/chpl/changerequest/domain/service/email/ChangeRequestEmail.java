@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -101,13 +100,11 @@ public abstract class ChangeRequestEmail {
     }
 
     private Boolean isUserGroupAdmin(String userGroupName) {
-        return userGroupName.equals(Authority.ROLE_ADMIN)
-                || userGroupName.equals(CognitoGroups.CHPL_ADMIN);
+        return userGroupName.equals(CognitoGroups.CHPL_ADMIN);
     }
 
     private Boolean isUserGroupOnc(String userGroupName) {
-        return userGroupName.equals(Authority.ROLE_ONC)
-                || userGroupName.equals(CognitoGroups.CHPL_ONC);
+        return userGroupName.equals(CognitoGroups.CHPL_ONC);
     }
 
 }

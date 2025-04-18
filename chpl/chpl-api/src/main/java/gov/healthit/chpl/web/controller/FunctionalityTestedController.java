@@ -55,7 +55,7 @@ public class FunctionalityTestedController {
 
     @Operation(summary = "Create a Functionality Tested.",
             description = "Provides functionality to add a new Functionality Tested and the Criteria associated with it. "
-                    + "Security Restrictions: To create: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -68,7 +68,7 @@ public class FunctionalityTestedController {
 
     @Operation(summary = "Update a Functionality Tested.",
             description = "Provides functionality to update a Functionality Tested and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -81,7 +81,7 @@ public class FunctionalityTestedController {
 
     @Operation(summary = "Delete a Functionality Tested.",
             description = "Provides functionality to delete an existing Functionality Tested and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

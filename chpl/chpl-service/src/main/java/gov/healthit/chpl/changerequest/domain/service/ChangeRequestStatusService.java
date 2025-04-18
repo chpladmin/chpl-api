@@ -18,10 +18,8 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
@@ -182,14 +180,4 @@ public class ChangeRequestStatusService {
             return null;
         }
     }
-
-    private User getUserById(Long userId) {
-        try {
-            return userDAO.getById(userId).toDomain();
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve user with ID: {}", userId, e);
-            return null;
-        }
-    }
-
 }

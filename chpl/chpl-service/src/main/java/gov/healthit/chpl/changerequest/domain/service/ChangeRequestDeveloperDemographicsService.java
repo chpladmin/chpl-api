@@ -15,7 +15,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -32,6 +31,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -46,6 +46,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
@@ -72,10 +73,15 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private String cancelledEmailBody;
 
     @Autowired
-    public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
-            DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
-        super(userDeveloperMapDAO);
+    public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO,
+            ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
+            DeveloperManager developerManager,
+            ActivityManager activityManager,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            ChplEmailFactory chplEmailFactory,
+            ChplHtmlEmailBuilder chplHtmlEmailBuilder,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
+        super();
         this.crDAO = crDAO;
         this.crDeveloperDemographicsDAO = crDeveloperDemographicsDAO;
         this.developerManager = developerManager;
@@ -83,6 +89,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override
@@ -171,7 +178,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(approvalEmailSubject)
@@ -193,7 +200,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(pendingDeveloperActionEmailSubject)
@@ -216,7 +223,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(rejectedEmailSubject)
@@ -239,7 +246,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Override
     protected void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(cancelledEmailSubject)

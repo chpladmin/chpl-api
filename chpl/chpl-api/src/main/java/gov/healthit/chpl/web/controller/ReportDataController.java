@@ -26,6 +26,7 @@ import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -59,7 +60,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
@@ -69,7 +70,7 @@ public class ReportDataController {
             description = "Retrieves the report metadata for a group of Power BI reports.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
         return reportDataManager.getReportMetadataByReportGroup(reportGroup);
@@ -79,7 +80,7 @@ public class ReportDataController {
             description = "Retrieves the individual report metadata for a Power BI report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
         return reportDataManager.getReportMetadata(reportKey);
@@ -89,7 +90,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Surveillance Activity Counts report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/surveillance-activity-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceActivityCounts getSurveillanceActivityCounts() {
         return reportDataManager.getSurveillanceActivityCounts();
@@ -99,7 +100,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Open Surveillance Activity Counts by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-surveillance-activity-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getOpenSurveillanceActivityCountsByAcb() {
         return reportDataManager.getOpenSurveillanceActivityCountsByAcb();
@@ -109,7 +110,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Listings with Open Surveillance report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-surveillance-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getListingsWithOpenSurveillance() {
         return reportDataManager.getListingsWithOpenSurveillance();
@@ -119,7 +120,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Non-conformity Counts report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/non-conformity-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody NonconformityCounts getNonconformityCounts() {
         return reportDataManager.getNonconformityCounts();
@@ -129,7 +130,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Open Non-conformity Counts by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-non-conformity-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getOpenNonconformityCountsByAcb() {
         return reportDataManager.getOpenNonconformityCountsByAcb();
@@ -139,7 +140,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Listings with Open Non-conformity report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-non-conformity-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getListingsWithOpenNonconformity() {
         return reportDataManager.getListingsWithOpenNonconformity();
@@ -149,7 +150,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the CAP Counts report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/cap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CapCounts getCapCounts() {
         return reportDataManager.getCapCounts();
@@ -159,7 +160,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Open CAP Counts by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
         return reportDataManager.getOpenCapCountsByAcb();
@@ -169,7 +170,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Closed CAP Counts by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/closed-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
         return reportDataManager.getClosedCapCountsByAcb();
@@ -179,7 +180,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Listings with Open CAP report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/open-cap-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getListingsWithOpenCap() {
         return reportDataManager.getListingsWithOpenCap();
@@ -189,7 +190,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Listings with Closed CAP report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/closed-cap-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getListingsWithClosedCap() {
         return reportDataManager.getListingsWithClosedCap();
@@ -199,7 +200,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Unique Developer Count report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/unique-developer-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody UniqueDeveloperCount getUniqueDeveloperCount() {
         return reportDataManager.getUniqueDeveloperCount();
@@ -209,7 +210,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developer Counts with Active Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developer-count-with-active-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getDeveloperCountsWithActiveListingsByAcb() {
         return reportDataManager.getDeveloperCountsWithActiveListingsByAcb();
@@ -219,7 +220,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developers with Active Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developers-with-active-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithActiveListingsByAcb() {
         return developerSearchService.getAllPagesOfSearchResults(
@@ -231,7 +232,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developer Counts with Withdrawn Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developer-count-with-withdrawn-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getDeveloperCountsWithWithdrawnListingsByAcb() {
         return reportDataManager.getDeveloperCountsWithWithdrawnListingsByAcb();
@@ -241,7 +242,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developers with Withdrawn Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developers-with-withdrawn-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
         return reportDataManager.getDevelopersWithWithdrawnListingsByAcb();
@@ -251,7 +252,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developer Counts with Suspended Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developer-count-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
         return reportDataManager.getDeveloperCountsWithSuspendedListingsByAcb();
@@ -261,7 +262,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Developers with Suspended Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/developers-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
         return reportDataManager.getDevelopersWithSuspendedListingsByAcb();
@@ -271,7 +272,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Active Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/active-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
         return reportDataManager.getActiveProdutCountsByAcb();
@@ -281,7 +282,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/withdrawn-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
         return reportDataManager.getWithdrawnProdutCountsByAcb();
@@ -291,7 +292,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Suspended Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/suspended-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
         return reportDataManager.getSuspendedProdutCountsByAcb();
@@ -301,7 +302,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Active Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/active-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductByAcb> getActiveProducts() {
         return reportDataManager.getActiveProductsAndAcb();
@@ -311,7 +312,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Suspended Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/suspended-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductByAcb> getSuspendedProducts() {
         return reportDataManager.getSuspendedProductsAndAcb();
@@ -321,7 +322,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/withdrawn-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductByAcb> getWithdrawnProducts() {
         return reportDataManager.getWithdrawnProductsAndAcb();
@@ -331,7 +332,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Product Count report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/product-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody UniqueProductCount getUniqueProductCount() {
         return reportDataManager.getUniqueProductCount();
@@ -341,7 +342,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Active Listings  by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/active-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getActiveListingsCountsByAcb() {
         return reportDataManager.getActiveListingCountsByAcb();
@@ -351,7 +352,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/withdrawn-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
         return reportDataManager.getWithdrawnListingCountsByAcb();
@@ -361,7 +362,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/suspended-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
         return reportDataManager.getSuspendedListingCountsByAcb();
@@ -371,7 +372,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Active Listing by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/active-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getActiveListings() {
         return reportDataManager.getActiveListings();
@@ -381,7 +382,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/suspended-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getSuspendedListings() {
         return reportDataManager.getSuspendedListings();
@@ -391,7 +392,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/withdrawn-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getWithdrawnListings() {
         return reportDataManager.getWithdrawnListings();
@@ -401,7 +402,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Listing Count report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/listing-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody UniqueListingCount getUniqueListingCount() {
         return reportDataManager.getUniqueListingCount();
@@ -411,7 +412,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
         return reportDataManager.getDirectReviewCounts();
@@ -421,7 +422,7 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Service Base Url List report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/service-base-url-list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return reportDataManager.getUrlUptimeMonitors();
@@ -432,19 +433,29 @@ public class ReportDataController {
             description = "Retrieves the data used to generate the Attestations report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AttestationReport> getAttestationReports() {
         return reportDataManager.getAttestationReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Attestations report.",
+            description = "Retrieves the data used to generate the Attestations report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @RequestMapping(value = "/attestations/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<AttestationReportDeveloper> getAttestationReportDevelopers() {
+        return reportDataManager.getAttestationReportDevelopers();
     }
 
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
+    })
     @RequestMapping(value = "/criterion-product", method = RequestMethod.GET,
-        produces = "application/json; charset=utf-8")
+    produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
         CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
         response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());

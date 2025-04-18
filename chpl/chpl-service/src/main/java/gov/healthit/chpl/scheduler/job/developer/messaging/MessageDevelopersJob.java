@@ -176,7 +176,7 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
         String id = context.getMergedJobDataMap().get(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID).toString();
 
         if (NumberUtils.isParsable(id)) {
-            return userDAO.getById(Long.valueOf(id)).toDomain();
+            return userDAO.getById(Long.valueOf(id));
         } else if (Util.isUUID(id)) {
             return cognitoApiWrapper.getUserInfo(UUID.fromString(id));
         } else {

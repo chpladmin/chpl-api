@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -50,13 +49,10 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -84,7 +80,6 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperDAO developerDao;
     private ProductManager productManager;
     private ProductVersionManager versionManager;
-    private UserManager userManager;
     private CertificationBodyManager acbManager;
     private CertifiedProductDAO certifiedProductDao;
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -101,7 +96,7 @@ public class DeveloperManager extends SecuredManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
-            UserManager userManager, CertificationBodyManager acbManager,
+            CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
@@ -112,7 +107,6 @@ public class DeveloperManager extends SecuredManager {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
-        this.userManager = userManager;
         this.acbManager = acbManager;
         this.certifiedProductDao = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
@@ -319,32 +313,30 @@ public class DeveloperManager extends SecuredManager {
     public void deleteDeveloperForJoin(Long developerIdToDelete, Developer developerToJoin) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito
         //and add permissions for the users to belong to the joined developer
-        if (ff4j.check(FeatureList.SSO)) {
-            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
-                    Developer.builder().id(developerIdToDelete).build());
+        List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                Developer.builder().id(developerIdToDelete).build());
 
-            usersOnDeveloper.stream()
-                .forEach(user -> {
-                    Organization developerOrgToDelete = user.getOrganizations().stream()
-                            .filter(org -> org.getId().equals(developerIdToDelete))
-                            .findAny().orElse(null);
-                    if (developerOrgToDelete != null) {
-                        user.getOrganizations().remove(developerOrgToDelete);
-                    } else {
-                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + developerIdToDelete);
-                    }
-                    Organization developerOrgToJoin = Organization.builder()
-                            .id(developerToJoin.getId())
-                            .name(developerToJoin.getName())
-                            .build();
-                    user.getOrganizations().add(developerOrgToJoin);
-                    try {
-                        cognitoUserManager.updateUser(user);
-                    } catch (Exception ex) {
-                        LOGGER.error("Error removing user's permissions on developer organization ID " + developerIdToDelete + " in Cognito", ex);
-                    }
-                });
-        }
+        usersOnDeveloper.stream()
+            .forEach(user -> {
+                Organization developerOrgToDelete = user.getOrganizations().stream()
+                        .filter(org -> org.getId().equals(developerIdToDelete))
+                        .findAny().orElse(null);
+                if (developerOrgToDelete != null) {
+                    user.getOrganizations().remove(developerOrgToDelete);
+                } else {
+                    LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + developerIdToDelete);
+                }
+                Organization developerOrgToJoin = Organization.builder()
+                        .id(developerToJoin.getId())
+                        .name(developerToJoin.getName())
+                        .build();
+                user.getOrganizations().add(developerOrgToJoin);
+                try {
+                    cognitoUserManager.updateUser(user);
+                } catch (Exception ex) {
+                    LOGGER.error("Error removing user's permissions on developer organization ID " + developerIdToDelete + " in Cognito", ex);
+                }
+            });
 
         //The delete is last because if the developer is marked as deleted
         //we have trouble finding it's users.
@@ -408,27 +400,25 @@ public class DeveloperManager extends SecuredManager {
     }, allEntries = true)
     public void removeUsersForDeveloperSplit(Developer oldDeveloper) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito
-        if (ff4j.check(FeatureList.SSO)) {
-            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
-                    Developer.builder().id(oldDeveloper.getId()).build());
+        List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                Developer.builder().id(oldDeveloper.getId()).build());
 
-            usersOnDeveloper.stream()
-                .forEach(user -> {
-                    Organization developerOrgToDelete = user.getOrganizations().stream()
-                            .filter(org -> org.getId().equals(oldDeveloper.getId()))
-                            .findAny().orElse(null);
-                    if (developerOrgToDelete != null) {
-                        user.getOrganizations().remove(developerOrgToDelete);
-                    } else {
-                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + oldDeveloper.getId());
-                    }
-                    try {
-                        cognitoUserManager.updateUser(user);
-                    } catch (Exception ex) {
-                        LOGGER.error("Error removing user's permissions on developer organization ID " + oldDeveloper.getId() + " in Cognito", ex);
-                    }
-                });
-        }
+        usersOnDeveloper.stream()
+            .forEach(user -> {
+                Organization developerOrgToDelete = user.getOrganizations().stream()
+                        .filter(org -> org.getId().equals(oldDeveloper.getId()))
+                        .findAny().orElse(null);
+                if (developerOrgToDelete != null) {
+                    user.getOrganizations().remove(developerOrgToDelete);
+                } else {
+                    LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + oldDeveloper.getId());
+                }
+                try {
+                    cognitoUserManager.updateUser(user);
+                } catch (Exception ex) {
+                    LOGGER.error("Error removing user's permissions on developer organization ID " + oldDeveloper.getId() + " in Cognito", ex);
+                }
+            });
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -649,15 +639,5 @@ public class DeveloperManager extends SecuredManager {
             return msgUtil.getMessage("developer.merge.dupChplProdNbrs.duplicate", origChplProductNumberA,
                     origChplProductNumberB);
         }
-    }
-
-    private UserDTO getUser(Long userId) {
-        try {
-            return userManager.getById(userId);
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve user with id: {}", userId, e);
-            return null;
-        }
-
     }
 }

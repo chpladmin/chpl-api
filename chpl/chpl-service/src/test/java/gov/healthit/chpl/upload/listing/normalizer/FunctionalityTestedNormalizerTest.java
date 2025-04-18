@@ -27,7 +27,7 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 public class FunctionalityTestedNormalizerTest {
 
     private static final String RESTRICTED_FUNCTIONALITIES_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": "
-            + "[{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"ROLE_ADMIN\",\"ROLE_ONC\"]}]}]";
+            + "[{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"chpl-admin\",\"chpl-onc\"]}]}]";
     private static final Long CRITERIA_ID_WITH_RESTRICTIONS = 27L;
     private static final Long CRITERIA_ID_WITHOUT_RESTRICTIONS = 13L;
     private static final Long FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS = 56L;

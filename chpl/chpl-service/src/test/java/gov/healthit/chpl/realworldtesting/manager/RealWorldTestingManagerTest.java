@@ -2,6 +2,8 @@ package gov.healthit.chpl.realworldtesting.manager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -14,7 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -25,8 +27,6 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class RealWorldTestingManagerTest {
-    private static final Long USER_ID = -2L;
-
     private RealWorldTestingManager realWorldTestingManager;
     private SchedulerManager schedulerManager;
     private ErrorMessageUtil errorMessageUtil;
@@ -44,7 +44,7 @@ public class RealWorldTestingManagerTest {
                 .thenReturn("This is an error message.");
 
         realWorldTestingManager = new RealWorldTestingManager(Mockito.mock(RealWorldTestingByDeveloperDao.class),
-                schedulerManager, null, errorMessageUtil);
+                schedulerManager, errorMessageUtil);
     }
 
     @Test(expected = ValidationException.class)
@@ -161,10 +161,10 @@ public class RealWorldTestingManagerTest {
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(USER_ID);
+        adminUser.setCognitoId(UUID.randomUUID());
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
-        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
+        adminUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
