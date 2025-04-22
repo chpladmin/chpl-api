@@ -218,7 +218,7 @@ public class SvapManager {
         }
 
         if (isSvapDuplicateOnEdit(updatedSvap)) {
-            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate"));
+            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate", updatedSvap.getRegulatoryTextCitation()));
         }
 
         //If there are removed criteria, make sure there are no listings attesting to SVAP/criteria
@@ -264,7 +264,7 @@ public class SvapManager {
         }
 
         if (isSvapDuplicateOnAdd(newSvap)) {
-            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate"));
+            messages.add(errorMessageUtil.getMessage("svap.edit.duplicate", newSvap.getRegulatoryTextCitation()));
         }
 
         if (messages.size() > 0) {
@@ -275,16 +275,14 @@ public class SvapManager {
 
     private boolean isSvapDuplicateOnAdd(Svap svap) throws EntityRetrievalException {
         return getAllSvapCriteriaMaps().stream()
-                .filter(s -> s.getSvap().getApprovedStandardVersion().equalsIgnoreCase(svap.getApprovedStandardVersion())
-                        && s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation()))
+                .filter(s -> s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation()))
                 .findAny()
                 .isPresent();
     }
 
     private boolean isSvapDuplicateOnEdit(Svap svap) throws EntityRetrievalException {
         return getAllSvapCriteriaMaps().stream()
-                .filter(s -> s.getSvap().getApprovedStandardVersion().equalsIgnoreCase(svap.getApprovedStandardVersion())
-                        && s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation())
+                .filter(s -> s.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(svap.getRegulatoryTextCitation())
                         && !s.getSvap().getSvapId().equals(svap.getSvapId()))
                 .findAny()
                 .isPresent();
