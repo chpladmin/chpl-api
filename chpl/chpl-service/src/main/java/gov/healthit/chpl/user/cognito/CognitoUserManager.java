@@ -92,7 +92,7 @@ public class CognitoUserManager {
     @Transactional
     @UserStoreReplace
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, @cognitoApiWrapper.getUserInfoNoCache(#user.cognitoId))")
     public User updateUser(User user) throws ValidationException, UserRetrievalException, ActivityException {
         Set<String> errors = userUpdateValidator.validate(user);
         if (errors.size() > 0) {
