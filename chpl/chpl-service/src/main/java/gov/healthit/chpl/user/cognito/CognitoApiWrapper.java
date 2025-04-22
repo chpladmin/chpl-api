@@ -70,6 +70,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserNotFoundException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
 @Log4j2
@@ -218,8 +220,13 @@ public class CognitoApiWrapper {
                 .username(username)
                 .build();
 
-        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
-        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+        AdminGetUserResponse response = null;
+        try {
+            response = cognitoClient.adminGetUser(request);
+            if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+                return null;
+            }
+        } catch (UserNotFoundException | ResourceNotFoundException ex) {
             return null;
         }
 

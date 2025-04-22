@@ -18,7 +18,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -124,7 +123,6 @@ public class JoinDeveloperJob extends QuartzJob {
         }
     }
 
-    @CognitoUserCacheRefresh
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();

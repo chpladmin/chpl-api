@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -302,7 +301,6 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).DELETE)")
     @Transactional(readOnly = false)
-    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
@@ -346,7 +344,6 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).JOIN)")
     @Transactional(readOnly = false)
-    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
@@ -388,7 +385,6 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @Transactional(readOnly = false)
-    @CognitoUserCacheRefresh
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS,
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,

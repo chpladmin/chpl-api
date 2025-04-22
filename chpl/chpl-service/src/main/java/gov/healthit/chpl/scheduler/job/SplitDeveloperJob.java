@@ -29,7 +29,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CognitoUserCacheRefresh;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
@@ -248,7 +247,6 @@ public class SplitDeveloperJob extends QuartzJob {
         }
     }
 
-    @CognitoUserCacheRefresh
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
