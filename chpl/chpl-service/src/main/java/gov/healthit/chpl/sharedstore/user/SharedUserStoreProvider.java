@@ -32,6 +32,25 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
         return super.get(key, s);
     }
 
+    @Override
+    public void put(String key, User value) {
+        //NOTE about value != null check:
+        //In lower envs, we sometimes load users that we don't have access to (if they have done things in prod)
+        //and until we figure that out, those users end up as null values in the shared store
+        //which causes things to break. So we will not put any null values in the shared store
+        //
+        //NOTE about value.getAccountEnabled() check
+        //We expect the User Shared Store to always contain only the active users for the current environment.
+        //When loading activity, we "get" users by cognito ID per activity loaded. Most of those users will already
+        //be in the shared store since we always keep it fully loaded with all active users. However, some activity inevitably
+        //will have users that have been disabled at some point. We do not want those disabled users requested for
+        //activity display to end up in the shared store. So here, we check that any user is enabled before
+        //we "put" it.
+        if (value != null && value.getAccountEnabled()) {
+            super.put(key, value);
+        }
+    }
+
     public List<User> getAll() {
         List<User> allUsers = new ArrayList<User>();
         List<SharedStore> results = sharedStoreDAO.getAll(getDomain());

@@ -58,19 +58,14 @@ public abstract class SharedStoreProvider<K, V> {
             remove(key);
         }
 
-        //In lower envs, we sometimes load users that we don't have access to (if they have done things in prod)
-        //and until we figure that out, those users end up as null values in the shared store
-        //which causes things to break. So we will not put any null values in the shared store
-        if (value != null) {
-            try {
-                sharedStoreDAO.add(SharedStore.builder()
-                        .domain(getDomain())
-                        .key(key.toString())
-                        .value(mapper.writeValueAsString(value))
-                        .build());
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Could not write object to JSON: {} {}", getDomain(), key.toString(), e);
-            }
+        try {
+            sharedStoreDAO.add(SharedStore.builder()
+                    .domain(getDomain())
+                    .key(key.toString())
+                    .value(mapper.writeValueAsString(value))
+                    .build());
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Could not write object to JSON: {} {}", getDomain(), key.toString(), e);
         }
     }
 
