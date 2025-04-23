@@ -90,7 +90,8 @@ public class SvapManager {
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public Svap update(Svap svap) throws EntityRetrievalException, ValidationException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
-        validateForEdit(svap,  originalSvap);
+        normalize(svap);
+        validateForEdit(svap, originalSvap);
         updateSvap(svap);
         addNewCriteriaForExistingSvap(svap, originalSvap);
         deleteCriteriaRemovedFromSvap(svap, originalSvap);
@@ -111,6 +112,7 @@ public class SvapManager {
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
     @Transactional
     public Svap create(Svap svap) throws EntityRetrievalException, ValidationException {
+        normalize(svap);
         validateForAdd(svap);
         Svap newSvap = addSvap(svap);
         addNewCriteriaForNewSvap(newSvap, svap.getCriteria());
@@ -180,6 +182,11 @@ public class SvapManager {
     private void addNewCriteriaForNewSvap(Svap svap, List<CertificationCriterion> criteria) {
         criteria.stream()
                 .forEach(crit -> svapDao.addSvapCriteriMap(svap, crit));
+    }
+
+    private void normalize(Svap svap) throws ValidationException, EntityRetrievalException {
+        svap.setApprovedStandardVersion(StringUtils.trim(svap.getApprovedStandardVersion()));
+        svap.setRegulatoryTextCitation(StringUtils.trim(svap.getRegulatoryTextCitation()));
     }
 
     private void validateForDelete(Svap svap) throws ValidationException {
