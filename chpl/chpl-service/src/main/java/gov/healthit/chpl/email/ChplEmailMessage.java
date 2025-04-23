@@ -10,7 +10,8 @@ import lombok.Data;
 public class ChplEmailMessage implements Serializable {
     private static final long serialVersionUID = 3935859167555097284L;
 
-    private List<String> recipients;
+    private List<String> toRecipients;
+    private List<String> ccRecipients;
     private String subject = "";
     private String body = "";
     private List<File> fileAttachments = null;
