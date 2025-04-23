@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDAO;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
@@ -15,12 +14,10 @@ import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDevel
 public class AttestationReportService {
 
     private AttestationReportDAO attestationReportDAO;
-    private AttestationPeriodService attestationPeriodService;
 
     @Autowired
-    public AttestationReportService(AttestationReportDAO attestationReportDAO, AttestationPeriodService attestationPeriodService) {
+    public AttestationReportService(AttestationReportDAO attestationReportDAO) {
         this.attestationReportDAO = attestationReportDAO;
-        this.attestationPeriodService = attestationPeriodService;
     }
 
     @Transactional
