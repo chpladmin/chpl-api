@@ -2,6 +2,7 @@ package gov.healthit.chpl.developer.search;
 
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -18,6 +19,7 @@ public class SearchRequestNormalizer {
         normalizeDecertificationDates(request);
         normalizeActiveListingsFilter(request);
         normalizeAttestationsFilter(request);
+        normalizeCriteriaIdSearchOptions(request);
         normalizeOrderBy(request);
     }
 
@@ -72,6 +74,30 @@ public class SearchRequestNormalizer {
         }
         if (!StringUtils.isEmpty(request.getDecertificationDateEnd())) {
             request.setDecertificationDateEnd(StringUtils.normalizeSpace(request.getDecertificationDateEnd()));
+        }
+    }
+
+    private void normalizeCriteriaIdSearchOptions(DeveloperSearchRequest request) {
+        normailizeCriteriaIds(request);
+        normalizeCriteriaOptionsOperator(request);
+    }
+
+    private void normailizeCriteriaIds(DeveloperSearchRequest request) {
+        if (CollectionUtils.isNotEmpty(request.getCriteriaIdsStrings())) {
+            request.setCriteriaIds(request.getCriteriaIdsStrings().stream()
+                    .map(Long::parseLong)
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeCriteriaOptionsOperator(DeveloperSearchRequest request) {
+        if (!StringUtils.isBlank(request.getCriteriaIdsOperatorString())
+                && request.getCriteriaIdsOperator() == null) {
+            try {
+                request.setCriteriaIdsOperator(
+                        SearchSetOperator.valueOf(request.getCriteriaIdsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
         }
     }
 

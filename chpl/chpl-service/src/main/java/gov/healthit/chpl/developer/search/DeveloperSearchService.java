@@ -73,6 +73,8 @@ public class DeveloperSearchService {
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
             .filter(dev -> matchesHasUsersFilter(dev, searchRequest, allEnabledDeveloperUsers))
             .filter(dev -> matchesDeveloperId(dev, searchRequest.getDeveloperIds()))
+            .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
+            .filter(dev -> matchesCriteriaIdsFilter(dev, searchRequest))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
 
@@ -287,6 +289,21 @@ public class DeveloperSearchService {
                     matchesHasNotPublishedAttestationsFilter);
         }
         return true;
+    }
+
+    private boolean matchesCriteriaIdsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
+        if (CollectionUtils.isEmpty(searchRequest.getCriteriaIds())) {
+            return true;
+        }
+
+        if (searchRequest.getCriteriaIdsOperator() == null
+                || searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.AND)) {
+            return developer.getCriteriaIds().containsAll(searchRequest.getCriteriaIds());
+        } else if (searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.OR)) {
+            return !CollectionUtils.intersection(developer.getCriteriaIds(), searchRequest.getCriteriaIds()).isEmpty();
+        } else {
+            return false;
+        }
     }
 
     private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {

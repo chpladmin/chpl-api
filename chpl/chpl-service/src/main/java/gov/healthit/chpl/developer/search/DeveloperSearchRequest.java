@@ -76,6 +76,19 @@ public class DeveloperSearchRequest implements Serializable {
     private Set<Long> developerIds = new HashSet<Long>();
 
     @JsonIgnore
+    private String criteriaIdsOperatorString;
+    @JsonDeserialize(using = StringToSearchSetOperator.class)
+    private SearchSetOperator criteriaIdsOperator;
+
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
+    @JsonIgnore
+    @Builder.Default
+    private Set<String> criteriaIdsStrings = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfLongs.class)
+    @Builder.Default
+    private Set<Long> criteriaIds = new HashSet<Long>();
+
+    @JsonIgnore
     private String orderByString;
     private OrderByOption orderBy;
     @Builder.Default
