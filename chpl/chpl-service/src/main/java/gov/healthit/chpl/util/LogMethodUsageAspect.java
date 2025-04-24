@@ -15,13 +15,11 @@ public class LogMethodUsageAspect {
 
     @Before("@annotation(LogMethodUsage)")
     public void logMethodStart(JoinPoint joinPoint) {
-        System.out.println(joinPoint.getSignature().getDeclaringTypeName() + " started");
         LOGGER.info(joinPoint.getSignature().getDeclaringTypeName() + " started");
     }
 
     @AfterReturning("@annotation(LogMethodUsage)")
     public void logMethodCompletion(JoinPoint joinPoint) {
-        System.out.println(joinPoint.getSignature().getDeclaringTypeName() + " completed");
         LOGGER.info(joinPoint.getSignature().getDeclaringTypeName() + " completed");
     }
 }
