@@ -8,7 +8,7 @@
         <AppenderRef ref="redisson" />
         <AppenderRef ref="redissonJson" />
     </Logger>
-    <Logger name="sharedDataStoreLogger" level="INFO">
+    <Logger name="sharedDataStoreLogger" level="INFO" additivity="false">
         <AppenderRef ref="sharedDataStore" />
         <AppenderRef ref="sharedDataStoreJson" />
     </Logger>
