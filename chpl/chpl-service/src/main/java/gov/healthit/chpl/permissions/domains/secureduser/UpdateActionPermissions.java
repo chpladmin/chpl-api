@@ -6,9 +6,9 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import lombok.extern.log4j.Log4j2;
 
-@Component("securedCognitoUserUpdateActionPermissions")
+@Component("securedUserUpdateActionPermissions")
 @Log4j2
-public class CognitoUpdateActionPermissions extends ActionPermissions {
+public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

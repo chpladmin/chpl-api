@@ -1,4 +1,4 @@
-package gov.healthit.chpl.sharedstore.listing;
+package gov.healthit.chpl.sharedstore;
 
 public class ExpressionRootObject {
     private final Object object;
