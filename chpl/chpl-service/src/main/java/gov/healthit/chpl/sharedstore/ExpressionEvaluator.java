@@ -1,4 +1,4 @@
-package gov.healthit.chpl.sharedstore.listing;
+package gov.healthit.chpl.sharedstore;
 
 import java.lang.reflect.Method;
 import java.util.Map;

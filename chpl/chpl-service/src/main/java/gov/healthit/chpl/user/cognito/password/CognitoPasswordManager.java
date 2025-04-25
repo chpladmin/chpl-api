@@ -40,7 +40,7 @@ public class CognitoPasswordManager {
     @Transactional
     public void sendForgotPasswordEmail(String email) {
         try {
-            if (cognitoApiWrapper.getUserInfo(email) != null) {
+            if (cognitoApiWrapper.getUserInfoNoCache(email) != null) {
                 CognitoForgotPassword forgotPassword = generateForgotPassword(email);
                 cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
             }
@@ -63,7 +63,6 @@ public class CognitoPasswordManager {
         cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password, true);
         cognitoPasswordChangedEmailer.sendEmail(forgotPassword.getEmail());
     }
-
 
     @Transactional
     public void setPassword(String password, String confirmPassword) throws ValidationException, EmailNotSentException, UserRetrievalException {
