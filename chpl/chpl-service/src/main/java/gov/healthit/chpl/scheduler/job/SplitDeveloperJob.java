@@ -254,8 +254,6 @@ public class SplitDeveloperJob extends QuartzJob {
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.QUESTIONABLE_ACTIVITIES).invalidate();
-        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_EMAIL).invalidate();
-        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_UUID).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Long> productIds,

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("securedCognitoUserAddOrganizationToUserActionPermissions")
+@Component("securedUserAddOrganizationToUserActionPermissions")
 public class AddOrganizationToUserActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {

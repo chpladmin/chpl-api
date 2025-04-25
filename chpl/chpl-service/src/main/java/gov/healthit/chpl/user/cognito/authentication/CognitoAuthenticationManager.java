@@ -43,7 +43,7 @@ public class CognitoAuthenticationManager {
 
     public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException, CognitoPasswordResetRequiredException {
         try {
-            User user = cognitoApiWrapper.getUserInfo(credentials.getUserName());
+            User user = cognitoApiWrapper.getUserInfoNoCache(credentials.getUserName());
             forcePasswordChangeHandler(user);
 
             AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
