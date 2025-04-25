@@ -92,6 +92,9 @@
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
     </Logger>
+    <Logger name="cognitoUserCacheRefreshJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="cognitoUserCacheRefreshJob" />
+    </Logger>
     <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
     </Logger>

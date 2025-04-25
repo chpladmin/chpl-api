@@ -27,7 +27,7 @@ public class CognitoMassRequirePasswordChangeJob extends QuartzJob  {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Cognito Mass Require Password Change job. *********");
 
-        List<User> users = cognitoApiWrapper.getAllUsers();
+        List<User> users = cognitoApiWrapper.getAllUsersNoCache();
 
         users.stream()
                 .filter(user -> CollectionUtils.isEmpty(includedUsers)

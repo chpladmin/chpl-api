@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.ics.IcsManager;
 import gov.healthit.chpl.listing.ics.ListingIcsNode;
+import gov.healthit.chpl.sharedstore.ExpressionEvaluator;
 import lombok.extern.log4j.Log4j2;
 
 @Component
