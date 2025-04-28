@@ -14,5 +14,14 @@
               <start-time-seconds-in-future>5</start-time-seconds-in-future>
             </simple>
         </trigger>
+        <trigger>
+            <simple>
+              <name>cognitoUserCacheRefresh</name>
+              <group>cognitoUserCacheRefreshTrigger</group>
+              <job-name>cognitoUserCacheRefresh</job-name>
+              <job-group>systemJobs</job-group>
+              <start-time-seconds-in-future>10</start-time-seconds-in-future>
+            </simple>
+        </trigger>
     </schedule>
 </job-scheduling-data>

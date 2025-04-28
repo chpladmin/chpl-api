@@ -2,8 +2,6 @@ package gov.healthit.chpl.changerequest.domain.service;
 
 import java.util.List;
 
-import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,18 +19,14 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission
 import gov.healthit.chpl.changerequest.domain.service.email.AttestationEmails;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
@@ -43,6 +37,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -52,7 +47,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ChangeRequestAttestationDAO crAttestationDAO;
     private AttestationManager attestationManager;
     private AttestationPeriodService attestationPeriodService;
-    private UserDAO userDAO;
     private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
     private AttestationCertificationBodyService attestationCertificationBodyService;
@@ -64,17 +58,21 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private Long cancelledStatus;
 
     @Autowired
-    public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttestationDAO,
-            UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
-            ActivityManager activityManager, FormService formService, FormValidator formValidator,
-            AttestationEmails attestationEmails, AttestationCertificationBodyService attestationCertificationBodyService) {
-        super(userDeveloperMapDAO);
+    public ChangeRequestAttestationService(ChangeRequestDAO crDAO,
+            ChangeRequestAttestationDAO crAttestationDAO,
+            AttestationManager attestationManager,
+            AttestationPeriodService attestationPeriodService,
+            DeveloperDAO developerDAO,
+            ActivityManager activityManager,
+            FormService formService,
+            FormValidator formValidator,
+            AttestationEmails attestationEmails,
+            AttestationCertificationBodyService attestationCertificationBodyService) {
+        super();
         this.crDAO = crDAO;
         this.crAttestationDAO = crAttestationDAO;
         this.attestationManager = attestationManager;
         this.attestationPeriodService = attestationPeriodService;
-        this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.activityManager = activityManager;
         this.attestationCertificationBodyService = attestationCertificationBodyService;
@@ -214,10 +212,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
         return attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId());
-    }
-
-    private UserDTO getUserById(Long userId) throws UserRetrievalException {
-        return userDAO.getById(userId);
     }
 
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {

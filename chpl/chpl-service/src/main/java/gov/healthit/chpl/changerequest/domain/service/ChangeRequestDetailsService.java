@@ -1,17 +1,12 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,13 +25,6 @@ public abstract class ChangeRequestDetailsService<T> {
 
     @Value("${changerequest.status.cancelledbyrequester}")
     private Long cancelledByRequesterStatus;
-
-    private UserDeveloperMapDAO userDeveloperMapDAO;
-
-    @Autowired
-    public ChangeRequestDetailsService(UserDeveloperMapDAO userDeveloperMapDAO) {
-        this.userDeveloperMapDAO = userDeveloperMapDAO;
-    }
 
     public ChangeRequest postStatusChangeProcessing(ChangeRequest cr) throws EmailNotSentException {
         try {
@@ -84,19 +72,11 @@ public abstract class ChangeRequestDetailsService<T> {
         }
     }
 
-    protected List<UserDTO> getUsersForDeveloper(Long developerId) {
-        return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
-                .map(userDeveloperMap -> userDeveloperMap.getUser())
-                .collect(Collectors.<UserDTO>toList());
-    }
-
     private Boolean isUserGroupAdmin(String userGroupName) {
-        return userGroupName.equals(Authority.ROLE_ADMIN)
-                || userGroupName.equals(CognitoGroups.CHPL_ADMIN);
+        return userGroupName.equals(CognitoGroups.CHPL_ADMIN);
     }
 
     private Boolean isUserGroupOnc(String userGroupName) {
-        return userGroupName.equals(Authority.ROLE_ONC)
-                || userGroupName.equals(CognitoGroups.CHPL_ONC);
+        return userGroupName.equals(CognitoGroups.CHPL_ONC);
     }
 }

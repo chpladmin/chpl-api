@@ -3,12 +3,11 @@ package gov.healthit.chpl.permissions.domains.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.scheduler.job.CognitoUserCacheRefreshJob;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
@@ -18,6 +17,7 @@ import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertific
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
+import jakarta.annotation.PostConstruct;
 
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
@@ -36,9 +36,12 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(TriggerDeveloperBanJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(ChangeRequestReportEmailJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(UpdateCurrentCertificationStatusJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(CognitoUserCacheRefreshJob.JOB_NAME);
 
         BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.add(CertificationIdEmailJob.JOB_NAME);
+
         BACKGROUND_JOBS_DEVELOPER_CAN_CREATE.add(ChangeRequestReportEmailJob.JOB_NAME);
+        BACKGROUND_JOBS_DEVELOPER_CAN_CREATE.add(CognitoUserCacheRefreshJob.JOB_NAME);
     }
 
     @Override

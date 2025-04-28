@@ -53,7 +53,7 @@ public class CodeSetController {
 
     @Operation(summary = "Create a Code Sets.",
             description = "Provides functionality to add a new Code Set and the Criteria associated with it. "
-                    + "Security Restrictions: To create: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -66,7 +66,7 @@ public class CodeSetController {
 
     @Operation(summary = "Update a Code Set.",
             description = "Provides functionality to update a Code Set and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -79,7 +79,7 @@ public class CodeSetController {
 
     @Operation(summary = "Delete a Code Set.",
             description = "Provides functionality to delete an existing Code Set and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN",
+                    + "Security Restrictions: Users with role chpl-admin",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

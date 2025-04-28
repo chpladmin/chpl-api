@@ -126,8 +126,8 @@ public class SearchComplaintsController {
     }
 
     @Operation(summary = "Search complaints accessible to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can get all complaints. "
-                    + "ROLE_ACB can get complaints related to ONC-ACBs to which they have permissins.",
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can get all complaints. "
+                    + "Users with role chpl-onc-acb can get complaints related to ONC-ACBs to which they have permissins.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

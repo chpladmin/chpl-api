@@ -52,7 +52,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // ROLE_ONC does not have access
+        // chpl-onc does not have access
         assertFalse(permissions.hasAccess(1L));
     }
 

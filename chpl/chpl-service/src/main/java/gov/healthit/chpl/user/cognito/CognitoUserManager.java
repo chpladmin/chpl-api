@@ -31,7 +31,7 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.sharedstore.user.UserStoreReplace;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.util.AuthUtil;
@@ -52,7 +52,6 @@ public class CognitoUserManager {
     private Long invitationLengthDays;
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
-    private ResourcePermissionsFactory resourcePermissionsFactory;
     private boolean isProdEnvironment = true;
 
     @Autowired
@@ -62,7 +61,6 @@ public class CognitoUserManager {
             CognitoApiWrapper cognitoApiWrapper,
             CognitoInvitationManager cognitoInvitationManager,
             ActivityManager activityManager,
-            ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil errorMessageUtil,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment,
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
@@ -77,7 +75,6 @@ public class CognitoUserManager {
         this.groupNameForEnvironment = groupNameForEnvironment;
         this.invitationLengthDays = invitationLengthDays;
         this.activityManager = activityManager;
-        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.groupNameForEnvironment = groupNameForEnvironment;
         if (StringUtils.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
             isProdEnvironment = false;
@@ -93,15 +90,16 @@ public class CognitoUserManager {
     }
 
     @Transactional
+    @UserStoreReplace
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, @cognitoApiWrapper.getUserInfoNoCache(#user.cognitoId))")
     public User updateUser(User user) throws ValidationException, UserRetrievalException, ActivityException {
         Set<String> errors = userUpdateValidator.validate(user);
         if (errors.size() > 0) {
             throw new ValidationException(errors, null);
         }
 
-        User originalUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        User originalUser = cognitoApiWrapper.getUserInfoNoCache(user.getCognitoId());
         cognitoApiWrapper.updateUser(user);
 
         //check for organizations to remove
@@ -115,7 +113,7 @@ public class CognitoUserManager {
         //Developer A is joining Developer B. All the users of Developer A
         //have access removed from Developer A in the code block above but now will be given Developer B.
         //Developer A gets deleted.
-        User userAfterRemovingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        User userAfterRemovingOrgs = cognitoApiWrapper.getUserInfoNoCache(user.getCognitoId());
         List<Long> addedOrganizationIds = getAddedOrganizationIds(userAfterRemovingOrgs, user);
         if (!CollectionUtils.isEmpty(addedOrganizationIds)) {
             addedOrganizationIds.stream()
@@ -125,14 +123,19 @@ public class CognitoUserManager {
             }));
         }
 
-        User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserInfoNoCache(user.getCognitoId());
         if (userShouldBeDisabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            //for acb/dev users that lost access to their last org - disable them
+            cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
+        } else if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+            //for admin/onc/cms users that have no orgs but were requested to be disabled - disable them
             cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
         } else if (userShouldBeEnabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            //for acb/dev users that gained access but had none before - enable them
             cognitoApiWrapper.enableUser(userAfterRemovingAndAddingOrgs);
         }
 
-        User updatedUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        User updatedUser = cognitoApiWrapper.getUserInfoNoCache(user.getCognitoId());
         activityManager.addUserActivity(updatedUser.getCognitoId(),
                 String.format("User %s was updated", updatedUser.getEmail()),
                 originalUser, updatedUser);
@@ -191,6 +194,7 @@ public class CognitoUserManager {
     }
 
     @Transactional
+    @UserStoreReplace
     public UUID createUser(CreateUserFromInvitationRequest userInfo)
             throws ValidationException, UserCreationException, UserRetrievalException, ActivityException, EmailNotSentException {
 
@@ -208,7 +212,7 @@ public class CognitoUserManager {
             //otherwise we will create a brand new user
             User existingUser = null;
             try {
-                existingUser = cognitoApiWrapper.getUserInfo(userInfo.getUser().getEmail());
+                existingUser = cognitoApiWrapper.getUserInfoNoCache(userInfo.getUser().getEmail());
             } catch (Exception ex) {
                 LOGGER.warn("Unable to look up user with email address " + userInfo.getUser().getEmail());
             }
@@ -248,7 +252,7 @@ public class CognitoUserManager {
         cognitoApiWrapper.updateUser(existingUser);
         cognitoInvitationManager.deleteInvitation(invitation);
 
-        User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
+        User reenabledUser = cognitoApiWrapper.getUserInfoNoCache(existingUser.getCognitoId());
         activityManager.addUserActivity(reenabledUser.getCognitoId(),
                 String.format("User %s was re-enabled", reenabledUser.getEmail()),
                 existingUser, reenabledUser);
@@ -270,7 +274,7 @@ public class CognitoUserManager {
         }
         cognitoInvitationManager.deleteInvitation(invitation);
 
-        User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
+        User createdUser = cognitoApiWrapper.getUserInfoNoCache(credentials.getCognitoId());
         activityManager.addUserActivity(createdUser.getCognitoId(),
                 String.format("User %s was created", createdUser.getEmail()),
                 null, createdUser);
@@ -309,6 +313,7 @@ public class CognitoUserManager {
     }
 
     @Transactional
+    @UserStoreReplace
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).ADD_ORG_TO_USER)")
     public User addOrganizationToUser(UUID invitationToken, String accessToken) throws InvalidArgumentsException, UserRetrievalException, ActivityException {
@@ -324,7 +329,7 @@ public class CognitoUserManager {
         cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
         cognitoInvitationManager.deleteInvitation(invitation);
 
-        User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
+        User updatedUser = cognitoApiWrapper.getUserInfoNoCache(originalUser.getCognitoId());
         activityManager.addUserActivity(updatedUser.getCognitoId(),
                 String.format("User %s was updated", updatedUser.getEmail()),
                 originalUser, updatedUser);

@@ -17,7 +17,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertificationStatusProvider;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
@@ -34,7 +34,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
     @Before
     public void before() {
-        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
 
         messages = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(messages.getMessage("listing.criteria.userCannotAddOrRemove")).thenReturn("Targeted error message");

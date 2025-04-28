@@ -44,8 +44,9 @@ public class ChangeRequestController {
     }
 
     @Operation(summary = "Get details about a specific change request.",
-            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
-                    + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can get all change requests. "
+                    + "Users with role chpl-onc-acb can get change requests for developers where they manage at least one "
+                    + "certified product for the developer. Users with role chpl-developer can get "
                     + "change requests where they have administrative authority based on the developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -57,8 +58,9 @@ public class ChangeRequestController {
     }
 
     @Operation(summary = "Create a report with change requests that is emailed to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests. ROLE_ACB can get change requests "
-                    + "for developers where they manage at least one certified product for the developer. ROLE_DEVELOPER can get "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can get all change requests. "
+                    + "Users with role chpl-onc-acb can get change requests for developers where they manage at least one "
+                    + "certified product for the developer. Users with role chpl-developer can get "
                     + "change requests where they have administrative authority based on the developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -71,7 +73,8 @@ public class ChangeRequestController {
     }
 
     @Operation(summary = "Create a new change request.",
-            description = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.",
+            description = "Security Restrictions: Users with role chpl-developer can create change requests where they "
+                    + "have administrative authority based on the developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -88,8 +91,9 @@ public class ChangeRequestController {
     }
 
     @Operation(summary = "Update an existing request status or request details.",
-            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can update all chnage requests.  ROLE_ACB can update change requests "
-                    + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can update "
+            description = "Security Restrictions: Users with either role chpl-admin or chpl-onc can update all chnage "
+                    + "requests. Users with role chpl-onc-acb can update change requests for developers where they manage at "
+                    + "least one certified product for the developer.  Users with role chpl-developer can update "
                     + "change requests where they have administrative authority based on the developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

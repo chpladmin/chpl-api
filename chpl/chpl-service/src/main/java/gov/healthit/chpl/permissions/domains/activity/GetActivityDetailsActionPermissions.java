@@ -11,13 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.complaint.domain.Complaint;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
-import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
@@ -29,17 +26,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
-    private UserDAO userDao;
     private QuarterlyReportDAO quarterlyReportDao;
     private AnnualReportDAO annualReportDao;
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public GetActivityDetailsActionPermissions(UserDAO userDao,
-            QuarterlyReportDAO quarterlyReportDao,
+    public GetActivityDetailsActionPermissions(QuarterlyReportDAO quarterlyReportDao,
             AnnualReportDAO annualReportDao) {
         jsonMapper = new ObjectMapper();
-        this.userDao = userDao;
         this.quarterlyReportDao = quarterlyReportDao;
         this.annualReportDao = annualReportDao;
     }
@@ -280,7 +274,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     /**
-     * Admin and Onc can see activity for any user. Acb, Atl, and Cms staff
+     * Admin and Onc can see activity for any user. ONC-ACB, and CMS Staff
      * users can see activity for any user they have access to. Non-logged in
      * users get access denied.
      *
@@ -291,31 +285,28 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
-            UserDTO user = null;
+            User user = null;
             try {
-                user = jsonMapper.convertValue(userJson, UserDTO.class);
+                user = jsonMapper.convertValue(userJson, User.class);
             } catch (Exception ex) {
                 LOGGER.error("Could not parse activity as UserDTO. " + "JSON was: " + userJson, ex);
             }
 
             if (user != null) {
-                List<UserDTO> accessibleUsers = new ArrayList<UserDTO>();
+                List<User> accessibleUsers = new ArrayList<User>();
                 if (getResourcePermissions().isUserRoleAcbAdmin()) {
                     // find all users on the acbs that this user has access to
                     // and see if the user in the activity is in that list
                     List<CertificationBody> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
                     for (CertificationBody acb : accessibleAcbs) {
-                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb).stream()
-                                .map(u -> getUserDto(u.getUserId()))
-                                .toList());
+                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
                     }
                 } else if (getResourcePermissions().isUserRoleCmsStaff()) {
-                    List<UserDTO> cmsUsers = userDao.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
-                    accessibleUsers.addAll(cmsUsers);
+                    accessibleUsers.addAll(getResourcePermissions().getAllCmsUsers());
                 }
 
-                for (UserDTO accessibleUser : accessibleUsers) {
-                    if (accessibleUser.getId().longValue() == user.getId().longValue()) {
+                for (User accessibleUser : accessibleUsers) {
+                    if (accessibleUser.getCognitoId().equals(user.getCognitoId())) {
                         hasAccess = true;
                     }
                 }
@@ -347,14 +338,5 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             return false;
         }
 
-    }
-
-    private UserDTO getUserDto(Long userId) {
-        try {
-            return userDao.getById(userId);
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve user with id: {}", userId, e);
-            return null;
-        }
     }
 }

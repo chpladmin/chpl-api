@@ -18,7 +18,6 @@ public class ActivityMetadataBuilderFactory {
     private VersionActivityMetadataBuilder versionBuilder;
     private CertificationBodyActivityMetadataBuilder acbBuilder;
     private TestingLabActivityMetadataBuilder atlBuilder;
-    private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
     private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
     private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
     private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
@@ -37,7 +36,6 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("versionActivityMetadataBuilder") VersionActivityMetadataBuilder versionBuilder,
             @Qualifier("acbActivityMetadataBuilder") CertificationBodyActivityMetadataBuilder acbBuilder,
             @Qualifier("atlActivityMetadataBuilder") TestingLabActivityMetadataBuilder atlBuilder,
-            @Qualifier("userMaintenanceActivityMetadataBuilder") UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
             @Qualifier("complaintActivityMetadataBuilder") ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
             @Qualifier("quarterlyReportActivityMetadataBuilder") QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
             @Qualifier("annualReportActivityMetadataBuilder") AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
@@ -53,7 +51,6 @@ public class ActivityMetadataBuilderFactory {
         this.versionBuilder = versionBuilder;
         this.acbBuilder = acbBuilder;
         this.atlBuilder = atlBuilder;
-        this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
         this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
         this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
         this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
@@ -81,9 +78,6 @@ public class ActivityMetadataBuilderFactory {
             break;
         case TESTING_LAB:
             builder = atlBuilder;
-            break;
-        case USER:
-            builder = userMaintenanceActivityMetadataBuilder;
             break;
         case COMPLAINT:
             builder = complaintActivityMetadataBuilder;

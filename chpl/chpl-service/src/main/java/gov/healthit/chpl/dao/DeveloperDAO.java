@@ -22,9 +22,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.entity.UserDeveloperMapEntity;
-import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperSearchResultEntity;
@@ -342,52 +339,6 @@ public class DeveloperDAO extends BaseDAOImpl {
     public List<Developer> getByCertificationBodyId(List<Long> certificationBodyIds) {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
                 .map(dev -> dev.toDomain())
-                .toList();
-    }
-
-    public List<Developer> getDevelopersByUserId(Long userId) {
-        Query query = entityManager.createQuery(
-                "FROM UserDeveloperMapEntity udm "
-                + "join fetch udm.developer developer "
-                + "join fetch udm.user u "
-                + "join fetch u.permission perm "
-                + "join fetch u.contact contact "
-                + "where (udm.deleted != true) AND (u.id = :userId) ",
-                UserDeveloperMapEntity.class);
-        query.setParameter("userId", userId);
-        List<UserDeveloperMapEntity> result = query.getResultList();
-
-        return result.stream()
-                .map(entity -> entity.getDeveloper().toDomain())
-                .toList();
-    }
-
-    @Transactional
-    public List<PointOfContact> getContactForDeveloperUsers(Long developerId) {
-        Query query = entityManager.createQuery("SELECT contact "
-                + "FROM UserDeveloperMapEntity udm "
-                + "JOIN udm.developer developer "
-                + "JOIN udm.user u "
-                + "JOIN u.contact contact "
-                + "WHERE udm.deleted = false "
-                + "AND developer.deleted = false "
-                + "AND u.deleted = false "
-                + "AND u.accountExpired = false "
-                + "AND u.accountEnabled = true "
-                + "AND contact.deleted = false "
-                + "AND (developer.id = :developerId)", UserContactEntity.class);
-        query.setParameter("developerId", developerId);
-        List<UserContactEntity> queryResults = query.getResultList();
-        if (queryResults == null || queryResults.size() == 0) {
-            return List.of();
-        }
-        return queryResults.stream()
-                .map(qr -> PointOfContact.builder()
-                        .contactId(qr.getId())
-                        .email(qr.getEmail())
-                        .fullName(qr.getFullName())
-                        .phoneNumber(qr.getPhoneNumber())
-                        .build())
                 .toList();
     }
 

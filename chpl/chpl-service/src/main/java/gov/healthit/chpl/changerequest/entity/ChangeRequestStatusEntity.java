@@ -2,6 +2,10 @@ package gov.healthit.chpl.changerequest.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,4 +68,14 @@ public class ChangeRequestStatusEntity extends EntityAudit {
     @Column(name = "comment", nullable = true)
     private String comment;
 
+    public ChangeRequestStatus toDomain() {
+        return ChangeRequestStatus.builder()
+                .id(this.id)
+                .changeRequestStatusType(this.changeRequestStatusType.toDomain())
+                .statusChangeDateTime(DateUtil.toLocalDateTime(this.statusChangeDate.getTime()))
+                .comment(this.comment == null ? null : this.comment)
+                .certificationBody(this.certificationBody == null ? null : this.certificationBody.toDomain())
+                .userGroupName(this.userGroupName == null ? null : this.userGroupName)
+                .build();
+    }
 }

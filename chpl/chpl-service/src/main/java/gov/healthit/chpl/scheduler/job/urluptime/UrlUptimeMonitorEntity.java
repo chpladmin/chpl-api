@@ -2,7 +2,7 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -34,7 +34,7 @@ public class UrlUptimeMonitorEntity extends EntityAudit {
 
     @Override
     public LastModifiedUserStrategy getLastModifiedUserStrategy() {
-        return new CurrentUserThenSystemUserStrategy();
+        return new CurrentUserStrategy();
     }
 
     @Id

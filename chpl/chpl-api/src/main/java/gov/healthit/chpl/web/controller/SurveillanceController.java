@@ -60,8 +60,8 @@ public class SurveillanceController {
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
                     + " to check for errors. "
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
-                    + "the certified product is required.",
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb and "
+                    + "administrative authority on the ONC-ACB associated with the certified product is required.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -90,8 +90,9 @@ public class SurveillanceController {
     @Operation(summary = "Update a surveillance activity for a certified product.",
             description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN or ROLE_ACB "
-                    + "and associated with the certified product is required.",
+                    + "validated to check for errors. "
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb "
+                    + "and be associated with the certified product.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -120,8 +121,9 @@ public class SurveillanceController {
         message = "This endpoint is deprecated and will be removed. Please DELETE from /certified-products/{certifiedProductId}/surveillance")
     @Operation(summary = "Delete a surveillance activity for a certified product.",
             description = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
-                    + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
-                    + "administrative authority on the specified ACB for each pending surveillance is required.",
+                    + "non-conformities in the system. "
+                    + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb and have "
+                    + "administrative authority on the specified ONC-ACB for each pending surveillance is required.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

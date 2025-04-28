@@ -3,6 +3,7 @@ package gov.healthit.chpl.changerequest.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
@@ -13,17 +14,22 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("changeRequestTypeDAO")
 public class ChangeRequestTypeDAO extends BaseDAOImpl {
+    private ChangeRequestConverter changeRequestConverter;
+
+    @Autowired
+    public ChangeRequestTypeDAO(ChangeRequestConverter changeRequestConverter) {
+        this.changeRequestConverter = changeRequestConverter;
+    }
 
     public ChangeRequestType getChangeRequestTypeById(Long changeRequestTypeId)
             throws EntityRetrievalException {
-        return ChangeRequestConverter.convert(getChangeRequestTypeEntity(changeRequestTypeId));
-
+        return changeRequestConverter.convert(getChangeRequestTypeEntity(changeRequestTypeId));
     }
 
     public List<ChangeRequestType> getChangeRequestTypes() {
         List<ChangeRequestTypeEntity> entities = getChangeRequestTypeEntities();
         List<ChangeRequestType> domains = entities.stream()
-                .map(ChangeRequestConverter::convert)
+                .map(entity -> changeRequestConverter.convert(entity))
                 .collect(Collectors.<ChangeRequestType> toList());
         return domains;
     }

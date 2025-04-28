@@ -77,6 +77,7 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
             JobDataMap jobDataMap = context.getMergedJobDataMap();
             DeveloperMessageRequest developerMessageRequest = (DeveloperMessageRequest) jobDataMap.get(DEVELOPER_MESSAGE_REQUEST);
             LOGGER.info("Developer search request: " + developerMessageRequest.getQuery());
+            LOGGER.info("Additional Recipients:" + developerMessageRequest.getAdditionalRecipients());
             LOGGER.info("Message Subject: " + developerMessageRequest.getSubject());
             LOGGER.info("Message Body: " + developerMessageRequest.getBody());
 
@@ -96,7 +97,7 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
             sendEmails(developerEmails, isPreview, developersWithoutUsers, submittedByUser);
 
             if (!isPreview) {
-                sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
+                sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser, developerMessageRequest.getAdditionalRecipients());
             }
         } catch (Exception e) {
             LOGGER.error(e);
@@ -151,17 +152,22 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
         return email.getMessage();
     }
 
-    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
-        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, developerMessageSubject, submittedUser);
+    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject,
+            User submittedUser, List<String> additionalRecipients) {
+        additionalRecipients = additionalRecipients.stream()
+                .filter(recipient -> !StringUtils.isEmpty(recipient))
+                .collect(Collectors.toList());
+        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, developerMessageSubject, submittedUser, additionalRecipients);
 
         try {
             emailFactory.emailBuilder()
-                .recipients(statusReportEmail.getRecipients())
+                .recipients(statusReportEmail.getToRecipients())
+                .ccRecipients(statusReportEmail.getCcRecipieints())
                 .subject(statusReportEmail.getSubject())
                 .htmlMessage(statusReportEmail.getMessage())
                 .sendEmail();
         } catch (Exception e) {
-            LOGGER.error("Error sending status report emails to: {}", statusReportEmail.getRecipients().stream().collect(Collectors.joining("; ")));
+            LOGGER.error("Error sending status report emails to: {}", statusReportEmail.getToRecipients().stream().collect(Collectors.joining("; ")));
             LOGGER.error(e);
         }
     }
@@ -170,7 +176,7 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
         String id = context.getMergedJobDataMap().get(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID).toString();
 
         if (NumberUtils.isParsable(id)) {
-            return userDAO.getById(Long.valueOf(id)).toDomain();
+            return userDAO.getById(Long.valueOf(id));
         } else if (Util.isUUID(id)) {
             return cognitoApiWrapper.getUserInfo(UUID.fromString(id));
         } else {

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -193,24 +191,6 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return getEntitiesByDeveloperId(developerId).stream()
                 .map(acb -> acb.toDomain())
                 .collect(Collectors.<CertificationBody>toList());
-    }
-
-
-    public List<CertificationBody> getCertificationBodiesByUserId(Long userId) {
-        Query query = entityManager.createQuery(
-                "FROM UserCertificationBodyMapEntity ucbm "
-                        + "join fetch ucbm.certificationBody acb "
-                        + "left join fetch acb.address "
-                        + "join fetch ucbm.user u "
-                        + "join fetch u.permission perm "
-                        + "join fetch u.contact contact "
-                        + "where (ucbm.deleted != true) AND (u.id = :userId) ",
-                        UserCertificationBodyMapEntity.class);
-        query.setParameter("userId", userId);
-        List<UserCertificationBodyMapEntity> results = query.getResultList();
-        return results.stream()
-                .map(result -> result.getCertificationBody().toDomain())
-                .collect(Collectors.toList());
     }
 
     private List<CertificationBodyEntity> getAllEntities() {

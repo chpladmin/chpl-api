@@ -96,7 +96,7 @@ public class CognitoUserCreationValidator {
     }
 
     private Boolean doesEnabledUserExistInCognito(String email) throws UserRetrievalException {
-        User existingUser = cognitoApiWrapper.getUserInfo(email);
+        User existingUser = cognitoApiWrapper.getUserInfoNoCache(email);
         return existingUser != null && BooleanUtils.isTrue(existingUser.getAccountEnabled());
     }
 }

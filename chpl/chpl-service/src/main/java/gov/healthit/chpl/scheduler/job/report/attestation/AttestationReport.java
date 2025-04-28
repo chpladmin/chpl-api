@@ -1,7 +1,10 @@
 package gov.healthit.chpl.scheduler.job.report.attestation;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -38,4 +41,20 @@ public class AttestationReport {
 
     @Builder.Default
     private Long noSubmissionCount = 0L;
+
+    @JsonIgnore
+    @Builder.Default
+    private List<DeveloperAttestationStatus> developersWithApprovedAttestations = new ArrayList<DeveloperAttestationStatus>();
+
+    @JsonIgnore
+    @Builder.Default
+    private List<DeveloperAttestationStatus> developersWithPendingAcbActionAttestations = new ArrayList<DeveloperAttestationStatus>();
+
+    @JsonIgnore
+    @Builder.Default
+    private List<DeveloperAttestationStatus> developerWithPendingDeveloperActionAttestations = new ArrayList<DeveloperAttestationStatus>();
+
+    @JsonIgnore
+    @Builder.Default
+    private List<DeveloperAttestationStatus> developersWithNoSubmissionAttestations = new ArrayList<DeveloperAttestationStatus>();
 }

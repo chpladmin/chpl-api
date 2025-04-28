@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.quartz.JobDataMap;
 
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -51,8 +52,8 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN")));
-        assertTrue(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC")));
+        assertFalse(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ADMIN)));
+        assertTrue(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ADMIN + ";" + CognitoGroups.CHPL_ONC)));
     }
 
     @Override
@@ -62,10 +63,10 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertTrue(permissions.hasAccess());
         assertFalse(permissions.hasAccess(buildChplJob()));
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN")));
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC")));
-        assertTrue(permissions.hasAccess(buildJob("ROLE_ACB")));
-        assertTrue(permissions.hasAccess(buildJob("ROLE_ONC;ROLE_ACB")));
+        assertFalse(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ADMIN)));
+        assertFalse(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ADMIN + ";" + CognitoGroups.CHPL_ONC)));
+        assertTrue(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ACB)));
+        assertTrue(permissions.hasAccess(buildJob(CognitoGroups.CHPL_ONC + ";" + CognitoGroups.CHPL_ACB)));
     }
 
     @Override

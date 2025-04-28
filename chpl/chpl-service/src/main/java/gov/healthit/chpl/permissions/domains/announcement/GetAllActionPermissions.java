@@ -17,7 +17,7 @@ public class GetAllActionPermissions extends ActionPermissions {
     }
 
     /**
-     * Anonymous users + ROLE_DEVELOPER can only see public announcements.
+     * Anonymous users + chpl-developer can only see public announcements.
      * Other logged-in users can see all public/private announcements.
      */
     @Override

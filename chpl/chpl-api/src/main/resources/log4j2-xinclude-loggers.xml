@@ -8,7 +8,7 @@
         <AppenderRef ref="redisson" />
         <AppenderRef ref="redissonJson" />
     </Logger>
-    <Logger name="sharedDataStoreLogger" level="INFO">
+    <Logger name="sharedDataStoreLogger" level="INFO" additivity="false">
         <AppenderRef ref="sharedDataStore" />
         <AppenderRef ref="sharedDataStoreJson" />
     </Logger>
@@ -104,17 +104,13 @@
         <AppenderRef ref="pendingChangeRequestEmailJob" />
         <AppenderRef ref="pendingChangeRequestEmailJobJson" />
     </Logger>
-    <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="massRequirePasswordChangeJob" />
-        <AppenderRef ref="massRequirePasswordChangeJobJson" />
-    </Logger>
-    <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="developerAccessEmailJob" />
-        <AppenderRef ref="developerAccessEmailJobJson" />
-    </Logger>
     <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="directReviewCacheRefreshJob" />
         <AppenderRef ref="directReviewCacheRefreshJobJson" />
+    </Logger>
+    <Logger name="cognitoUserCacheRefreshJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="cognitoUserCacheRefreshJob" />
+        <AppenderRef ref="cognitoUserCacheRefreshJobJson" />
     </Logger>
     <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
@@ -261,5 +257,13 @@
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJobJson" />
+    </Logger>
+    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixJobDataJob" />
+        <AppenderRef ref="fixJobDataJobJson" />
+    </Logger>
+    <Logger name="rwtPopulateMissingDataCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="rwtPopulateMissingDataCreatorJob" />
+        <AppenderRef ref="rwtPopulateMissingDataCreatorJobJson" />
     </Logger>
 </Loggers>

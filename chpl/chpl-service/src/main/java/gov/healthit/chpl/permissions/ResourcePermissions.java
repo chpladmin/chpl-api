@@ -5,7 +5,6 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ResourcePermissions {
@@ -18,7 +17,7 @@ public interface ResourcePermissions {
 
     List<User> getAllDeveloperUsers();
 
-    List<User> getAllUsersForCurrentUser();
+    List<User> getAllCmsUsers();
 
     List<CertificationBody> getAllAcbsForCurrentUser();
 
@@ -29,10 +28,6 @@ public interface ResourcePermissions {
     List<Developer> getAllDevelopersForUser(User user);
 
     CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException;
-
-    Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException;
-
-    UserPermission getRoleByUser(User user);
 
     boolean hasPermissionOnUser(User user);
 
@@ -45,18 +40,6 @@ public interface ResourcePermissions {
     boolean isUserRoleAcbAdmin();
 
     boolean isUserRoleDeveloperAdmin();
-
-    //Not used with Cognito users
-    @Deprecated
-    boolean isUserRoleUserCreator();
-
-    //Not used with Cognito users
-    @Deprecated
-    boolean isUserRoleUserAuthenticator();
-
-    //Not used with Cognito users
-    @Deprecated
-    boolean isUserRoleInvitedUserCreator();
 
     boolean isUserRoleStartup();
 

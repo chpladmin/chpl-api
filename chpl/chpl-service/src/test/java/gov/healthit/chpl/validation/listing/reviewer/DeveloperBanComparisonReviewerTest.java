@@ -4,15 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -469,10 +471,10 @@ public class DeveloperBanComparisonReviewerTest {
     private JWTAuthenticatedUser getAcbUser() {
         JWTAuthenticatedUser acbUser = new JWTAuthenticatedUser();
         acbUser.setFullName("Test");
-        acbUser.setId(3L);
+        acbUser.setCognitoId(UUID.randomUUID());
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("unit@test.com");
-        acbUser.getAuthorities().add(new GrantedPermission("ROLE_ACB"));
+        acbUser.getAuthorities().add(new SimpleGrantedAuthority(CognitoGroups.CHPL_ACB));
         return acbUser;
     }
 }

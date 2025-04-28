@@ -24,6 +24,7 @@ import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusConcept;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -100,12 +101,14 @@ public class AttestationReportCreatorJob extends QuartzJob {
                         Map<Long, AttestationReport> attestationReportsByAcbId = new HashMap<Long, AttestationReport>();
                         List<CertificationBody> activeAcbs = certificationBodyManager.getAllActive();
                         List<Developer> applicableDevelopers = getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod();
+                        Map<Long, ChangeRequest> changeRequestsByDeveloperId = new HashMap<Long, ChangeRequest>();
 
                         applicableDevelopers.forEach(developer -> {
                             LOGGER.info("Processing Developer: {} ({})", developer.getName(), developer.getId());
                             try {
-
                                 ChangeRequest cr = getMostRecentChangeRequest(developer, mostRecentPastAttestationPeriod);
+                                changeRequestsByDeveloperId.put(developer.getId(), cr);
+
 
                                 activeAcbs.forEach(acb -> {
                                    if (isDeveloperManagedByAcb(developer, acb, mostRecentPastAttestationPeriod)) {
@@ -119,17 +122,18 @@ public class AttestationReportCreatorJob extends QuartzJob {
                                        }
                                        AttestationReport report = attestationReportsByAcbId.get(acb.getId());
                                        report.setDeveloperCount(report.getDeveloperCount() + 1);
-
-                                       updateCountsBasedOnChangeRequestStatus(cr, report);
+                                       updateCountsBasedOnChangeRequestStatus(cr, developer, report);
                                    }
                                 });
+
                             } catch (Exception e) {
                                 LOGGER.error("Could not collect Developer Attestation Report data for Developer: {} ", developer.getName(), e);
                             }
                         });
 
-                        attestationReportsByAcbId.entrySet().forEach(entry -> attestationReportDAO.insert(entry.getValue()));
+                        attestationReportsByAcbId.put(0L, getSummarizedAttestationReportForAllAcbs(applicableDevelopers, changeRequestsByDeveloperId));
 
+                        attestationReportsByAcbId.entrySet().forEach(entry -> attestationReportDAO.insert(entry.getValue()));
                     } else {
                         LOGGER.info("Not within submission plus approval window");
                     }
@@ -138,27 +142,63 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 }
             }
 
-            private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, AttestationReport report) {
-                if (cr == null) {
-                       report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
-                   } else {
-                       switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
-                       case "Accepted":
-                           report.setApprovedCount(report.getApprovedCount() + 1);
-                           break;
-                       case "Pending Developer Action":
-                           report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
-                           break;
-                       case "Pending ONC-ACB Action":
-                           report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
-                           break;
-                       default:
-                           break;
-                       }
-                   }
-            }
+
         });
         LOGGER.info("********* Completed Attestation Report Creator job. *********");
+    }
+
+    private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, Developer developer, AttestationReport report) {
+        if (cr == null) {
+               report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
+               report.getDevelopersWithNoSubmissionAttestations().add(DeveloperAttestationStatus.builder()
+                       .developer(developer)
+                       .build());
+       } else {
+           switch (ChangeRequestStatusConcept.findByName(cr.getCurrentStatus().getChangeRequestStatusType().getName())) {
+           case ACCEPTED:
+               report.setApprovedCount(report.getApprovedCount() + 1);
+            report.getDevelopersWithApprovedAttestations().add(DeveloperAttestationStatus.builder()
+                    .developer(developer)
+                    .changeRequestStatus(cr.getCurrentStatus())
+                    .build());
+               break;
+           case PENDING_DEVELOPER_ACTION:
+               report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
+               report.getDeveloperWithPendingDeveloperActionAttestations().add(DeveloperAttestationStatus.builder()
+                       .developer(developer)
+                       .changeRequestStatus(cr.getCurrentStatus())
+                       .build());
+               break;
+           case PENDING_ONC_ACB_ACTION:
+               report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
+               report.getDevelopersWithPendingAcbActionAttestations().add(DeveloperAttestationStatus.builder()
+                       .developer(developer)
+                       .changeRequestStatus(cr.getCurrentStatus())
+                       .build());
+               break;
+           default:
+               break;
+           }
+       }
+    }
+
+    private AttestationReport getSummarizedAttestationReportForAllAcbs(List<Developer> applicableDevelopers, Map<Long, ChangeRequest> changeRequestsByDeveloperId) {
+        AttestationReport attestationReportForAllAcbs = AttestationReport.builder()
+                .attestationPeriod(attestationPeriodService.getMostRecentPastAttestationPeriod())
+                .certificationBody(CertificationBody.builder()
+                        .id(0L)
+                        .name("All ONC-ACBs")
+                        .build())
+                .reportDate(LocalDate.now())
+                .developerCount(Long.valueOf(applicableDevelopers.size()))
+                .build();
+
+        applicableDevelopers.forEach(developer -> {
+            ChangeRequest cr = changeRequestsByDeveloperId.getOrDefault(developer.getId(), null);
+            updateCountsBasedOnChangeRequestStatus(cr, developer, attestationReportForAllAcbs);
+        });
+
+        return attestationReportForAllAcbs;
     }
 
     private boolean inSubmissionPlusApprovalPeriod() {
