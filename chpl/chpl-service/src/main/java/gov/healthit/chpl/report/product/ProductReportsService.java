@@ -29,7 +29,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ProductReportsService extends SummaryStatisticsReportBaseService {
-    private SummaryStatisticsDAO summaryStatisticsDAO;
     private CertificationStatusIdHelper statusIdHelper;
     private ListingSearchService listingSearchService;
 
@@ -37,7 +36,6 @@ public class ProductReportsService extends SummaryStatisticsReportBaseService {
     public ProductReportsService(SummaryStatisticsDAO summaryStatisticsDAO, CertificationStatusDAO certificationStatusDao, ListingSearchService listingSearchService,
             CertificationBodyManager certificationBodyManager) {
         super(summaryStatisticsDAO, certificationBodyManager);
-        this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
         this.listingSearchService = listingSearchService;
     }
