@@ -61,7 +61,8 @@ public class DeveloperSearchResult implements Serializable {
     private Set<IdNamePair> acbsForActiveListings;
     private Set<IdNamePair> acbsForWithdrawnListings;
     private Set<IdNamePair> acbsForSuspendedListings;
-    private Set<Long> criteriaIds;
+    private Set<Long> criteriaIdsAllListings;
+    private Set<Long> criteriaIdsActiveListings;
     private Date creationDate;
 
     public DeveloperSearchResult() {

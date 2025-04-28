@@ -7,9 +7,11 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import gov.healthit.chpl.search.domain.DevelopersListingsCriteriaOption;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfLongs;
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;
+import gov.healthit.chpl.util.StringToDevelopersListingsCriteriaOption;
 import gov.healthit.chpl.util.StringToSearchSetOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -87,6 +89,12 @@ public class DeveloperSearchRequest implements Serializable {
     @JsonDeserialize(using = CommaDelimitedStringToSetOfLongs.class)
     @Builder.Default
     private Set<Long> criteriaIds = new HashSet<Long>();
+
+    @JsonIgnore
+    private String developersListingsCriteriaOptionString;
+    @JsonDeserialize(using = StringToDevelopersListingsCriteriaOption.class)
+    private DevelopersListingsCriteriaOption developersListingsCriteriaOption;
+
 
     @JsonIgnore
     private String orderByString;

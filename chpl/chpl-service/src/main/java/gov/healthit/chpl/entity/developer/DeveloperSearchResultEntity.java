@@ -124,8 +124,11 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "acbs_for_developer_all_listings")
     private String acbsForDeveloperAllListings;
 
-    @Column (name = "delimited_criteria")
-    private String delimitedCriteria;
+    @Column (name = "delimited_criteria_all_listings")
+    private String delimitedCriteriaAllListings;
+
+    @Column (name = "delimited_criteria_active_listings")
+    private String delimitedCriteriaActiveListings;
 
     @Column(name = "creation_date")
     private Date creationDate;
@@ -172,7 +175,8 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
                 .acbsForWithdrawnListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperWithdrawnListings()))
                 .acbsForSuspendedListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperSuspendedListings()))
-                .criteriaIds(buildSetOfCriteriaIds(this.getDelimitedCriteria()))
+                .criteriaIdsAllListings(buildSetOfCriteriaIds(this.getDelimitedCriteriaAllListings()))
+                .criteriaIdsActiveListings(buildSetOfCriteriaIds(this.getDelimitedCriteriaActiveListings()))
                 .creationDate(this.getCreationDate())
                 .build();
     }

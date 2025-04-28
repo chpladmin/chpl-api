@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.search.domain.DevelopersListingsCriteriaOption;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 public class SearchRequestNormalizer {
@@ -80,6 +81,7 @@ public class SearchRequestNormalizer {
     private void normalizeCriteriaIdSearchOptions(DeveloperSearchRequest request) {
         normailizeCriteriaIds(request);
         normalizeCriteriaOptionsOperator(request);
+        normalizeDevelopersListingsCriteriaOption(request);
     }
 
     private void normailizeCriteriaIds(DeveloperSearchRequest request) {
@@ -96,6 +98,17 @@ public class SearchRequestNormalizer {
             try {
                 request.setCriteriaIdsOperator(
                         SearchSetOperator.valueOf(request.getCriteriaIdsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeDevelopersListingsCriteriaOption(DeveloperSearchRequest request) {
+        if (!StringUtils.isBlank(request.getDevelopersListingsCriteriaOptionString())
+                && request.getDevelopersListingsCriteriaOption() == null) {
+            try {
+                request.setDevelopersListingsCriteriaOption(DevelopersListingsCriteriaOption
+                        .valueOf(request.getDevelopersListingsCriteriaOptionString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }

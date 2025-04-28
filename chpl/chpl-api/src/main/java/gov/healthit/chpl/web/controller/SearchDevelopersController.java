@@ -114,6 +114,10 @@ public class SearchDevelopersController {
                     + "specified or may have met any one or more of the certificationCriteriaIds",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
             @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
+            @Parameter(description = "Either ACTIVE or ALL. Defaults to ACTIVE."
+                    + "Indicates whether criteria attested to is based all of the developer's listings are considered or only the active listings. ",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
+            @RequestParam(value = "developersListingsCriteriaOption", required = false, defaultValue = "ACTIVE") String developersListingsCriteriaOption,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -133,7 +137,7 @@ public class SearchDevelopersController {
         return searchV3(searchTerm, acbsForActiveLisitngsDelimited, acbsForAllLisitngsDelimited,
                 statusesDelimited, attestationsOptionsDelimited, attestationsOptionsOperator, decertificationDateStart,
                 decertificationDateEnd, activeListingsOptionsDelimited, activeListingsOptionsOperator, hasUsers,
-                criteriaIdsDelimited, criteriaIdsOperator, pageNumber, pageSize, orderBy, sortDescending);
+                criteriaIdsDelimited, criteriaIdsOperator, developersListingsCriteriaOption, pageNumber, pageSize, orderBy, sortDescending);
     }
 
     @SuppressWarnings({
@@ -201,6 +205,10 @@ public class SearchDevelopersController {
                     + "specified or may have met any one or more of the certificationCriteriaIds",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
             @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
+            @Parameter(description = "Either ACTIVE or ALL. Defaults to ACTIVE."
+                    + "Indicates whether criteria attested to is based all of the developer's listings are considered or only the active listings. ",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "developersListingsCriteriaOption")
+            @RequestParam(value = "developersListingsCriteriaOption", required = false, defaultValue = "ACTIVE") String developersListingsCriteriaOption,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -230,6 +238,7 @@ public class SearchDevelopersController {
                 .activeListingsOptionsOperatorString(activeListingsOptionsOperator)
                 .criteriaIdsOperatorString(criteriaIdsOperator)
                 .criteriaIdsStrings(convertToSetWithDelimeter(criteriaIdsDelimited, ","))
+                .developersListingsCriteriaOptionString(developersListingsCriteriaOption)
                 .hasUsers(!StringUtils.isEmpty(hasUsers) ? BooleanUtils.toBooleanObject(hasUsers) : null)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
@@ -300,6 +309,10 @@ public class SearchDevelopersController {
                     + "specified or may have met any one or more of the certificationCriteriaIds",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
             @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
+            @Parameter(description = "Either ACTIVE or ALL. Defaults to ACTIVE."
+                    + "Indicates whether criteria attested to is based all of the developer's listings are considered or only the active listings. ",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "developersListingsCriteriaOption")
+            @RequestParam(value = "developersListingsCriteriaOption", required = false, defaultValue = "ACTIVE") String developersListingsCriteriaOption,
             @Parameter(description = "Either true or false. Defaults to null."
                     + "Indicates whether to search for developers that do or do not have users.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
@@ -328,6 +341,7 @@ public class SearchDevelopersController {
                 .hasUsers(!StringUtils.isEmpty(hasUsers) ? BooleanUtils.toBooleanObject(hasUsers) : null)
                 .criteriaIdsOperatorString(criteriaIdsOperator)
                 .criteriaIdsStrings(convertToSetWithDelimeter(criteriaIdsDelimited, ","))
+                .developersListingsCriteriaOptionString(developersListingsCriteriaOption)
                 .pageSize(DeveloperSearchRequest.MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .orderByString(orderBy)

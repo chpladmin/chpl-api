@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.search.domain.DevelopersListingsCriteriaOption;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -296,11 +297,15 @@ public class DeveloperSearchService {
             return true;
         }
 
+        Set<Long> developersCriteriaIds = searchRequest.getDevelopersListingsCriteriaOption().equals(DevelopersListingsCriteriaOption.ALL)
+                ? developer.getCriteriaIdsAllListings()
+                : developer.getCriteriaIdsActiveListings();
+
         if (searchRequest.getCriteriaIdsOperator() == null
                 || searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.AND)) {
-            return developer.getCriteriaIds().containsAll(searchRequest.getCriteriaIds());
+            return developersCriteriaIds.containsAll(searchRequest.getCriteriaIds());
         } else if (searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.OR)) {
-            return !CollectionUtils.intersection(developer.getCriteriaIds(), searchRequest.getCriteriaIds()).isEmpty();
+            return !CollectionUtils.intersection(developersCriteriaIds, searchRequest.getCriteriaIds()).isEmpty();
         } else {
             return false;
         }
