@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 51.0.0
+_28 April 2025_
+
+### Breaking Changes
+* Remove SSO flag - Cognito is always used for auth
+
+### Features
+* Enhanced the Attestations report-data endpoint to support drill-down
+* Backfill RWT (Results) missing data used in the Power BI reports
+* Cache all Cognito Users in the shared store
+* Include 'actingUser' in Change Request status event details
+* Add 'additionalRecipients' to Developer Messaging params
+
+### Bug Fixes
+* Allow Developer users to edit users in their own org
+* Allow ONC/ADMIN to update Change Request for any Developer status
+
+---
+
 ## Version 50.3.0
 _14 April 2025_
 
