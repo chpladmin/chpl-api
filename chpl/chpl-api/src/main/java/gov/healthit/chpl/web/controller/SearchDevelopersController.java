@@ -106,14 +106,14 @@ public class SearchDevelopersController {
                     + "Indicates whether to search for developers that do or do not have users.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
             @RequestParam(value = "hasUsers", required = false, defaultValue = "") String hasUsers,
-            @Parameter(description = "A comma-separated list of criteria Ids which a developer has listing that attests to. ",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIds")
-            @RequestParam(value = "criteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
+            @Parameter(description = "A comma-separated list of Certification Criteria Ids which a developer has listing that attests to. ",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds")
+            @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
-                    + "Indicates whether a developer must have met all criteriaIdsOptions "
-                    + "specified or may have met any one or more of the criteriaIdsOptions",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIdsOptionsOperator")
-            @RequestParam(value = "criteriaIdsOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
+                    + "Indicates whether a developer must have met all certificationCriteriaIds "
+                    + "specified or may have met any one or more of the certificationCriteriaIds",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
+            @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -130,7 +130,6 @@ public class SearchDevelopersController {
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
                     throws InvalidArgumentsException, ValidationException {
 
-        //TODO
         return searchV3(searchTerm, acbsForActiveLisitngsDelimited, acbsForAllLisitngsDelimited,
                 statusesDelimited, attestationsOptionsDelimited, attestationsOptionsOperator, decertificationDateStart,
                 decertificationDateEnd, activeListingsOptionsDelimited, activeListingsOptionsOperator, hasUsers,
@@ -194,17 +193,14 @@ public class SearchDevelopersController {
                     + "Indicates whether to search for developers that do or do not have users.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
             @RequestParam(value = "hasUsers", required = false, defaultValue = "") String hasUsers,
-
-            @Parameter(description = "A comma-separated list of criteria Ids which a developer has listing that attests to. ",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIds")
-            @RequestParam(value = "criteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
-
+            @Parameter(description = "A comma-separated list of Certification Criteria Ids which a developer has listing that attests to. ",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds")
+            @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
-                    + "Indicates whether a developer must have met all criteriaIdsOptions "
-                    + "specified or may have met any one or more of the criteriaIdsOptions",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIdsOptionsOperator")
-            @RequestParam(value = "criteriaIdsOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
-
+                    + "Indicates whether a developer must have met all certificationCriteriaIds "
+                    + "specified or may have met any one or more of the certificationCriteriaIds",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
+            @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -296,17 +292,14 @@ public class SearchDevelopersController {
                     + "specified or may have met any one or more of the activeListingsOptions",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "activeListingsOptionsOperator")
             @RequestParam(value = "activeListingsOptionsOperator", required = false, defaultValue = "OR") String activeListingsOptionsOperator,
-
-            @Parameter(description = "A comma-separated list of criteria Ids which a developer has listing that attests to. ",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "attestationsOptions")
-            @RequestParam(value = "criteriaIdsDelimited", required = false, defaultValue = "") String criteriaIdsDelimited,
+            @Parameter(description = "A comma-separated list of Certification Criteria Ids which a developer has listing that attests to. ",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaIds")
+            @RequestParam(value = "certificationCriteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
             @Parameter(description = "Either AND or OR. Defaults to OR."
-                    + "Indicates whether a developer must have met all criteriaIdsOptions "
-                    + "specified or may have met any one or more of the criteriaIdsOptions",
-                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIdsOptionsOperator")
-            @RequestParam(value = "criteriaIdsOptionsOperator", required = false, defaultValue = "OR") String criteriaIdsOptionsOperator,
-
-
+                    + "Indicates whether a developer must have met all certificationCriteriaIds "
+                    + "specified or may have met any one or more of the certificationCriteriaIds",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationCriteriaOperator")
+            @RequestParam(value = "certificationCriteriaOperator", required = false, defaultValue = "OR") String criteriaIdsOperator,
             @Parameter(description = "Either true or false. Defaults to null."
                     + "Indicates whether to search for developers that do or do not have users.",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
@@ -333,7 +326,7 @@ public class SearchDevelopersController {
                 .activeListingsOptionsStrings(convertToSetWithDelimeter(activeListingsOptionsDelimited, ","))
                 .activeListingsOptionsOperatorString(activeListingsOptionsOperator)
                 .hasUsers(!StringUtils.isEmpty(hasUsers) ? BooleanUtils.toBooleanObject(hasUsers) : null)
-                .criteriaIdsOperatorString(criteriaIdsOptionsOperator)
+                .criteriaIdsOperatorString(criteriaIdsOperator)
                 .criteriaIdsStrings(convertToSetWithDelimeter(criteriaIdsDelimited, ","))
                 .pageSize(DeveloperSearchRequest.MAX_PAGE_SIZE)
                 .pageNumber(0)
