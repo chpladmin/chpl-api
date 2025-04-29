@@ -10,16 +10,16 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Aspect
-@Log4j2
+@Log4j2(topic = "reportDataMethodUsageLogger")
 public class LogMethodUsageAspect {
 
     @Before("@annotation(LogMethodUsage)")
     public void logMethodStart(JoinPoint joinPoint) {
-        LOGGER.info(joinPoint.getSignature().getName() + " started");
+        LOGGER.info(joinPoint.getClass().getName() + ": " + joinPoint.getSignature().getName() + " started");
     }
 
     @AfterReturning("@annotation(LogMethodUsage)")
     public void logMethodCompletion(JoinPoint joinPoint) {
-        LOGGER.info(joinPoint.getSignature().getName() + " completed");
+        LOGGER.info(joinPoint.getClass().getName() + ": " + joinPoint.getSignature().getName() + " completed");
     }
 }
