@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -73,6 +74,7 @@ public class FunctionalityTestedManager {
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
     public FunctionalityTested update(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
         FunctionalityTested origFuncTested = functionalityTestedDAO.getById(functionalityTested.getId());
+        normalize(functionalityTested);
         functionalityTestedValidator.validateForEdit(functionalityTested);
         functionalityTestedService.update(functionalityTested);
         FunctionalityTested updatedFuncTested = functionalityTestedDAO.getById(functionalityTested.getId());
@@ -93,6 +95,7 @@ public class FunctionalityTestedManager {
             + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
     @Transactional
     public FunctionalityTested create(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
+        normalize(functionalityTested);
         functionalityTestedValidator.validateForAdd(functionalityTested);
         FunctionalityTested createdFuncTested = functionalityTestedService.add(functionalityTested);
 
@@ -149,5 +152,11 @@ public class FunctionalityTestedManager {
         return functionalitiesTestedForCriterion.stream()
                 .sorted(funcTestedComparator)
                 .toList();
+    }
+
+    private void normalize(FunctionalityTested funcTested) {
+        funcTested.setAdditionalInformation(StringUtils.trim(funcTested.getAdditionalInformation()));
+        funcTested.setRegulatoryTextCitation(StringUtils.trim(funcTested.getRegulatoryTextCitation()));
+        funcTested.setValue(StringUtils.trim(funcTested.getValue()));
     }
 }
