@@ -15,11 +15,11 @@ public class LogMethodUsageAspect {
 
     @Before("@annotation(LogMethodUsage)")
     public void logMethodStart(JoinPoint joinPoint) {
-        LOGGER.info(joinPoint.getClass().getName() + ": " + joinPoint.getSignature().getName() + " started");
+        LOGGER.info(joinPoint.getTarget().getClass().getName() + ": " + joinPoint.getSignature().getName() + " started");
     }
 
     @AfterReturning("@annotation(LogMethodUsage)")
     public void logMethodCompletion(JoinPoint joinPoint) {
-        LOGGER.info(joinPoint.getClass().getName() + ": " + joinPoint.getSignature().getName() + " completed");
+        LOGGER.info(joinPoint.getTarget().getClass().getName() + ": " + joinPoint.getSignature().getName() + " completed");
     }
 }
