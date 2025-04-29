@@ -16,6 +16,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.scheduler.CreateOneTimeTriggerActionPermissions;
+import gov.healthit.chpl.scheduler.job.CognitoUserCacheRefreshJob;
 import gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob;
 
 public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissionsBaseTest {
@@ -81,7 +82,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
     }
 
     @Test
-    public void hasAccess_StartupUser_cacheRefreshJob() throws Exception {
+    public void hasAccess_StartupUser_directReviewCacheRefreshJob() throws Exception {
         setupForStartupUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
@@ -89,6 +90,19 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         trigger.setJob(ChplJob.builder()
                 .name(DirectReviewCacheRefreshJob.JOB_NAME)
                 .group(DirectReviewCacheRefreshJob.JOB_GROUP)
+                .build());
+        assertTrue(permissions.hasAccess(trigger));
+    }
+
+    @Test
+    public void hasAccess_StartupUser_cognitoUserCacheRefreshJob() throws Exception {
+        setupForStartupUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        ChplOneTimeTrigger trigger = new ChplOneTimeTrigger();
+        trigger.setJob(ChplJob.builder()
+                .name(CognitoUserCacheRefreshJob.JOB_NAME)
+                .group(CognitoUserCacheRefreshJob.JOB_GROUP)
                 .build());
         assertTrue(permissions.hasAccess(trigger));
     }

@@ -520,6 +520,16 @@
             <recover>false</recover>
         </job>
 
+        <!--  Refresh the Cognito user cache -->
+        <job>
+            <name>cognitoUserCacheRefresh</name>
+            <group>systemJobs</group>
+            <description>Refresh the user cache from Cognito</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CognitoUserCacheRefreshJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- Generate email report for Real World Testing  -->
         <job>
             <name>Real World Testing Email Report</name>

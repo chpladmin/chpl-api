@@ -306,9 +306,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public void deleteDeveloperForJoin(Long developerIdToDelete, Developer developerToJoin) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito
@@ -351,9 +349,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -394,9 +390,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COGNITO_USERS_BY_EMAIL,
-            CacheNames.COGNITO_USERS_BY_UUID
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public void removeUsersForDeveloperSplit(Developer oldDeveloper) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito

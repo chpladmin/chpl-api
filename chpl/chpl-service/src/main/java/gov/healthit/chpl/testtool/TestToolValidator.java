@@ -46,7 +46,7 @@ public class TestToolValidator {
             messages.add(errorMessageUtil.getMessage("testTool.edit.noCriteria"));
         } else {
             if (isTestToolDuplicateOnEdit(testTool)) {
-                messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate"));
+                messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate", testTool.getValue()));
             }
             messages.addAll(validateCriteriaRemovedFromTestTool(testTool));
         }
@@ -74,7 +74,7 @@ public class TestToolValidator {
         }
 
         if (isTestToolDuplicateOnAdd(testTool)) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate"));
+            messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate",  testTool.getValue()));
         }
 
         if (testTool.getRule() != null
@@ -144,32 +144,17 @@ public class TestToolValidator {
     }
 
     private boolean isTestToolDuplicateOnEdit(TestTool testTool) throws EntityRetrievalException {
-        String updatedCitationText = testTool.getRegulatoryTextCitation() != null ? testTool.getRegulatoryTextCitation() : "";
-
         return testToolDAO.getAllTestToolCriteriaMaps().stream()
-                .filter(map -> {
-                        String origCitationText = map.getTestTool().getRegulatoryTextCitation() != null ? map.getTestTool().getRegulatoryTextCitation() : "";
-
-                        return map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText)
-                                && !map.getTestTool().getId().equals(testTool.getId());
-                })
+                .filter(map -> map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
+                                && !map.getTestTool().getId().equals(testTool.getId()))
                 .findAny()
                 .isPresent();
     }
 
     private boolean isTestToolDuplicateOnAdd(TestTool testTool) throws EntityRetrievalException {
-        String updatedCitationText = testTool.getRegulatoryTextCitation() != null ? testTool.getRegulatoryTextCitation() : "";
 
         return testToolDAO.getAllTestToolCriteriaMaps().stream()
-                .filter(map -> {
-                        String origCitationText = map.getTestTool().getRegulatoryTextCitation() != null
-                                ? map.getTestTool().getRegulatoryTextCitation()
-                                : "";
-
-                        return map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText);
-                })
+                .filter(map -> map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue()))
                 .findAny()
                 .isPresent();
     }

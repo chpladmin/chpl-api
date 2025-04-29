@@ -51,7 +51,7 @@ public class FunctionalityTestedValidator {
             messages.add(errorMessageUtil.getMessage("functionalityTested.edit.noCriteria"));
         } else {
             if (isFunctionalityTestedDuplicateOnEdit(functionalityTested)) {
-                messages.add(errorMessageUtil.getMessage("functionalityTested.edit.duplicate"));
+                messages.add(errorMessageUtil.getMessage("functionalityTested.edit.duplicate", functionalityTested.getRegulatoryTextCitation()));
             }
             messages.addAll(validateCriteriaRemovedFromFunctionalityTested(functionalityTested));
         }
@@ -84,7 +84,7 @@ public class FunctionalityTestedValidator {
         }
 
         if (isFunctionalityTestedDuplicateOnAdd(functionalityTested)) {
-            messages.add(errorMessageUtil.getMessage("functionalityTested.edit.duplicate"));
+            messages.add(errorMessageUtil.getMessage("functionalityTested.edit.duplicate", functionalityTested.getRegulatoryTextCitation()));
         }
 
         if (functionalityTested.getRule() != null
@@ -159,8 +159,7 @@ public class FunctionalityTestedValidator {
                 .filter(map -> {
                         String origCitationText = map.getFunctionalityTested().getRegulatoryTextCitation() != null ? map.getFunctionalityTested().getRegulatoryTextCitation() : "";
 
-                        return map.getFunctionalityTested().getValue().equalsIgnoreCase(functionalityTested.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText)
+                        return origCitationText.equalsIgnoreCase(updatedCitationText)
                                 && !map.getFunctionalityTested().getId().equals(functionalityTested.getId());
                 })
                 .findAny()
@@ -174,8 +173,7 @@ public class FunctionalityTestedValidator {
                 .filter(map -> {
                         String origCitationText = map.getFunctionalityTested().getRegulatoryTextCitation() != null ? map.getFunctionalityTested().getRegulatoryTextCitation() : "";
 
-                        return map.getFunctionalityTested().getValue().equalsIgnoreCase(functionalityTested.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText);
+                        return origCitationText.equalsIgnoreCase(updatedCitationText);
                 })
                 .findAny()
                 .isPresent();
