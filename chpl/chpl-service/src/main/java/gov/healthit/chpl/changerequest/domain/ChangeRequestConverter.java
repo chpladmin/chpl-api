@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestServiceBaseUrlListEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
@@ -166,5 +167,13 @@ public final class ChangeRequestConverter {
         }
         crDev.setContact(contact);
         return crDev;
+    }
+
+    public ChangeRequestServiceBaseUrlList convert(ChangeRequestServiceBaseUrlListEntity entity) {
+        ChangeRequestServiceBaseUrlList crSbul = new ChangeRequestServiceBaseUrlList();
+        crSbul.setId(entity.getId());
+        crSbul.setServiceBaseUrlList(entity.getServiceBaseUrlList());
+        crSbul.setListingId(entity.getListingId());
+        return crSbul;
     }
 }
