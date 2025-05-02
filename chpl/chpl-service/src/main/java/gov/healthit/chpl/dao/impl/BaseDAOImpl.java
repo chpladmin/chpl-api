@@ -10,7 +10,6 @@ import jakarta.persistence.PersistenceContext;
 public class BaseDAOImpl {
     public static final String SCHEMA_NAME = "openchpl";
     public static final String SHARED_STORE_SCHEMA_NAME = "shared_store";
-    public static final int BATCH_SIZE = 20;
 
     @PersistenceContext
     protected EntityManager entityManager;
