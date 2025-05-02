@@ -105,6 +105,7 @@ public class ProductReportsService extends SummaryStatisticsReportBaseService {
         try {
             List<ListingSearchResult> results = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                     .certificationStatuses(statusNames)
+                    .pageSize(SearchRequest.MAX_PAGE_SIZE)
                     .build());
 
             Set<ProductByAcb> productsByAcbs =  results.stream()

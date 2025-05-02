@@ -92,6 +92,7 @@ public class ServiceBaseUrlListService {
                 .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .certificationCriteriaIds(Set.of(getG10Criteria().getId()))
                 .certificationCriteriaOperator(SearchSetOperator.OR)
+                .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build();
 
         return listingSearchService.getAllPagesOfSearchResults(request);
