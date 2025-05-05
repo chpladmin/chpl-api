@@ -8,13 +8,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestServiceBaseUrlListDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestListingUrlDAO;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestServiceBaseUrlList;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -40,9 +41,10 @@ import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetailsService<ChangeRequestServiceBaseUrlList> {
+@Component
+public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetailsService<ChangeRequestListingUrl> {
     private ChangeRequestDAO crDAO;
-    private ChangeRequestServiceBaseUrlListDAO crServiceBaseUrlListDAO;
+    private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertificationCriterionService certificationCriterionService;
@@ -78,7 +80,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
 
     @Autowired
     public ChangeRequestServiceBaseUrlListService(ChangeRequestDAO crDAO,
-            ChangeRequestServiceBaseUrlListDAO crServiceBaseUrlListDAO,
+            ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductManager certifiedProductManager,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             CertificationCriterionService certificationCriterionService,
@@ -89,7 +91,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super();
         this.crDAO = crDAO;
-        this.crServiceBaseUrlListDAO = crServiceBaseUrlListDAO;
+        this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certificationCriterionService = certificationCriterionService;
@@ -101,14 +103,14 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
     }
 
     @Override
-    public ChangeRequestServiceBaseUrlList getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException {
-        return crServiceBaseUrlListDAO.getByChangeRequestId(changeRequestId);
+    public ChangeRequestListingUrl getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException {
+        return crListingUrlDAO.getByChangeRequestId(changeRequestId);
     }
 
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crServiceBaseUrlListDAO.create(cr, (ChangeRequestServiceBaseUrlList) cr.getDetails());
+            crListingUrlDAO.create(cr, (ChangeRequestListingUrl) cr.getDetails());
             return crDAO.get(cr.getId());
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -120,15 +122,14 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
         try {
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
-            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails object
-            ChangeRequestServiceBaseUrlList crSbulDetails = (ChangeRequestServiceBaseUrlList) cr.getDetails();
+            // Convert the map of key/value pairs to a ChangeRequestListingUrl object
+            ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
             // Use the id from the DB, not the object. Client could have changed the id.
-            crSbulDetails.setId(((ChangeRequestServiceBaseUrlList) crFromDb.getDetails()).getId());
-            cr.setDetails(crSbulDetails);
+            crListingUrl.setId(((ChangeRequestListingUrl) crFromDb.getDetails()).getId());
+            cr.setDetails(crListingUrl);
 
-            if (!((ChangeRequestServiceBaseUrlList) cr.getDetails())
-                    .equals((crFromDb.getDetails()))) {
-                cr.setDetails(crServiceBaseUrlListDAO.update((ChangeRequestServiceBaseUrlList) cr.getDetails()));
+            if (!((ChangeRequestListingUrl) cr.getDetails()).equals((crFromDb.getDetails()))) {
+                cr.setDetails(crListingUrlDAO.update((ChangeRequestListingUrl) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -151,13 +152,13 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#cr.listingId")
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestServiceBaseUrlList crSbulDetails = (ChangeRequestServiceBaseUrlList) cr.getDetails();
+        ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
         try {
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crSbulDetails.getListingId());
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListingId());
 
             listing.getCertificationResults().stream()
                     .filter(crResult -> crResult.getCriterion().getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10)))
-                    .forEach(crResult -> crResult.setServiceBaseUrlList(crSbulDetails.getServiceBaseUrlList()));
+                    .forEach(crResult -> crResult.setServiceBaseUrlList(crListingUrl.getUrl()));
 
             ListingUpdateRequest listingUpdateRequest = ListingUpdateRequest.builder()
                     .listing(listing)
@@ -189,7 +190,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
                 .paragraph("", String.format(approvalEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
-                        ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getServiceBaseUrlList(),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
                         getApprovalBody(cr)))
                 .footer(PublicFooter.class)
                 .build();
@@ -212,7 +213,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
-                        ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getServiceBaseUrlList(),getApprovalBody(cr),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .footer(PublicFooter.class)
                 .build();
@@ -235,7 +236,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
                 .paragraph("", String.format(rejectedEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
-                        ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getServiceBaseUrlList(),getApprovalBody(cr),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .footer(PublicFooter.class)
                 .build();
@@ -259,7 +260,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
                         cr.getDeveloper().getName(),
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
-                        ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getServiceBaseUrlList(),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
                         AuthUtil.getUsername()))
                 .footer(PublicFooter.class)
                 .build();
@@ -267,12 +268,12 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
 
     private String getChplProductNumber(ChangeRequest cr) {
         String chplProductNumber = "";
-        if (cr.getDetails() != null && ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getListingId() != null) {
+        if (cr.getDetails() != null && ((ChangeRequestListingUrl) cr.getDetails()).getListingId() != null) {
             try {
-                CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(((ChangeRequestServiceBaseUrlList) cr.getDetails()).getListingId());
+                CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(((ChangeRequestListingUrl) cr.getDetails()).getListingId());
                 chplProductNumber = listing.getChplProductNumber();
             } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not locate listing with id {}", ((ChangeRequestServiceBaseUrlList) cr.getDetails()).getListingId(), e);
+                LOGGER.error("Could not locate listing with id {}", ((ChangeRequestListingUrl) cr.getDetails()).getListingId(), e);
             }
         }
         return chplProductNumber;

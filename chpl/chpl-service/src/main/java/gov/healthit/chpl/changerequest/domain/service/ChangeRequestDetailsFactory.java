@@ -16,8 +16,8 @@ public class ChangeRequestDetailsFactory {
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestType;
 
-    @Value("${changerequest.serviceBaseUrlList}")
-    private Long serviceBaseUrlListChangeRequestType;
+    //@Value("${changerequest.serviceBaseUrlList}")
+    private Long serviceBaseUrlListChangeRequestType = 4L;
 
     @Autowired
     public ChangeRequestDetailsFactory(ChangeRequestDeveloperDemographicsService crDevDemographicsService,

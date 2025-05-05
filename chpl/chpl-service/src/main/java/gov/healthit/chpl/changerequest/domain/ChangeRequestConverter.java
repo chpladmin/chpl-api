@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestServiceBaseUrlListEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestListingUrlEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
@@ -169,11 +169,15 @@ public final class ChangeRequestConverter {
         return crDev;
     }
 
-    public ChangeRequestServiceBaseUrlList convert(ChangeRequestServiceBaseUrlListEntity entity) {
-        ChangeRequestServiceBaseUrlList crSbul = new ChangeRequestServiceBaseUrlList();
-        crSbul.setId(entity.getId());
-        crSbul.setServiceBaseUrlList(entity.getServiceBaseUrlList());
-        crSbul.setListingId(entity.getListingId());
-        return crSbul;
+    public ChangeRequestListingUrl convert(ChangeRequestListingUrlEntity entity) {
+        ChangeRequestListingUrl crListingUrl = new ChangeRequestListingUrl();
+        crListingUrl.setId(entity.getId());
+        crListingUrl.setChangeRequestListingUrlType(ChangeRequestListingUrlType.builder()
+                .id(entity.getChangeRequestListingUrlType().getId())
+                .name(entity.getChangeRequestListingUrlType().getName())
+                .build());
+        crListingUrl.setUrl(entity.getUrl());
+        crListingUrl.setListingId(entity.getListingId());
+        return crListingUrl;
     }
 }

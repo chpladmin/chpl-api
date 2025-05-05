@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.manager;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
@@ -87,6 +89,8 @@ public class ChangeRequestManager {
 
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
+
+    private Long serviceBaseUrlListChangeRequestId = 4L;
 
     private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
@@ -269,7 +273,10 @@ public class ChangeRequestManager {
             return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
+        } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)) {
+            return changeRequestTypeDAO.getChangeRequestTypeById(serviceBaseUrlListChangeRequestId);
         }
+
         return null;
     }
 
@@ -283,6 +290,16 @@ public class ChangeRequestManager {
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
         return crMap.containsKey("form");
+    }
+
+    private boolean isServiceBaseUrlListChangeRequest(ChangeRequest cr) {
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        try {
+            return crMap.containsKey("changeRequestListingUrlType")
+                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(1);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
@@ -316,6 +333,8 @@ public class ChangeRequestManager {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
         } else if (isDeveloperAttestationChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
+        } else if (isServiceBaseUrlListChangeRequest(cr)) {
+            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
         }
         return cr;
     }

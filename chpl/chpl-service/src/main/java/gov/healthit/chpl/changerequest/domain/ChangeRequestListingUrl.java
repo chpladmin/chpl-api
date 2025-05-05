@@ -16,18 +16,19 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChangeRequestServiceBaseUrlList implements Serializable, ChangeRequestDetails {
+public class ChangeRequestListingUrl implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -3382178658531362574L;
 
     @EqualsAndHashCode.Exclude
     private Long id;
 
-    private String serviceBaseUrlList;
+    private ChangeRequestListingUrlType changeRequestListingUrlType;
+    private String url;
     private Long listingId;
 
-    public static ChangeRequestServiceBaseUrlList cast(Object obj) {
-        if (obj instanceof ChangeRequestServiceBaseUrlList) {
-            return (ChangeRequestServiceBaseUrlList) obj;
+    public static ChangeRequestListingUrl cast(Object obj) {
+        if (obj instanceof ChangeRequestListingUrl) {
+            return (ChangeRequestListingUrl) obj;
         } else {
             throw new RuntimeException("Could not cast object as type ChangeRequestServiceBaseUrlList");
         }
