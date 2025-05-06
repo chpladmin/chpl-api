@@ -7,7 +7,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,7 +43,6 @@ import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -301,22 +299,6 @@ public class SchedulerManager extends SecuredManager {
             }
         }
         return jobs;
-    }
-
-    public LocalDateTime getMostRecentPastTriggerTime(String triggerName, String triggerGroup) throws SchedulerException {
-        Scheduler scheduler = getScheduler();
-        TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
-        Trigger trigger = scheduler.getTrigger(triggerKey);
-
-        if (trigger != null) {
-            Date previousFireTime = trigger.getPreviousFireTime();
-            if (previousFireTime != null) {
-                return DateUtil.toLocalDateTime(previousFireTime.getTime());
-            }
-        } else {
-            LOGGER.error("Trigger " + triggerName + " in group " + triggerGroup + " was not found.");
-        }
-        return null;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "

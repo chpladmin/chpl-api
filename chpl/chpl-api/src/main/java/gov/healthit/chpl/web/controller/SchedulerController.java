@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.quartz.SchedulerException;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
-import gov.healthit.chpl.web.controller.results.TimestampResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -108,19 +106,6 @@ public class SchedulerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad Request: "
                     + "Please specify a query parameter of either '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "'");
         }
-    }
-
-    //TODO: is it okay if this is publicly available?
-    //Not sure if it can be put behind security since it's for power bi...
-    @Operation(summary = "Get the last time any particular job was triggered.")
-    @RequestMapping(value = "/last-trigger-time/{triggerName}/{triggerGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody TimestampResult getMostRecentTriggerForJob(@PathVariable("triggerName") String triggerName,
-            @PathVariable("triggerGroup") String triggerGroup) throws SchedulerException {
-        LocalDateTime mostRecentPastTriggerTimeInSystemTimeZone = schedulerManager.getMostRecentPastTriggerTime(triggerName, triggerGroup);
-        return TimestampResult.builder()
-                .localDateTime(mostRecentPastTriggerTimeInSystemTimeZone)
-                .build();
     }
 
     @Operation(summary = "Update an existing trigger and return it",
