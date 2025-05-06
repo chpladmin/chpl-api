@@ -15,7 +15,7 @@ public class SystemToEasternLocalDateTimeReportSerializer extends StdSerializer<
 
     public SystemToEasternLocalDateTimeReportSerializer() {
         super(LocalDateTime.class);
-        this.formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
+        this.formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
     }
 
     @Override

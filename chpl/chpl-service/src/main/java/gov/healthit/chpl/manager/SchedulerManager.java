@@ -300,7 +300,6 @@ public class SchedulerManager extends SecuredManager {
                 }
             }
         }
-
         return jobs;
     }
 
