@@ -149,7 +149,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
     }
 
     @Override
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#cr.listingId")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#cr.details.listingId")
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
@@ -157,7 +157,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListingId());
 
             listing.getCertificationResults().stream()
-                    .filter(crResult -> crResult.getCriterion().getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10)))
+                    .filter(crResult -> crResult.getCriterion().getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId()))
                     .forEach(crResult -> crResult.setServiceBaseUrlList(crListingUrl.getUrl()));
 
             ListingUpdateRequest listingUpdateRequest = ListingUpdateRequest.builder()
