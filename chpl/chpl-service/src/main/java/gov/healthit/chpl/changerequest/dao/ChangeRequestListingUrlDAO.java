@@ -38,7 +38,7 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
     public ChangeRequestListingUrl update(ChangeRequestListingUrl crListingUpdate) throws EntityRetrievalException {
         ChangeRequestListingUrlEntity entity = getEntity(crListingUpdate.getId());
         entity.setUrl(crListingUpdate.getUrl());
-        entity.setListingId(crListingUpdate.getListingId());
+        entity.setListingId(crListingUpdate.getListing().getId());
         update(entity);
         return changeRequestConverter.convert(getEntity(entity.getId()));
     }
@@ -48,7 +48,7 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
         entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, cr.getId()));
         entity.setChangeRequestListingUrlType(getSession().get(ChangeRequestListingUrlTypeEntity.class, crListingUpdate.getChangeRequestListingUrlType().getId()));
         entity.setUrl(crListingUpdate.getUrl());
-        entity.setListingId(crListingUpdate.getListingId());
+        entity.setListingId(crListingUpdate.getListing().getId());
         return entity;
     }
 

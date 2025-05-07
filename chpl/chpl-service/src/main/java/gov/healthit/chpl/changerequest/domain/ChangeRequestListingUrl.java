@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class ChangeRequestListingUrl implements Serializable, ChangeRequestDetai
 
     private ChangeRequestListingUrlType changeRequestListingUrlType;
     private String url;
-    private Long listingId;
+    private CertifiedProductSearchDetails listing;
 
     public static ChangeRequestListingUrl cast(Object obj) {
         if (obj instanceof ChangeRequestListingUrl) {

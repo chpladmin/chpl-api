@@ -154,7 +154,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
         try {
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListingId());
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListing().getId());
 
             listing.getCertificationResults().stream()
                     .filter(crResult -> crResult.getCriterion().getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId()))
@@ -268,12 +268,12 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
 
     private String getChplProductNumber(ChangeRequest cr) {
         String chplProductNumber = "";
-        if (cr.getDetails() != null && ((ChangeRequestListingUrl) cr.getDetails()).getListingId() != null) {
+        if (cr.getDetails() != null && ((ChangeRequestListingUrl) cr.getDetails()).getListing().getId() != null) {
             try {
-                CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(((ChangeRequestListingUrl) cr.getDetails()).getListingId());
+                CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(((ChangeRequestListingUrl) cr.getDetails()).getListing().getId());
                 chplProductNumber = listing.getChplProductNumber();
             } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not locate listing with id {}", ((ChangeRequestListingUrl) cr.getDetails()).getListingId(), e);
+                LOGGER.error("Could not locate listing with id {}", ((ChangeRequestListingUrl) cr.getDetails()).getListing().getId(), e);
             }
         }
         return chplProductNumber;

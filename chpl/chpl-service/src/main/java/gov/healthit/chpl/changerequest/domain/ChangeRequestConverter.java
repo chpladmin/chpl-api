@@ -5,8 +5,10 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
@@ -22,15 +24,19 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public final class ChangeRequestConverter {
 
     private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    public ChangeRequestConverter(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+    public ChangeRequestConverter(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil, @Lazy CertifiedProductDetailsManager certifiedProductDetailsManager) {
         this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
     }
 
     public ChangeRequestStatusType convert(ChangeRequestStatusTypeEntity entity) {
@@ -170,14 +176,19 @@ public final class ChangeRequestConverter {
     }
 
     public ChangeRequestListingUrl convert(ChangeRequestListingUrlEntity entity) {
-        ChangeRequestListingUrl crListingUrl = new ChangeRequestListingUrl();
-        crListingUrl.setId(entity.getId());
-        crListingUrl.setChangeRequestListingUrlType(ChangeRequestListingUrlType.builder()
-                .id(entity.getChangeRequestListingUrlType().getId())
-                .name(entity.getChangeRequestListingUrlType().getName())
-                .build());
-        crListingUrl.setUrl(entity.getUrl());
-        crListingUrl.setListingId(entity.getListingId());
-        return crListingUrl;
+        try {
+            ChangeRequestListingUrl crListingUrl = new ChangeRequestListingUrl();
+            crListingUrl.setId(entity.getId());
+            crListingUrl.setChangeRequestListingUrlType(ChangeRequestListingUrlType.builder()
+                    .id(entity.getChangeRequestListingUrlType().getId())
+                    .name(entity.getChangeRequestListingUrlType().getName())
+                    .build());
+            crListingUrl.setUrl(entity.getUrl());
+            crListingUrl.setListing(certifiedProductDetailsManager.getCertifiedProductDetails(entity.getListingId()));
+            return crListingUrl;
+        } catch (Exception e) {
+            LOGGER.error("Error getting listing {} for change request listing URL.", entity.getListingId(), e);
+            return null;
+        }
     }
 }
