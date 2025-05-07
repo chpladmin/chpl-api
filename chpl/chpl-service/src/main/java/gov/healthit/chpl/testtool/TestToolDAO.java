@@ -3,8 +3,6 @@ package gov.healthit.chpl.testtool;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -14,35 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository("testToolDAO")
 public class TestToolDAO extends BaseDAOImpl {
     private CertifiedProductDAO certifiedProductDAO;
-    private RuleDAO ruleDAO;
 
     @Autowired
-    public TestToolDAO(CertifiedProductDAO certifiedProductDAO, RuleDAO ruleDAO) {
+    public TestToolDAO(CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
-        this.ruleDAO = ruleDAO;
     }
 
     @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public TestTool add(TestTool testTool) {
         TestToolEntity entity = TestToolEntity.builder()
                 .value(testTool.getValue())
-                .regulatoryTextCitation(testTool.getRegulatoryTextCitation())
                 .startDay(testTool.getStartDay())
                 .endDay(testTool.getEndDay())
-                .rule(testTool.getRule() != null ? ruleDAO.getRuleEntityById(testTool.getRule().getId()) : null)
                 .deleted(false)
                 .build();
         create(entity);
@@ -91,15 +85,8 @@ public class TestToolDAO extends BaseDAOImpl {
     public void update(TestTool testTool) throws EntityRetrievalException {
         TestToolEntity entity = getEntityById(testTool.getId());
         entity.setValue(testTool.getValue());
-        entity.setRegulatoryTextCitation(testTool.getRegulatoryTextCitation());
         entity.setStartDay(testTool.getStartDay());
         entity.setEndDay(testTool.getEndDay());
-        if (testTool.getRule() != null) {
-            entity.setRule(ruleDAO.getRuleEntityById(testTool.getRule().getId()));
-        } else {
-            entity.setRule(null);
-        }
-
         update(entity);
     }
 
