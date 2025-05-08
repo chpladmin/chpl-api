@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.entity;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -35,4 +36,11 @@ public class ChangeRequestListingUrlTypeEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "name", nullable = false)
     private String name;
+
+    public ChangeRequestListingUrlType toDomain() {
+        return ChangeRequestListingUrlType.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
 }

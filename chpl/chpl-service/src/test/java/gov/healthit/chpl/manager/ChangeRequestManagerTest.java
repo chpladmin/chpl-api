@@ -66,7 +66,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                resourcePermissionsFactory, null, null, null, ff4j);
+                resourcePermissionsFactory, null, null, null, ff4j, null);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -89,7 +89,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, resourcePermissionsFactory, null, null, null, ff4j);
+                null, null, resourcePermissionsFactory, null, null, null, ff4j, null);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -144,7 +144,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j);
+                ff4j,
+                null);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -190,7 +191,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j);
+                ff4j,
+                null);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -247,7 +249,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j);
+                ff4j,
+                null);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -307,7 +310,8 @@ public class ChangeRequestManagerTest {
                 errorMessageUtil,
                 null,
                 null,
-                ff4j);
+                ff4j,
+                null);
 
         // Run
         ChangeRequest cr = getBasicChangeRequest();

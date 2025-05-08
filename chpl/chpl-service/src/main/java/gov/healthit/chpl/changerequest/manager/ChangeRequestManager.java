@@ -26,6 +26,7 @@ import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestListingUrlDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -68,6 +69,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestManager {
+    private static final String LISTING_URL_CHANGE_REQUEST_TYPE = "Listing URL Change Request";
+    private static final String SERVICE_BASE_URL_LIST_TYPE = "Service Base URL List";
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
@@ -90,8 +93,6 @@ public class ChangeRequestManager {
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
 
-    private Long serviceBaseUrlListChangeRequestId = 4L;
-
     private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
@@ -110,6 +111,7 @@ public class ChangeRequestManager {
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FormValidator formValidator;
+    private ChangeRequestListingUrlDAO changeRequestListingUrlDAO;
 
     private FF4j ff4j;
 
@@ -136,7 +138,8 @@ public class ChangeRequestManager {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
             FormValidator formValidator,
-            FF4j ff4j) {
+            FF4j ff4j,
+            ChangeRequestListingUrlDAO changeRequestListingUrlDAO) {
         this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
@@ -156,6 +159,7 @@ public class ChangeRequestManager {
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;
         this.ff4j = ff4j;
+        this.changeRequestListingUrlDAO = changeRequestListingUrlDAO;
     }
 
     @Transactional(readOnly = true)
@@ -274,7 +278,7 @@ public class ChangeRequestManager {
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
         } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeById(serviceBaseUrlListChangeRequestId);
+            return changeRequestTypeDAO.getChangeRequestTypeByName(LISTING_URL_CHANGE_REQUEST_TYPE);
         }
 
         return null;
@@ -294,9 +298,11 @@ public class ChangeRequestManager {
 
     private boolean isServiceBaseUrlListChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        ;
         try {
+            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(SERVICE_BASE_URL_LIST_TYPE).getId().intValue();
             return crMap.containsKey("changeRequestListingUrlType")
-                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(1);
+                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
         } catch (Exception e) {
             return false;
         }

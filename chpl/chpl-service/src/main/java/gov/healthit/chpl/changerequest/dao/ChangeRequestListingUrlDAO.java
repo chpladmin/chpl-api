@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestListingUrlEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestListingUrlTypeEntity;
@@ -21,6 +22,10 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
     @Autowired
     public ChangeRequestListingUrlDAO(ChangeRequestConverter changeRequestConverter) {
         this.changeRequestConverter = changeRequestConverter;
+    }
+
+    public ChangeRequestListingUrlType getChangeRequestListingUrlType(String name) throws EntityRetrievalException {
+        return getChangeRequestListingUrlTypeEntity(name).toDomain();
     }
 
     public ChangeRequestListingUrl create(ChangeRequest cr, ChangeRequestListingUrl crListingUrl)
@@ -89,6 +94,31 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
         List<ChangeRequestListingUrlEntity> result = entityManager
                 .createQuery(hql, ChangeRequestListingUrlEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
+                .getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException(
+                    "Data error. Change request listing url not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException(
+                    "Data error. Duplicate change request listing url in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
+    private ChangeRequestListingUrlTypeEntity getChangeRequestListingUrlTypeEntity(String name)
+            throws EntityRetrievalException {
+        String hql = "FROM ChangeRequestListingUrlTypeEntity crlut "
+                + "WHERE (NOT deleted = true) "
+                + "AND (name = :cname) ";
+
+        List<ChangeRequestListingUrlTypeEntity> result = entityManager
+                .createQuery(hql, ChangeRequestListingUrlTypeEntity.class)
+                .setParameter("name", name)
                 .getResultList();
 
         if (result == null || result.size() == 0) {

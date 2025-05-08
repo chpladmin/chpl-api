@@ -26,6 +26,11 @@ public class ChangeRequestTypeDAO extends BaseDAOImpl {
         return changeRequestConverter.convert(getChangeRequestTypeEntity(changeRequestTypeId));
     }
 
+    public ChangeRequestType getChangeRequestTypeByName(String name)
+            throws EntityRetrievalException {
+        return changeRequestConverter.convert(getChangeRequestTypeEntity(name));
+    }
+
     public List<ChangeRequestType> getChangeRequestTypes() {
         List<ChangeRequestTypeEntity> entities = getChangeRequestTypeEntities();
         List<ChangeRequestType> domains = entities.stream()
@@ -62,4 +67,27 @@ public class ChangeRequestTypeDAO extends BaseDAOImpl {
         }
         return result.get(0);
     }
+
+    private ChangeRequestTypeEntity getChangeRequestTypeEntity(String name)
+            throws EntityRetrievalException {
+        String hql = "FROM ChangeRequestTypeEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (name = :name) ";
+        List<ChangeRequestTypeEntity> result = entityManager
+                .createQuery(hql, ChangeRequestTypeEntity.class)
+                .setParameter("name", name)
+                .getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException("Data error. Change request type not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate change request type in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
 }
