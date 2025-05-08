@@ -1,10 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -73,21 +70,6 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
             cses.add(entity.toDomain());
         }
         return cses;
-    }
-
-    public Map<Long, List<CertificationStatusEvent>> findAllByListing() {
-        List<CertificationStatusEventEntity> entities = getAllEntities();
-        Map<Long, List<CertificationStatusEventEntity>> entityMap = entities.stream()
-                .collect(Collectors.groupingBy(CertificationStatusEventEntity::getCertifiedProductId));
-
-        Map<Long, List<CertificationStatusEvent>> syncdMap = new Hashtable<Long, List<CertificationStatusEvent>>();
-        for (Long key : entityMap.keySet()) {
-            List<CertificationStatusEvent> listingEvents = entityMap.get(key).stream()
-                    .map(entity -> entity.toDomain())
-                    .collect(Collectors.toList());
-            syncdMap.put(key, listingEvents);
-        }
-        return syncdMap;
     }
 
     public List<CertificationStatusEvent> findByCertifiedProductId(Long certifiedProductId) {

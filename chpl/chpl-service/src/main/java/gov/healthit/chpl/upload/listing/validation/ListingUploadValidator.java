@@ -21,6 +21,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperCodeReviewe
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.InheritsFromActiveListingReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.MeasureReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
@@ -58,6 +59,7 @@ public class ListingUploadValidator {
     private VersionReviewer versionReviewer;
     private CertificationDateReviewer certDateReviewer;
     private InheritanceReviewer inheritanceReviewer;
+    private InheritsFromActiveListingReviewer inheritsFromActiveListingReviewer;
     private QmsStandardReviewer qmsReviewer;
     private AccessibilityStandardReviewer accStdReviewer;
     private MeasureReviewer measureReviewer;
@@ -90,6 +92,7 @@ public class ListingUploadValidator {
             CertificationDateReviewer certDateReviewer,
             ChplNumberUniqueReviewer chplNumberUniqueReviewer,
             InheritanceReviewer inheritanceReviewer,
+            InheritsFromActiveListingReviewer inheritsFromActiveListingReviewer,
             QmsStandardReviewer qmsReviewer,
             AccessibilityStandardReviewer accStdReviewer,
             @Qualifier("listingUploadMeasureReviewer") MeasureReviewer measureReviewer,
@@ -119,6 +122,7 @@ public class ListingUploadValidator {
         this.certDateReviewer = certDateReviewer;
         this.chplNumberUniqueReviewer = chplNumberUniqueReviewer;
         this.inheritanceReviewer = inheritanceReviewer;
+        this.inheritsFromActiveListingReviewer = inheritsFromActiveListingReviewer;
         this.qmsReviewer = qmsReviewer;
         this.accStdReviewer = accStdReviewer;
         this.measureReviewer = measureReviewer;
@@ -150,6 +154,7 @@ public class ListingUploadValidator {
         versionReviewer.review(listing);
         icsCodeReviewer.review(listing);
         inheritanceReviewer.review(listing);
+        inheritsFromActiveListingReviewer.review(listing);
         additionalSoftwareCodeReviewer.review(listing);
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
