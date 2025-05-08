@@ -16,6 +16,14 @@ public final class CertificationStatusUtil {
             CertificationStatusType.SuspendedByOnc)
             .toList();
 
+    private static final List<CertificationStatusType> INACTIVE_STATUSES = Stream.of(
+            CertificationStatusType.WithdrawnByAcb,
+            CertificationStatusType.WithdrawnByDeveloper,
+            CertificationStatusType.WithdrawnByDeveloperUnderReview,
+            CertificationStatusType.TerminatedByOnc,
+            CertificationStatusType.Retired)
+            .toList();
+
     private static final List<CertificationStatusType> SUSPENDED_STATUSES = Stream.of(
             CertificationStatusType.SuspendedByAcb,
             CertificationStatusType.SuspendedByOnc)
@@ -43,8 +51,18 @@ public final class CertificationStatusUtil {
         return ACTIVE_STATUSES;
     }
 
+    public static List<CertificationStatusType> getInactiveStatuses() {
+        return INACTIVE_STATUSES;
+    }
+
     public static List<String> getActiveStatusNames() {
         return ACTIVE_STATUSES.stream()
+                .map(status -> status.getName())
+                .toList();
+    }
+
+    public static List<String> getInactiveStatusNames() {
+        return INACTIVE_STATUSES.stream()
                 .map(status -> status.getName())
                 .toList();
     }
@@ -64,6 +82,15 @@ public final class CertificationStatusUtil {
     public static boolean isActive(CertifiedProductSearchDetails listing) {
         CertificationStatus currentStatusName = NullSafeEvaluator.eval(() -> listing.getCurrentStatus().getStatus(), null);
         return currentStatusName != null && getActiveStatusNames().contains(currentStatusName.getName());
+    }
+
+    public static boolean isInactive(CertifiedProductSearchDetails listing) {
+        CertificationStatus currentStatusName = NullSafeEvaluator.eval(() -> listing.getCurrentStatus().getStatus(), null);
+        return isInactive(currentStatusName.getName());
+    }
+
+    public static boolean isInactive(String statusName) {
+        return statusName != null && getInactiveStatusNames().contains(statusName);
     }
 
     public static boolean isNotRetired(CertifiedProductSearchDetails listing) {
