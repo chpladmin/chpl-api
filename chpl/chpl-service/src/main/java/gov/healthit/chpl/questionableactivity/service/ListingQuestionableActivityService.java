@@ -19,6 +19,7 @@ import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AttestRemovedCriteriaActivity;
+import gov.healthit.chpl.questionableactivity.listing.CreateIcsListingWithWithdrawnParent;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedMeasuresActivity;
@@ -66,6 +67,7 @@ public class ListingQuestionableActivityService {
             ActivityDTO activity, String activityReason) {
         if (origListing == null && newListing != null) {
             processListingActivity(UploadedAfterCertificationDateActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(CreateIcsListingWithWithdrawnParent.class.getName(), origListing, newListing, activity, activityReason);
         } else if (origListing != null && newListing != null) {
             processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
