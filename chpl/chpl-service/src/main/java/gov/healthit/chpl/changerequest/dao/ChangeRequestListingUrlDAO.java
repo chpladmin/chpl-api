@@ -114,7 +114,7 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestListingUrlTypeEntity crlut "
                 + "WHERE (NOT deleted = true) "
-                + "AND (name = :cname) ";
+                + "AND (name = :name) ";
 
         List<ChangeRequestListingUrlTypeEntity> result = entityManager
                 .createQuery(hql, ChangeRequestListingUrlTypeEntity.class)

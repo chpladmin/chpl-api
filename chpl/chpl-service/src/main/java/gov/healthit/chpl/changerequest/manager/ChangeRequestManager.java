@@ -69,7 +69,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestManager {
-    private static final String LISTING_URL_CHANGE_REQUEST_TYPE = "Listing URL Change Request";
     private static final String SERVICE_BASE_URL_LIST_TYPE = "Service Base URL List";
 
     @Value("${changerequest.status.pendingacbaction}")
@@ -167,7 +166,10 @@ public class ChangeRequestManager {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
                 .filter(entity -> entity.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
                         || (entity.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
-                                && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
+                                && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
+                        || (entity.getName().equals(ChangeRequestType.LISTING_URL_TYPE)
+                                && ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST))
+                        )
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
     }
@@ -189,6 +191,12 @@ public class ChangeRequestManager {
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
+        if (!ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
+                && changeRequest.getDetails() != null
+                && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType() != null
+                && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.featureDisabled"));
+        }
         return saveChangeRequest(changeRequest);
     }
 
@@ -278,7 +286,7 @@ public class ChangeRequestManager {
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
         } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeByName(LISTING_URL_CHANGE_REQUEST_TYPE);
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.LISTING_URL_TYPE);
         }
 
         return null;
