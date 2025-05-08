@@ -85,8 +85,8 @@ public class SearchRequestNormalizer {
     }
 
     private void normailizeCriteriaIds(DeveloperSearchRequest request) {
-        if (CollectionUtils.isNotEmpty(request.getCriteriaIdsStrings())) {
-            request.setCriteriaIds(request.getCriteriaIdsStrings().stream()
+        if (CollectionUtils.isNotEmpty(request.getCertificationCriteriaIdsStrings())) {
+            request.setCertificationCriteriaIds(request.getCertificationCriteriaIdsStrings().stream()
                     .map(Long::parseLong)
                     .collect(Collectors.toSet()));
         }
@@ -94,9 +94,9 @@ public class SearchRequestNormalizer {
 
     private void normalizeCriteriaOptionsOperator(DeveloperSearchRequest request) {
         if (!StringUtils.isBlank(request.getCriteriaIdsOperatorString())
-                && request.getCriteriaIdsOperator() == null) {
+                && request.getCertificationCriteriaIdsOperator() == null) {
             try {
-                request.setCriteriaIdsOperator(
+                request.setCertificationCriteriaIdsOperator(
                         SearchSetOperator.valueOf(request.getCriteriaIdsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }

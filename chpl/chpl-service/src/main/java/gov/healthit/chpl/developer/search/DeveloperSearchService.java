@@ -293,7 +293,7 @@ public class DeveloperSearchService {
     }
 
     private boolean matchesCriteriaIdsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
-        if (CollectionUtils.isEmpty(searchRequest.getCriteriaIds())) {
+        if (CollectionUtils.isEmpty(searchRequest.getCertificationCriteriaIds())) {
             return true;
         }
 
@@ -301,11 +301,11 @@ public class DeveloperSearchService {
                 ? developer.getCriteriaIdsAllListings()
                 : developer.getCriteriaIdsActiveListings();
 
-        if (searchRequest.getCriteriaIdsOperator() == null
-                || searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.AND)) {
-            return developersCriteriaIds.containsAll(searchRequest.getCriteriaIds());
-        } else if (searchRequest.getCriteriaIdsOperator().equals(SearchSetOperator.OR)) {
-            return !CollectionUtils.intersection(developersCriteriaIds, searchRequest.getCriteriaIds()).isEmpty();
+        if (searchRequest.getCertificationCriteriaIdsOperator() == null
+                || searchRequest.getCertificationCriteriaIdsOperator().equals(SearchSetOperator.AND)) {
+            return developersCriteriaIds.containsAll(searchRequest.getCertificationCriteriaIds());
+        } else if (searchRequest.getCertificationCriteriaIdsOperator().equals(SearchSetOperator.OR)) {
+            return !CollectionUtils.intersection(developersCriteriaIds, searchRequest.getCertificationCriteriaIds()).isEmpty();
         } else {
             return false;
         }
