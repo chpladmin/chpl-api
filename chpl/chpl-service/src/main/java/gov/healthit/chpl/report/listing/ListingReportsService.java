@@ -102,6 +102,7 @@ public class ListingReportsService extends SummaryStatisticsReportBaseService {
         try {
             return listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                     .certificationStatuses(statusNames)
+                    .pageSize(SearchRequest.MAX_PAGE_SIZE)
                     .build());
 
         } catch (ValidationException e) {
