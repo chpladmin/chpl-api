@@ -20,6 +20,9 @@
         <AppenderRef ref="sharedDataStore" />
         <AppenderRef ref="sharedDataStoreJson" />
     </Logger>
+    <Logger name="reportDataMethodUsageLogger" level="INFO" additivity="false">
+        <AppenderRef ref="reportDataMethodUsage" />
+    </Logger>
     <Logger name="summaryStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsEmailJob" />
     </Logger>

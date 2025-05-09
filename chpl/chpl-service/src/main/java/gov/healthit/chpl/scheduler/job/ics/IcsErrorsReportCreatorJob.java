@@ -74,6 +74,7 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         try {
             relevantListings = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                 .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
+                .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build());
         } catch (ValidationException ex) {
             LOGGER.fatal("Invalid search request provided.", ex);

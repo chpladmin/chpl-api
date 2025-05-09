@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryReport;
+import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,6 +35,7 @@ public class RealWorldTestingReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingPlanReports() {
         return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryReports();
@@ -44,6 +46,7 @@ public class RealWorldTestingReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/results", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingResultsReports() {
         return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryReports();
