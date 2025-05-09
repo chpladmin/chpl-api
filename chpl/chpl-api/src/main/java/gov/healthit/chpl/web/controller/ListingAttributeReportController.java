@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
 import gov.healthit.chpl.report.listingattribute.AccessibilityStandardListingReport;
 import gov.healthit.chpl.report.listingattribute.AccessibilityStandardReport;
 import gov.healthit.chpl.report.listingattribute.MeasureListingReport;
 import gov.healthit.chpl.report.listingattribute.MeasureReport;
 import gov.healthit.chpl.report.listingattribute.QmsStandardListingReport;
 import gov.healthit.chpl.report.listingattribute.QmsStandardReport;
+import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,6 +39,7 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/qms-standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QmsStandardReport> getQmsStandardsReports() {
         return reportDataManager.getListingAttributeService().getQmsStandardReports();
@@ -50,6 +50,7 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/qms-standards/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QmsStandardListingReport> getQmsStandardsListingReports() {
         return reportDataManager.getListingAttributeService().getQmsStandardListingReports();
@@ -60,6 +61,7 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/accessibility-standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AccessibilityStandardReport> geAccessibilitytStandardReports() {
         return reportDataManager.getListingAttributeService().getAccessibilityStandardReports();
@@ -70,6 +72,7 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/accessibility-standards/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<AccessibilityStandardListingReport> getAccessibilityStandardListingReports() {
         return reportDataManager.getListingAttributeService().getAccessibilityStandardListingReports();
@@ -80,6 +83,7 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/measures", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureReport> getMeasureReports() {
         return reportDataManager.getListingAttributeService().getMeasureReports();
@@ -90,28 +94,9 @@ public class ListingAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/measures/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureListingReport> getMeasureListingReports() {
         return reportDataManager.getListingAttributeService().getMeasureListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the UCD Process Listing Attribute Summary report.",
-            description = "Retrieves the data used to generate the UCD Process Listing Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/ucd-processes", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<OptionalStandardReport> getOptionalStandardReports() {
-        return reportDataManager.getCriteriaAttributeAttributeService().getOptionalStandardReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the UCD Process Listing Attribute Listings report.",
-            description = "Retrieves the data used to generate the UCD Process Listing Attribute Listings report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/ucd-processes/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<OptionalStandardListingReport> getOptionalStandardListingReports() {
-        return reportDataManager.getCriteriaAttributeAttributeService().getOptionalStandardListingReports();
     }
 }

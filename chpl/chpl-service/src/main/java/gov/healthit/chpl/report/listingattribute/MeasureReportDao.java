@@ -29,7 +29,7 @@ public class MeasureReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> MeasureReport.builder()
-                        .measure(((MeasureEntity) result[0]).toDomain())
+                        .measure(((MeasureEntity) result[0]).toSimpleMeasure())
                         .count((Long) result[1])
                         .build())
                 .toList();
@@ -52,7 +52,7 @@ public class MeasureReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> MeasureListingReport.builder()
-                        .measure(((MeasureEntity) result[0]).toDomain())
+                        .measure(((MeasureEntity) result[0]).toSimpleMeasure())
                         .chplProductNumber((String) result[1])
                         .build())
                 .toList();
