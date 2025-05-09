@@ -69,7 +69,7 @@ public class MeasureEntity extends EntityAudit {
     @Where(clause = " deleted = false ")
     private Set<MeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MeasureCriterionMapEntity>();
 
-    public Measure convert() {
+    public Measure toDomain() {
         LinkedHashSet<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();
         if (getAllowedCriteria() != null) {
             getAllowedCriteria().stream()
