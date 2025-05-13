@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import gov.healthit.chpl.domain.status.ServerStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.util.RedisUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.results.TimestampResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +38,13 @@ public class StatusController {
         this.drService = drService;
         this.cacheManager = cacheManager;
         this.redisUtil = redisUtil;
+    }
+
+    @RequestMapping(value = "/current-time", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody TimestampResult getCurrentTime() {
+        return TimestampResult.builder()
+                .localDateTime(LocalDateTime.now())
+                .build();
     }
 
     @Operation(summary = "Check that the rest services are up and running and indicate whether "

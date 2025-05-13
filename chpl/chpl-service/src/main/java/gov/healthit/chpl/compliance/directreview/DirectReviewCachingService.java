@@ -209,7 +209,7 @@ public class DirectReviewCachingService {
     @CachePut(value = CacheNames.DIRECT_REVIEWS, key = "#developerId")
     public DirectReviewContainer getDirectReviews(Long developerId, Logger logger) {
         DirectReviewContainer drContainer = null;
-        DirectReviewContainer fetchedDrContainer  = getDirectReviewsForDeveloperFromJira(developerId, logger);
+        DirectReviewContainer fetchedDrContainer = getDirectReviewsForDeveloperFromJira(developerId, logger);
         if (fetchedDrContainer != null) {
             drContainer = fetchedDrContainer;
         } else {
