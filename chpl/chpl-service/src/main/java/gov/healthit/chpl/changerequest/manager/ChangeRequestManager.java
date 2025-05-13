@@ -349,6 +349,7 @@ public class ChangeRequestManager {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
         } else if (isServiceBaseUrlListChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
+            ((ChangeRequestListingUrl) cr.getDetails()).setUrl(((ChangeRequestListingUrl) cr.getDetails()).getUrl().trim());
         }
         return cr;
     }
