@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -25,13 +24,11 @@ public class TestToolValidator {
     private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
 
     private ErrorMessageUtil errorMessageUtil;
-    private RuleDAO ruleDAO;
     private TestToolDAO testToolDAO;
 
     @Autowired
-    public TestToolValidator(ErrorMessageUtil errorMessageUtil, RuleDAO ruleDAO, TestToolDAO testToolDAO) {
+    public TestToolValidator(ErrorMessageUtil errorMessageUtil, TestToolDAO testToolDAO) {
         this.errorMessageUtil = errorMessageUtil;
-        this.ruleDAO = ruleDAO;
         this.testToolDAO = testToolDAO;
     }
 
@@ -49,11 +46,6 @@ public class TestToolValidator {
                 messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate", testTool.getValue()));
             }
             messages.addAll(validateCriteriaRemovedFromTestTool(testTool));
-        }
-
-        if (testTool.getRule() != null
-                && ruleDAO.getRuleEntityById(testTool.getRule().getId()) == null) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.notFoundRule"));
         }
 
         if (messages.size() > 0) {
@@ -75,11 +67,6 @@ public class TestToolValidator {
 
         if (isTestToolDuplicateOnAdd(testTool)) {
             messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate",  testTool.getValue()));
-        }
-
-        if (testTool.getRule() != null
-                && ruleDAO.getRuleEntityById(testTool.getRule().getId()) == null) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.notFoundRule"));
         }
 
         if (messages.size() > 0) {
