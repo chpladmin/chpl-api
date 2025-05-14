@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.search.domain.DevelopersListingsCriteriaOption;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -73,6 +74,8 @@ public class DeveloperSearchService {
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
             .filter(dev -> matchesHasUsersFilter(dev, searchRequest, allEnabledDeveloperUsers))
             .filter(dev -> matchesDeveloperId(dev, searchRequest.getDeveloperIds()))
+            .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
+            .filter(dev -> matchesCriteriaIdsFilter(dev, searchRequest))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
 
@@ -287,6 +290,25 @@ public class DeveloperSearchService {
                     matchesHasNotPublishedAttestationsFilter);
         }
         return true;
+    }
+
+    private boolean matchesCriteriaIdsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
+        if (CollectionUtils.isEmpty(searchRequest.getCertificationCriteriaIds())) {
+            return true;
+        }
+
+        Set<Long> developersCriteriaIds = searchRequest.getDevelopersListingsCriteriaOption().equals(DevelopersListingsCriteriaOption.ALL)
+                ? developer.getCriteriaIdsAllListings()
+                : developer.getCriteriaIdsActiveListings();
+
+        if (searchRequest.getCertificationCriteriaIdsOperator() == null
+                || searchRequest.getCertificationCriteriaIdsOperator().equals(SearchSetOperator.AND)) {
+            return developersCriteriaIds.containsAll(searchRequest.getCertificationCriteriaIds());
+        } else if (searchRequest.getCertificationCriteriaIdsOperator().equals(SearchSetOperator.OR)) {
+            return !CollectionUtils.intersection(developersCriteriaIds, searchRequest.getCertificationCriteriaIds()).isEmpty();
+        } else {
+            return false;
+        }
     }
 
     private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {
