@@ -2,8 +2,10 @@ package gov.healthit.chpl.developer.search;
 
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import gov.healthit.chpl.search.domain.DevelopersListingsCriteriaOption;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 public class SearchRequestNormalizer {
@@ -18,6 +20,7 @@ public class SearchRequestNormalizer {
         normalizeDecertificationDates(request);
         normalizeActiveListingsFilter(request);
         normalizeAttestationsFilter(request);
+        normalizeCriteriaIdSearchOptions(request);
         normalizeOrderBy(request);
     }
 
@@ -72,6 +75,42 @@ public class SearchRequestNormalizer {
         }
         if (!StringUtils.isEmpty(request.getDecertificationDateEnd())) {
             request.setDecertificationDateEnd(StringUtils.normalizeSpace(request.getDecertificationDateEnd()));
+        }
+    }
+
+    private void normalizeCriteriaIdSearchOptions(DeveloperSearchRequest request) {
+        normailizeCriteriaIds(request);
+        normalizeCriteriaOptionsOperator(request);
+        normalizeDevelopersListingsCriteriaOption(request);
+    }
+
+    private void normailizeCriteriaIds(DeveloperSearchRequest request) {
+        if (CollectionUtils.isNotEmpty(request.getCertificationCriteriaIdsStrings())) {
+            request.setCertificationCriteriaIds(request.getCertificationCriteriaIdsStrings().stream()
+                    .map(Long::parseLong)
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeCriteriaOptionsOperator(DeveloperSearchRequest request) {
+        if (!StringUtils.isBlank(request.getCriteriaIdsOperatorString())
+                && request.getCertificationCriteriaIdsOperator() == null) {
+            try {
+                request.setCertificationCriteriaIdsOperator(
+                        SearchSetOperator.valueOf(request.getCriteriaIdsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeDevelopersListingsCriteriaOption(DeveloperSearchRequest request) {
+        if (!StringUtils.isBlank(request.getDevelopersListingsCriteriaOptionString())
+                && request.getDevelopersListingsCriteriaOption() == null) {
+            try {
+                request.setDevelopersListingsCriteriaOption(DevelopersListingsCriteriaOption
+                        .valueOf(request.getDevelopersListingsCriteriaOptionString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
         }
     }
 
