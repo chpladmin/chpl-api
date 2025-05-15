@@ -80,7 +80,7 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "GROUP BY cc.id, s.id ";
 
         Query query = entityManager.createQuery(hql);
-        query.setParameter("cerificationStatusId", certificationStatus.getId());
+        query.setParameter("certificationStatusId", certificationStatus.getId());
         List<Object[]> results = query.getResultList();
 
         return results.stream()
