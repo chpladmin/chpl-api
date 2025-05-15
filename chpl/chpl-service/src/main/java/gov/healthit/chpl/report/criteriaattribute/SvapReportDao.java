@@ -59,7 +59,7 @@ public class SvapReportDao extends BaseDAOImpl {
     }
 
     public List<SvapListingReport> getSvapListingReports() {
-        String hql = "SELECT cc, s, cpd.chplProductNumber "
+        String hql = "SELECT cc, s, cpd.chplProductNumber, cpd.certificationStatusName "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -69,7 +69,6 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crs.certificationResultId "
                 + "AND crs.svap.id = s.id "
-                + "AND cpd.certificationStatusId IN (1,6,7) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
                 + "AND crs.deleted = false "
@@ -84,6 +83,7 @@ public class SvapReportDao extends BaseDAOImpl {
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .svap(((SvapEntity) result[1]).toDomain())
                         .chplProductNumber((String) result[2])
+                        .certificationStatus((String) result[3])
                         .build())
                 .toList();
     }
