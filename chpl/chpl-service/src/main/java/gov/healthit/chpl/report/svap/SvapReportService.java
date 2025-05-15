@@ -56,7 +56,7 @@ public class SvapReportService {
         allCertStatuses.stream()
             .forEach(certStatus -> {
                 List<SvapReportByCertificationStatus> svapReportsForStatus = svapReportDAO.getSvapReports(certStatus);
-                if (CollectionUtils.isEmpty(svapReportsForStatus)) {
+                if (!CollectionUtils.isEmpty(svapReportsForStatus)) {
                     response.addAll(svapReportsForStatus);
                 }
             });
