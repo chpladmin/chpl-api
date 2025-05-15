@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
 import gov.healthit.chpl.report.svap.CriterionCount;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -53,6 +54,40 @@ public class SvapReportDao extends BaseDAOImpl {
                 .map(result -> SvapReport.builder()
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .svap(((SvapEntity) result[1]).toDomain())
+                        .count((Long) result[2])
+                        .build())
+                .toList();
+    }
+
+    public List<SvapReportByCertificationStatus> getSvapReports(CertificationStatus certificationStatus) {
+        String hql = "SELECT cc, s, count(*) as svapCount "
+                + "FROM CertificationCriterionEntity cc, "
+                + "CertificationResultEntity cr, "
+                + "CertifiedProductDetailsEntity cpd, "
+                + "CertificationResultSvapEntity crs, "
+                + "SvapEntity s "
+                + "WHERE cc.id = cr.certificationCriterionId "
+                + "AND cr.certifiedProductId = cpd.id "
+                + "AND cr.id = crs.certificationResultId "
+                + "AND crs.svap.id = s.id "
+                + "AND cpd.certificationStatusId = :certificationStatusId "
+                + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
+                + "AND cc.deleted = false "
+                + "AND cr.deleted = false "
+                + "AND crs.deleted = false "
+                + "AND cpd.deleted = false "
+                + "AND s.deleted = false "
+                + "GROUP BY cc.id, s.id ";
+
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("cerificationStatusId", certificationStatus.getId());
+        List<Object[]> results = query.getResultList();
+
+        return results.stream()
+                .map(result -> SvapReportByCertificationStatus.builder()
+                        .criterion(((CertificationCriterionEntity) result[0]).toDomain())
+                        .svap(((SvapEntity) result[1]).toDomain())
+                        .certificationStatus(certificationStatus.getName())
                         .count((Long) result[2])
                         .build())
                 .toList();
