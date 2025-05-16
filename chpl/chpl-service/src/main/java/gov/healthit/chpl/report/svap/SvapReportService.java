@@ -41,7 +41,16 @@ public class SvapReportService {
 
     @Transactional
     public List<CriteriaWithAnySvap> getCriteriaWithAnySvap() {
-        return svapReportDAO.getCriteriaWithAnySvap();
+        List<CertificationStatus> allCertStatuses = certStatusDao.findAll();
+        List<CriteriaWithAnySvap> response = new ArrayList<CriteriaWithAnySvap>();
+        allCertStatuses.stream()
+        .forEach(certStatus -> {
+            List<CriteriaWithAnySvap> criteriaWithAnySvapForStatus = svapReportDAO.getCriteriaWithAnySvap(certStatus);
+            if (!CollectionUtils.isEmpty(criteriaWithAnySvapForStatus)) {
+                response.addAll(criteriaWithAnySvapForStatus);
+            }
+        });
+        return response;
     }
 
     @Transactional
