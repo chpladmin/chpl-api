@@ -39,6 +39,7 @@ import lombok.ToString;
 public class DeveloperSearchResultEntity implements Serializable {
     private static final long serialVersionUID = -1396979009490864864L;
     private static final String ACB_SEPARATOR_CHAR = "\\|";
+    private static final String CRITERIA_SEPARATOR_CHAR = "\\|";
     private static final String ID_NAME_SEPARATOR_CHAR = ":";
 
     @Id
@@ -123,6 +124,12 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "acbs_for_developer_all_listings")
     private String acbsForDeveloperAllListings;
 
+    @Column (name = "delimited_criteria_all_listings")
+    private String delimitedCriteriaAllListings;
+
+    @Column (name = "delimited_criteria_active_listings")
+    private String delimitedCriteriaActiveListings;
+
     @Column(name = "creation_date")
     private Date creationDate;
 
@@ -168,6 +175,8 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
                 .acbsForWithdrawnListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperWithdrawnListings()))
                 .acbsForSuspendedListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperSuspendedListings()))
+                .criteriaIdsAllListings(buildSetOfCriteriaIds(this.getDelimitedCriteriaAllListings()))
+                .criteriaIdsActiveListings(buildSetOfCriteriaIds(this.getDelimitedCriteriaActiveListings()))
                 .creationDate(this.getCreationDate())
                 .build();
     }
@@ -178,6 +187,14 @@ public class DeveloperSearchResultEntity implements Serializable {
             return statusChangeDate;
         }
         return null;
+    }
+
+    private Set<Long> buildSetOfCriteriaIds(String criteriaIds) {
+        if (StringUtils.isEmpty(criteriaIds)) {
+            return new HashSet<Long>();
+        }
+        return Stream.of(criteriaIds.split(CRITERIA_SEPARATOR_CHAR)).map(str -> Long.parseLong(str))
+                .collect(Collectors.toSet());
     }
 
     private Set<IdNamePair> buildSetOfIdNamePairs(String acbIdNamePairs) {

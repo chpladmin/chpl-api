@@ -51,7 +51,7 @@ public class StandardValidator {
             messages.add(errorMessageUtil.getMessage("standard.edit.noCriteria"));
         } else {
             if (isStandardDuplicateOnEdit(standard)) {
-                messages.add(errorMessageUtil.getMessage("standard.edit.duplicate"));
+                messages.add(errorMessageUtil.getMessage("standard.edit.duplicate", standard.getRegulatoryTextCitation()));
             }
             messages.addAll(validateCriteriaRemovedFromStandard(standard));
         }
@@ -84,7 +84,7 @@ public class StandardValidator {
         }
 
         if (isStandardDuplicateOnAdd(standard)) {
-            messages.add(errorMessageUtil.getMessage("standard.edit.duplicate"));
+            messages.add(errorMessageUtil.getMessage("standard.edit.duplicate", standard.getRegulatoryTextCitation()));
         }
 
         if (standard.getRule() != null
@@ -159,8 +159,7 @@ public class StandardValidator {
                 .filter(map -> {
                         String origCitationText = map.getStandard().getRegulatoryTextCitation() != null ? map.getStandard().getRegulatoryTextCitation() : "";
 
-                        return map.getStandard().getValue().equalsIgnoreCase(standard.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText)
+                        return origCitationText.equalsIgnoreCase(updatedCitationText)
                                 && !map.getStandard().getId().equals(standard.getId());
                 })
                 .findAny()
@@ -174,8 +173,7 @@ public class StandardValidator {
                 .filter(map -> {
                         String origCitationText = map.getStandard().getRegulatoryTextCitation() != null ? map.getStandard().getRegulatoryTextCitation() : "";
 
-                        return map.getStandard().getValue().equalsIgnoreCase(standard.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText);
+                        return origCitationText.equalsIgnoreCase(updatedCitationText);
                 })
                 .findAny()
                 .isPresent();

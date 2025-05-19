@@ -17,6 +17,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +34,7 @@ public class TestToolController {
         this.testToolManager = testToolManager;
     }
 
+    @DeprecatedApiResponseFields(responseClass = TestTool.class, friendlyUrl = "/test-tools")
     @Operation(summary = "Retrieve all current Test Tools. ",
             description = "Returns all of the Test Tools that are currently in the CHPL.",
             security = {
@@ -60,6 +62,7 @@ public class TestToolController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(responseClass = TestTool.class, friendlyUrl = "/test-tools", httpMethod = "POST")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody TestTool createTestTool(@RequestBody(required = true) TestTool testTool) throws EntityRetrievalException, ValidationException {
@@ -73,6 +76,7 @@ public class TestToolController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(responseClass = TestTool.class, friendlyUrl = "/test-tools", httpMethod = "PUT")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody TestTool updateTestTool(@RequestBody(required = true) TestTool testTool) throws EntityRetrievalException, ValidationException {

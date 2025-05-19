@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -25,13 +24,11 @@ public class TestToolValidator {
     private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
 
     private ErrorMessageUtil errorMessageUtil;
-    private RuleDAO ruleDAO;
     private TestToolDAO testToolDAO;
 
     @Autowired
-    public TestToolValidator(ErrorMessageUtil errorMessageUtil, RuleDAO ruleDAO, TestToolDAO testToolDAO) {
+    public TestToolValidator(ErrorMessageUtil errorMessageUtil, TestToolDAO testToolDAO) {
         this.errorMessageUtil = errorMessageUtil;
-        this.ruleDAO = ruleDAO;
         this.testToolDAO = testToolDAO;
     }
 
@@ -46,14 +43,9 @@ public class TestToolValidator {
             messages.add(errorMessageUtil.getMessage("testTool.edit.noCriteria"));
         } else {
             if (isTestToolDuplicateOnEdit(testTool)) {
-                messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate"));
+                messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate", testTool.getValue()));
             }
             messages.addAll(validateCriteriaRemovedFromTestTool(testTool));
-        }
-
-        if (testTool.getRule() != null
-                && ruleDAO.getRuleEntityById(testTool.getRule().getId()) == null) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.notFoundRule"));
         }
 
         if (messages.size() > 0) {
@@ -74,12 +66,7 @@ public class TestToolValidator {
         }
 
         if (isTestToolDuplicateOnAdd(testTool)) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate"));
-        }
-
-        if (testTool.getRule() != null
-                && ruleDAO.getRuleEntityById(testTool.getRule().getId()) == null) {
-            messages.add(errorMessageUtil.getMessage("testTool.edit.notFoundRule"));
+            messages.add(errorMessageUtil.getMessage("testTool.edit.duplicate",  testTool.getValue()));
         }
 
         if (messages.size() > 0) {
@@ -144,32 +131,17 @@ public class TestToolValidator {
     }
 
     private boolean isTestToolDuplicateOnEdit(TestTool testTool) throws EntityRetrievalException {
-        String updatedCitationText = testTool.getRegulatoryTextCitation() != null ? testTool.getRegulatoryTextCitation() : "";
-
         return testToolDAO.getAllTestToolCriteriaMaps().stream()
-                .filter(map -> {
-                        String origCitationText = map.getTestTool().getRegulatoryTextCitation() != null ? map.getTestTool().getRegulatoryTextCitation() : "";
-
-                        return map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText)
-                                && !map.getTestTool().getId().equals(testTool.getId());
-                })
+                .filter(map -> map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
+                                && !map.getTestTool().getId().equals(testTool.getId()))
                 .findAny()
                 .isPresent();
     }
 
     private boolean isTestToolDuplicateOnAdd(TestTool testTool) throws EntityRetrievalException {
-        String updatedCitationText = testTool.getRegulatoryTextCitation() != null ? testTool.getRegulatoryTextCitation() : "";
 
         return testToolDAO.getAllTestToolCriteriaMaps().stream()
-                .filter(map -> {
-                        String origCitationText = map.getTestTool().getRegulatoryTextCitation() != null
-                                ? map.getTestTool().getRegulatoryTextCitation()
-                                : "";
-
-                        return map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue())
-                                && origCitationText.equalsIgnoreCase(updatedCitationText);
-                })
+                .filter(map -> map.getTestTool().getValue().equalsIgnoreCase(testTool.getValue()))
                 .findAny()
                 .isPresent();
     }

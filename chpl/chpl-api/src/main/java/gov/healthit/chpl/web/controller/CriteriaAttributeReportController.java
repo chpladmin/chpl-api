@@ -27,6 +27,7 @@ import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
+import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -50,6 +51,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/test-tools", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestToolReport> getTestToolReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getTestToolReports();
@@ -60,6 +62,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/test-tools/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getTestToolListingReports();
@@ -70,6 +73,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<StandardReport> getStandardReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getStandardReports();
@@ -80,6 +84,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/standards/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<StandardListingReport> getStandardListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getStandardListingReports();
@@ -90,6 +95,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/functionalities-tested", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<FunctionalityTestedReport> getFunctionalityTestedReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getFunctionalityTestedReports();
@@ -100,6 +106,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/functionalities-tested/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getFunctionalityTestedListingReports();
@@ -110,6 +117,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/optional-standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<OptionalStandardReport> getOptionalStandardReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getOptionalStandardReports();
@@ -120,6 +128,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/optional-standards/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<OptionalStandardListingReport> getOptionalStandardListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getOptionalStandardListingReports();
@@ -130,6 +139,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/test-data", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestDataReport> getTestDataReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getTestDataReports();
@@ -140,6 +150,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/test-data/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestDataListingReport> getTestDataListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getTestDataListingReports();
@@ -150,6 +161,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/svaps", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapReport> getSvapReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getSvapReports();
@@ -160,6 +172,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/svaps/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapListingReport> getSvapListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getSvapListingReports();
@@ -170,6 +183,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/privacy-and-security-frameworks", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<PrivacyAndSecurityFrameworkReport> getPrivacyAndSecurityFrameworkReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getPrivacyAndSecurityFrameworkReports();
@@ -180,6 +194,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/privacy-and-security-frameworks/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<PrivacyAndSecurityFrameworkListingReport> getPrivacyAndSecurityFrameworkListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getPrivacyAndSecurityFrameworkListingReports();
@@ -190,6 +205,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/conformance-methods", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ConformanceMethodReport> getConformanceMethodReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getConformnceMethodReports();
@@ -201,6 +217,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/conformance-methods/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ConformanceMethodListingReport> getConformanceMethodListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getConformanceMethodListingReports();
@@ -211,6 +228,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/code-sets", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CodeSetReport> getCodeSetReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getCodeSetReports();
@@ -222,6 +240,7 @@ public class CriteriaAttributeReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/code-sets/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CodeSetListingReport> getCodeSetListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getCodeSetListingReports();

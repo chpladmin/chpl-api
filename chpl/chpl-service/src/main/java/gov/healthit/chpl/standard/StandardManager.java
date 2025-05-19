@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,7 @@ public class StandardManager {
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
     public Standard update(Standard standard) throws EntityRetrievalException, ValidationException {
         Standard origStandard = standardDAO.getById(standard.getId());
+        normalize(standard);
         standardValidator.validateForEdit(standard);
         standardService.update(standard);
         Standard updatedStandard = standardDAO.getById(standard.getId());
@@ -91,6 +93,7 @@ public class StandardManager {
             + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).CREATE)")
     @Transactional
     public Standard create(Standard standard) throws EntityRetrievalException, ValidationException {
+        normalize(standard);
         standardValidator.validateForAdd(standard);
         Standard createdStandard = standardService.add(standard);
 
@@ -142,5 +145,12 @@ public class StandardManager {
         return standardsForCriterion.stream()
                 .sorted(standardComparator)
                 .toList();
+    }
+
+    private void normalize(Standard standard) {
+        standard.setAdditionalInformation(StringUtils.trim(standard.getAdditionalInformation()));
+        standard.setGroupName(StringUtils.trim(standard.getGroupName()));
+        standard.setRegulatoryTextCitation(StringUtils.trim(standard.getRegulatoryTextCitation()));
+        standard.setValue(StringUtils.trim(standard.getValue()));
     }
 }

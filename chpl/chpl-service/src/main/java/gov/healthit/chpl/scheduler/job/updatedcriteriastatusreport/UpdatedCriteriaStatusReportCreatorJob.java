@@ -141,6 +141,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                 .certificationStatuses(Set.of("Active", "Suspended by ONC", "Suspended by ONC-ACB"))
                 .certificationCriteriaIds(Set.of(certificationCriterionId))
                 .certificationCriteriaOperator(SearchSetOperator.AND)
+                .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build();
 
         return listingSearchService.getAllPagesOfSearchResults(request);
