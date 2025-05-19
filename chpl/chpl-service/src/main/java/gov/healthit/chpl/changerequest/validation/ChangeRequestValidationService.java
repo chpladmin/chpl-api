@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.validation.attestation.AttestationResponseValidation;
 import gov.healthit.chpl.changerequest.validation.attestation.AttestationValidation;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -16,14 +17,17 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class ChangeRequestValidationService {
     private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
+    private Long sbulChangeRequestTypeId;
 
     @Autowired
     public ChangeRequestValidationService(
             @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
-            @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
+            @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId,
+            @Value("${changerequest.serviceBaseUrlList}") Long sbulChangeRequestTypeId) {
 
         this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
+        this.sbulChangeRequestTypeId = sbulChangeRequestTypeId;
     }
 
     public List<String> getErrorMessages(ChangeRequestValidationContext context) {
@@ -38,7 +42,7 @@ public class ChangeRequestValidationService {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
 
         if (isNewChangeRequest(context)) {
-            rules.addAll(getCreateValidations());
+            rules.addAll(getCreateValidations(context));
         } else {
             rules.addAll(getUpdateValidations());
         }
@@ -85,10 +89,10 @@ public class ChangeRequestValidationService {
         return context.getOrigChangeRequest() == null;
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> getCreateValidations() {
+    private List<ValidationRule<ChangeRequestValidationContext>> getCreateValidations(ChangeRequestValidationContext context) {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new ChangeRequestTypeValidation(),
-                new ChangeRequestTypeInProcessValidation(),
+                getXXXXX(context.getNewChangeRequest().getChangeRequestType()),
                 new DeveloperExistenceValidation(),
                 new DeveloperActiveValidation(),
                 //TODO: make sure the passed-in attestationPeriod for the CR is the same as the currently submittable attestation period for that developer
@@ -116,6 +120,14 @@ public class ChangeRequestValidationService {
             return validationMessages;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private ValidationRule<ChangeRequestValidationContext> getXXXXX(ChangeRequestType changeRequestType) {
+        if (changeRequestType.getId().equals(sbulChangeRequestTypeId)) {
+            return new SbulChangeRequestTypeAndListingInProcessValidation();
+        } else {
+            return new ChangeRequestTypeInProcessValidation();
         }
     }
 }
