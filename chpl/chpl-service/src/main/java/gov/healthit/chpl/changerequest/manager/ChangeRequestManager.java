@@ -197,7 +197,11 @@ public class ChangeRequestManager {
                 && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.featureDisabled"));
         }
-        return saveChangeRequest(changeRequest);
+        ChangeRequest cr = saveChangeRequest(changeRequest);
+        if (cr == null ) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+        }
+        return cr;
     }
 
     @Transactional(readOnly = true)
@@ -306,7 +310,6 @@ public class ChangeRequestManager {
 
     private boolean isServiceBaseUrlListChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        ;
         try {
             Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(SERVICE_BASE_URL_LIST_TYPE).getId().intValue();
             return crMap.containsKey("changeRequestListingUrlType")
@@ -327,10 +330,13 @@ public class ChangeRequestManager {
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());
         newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
-        newCr = getChangeRequest(newCr.getId());
+        if (newCr != null) {
+            newCr = getChangeRequest(newCr.getId());
 
-        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
-        return newCr;
+            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
+            return newCr;
+        }
+        return null;
     }
 
     private ChangeRequest createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {

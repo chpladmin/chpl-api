@@ -110,6 +110,12 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
+            ChangeRequestListingUrl details = (ChangeRequestListingUrl) cr.getDetails();
+            // If CR details match the values from the existing listing, just return
+            if (getServiceBaseUrlList(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
+                return null;
+            }
+
             crListingUrlDAO.create(cr, (ChangeRequestListingUrl) cr.getDetails());
             return crDAO.get(cr.getId());
         } catch (EntityRetrievalException e) {
@@ -277,5 +283,17 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
             }
         }
         return chplProductNumber;
+    }
+
+    private String getServiceBaseUrlList(CertifiedProductSearchDetails listing) {
+        if (listing.getCertificationResults() != null) {
+            return listing.getCertificationResults().stream()
+                    .filter(crResult -> crResult.getCriterion().getId().equals(
+                            certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId()))
+                    .map(crResult -> crResult.getServiceBaseUrlList())
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
     }
 }

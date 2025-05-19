@@ -92,7 +92,7 @@ public class ChangeRequestValidationService {
     private List<ValidationRule<ChangeRequestValidationContext>> getCreateValidations(ChangeRequestValidationContext context) {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new ChangeRequestTypeValidation(),
-                getXXXXX(context.getNewChangeRequest().getChangeRequestType()),
+                getChangeRequestUniquenessValidator(context.getNewChangeRequest().getChangeRequestType()),
                 new DeveloperExistenceValidation(),
                 new DeveloperActiveValidation(),
                 //TODO: make sure the passed-in attestationPeriod for the CR is the same as the currently submittable attestation period for that developer
@@ -123,7 +123,7 @@ public class ChangeRequestValidationService {
         }
     }
 
-    private ValidationRule<ChangeRequestValidationContext> getXXXXX(ChangeRequestType changeRequestType) {
+    private ValidationRule<ChangeRequestValidationContext> getChangeRequestUniquenessValidator(ChangeRequestType changeRequestType) {
         if (changeRequestType.getId().equals(sbulChangeRequestTypeId)) {
             return new SbulChangeRequestTypeAndListingInProcessValidation();
         } else {
