@@ -43,7 +43,9 @@ import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 public class SchedulerManager extends SecuredManager {
     private static final String AUTHORITY_DELIMITER = ";";
@@ -296,7 +298,6 @@ public class SchedulerManager extends SecuredManager {
                 }
             }
         }
-
         return jobs;
     }
 

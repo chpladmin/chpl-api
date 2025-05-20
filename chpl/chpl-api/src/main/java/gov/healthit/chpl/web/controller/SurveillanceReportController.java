@@ -29,6 +29,7 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -150,6 +151,9 @@ public class SurveillanceReportController {
         reportManager.deleteAnnualReport(annualReportId);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance-report/export/annual/{annualReportId}", removalDate = "2025-11-01",
+            message = "The endpoint will no longer be supported as a GET request. Please POST to this same URL.")
     @Operation(summary = "Generates an annual report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
@@ -159,6 +163,21 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
+    public ChplOneTimeTrigger exportAnnualReportDeprecated(@PathVariable("annualReportId") Long annualReportId)
+            throws ValidationException, SchedulerException, EntityRetrievalException,
+            UserRetrievalException, InvalidArgumentsException {
+        return exportAnnualReport(annualReportId);
+    }
+
+    @Operation(summary = "Generates an annual report as an XLSX file as a background job "
+            + "and emails the report to the logged in user",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.POST)
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
             UserRetrievalException, InvalidArgumentsException {
@@ -297,6 +316,9 @@ public class SurveillanceReportController {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance-report/export/quarterly/{quarterlyReportId}", removalDate = "2025-11-01",
+            message = "The endpoint will no longer be supported as a GET request. Please POST to this same URL.")
     @Operation(summary = "Generates a quarterly report as an XLSX file as a background job "
             + "and emails the report to the logged in user",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
@@ -306,6 +328,20 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
+    public ChplOneTimeTrigger exportQuarterlyReportDeprecated(@PathVariable("quarterlyReportId") Long quarterlyReportId)
+            throws ValidationException, SchedulerException, UserRetrievalException {
+        return exportQuarterlyReport(quarterlyReportId);
+    }
+
+    @Operation(summary = "Generates a quarterly report as an XLSX file as a background job "
+            + "and emails the report to the logged in user",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb "
+                    + "and administrative authority on the ONC-ACB associated with the report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.POST)
     public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
             throws ValidationException, SchedulerException, UserRetrievalException {
         return reportManager.exportQuarterlyReportAsBackgroundJob(quarterlyReportId);
