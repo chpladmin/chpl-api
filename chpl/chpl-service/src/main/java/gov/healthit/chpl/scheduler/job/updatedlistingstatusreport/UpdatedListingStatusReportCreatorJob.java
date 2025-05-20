@@ -82,6 +82,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private void calculateStatisticsForActiveListings() throws ValidationException {
         SearchRequest request = SearchRequest.builder()
                 .certificationStatuses(Set.of("Active", "Suspended by ONC", "Suspended by ONC-ACB"))
+                .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build();
 
         listingSearchService.getAllPagesOfSearchResults(request).stream()

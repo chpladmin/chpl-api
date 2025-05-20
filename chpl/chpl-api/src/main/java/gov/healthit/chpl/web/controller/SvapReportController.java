@@ -12,6 +12,7 @@ import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.common.CertificationCriterionWithOrder;
 import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
 import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
+import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,6 +37,7 @@ public class SvapReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/criteria-with-any-svap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaWithAnySvap> getCriteriaWithAnySvap() {
         return reportDataManager.getSvapReportService().getCriteriaWithAnySvap();
@@ -46,6 +48,7 @@ public class SvapReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapListingReport> getSvapListingReports() {
         return reportDataManager.getSvapReportService().getSvapListingReports();
@@ -56,6 +59,7 @@ public class SvapReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationCriterionWithOrder> getCertificationCriteria() {
         return reportDataManager.getSvapReportService().getCertificationCriteria();

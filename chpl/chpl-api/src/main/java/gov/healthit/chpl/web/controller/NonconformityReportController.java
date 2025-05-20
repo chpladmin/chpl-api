@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.nonconformity.NonconformityTypeCount;
+import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,6 +35,7 @@ public class NonconformityReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @LogMethodUsage
     @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<NonconformityTypeCount> getNonconformityTypeCounts() {
         return reportDataManager.getNonconformityReportService().getNonconformityCounts();

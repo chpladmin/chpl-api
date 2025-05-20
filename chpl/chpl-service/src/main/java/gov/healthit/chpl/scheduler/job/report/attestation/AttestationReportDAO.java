@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -67,14 +66,14 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<AttestationReport> getAttestationReportByAttestationPeriod(AttestationPeriod period) {
-        return getEntitiesByAttestationPeriod(period).stream()
+    public List<AttestationReport> getAttestationReportByAttestationPeriod() {
+        return getEntities().stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
 
-    public List<AttestationReportDeveloper> getAttestationReportDeveloperByAttestationPeriod(AttestationPeriod period) {
-        return getAttestationReportDeveloperEntitiesByAttestationPeriod(period).stream()
+    public List<AttestationReportDeveloper> getAttestationReportDeveloperByAttestationPeriod() {
+        return getAttestationReportDeveloperEntities().stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
@@ -93,19 +92,16 @@ public class AttestationReportDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-    private List<AttestationReportEntity> getEntitiesByAttestationPeriod(AttestationPeriod period) {
+    private List<AttestationReportEntity> getEntities() {
         Query query = entityManager.createQuery(
-                "from AttestationReportEntity where (NOT deleted = true) and attestationPeriod.id = :attestationPeriodId", AttestationReportEntity.class);
-        query.setParameter("attestationPeriodId", period.getId());
+                "from AttestationReportEntity where (NOT deleted = true)", AttestationReportEntity.class);
         return query.getResultList();
     }
 
-    private List<AttestationReportDeveloperEntity> getAttestationReportDeveloperEntitiesByAttestationPeriod(AttestationPeriod period) {
+    private List<AttestationReportDeveloperEntity> getAttestationReportDeveloperEntities() {
         Query query = entityManager.createQuery(
                 "from AttestationReportDeveloperEntity ard "
-                + "where (NOT deleted = true) "
-                + "and ard.attestationReport.attestationPeriod.id = :attestationPeriodId", AttestationReportDeveloperEntity.class);
-        query.setParameter("attestationPeriodId", period.getId());
+                + "where (NOT deleted = true)", AttestationReportDeveloperEntity.class);
         return query.getResultList();
     }
 }

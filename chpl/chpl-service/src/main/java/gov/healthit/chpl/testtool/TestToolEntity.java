@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLJoinTableRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,14 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.WhereJoinTable;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,10 +48,6 @@ public class TestToolEntity extends EntityAudit {
     private String value;
 
     @Basic(optional = true)
-    @Column(name = "regulatory_text_citation")
-    private String regulatoryTextCitation;
-
-    @Basic(optional = true)
     @Column(name = "start_day")
     private LocalDate startDay;
 
@@ -66,21 +59,15 @@ public class TestToolEntity extends EntityAudit {
     @JoinTable(name = "test_tool_criteria_map",
         joinColumns = {@JoinColumn(name = "test_tool_id", referencedColumnName = "test_tool_id")},
         inverseJoinColumns = {@JoinColumn(name = "certification_criterion_id", referencedColumnName = "certification_criterion_id")})
-    @WhereJoinTable(clause = "deleted <> true")
+    @SQLJoinTableRestriction(value = "deleted <> true")
     private List<CertificationCriterionEntity> criteria;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_id")
-    private RuleEntity rule;
 
     public TestTool toDomain() {
         return TestTool.builder()
                 .id(id)
                 .value(value)
-                .regulatoryTextCitation(regulatoryTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
-                .rule(rule != null ? rule.toDomain() : null)
                 .build();
     }
 
@@ -88,11 +75,9 @@ public class TestToolEntity extends EntityAudit {
         return TestTool.builder()
                 .id(id)
                 .value(value)
-                .regulatoryTextCitation(regulatoryTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
                 .criteria(criteria == null ? null : criteria.stream().map(crit -> crit.toDomain()).collect(Collectors.toList()))
-                .rule(rule != null ? rule.toDomain() : null)
                 .build();
     }
 }
