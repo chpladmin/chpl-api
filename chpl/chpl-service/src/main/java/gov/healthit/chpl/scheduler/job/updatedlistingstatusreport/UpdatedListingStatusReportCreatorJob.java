@@ -102,7 +102,6 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
             LOGGER.info("Days updated early: {}", daysUpdatedEarly);
         }
 
-
         return UpdatedListingStatusReport.builder()
             .certifiedProductId(certifiedProductDetails.getId())
             .criteriaRequireUpdateCount(criteriaRequireUpdateCount)

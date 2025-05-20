@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -31,15 +33,17 @@ public class CodeSetsUpToDateService {
         this.certificationResultRules = certificationResultRules;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
+    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult, Logger logger) {
         Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certificationResult.getCriterion());
         Boolean upToDate = false;
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
-
+        logger.info("Checking attested Code Sets for " + Util.formatCriteriaNumber(certificationResult.getCriterion()));
         if (isCriteriaEligible) {
             upToDate = areCodeSetsUpToDate(certificationResult);
             if (upToDate) {
                 daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult);
+            } else {
+                logger.info("\tNOT Up-To-Date");
             }
         }
 
@@ -82,7 +86,6 @@ public class CodeSetsUpToDateService {
                 && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size())
                 || CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()));
     }
-
 
     private Boolean isCriteriaEligibleForCodeSets(CertificationCriterion criterion) {
         return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.CODE_SET);

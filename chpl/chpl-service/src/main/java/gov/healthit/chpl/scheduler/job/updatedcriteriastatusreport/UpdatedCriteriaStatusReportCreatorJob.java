@@ -35,6 +35,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.standard.StandardManager;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "updatedCriteriaStatusReportCreatorJobLogger")
@@ -101,11 +102,13 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                 .sorted(certificationCriterionComparator)
                 .forEach(criterion -> {
                     try {
+                        LOGGER.info("Processing " + Util.formatCriteriaNumber(criterion));
                         List<ListingSearchResult> listingSearchResults = getActiveListingsAttestingToCriteria(criterion.getId());
 
                         UpdatedCriteriaStatusReport updatedCriteriaStatusReport = getInitializedUpdatedCriteriaStatusReport(criterion, listingSearchResults.size());
 
                         listingSearchResults.forEach(searchResult -> {
+                            LOGGER.info("Checking " + searchResult.getChplProductNumber() + " for up-to-date attributes");
                             Optional<CertifiedProductSearchDetails> listing = getCertifiedProductDetails(searchResult.getId());
                             if (listing.isPresent()) {
                                 AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(

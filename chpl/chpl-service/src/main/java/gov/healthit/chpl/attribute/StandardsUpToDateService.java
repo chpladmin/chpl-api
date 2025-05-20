@@ -8,6 +8,7 @@ import java.util.OptionalLong;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -19,10 +20,9 @@ import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import jodd.mutable.MutableBoolean;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class StandardsUpToDateService {
 
     private StandardDAO standardDAO;
@@ -38,13 +38,13 @@ public class StandardsUpToDateService {
         this.standardGroupService = standardGroupService;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
+    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult, Logger logger) {
         Boolean isCriteriaEligible = isCriteriaEligibleForStandards(certificationResult.getCriterion());
         Boolean upToDate = false;
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
 
         if (isCriteriaEligible) {
-            upToDate = areStandardsUpToDate(certificationResult);
+            upToDate = areStandardsUpToDate(certificationResult, logger);
             if (upToDate) {
                 daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
             }
@@ -56,7 +56,8 @@ public class StandardsUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
-                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllStandardsForCriterion(certificationResult.getCriterion()))))
+                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(
+                        getAllStandardsForCriterion(certificationResult.getCriterion(), logger))))
                 .build();
     }
 
@@ -76,26 +77,35 @@ public class StandardsUpToDateService {
         return daysUpdatedEarly;
     }
 
-    private Boolean areStandardsUpToDate(CertificationResult certificationResult) {
-        return (areAttestedToStandardsUpToDate(certificationResult)
-                && areUnattestedStandardsUpToDate(certificationResult));
+    private Boolean areStandardsUpToDate(CertificationResult certificationResult, Logger logger) {
+        return (areAttestedToStandardsUpToDate(certificationResult, logger)
+                && areUnattestedStandardsUpToDate(certificationResult, logger));
     }
 
-    private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult) {
-        return getUnattestedToStandards(certificationResult).stream()
+    private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult, Logger logger) {
+        List<Standard> unattestedStandards = getUnattestedToStandards(certificationResult, logger);
+        logger.info("Got " + unattestedStandards.size() + " unattested standards for criteria " + Util.formatCriteriaNumber(certificationResult.getCriterion()));
+        unattestedStandards.stream()
+            .forEach(std -> logger.info("\t" + std.getRegulatoryTextCitation()));
+
+        return getUnattestedToStandards(certificationResult, logger).stream()
                 .filter(std -> DateUtil.isDateBetweenInclusive(Pair.of(std.getStartDay(), std.getEndDay() == null ? LocalDate.MAX : std.getEndDay()), LocalDate.now())
                         && StringUtils.isEmpty(std.getGroupName()))
+                .peek(std -> logger.info("\t\t" + std.getRegulatoryTextCitation() + " is NOT Up-To-Date"))
                 .findAny()
                 .isEmpty();
     }
 
-    private Boolean areAttestedToStandardsUpToDate(CertificationResult certificationResult) {
+    private Boolean areAttestedToStandardsUpToDate(CertificationResult certificationResult, Logger logger) {
         Boolean areAttestedToStandardsToDate = false;
         Boolean areGroupedStandardsUpToDate = false;
+        logger.info("Checking attested standards for " + Util.formatCriteriaNumber(certificationResult.getCriterion()));
 
         if (CollectionUtils.isNotEmpty(certificationResult.getStandards())) {
             areAttestedToStandardsToDate = certificationResult.getStandards().stream()
+                    .peek(certResultStandard -> logger.info("\t" + certResultStandard.getStandard().getRegulatoryTextCitation()))
                     .filter(certResultStandard -> certResultStandard.getStandard().getEndDay() != null)
+                    .peek(certResultStandard -> logger.info("\t\t" + certResultStandard.getStandard().getRegulatoryTextCitation() + " is NOT Up-To-Date"))
                     .findAny()
                     .isEmpty();
 
@@ -109,8 +119,8 @@ public class StandardsUpToDateService {
         return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.STANDARD);
     }
 
-    private List<Standard> getUnattestedToStandards(CertificationResult certificationResult) {
-        return getAllStandardsForCriterion(certificationResult.getCriterion()).stream()
+    private List<Standard> getUnattestedToStandards(CertificationResult certificationResult, Logger logger) {
+        return getAllStandardsForCriterion(certificationResult.getCriterion(), logger).stream()
                 .filter(std -> !isStandardInList(std, certificationResult.getStandards().stream().map(crs -> crs.getStandard()).toList()))
                 .toList();
     }
@@ -122,14 +132,14 @@ public class StandardsUpToDateService {
                 .isPresent();
     }
 
-    private List<Standard> getAllStandardsForCriterion(CertificationCriterion criterion) {
+    private List<Standard> getAllStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
         try {
             return standardDAO.getAllStandardCriteriaMap().stream()
                     .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Standards for Criterion.", e);
+            logger.error("Could not retrieve Standards for Criterion.", e);
             return List.of();
         }
     }

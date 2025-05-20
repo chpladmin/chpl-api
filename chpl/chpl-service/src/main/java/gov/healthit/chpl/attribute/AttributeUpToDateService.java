@@ -34,11 +34,11 @@ public class AttributeUpToDateService {
     public AttributeUpToDate getAttributeUpToDate(AttributeType attributeType, CertificationResult certificationResults, Logger logger) {
         AttributeUpToDate attributeUpToDate = null;
         if (attributeType == AttributeType.STANDARDS) {
-            attributeUpToDate = standardsUpToDateService.getAttributeUpToDate(certificationResults);
+            attributeUpToDate = standardsUpToDateService.getAttributeUpToDate(certificationResults, logger);
         } else if (attributeType == AttributeType.FUNCTIONALITIES_TESTED) {
-            attributeUpToDate = functionalitiesTestedUpToDateService.getAttributeUpToDate(certificationResults);
+            attributeUpToDate = functionalitiesTestedUpToDateService.getAttributeUpToDate(certificationResults, logger);
         } else if (attributeType == AttributeType.CODE_SETS) {
-            attributeUpToDate = codeSetsUpToDateService.getAttributeUpToDate(certificationResults);
+            attributeUpToDate = codeSetsUpToDateService.getAttributeUpToDate(certificationResults, logger);
         }
         return attributeUpToDate;
     }
