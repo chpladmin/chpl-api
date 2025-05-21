@@ -139,12 +139,15 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                 AttributeType.CODE_SETS, certificationResult, LOGGER);
 
         if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
+            LOGGER.info("{} is NOT up to date due to standards", certificationResult.getCriterion().getNumber());
             return false;
         }
         if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
+            LOGGER.info("{} is NOT up to date due to functionalities tested", certificationResult.getCriterion().getNumber());
             return false;
         }
         if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
+            LOGGER.info("{} is NOT up to date due to code sets", certificationResult.getCriterion().getNumber());
             return false;
         }
         LOGGER.info("{} is up to date", certificationResult.getCriterion().getNumber());
