@@ -109,7 +109,7 @@ public class StandardsUpToDateService {
                     .findAny()
                     .isEmpty();
 
-            areGroupedStandardsUpToDate = doesStandardExistForEachGroup(certificationResult, LocalDate.now());
+            areGroupedStandardsUpToDate = doesStandardExistForEachGroup(certificationResult, LocalDate.now(), logger);
         }
         return areAttestedToStandardsToDate
                 && areGroupedStandardsUpToDate;
@@ -144,7 +144,7 @@ public class StandardsUpToDateService {
         }
     }
 
-    public Boolean doesStandardExistForEachGroup(CertificationResult certResult, LocalDate validAsOfDate) {
+    public Boolean doesStandardExistForEachGroup(CertificationResult certResult, LocalDate validAsOfDate, Logger logger) {
         MutableBoolean doesStandardExistForEachGroup = MutableBoolean.of(true);
         standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDate).entrySet().stream()
                 .filter(standardGroup -> standardGroup.getValue().size() >= 2)
@@ -152,6 +152,7 @@ public class StandardsUpToDateService {
                 .forEach(standardGroup -> {
                     if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
                         doesStandardExistForEachGroup.set(false);
+                        logger.info("\t\tNo standard found for group " + standardGroup.getValue().get(0).getGroupName());
                     }
                 });
         return doesStandardExistForEachGroup.value;
