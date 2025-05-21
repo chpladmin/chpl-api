@@ -1,11 +1,9 @@
 package gov.healthit.chpl.scheduler.job.report.attestation;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,6 +29,9 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationCheckinReportDAO;
+import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReport;
+import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportDataCollector;
 import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationPeriodCalculator;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -43,6 +44,12 @@ public class AttestationReportCreatorJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private CheckInReportDataCollector checkInReportDataCollection;
+
+    @Autowired
+    private AttestationCheckinReportDAO attestationCheckinReportDAO;
 
     @Autowired
     private AttestationPeriodService attestationPeriodService;
@@ -90,7 +97,18 @@ public class AttestationReportCreatorJob extends QuartzJob {
         txTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-
+                try {
+                    LOGGER.info("Collecting checkin report data");
+                    List<Long> acbIds = certificationBodyManager.getAllActive().stream()
+                            .map(CertificationBody::getId)
+                            .toList();
+                    List<CheckInReport> reportRows = checkInReportDataCollection.collect(acbIds);
+                    attestationCheckinReportDAO.deleteByReportDate(LocalDate.now());
+                    attestationCheckinReportDAO.save(reportRows);
+                } catch (Exception e) {
+                    LOGGER.error("Error collecting checkin report data", e);
+                }
+                /*
                 try {
                     if (inSubmissionPlusApprovalPeriod()) {
                         if (!CollectionUtils.isEmpty(attestationReportDAO.getAttestationReportByDate(LocalDate.now()))) {
@@ -140,6 +158,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 } catch (Exception e) {
                     LOGGER.error(e);
                 }
+                */
             }
 
 
