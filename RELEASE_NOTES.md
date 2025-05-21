@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 51.1.0
+_19 May 2025_
+
+### Features
+* Deprecate regtext and rule from test tool objects
+* Save questionable activity for new listing + withdrawn parent
+* Add endpoint for current time in ET
+* Add previous Attestation Periods into the Developer Attestations data endpoint
+* Allow users to search for developers by criteria they have attested to
+
+### Bug Fixes
+* Check for duplicate criteria attributes using regtext only
+
+---
+
 ## Version 51.0.0
 _28 April 2025_
 
