@@ -54,28 +54,28 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestDetails
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    @Value("${changeRequest.serviceBaseUrlList.approval.subject}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.serviceBaseUrlList.approval.body}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.serviceBaseUrlList.rejected.subject}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.serviceBaseUrlList.rejected.body}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.serviceBaseUrlList.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.serviceBaseUrlList.pendingDeveloperAction.body}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
-    @Value("${changeRequest.serviceBaseUrlList.cancelled.subject}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.cancelled.subject}")
     private String cancelledEmailSubject;
 
-    @Value("${changeRequest.serviceBaseUrlList.cancelled.body}")
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.cancelled.body}")
     private String cancelledEmailBody;
 
     @Autowired

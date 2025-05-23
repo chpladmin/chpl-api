@@ -195,7 +195,7 @@ public class ChangeRequestManager {
                 && changeRequest.getDetails() != null
                 && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType() != null
                 && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.featureDisabled"));
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
         }
         ChangeRequest cr = saveChangeRequest(changeRequest);
         if (cr == null ) {
