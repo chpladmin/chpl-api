@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
@@ -24,8 +24,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "listing_not_up_to_date_reason")
-public class ListingNotUpToDateReasonEntity extends EntityAudit {
+@Table(name = "criterion_not_up_to_date_reason")
+public class CriterionNotUpToDateReasonEntity extends EntityAudit {
     private static final long serialVersionUID = 631120272172402100L;
 
     @Override
@@ -43,8 +43,8 @@ public class ListingNotUpToDateReasonEntity extends EntityAudit {
     @Column(name = "name", nullable = false)
     private String name;
 
-    public ListingNotUpToDateReason toDomain() {
-        return ListingNotUpToDateReason.builder()
+    public CriterionNotUpToDateReason toDomain() {
+        return CriterionNotUpToDateReason.builder()
                 .id(id)
                 .name(name)
                 .build();

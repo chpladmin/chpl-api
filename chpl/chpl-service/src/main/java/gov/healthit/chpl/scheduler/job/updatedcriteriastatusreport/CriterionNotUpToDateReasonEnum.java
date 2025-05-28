@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import org.apache.logging.log4j.Logger;
 
@@ -8,7 +8,7 @@ import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
 import gov.healthit.chpl.attribute.StandardUpToDate;
 import lombok.Getter;
 
-public enum ListingNotUpToDateReasonEnum {
+public enum CriterionNotUpToDateReasonEnum {
     STANDARD_ATTESTED("Standard Attested"),
     REQUIRED_STANDARD_NOT_ATTESTED("Required Standard Not Attested"),
     FUNCTIONALITY_TESTED_ATTESTED("Functionality Tested Attested"),
@@ -18,11 +18,11 @@ public enum ListingNotUpToDateReasonEnum {
 
     @Getter
     private String name;
-    ListingNotUpToDateReasonEnum(String name) {
+    CriterionNotUpToDateReasonEnum(String name) {
         this.name = name;
     }
 
-    public static ListingNotUpToDateReasonEnum calculateReason(AttributeUpToDate attributeUpToDate, Logger logger) {
+    public static CriterionNotUpToDateReasonEnum calculateReason(AttributeUpToDate attributeUpToDate, Logger logger) {
         if (attributeUpToDate.getExpiringButPresent()) {
             if (attributeUpToDate instanceof StandardUpToDate) {
                 return STANDARD_ATTESTED;
@@ -40,7 +40,7 @@ public enum ListingNotUpToDateReasonEnum {
                 return REQUIRED_CODE_SET_NOT_ATTESTED;
             }
         }
-        logger.error("No Listing Up-To-Date Reason was found for " + attributeUpToDate.getClass().getName());
+        logger.error("No Criterion Up-To-Date Reason was found for " + attributeUpToDate.getClass().getName());
         return null;
     }
 }

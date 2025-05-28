@@ -683,32 +683,6 @@
         </Policies>
     </RollingFile>
 
-    <RollingFile name="updatedListingStatusReportEmailJob"
-        fileName="${logDir}/scheduler/updatedListingStatusReportJob.log"
-        filePattern="${logDir}/scheduler/history/updatedListingStatusReportJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-
-    <RollingFile name="updatedListingStatusReportCreatorJob"
-        fileName="${logDir}/scheduler/updatedListingStatusReportCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/updatedListingStatusReportCreatorJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-
     <RollingFile name="updatedCriteriaStatusReportCreatorJob"
         fileName="${logDir}/scheduler/updatedCriteriaStatusReportCreatorJob.log"
         filePattern="${logDir}/scheduler/history/updatedCriteriaStatusReportCreatorJob-%d{yyyy-MM-dd}.log"

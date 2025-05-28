@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,17 +19,17 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class UpdatedListingStatusReportCsvCreator {
+public class UpdatedCriteriaStatusReportCsvCreator {
     private Environment env;
 
     @Autowired
-    public UpdatedListingStatusReportCsvCreator(Environment env) {
+    public UpdatedCriteriaStatusReportCsvCreator(Environment env) {
         this.env = env;
     }
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<UpdatedListingStatusReport> reports) throws IOException {
+    public File createCsvFile(List<UpdatedCriterionStatusReport> reports) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -41,7 +41,7 @@ public class UpdatedListingStatusReportCsvCreator {
             csvFilePrinter.printRecord(getHeaderRow());
 
             reports.stream()
-                .sorted(Comparator.comparing(UpdatedListingStatusReport::getChplProductNumber))
+                .sorted(Comparator.comparing(UpdatedCriterionStatusReport::getChplProductNumber))
                 .forEach(report -> printRow(csvFilePrinter, report));
         }
         return csvFile;
@@ -75,7 +75,7 @@ public class UpdatedListingStatusReportCsvCreator {
                 "Reason Update is Required");
     }
 
-    private List<String> getRow(UpdatedListingStatusReport report) {
+    private List<String> getRow(UpdatedCriterionStatusReport report) {
         return Arrays.asList(
                 report.getCertifiedProductId().toString(),
                 report.getChplProductNumber(),
@@ -88,10 +88,10 @@ public class UpdatedListingStatusReportCsvCreator {
                 report.getStandard() != null ? report.getStandard().getValue() : "",
                 report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
                 report.getCodeSet() != null ? report.getCodeSet().getName() : "",
-                report.getListingNotUpToDateReason().getName());
+                report.getCriterionNotUpToDateReason().getName());
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, UpdatedListingStatusReport report) {
+    private void printRow(CSVPrinter csvFilePrinter, UpdatedCriterionStatusReport report) {
         try {
             csvFilePrinter.printRecord(getRow(report));
         } catch (IOException e) {

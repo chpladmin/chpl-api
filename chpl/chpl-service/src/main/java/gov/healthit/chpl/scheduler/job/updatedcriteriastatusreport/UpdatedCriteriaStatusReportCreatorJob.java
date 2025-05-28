@@ -1,11 +1,13 @@
 package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,27 +24,20 @@ import gov.healthit.chpl.attribute.CodeSetUpToDate;
 import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
 import gov.healthit.chpl.attribute.StandardUpToDate;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.certificationCriteria.CriterionStatus;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.codeset.CodeSetManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.standard.StandardManager;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "updatedCriteriaStatusReportCreatorJobLogger")
 public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
-
     @Autowired
     private ListingSearchService listingSearchService;
 
@@ -50,19 +45,10 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private StandardManager standardManager;
+    private UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao;
 
     @Autowired
-    private FunctionalityTestedManager functionalityTestedManager;
-
-    @Autowired
-    private CodeSetManager codeSetManager;
-
-    @Autowired
-    private UpdatedCriteriaStatusReportDAO updatedCriteriaStatusReportDAO;
-
-    @Autowired
-    private CertificationCriterionComparator certificationCriterionComparator;
+    private CriterionNotUpToDateReasonDao criterionNotUpToDateReasonDao;
 
     @Autowired
     private AttributeUpToDateService attributeUpToDateService;
@@ -70,10 +56,13 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     @Autowired
     private JpaTransactionManager txManager;
 
+    private List<CriterionNotUpToDateReason> reasons;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Updated Criteria Status Report Creator job. *********");
+
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -85,10 +74,14 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             txTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    if (doStatisticsExistForDate(LocalDate.now())) {
-                        deleteStatisticsForDate(LocalDate.now());
+                    try {
+                        if (doStatisticsExistForDate(LocalDate.now())) {
+                            deleteStatisticsForDate(LocalDate.now());
+                        }
+                        calculateStatisticsForActiveListings();
+                    } catch (ValidationException e) {
+                        LOGGER.error(e);
                     }
-                    populateStatisticsForUpdatedCriteriaStatusReport();
                 }
             });
         } catch (Exception e) {
@@ -98,135 +91,174 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
         }
     }
 
-    private void populateStatisticsForUpdatedCriteriaStatusReport() {
-        getCriteriaListForReport().stream()
-                .filter(crit -> crit.getStatus() == CriterionStatus.ACTIVE)
-                .sorted(certificationCriterionComparator)
-                .forEach(criterion -> {
-                    try {
-                        LOGGER.info("Processing " + Util.formatCriteriaNumber(criterion));
-                        List<ListingSearchResult> listingSearchResults = getActiveListingsAttestingToCriteria(criterion.getId());
+    private void calculateStatisticsForActiveListings() throws ValidationException {
+        reasons = criterionNotUpToDateReasonDao.getAll();
 
-                        UpdatedCriteriaStatusReport updatedCriteriaStatusReport = getInitializedUpdatedCriteriaStatusReport(criterion, listingSearchResults.size());
-
-                        listingSearchResults.forEach(searchResult -> {
-                            LOGGER.info("Checking " + searchResult.getChplProductNumber() + " for up-to-date attributes");
-                            Optional<CertifiedProductSearchDetails> listing = getCertifiedProductDetails(searchResult.getId());
-//                            if (listing.isPresent()) {
-//                                List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(
-//                                        getCertificationResult(listing.get(), criterion.getId()),
-//                                        LOGGER);
-//                                List<FunctionalityTestedUpToDate> functionalitiesTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(
-//                                        getCertificationResult(listing.get(), criterion.getId()),
-//                                        LOGGER);
-//                                List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(
-//                                        getCertificationResult(listing.get(), criterion.getId()),
-//                                        LOGGER);
-//
-//                                updateFullyUpToDate(updatedCriteriaStatusReport, standardsUpToDate, functionalitiesTestedUpToDate, codeSetsUpToDate);
-//                                updateStandardsUpToDate(updatedCriteriaStatusReport, standardsUpToDate);
-//                                updateFunctionalitiesTestedUpToDate(updatedCriteriaStatusReport, functionalitiesTestedUpToDate);
-//                                updateCodeSetsUpToDate(updatedCriteriaStatusReport, codeSetsUpToDate);
-//                            }
-                        });
-
-                        LOGGER.info(updatedCriteriaStatusReport.toString());
-                        //TODO not saving data right now - need to figure out what we really want to be saved
-//                        updatedCriteriaStatusReportDAO.create(updatedCriteriaStatusReport);
-                    } catch (ValidationException e) {
-                        LOGGER.error("Could not process UpdatedCriteriaStatusReport - {}", e.getMessage(), e);
-                    }
-                });
-    }
-
-    private List<ListingSearchResult> getActiveListingsAttestingToCriteria(Long certificationCriterionId) throws ValidationException {
         SearchRequest request = SearchRequest.builder()
-                .certificationStatuses(Set.of("Active", "Suspended by ONC", "Suspended by ONC-ACB"))
-                .certificationCriteriaIds(Set.of(certificationCriterionId))
-                .certificationCriteriaOperator(SearchSetOperator.AND)
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build();
 
-        return listingSearchService.getAllPagesOfSearchResults(request);
+        listingSearchService.getAllPagesOfSearchResults(request).stream()
+                .map(result -> getCertifiedProductDetails(result.getId()))
+                .filter(listing -> listing.isPresent())
+                .peek(x -> LOGGER.info("Calculating all criteria updates needed for {}", x.get().getChplProductNumber()))
+                .flatMap(certifiedProductDetails -> calculateUpdatedCertificationResultsStatusReports(certifiedProductDetails.get()).stream())
+                .forEach(updatedListingStatusReport -> updatedCriterionStatusReportDao.create(updatedListingStatusReport));
     }
 
-    private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long certifiedProductId) {
+    private List<UpdatedCriterionStatusReport> calculateUpdatedCertificationResultsStatusReports(CertifiedProductSearchDetails listing) {
+        List<UpdatedCriterionStatusReport> updatedListingStatusReports = new ArrayList<UpdatedCriterionStatusReport>();
+        if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
+            listing.getCertificationResults().stream()
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
+                .flatMap(certResult -> calculateUpdatedCertificationResultStatusReports(listing, certResult).stream())
+                .filter(criterionStatusReport -> criterionStatusReport != null)
+                .forEach(criterionStatusReport -> updatedListingStatusReports.add(criterionStatusReport));
+        }
+        return updatedListingStatusReports;
+    }
+
+    private List<UpdatedCriterionStatusReport> calculateUpdatedCertificationResultStatusReports(
+            CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<UpdatedCriterionStatusReport> updatesRequiredForCriterion = getUpdatesRequiredForCriterion(listing, certResult);
+        if (!CollectionUtils.isEmpty(updatesRequiredForCriterion)) {
+            LOGGER.info("Criterion {} is NOT up-to-date. It requires {} updates.",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    updatesRequiredForCriterion.size());
+        } else {
+            LOGGER.info("Criterion {} is up-to-date.", Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
+        return updatesRequiredForCriterion;
+    }
+
+    private List<UpdatedCriterionStatusReport> getUpdatesRequiredForCriterion(CertifiedProductSearchDetails listing,
+            CertificationResult certResult) {
+        List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(certResult, LOGGER);
+        List<FunctionalityTestedUpToDate> functionalityTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(certResult, LOGGER);
+        List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(certResult, LOGGER);
+
+        List<UpdatedCriterionStatusReport> updatesRequiredForCriterion = new ArrayList<UpdatedCriterionStatusReport>();
+        if (!CollectionUtils.isEmpty(standardsUpToDate)) {
+            standardsUpToDate.stream()
+                .map(stdReport -> buildReportFromStandardRequiringUpdate(listing, stdReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(functionalityTestedUpToDate)) {
+            functionalityTestedUpToDate.stream()
+                .map(ftReport -> buildReportFromFunctionalityTestedRequiringUpdate(listing, ftReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(codeSetsUpToDate)) {
+            codeSetsUpToDate.stream()
+                .map(codeSetReport -> buildReportFromCodeSetRequiringUpdate(listing, codeSetReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        return updatesRequiredForCriterion;
+    }
+
+    private UpdatedCriterionStatusReport buildReportFromStandardRequiringUpdate(CertifiedProductSearchDetails listing,
+            StandardUpToDate standardReport) {
+        return UpdatedCriterionStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(standardReport.getCriterion())
+            .standard(standardReport.getStandard())
+            .functionalityTested(null)
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, standardReport.getCriterion()))
+            .criterionNotUpToDateReason(getCriterionNotUpToDateReason(standardReport))
+        .build();
+    }
+
+    private UpdatedCriterionStatusReport buildReportFromFunctionalityTestedRequiringUpdate(
+            CertifiedProductSearchDetails listing,
+            FunctionalityTestedUpToDate ftReport) {
+        return UpdatedCriterionStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(ftReport.getCriterion())
+            .standard(null)
+            .functionalityTested(ftReport.getFunctionalityTested())
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, ftReport.getCriterion()))
+            .criterionNotUpToDateReason(getCriterionNotUpToDateReason(ftReport))
+        .build();
+    }
+
+    private UpdatedCriterionStatusReport buildReportFromCodeSetRequiringUpdate(CertifiedProductSearchDetails listing,
+            CodeSetUpToDate codeSetReport) {
+        return UpdatedCriterionStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(codeSetReport.getCriterion())
+            .standard(null)
+            .functionalityTested(null)
+            .codeSet(codeSetReport.getCodeSet())
+            .certificationResultId(getCertificationResultId(listing, codeSetReport.getCriterion()))
+            .criterionNotUpToDateReason(getCriterionNotUpToDateReason(codeSetReport))
+        .build();
+    }
+
+    private CriterionNotUpToDateReason getCriterionNotUpToDateReason(AttributeUpToDate attributeReport) {
+        CriterionNotUpToDateReasonEnum reasonEnum = CriterionNotUpToDateReasonEnum.calculateReason(attributeReport, LOGGER);
+        return getReason(reasonEnum);
+    }
+
+    private CriterionNotUpToDateReason getReason(CriterionNotUpToDateReasonEnum reasonEnum) {
+        return reasons.stream()
+                .filter(reason -> reason.getName().equals(reasonEnum.getName()))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
+                .map(certResult -> certResult.getId())
+                .findAny()
+                .orElse(null);
+    }
+
+    private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
         try {
-            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId));
+            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(id));
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve listing with id: {}", certifiedProductId, e);
+            LOGGER.error("Could not retrieve listing with id: {}", id, e);
             return Optional.empty();
         }
     }
 
-    private CertificationResult getCertificationResult(CertifiedProductSearchDetails listing, Long certificationCriterionId) {
-        return listing.getCertificationResults().stream()
-                .filter(cr -> cr.getCriterion().getId().equals(certificationCriterionId))
-                .findAny()
-                .orElse(null);
-
-    }
-
-    private Set<CertificationCriterion> getCriteriaListForReport() {
-        Set<CertificationCriterion> mergedCriteria = standardManager.getCertificationCriteriaForStandards().stream().collect(Collectors.toSet());
-        mergedCriteria.addAll(functionalityTestedManager.getCertificationCriteriaForFunctionalitiesTested());
-        mergedCriteria.addAll(codeSetManager.getCertificationCriteriaForCodeSets());
-
-        return mergedCriteria.stream()
-                .filter(crit -> crit .getStatus().equals(CriterionStatus.ACTIVE))
-                .collect(Collectors.toSet());
-    }
-
-    private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, List<StandardUpToDate> standardsUpToDate,
-            List<FunctionalityTestedUpToDate> functionalitiesTestedUpToDate,
-            List<CodeSetUpToDate> codeSetsUpToDate) {
-        if (isAttributeUpToDate(standardsUpToDate)
-                && isAttributeUpToDate(functionalitiesTestedUpToDate)
-                && isAttributeUpToDate(codeSetsUpToDate)) {
-            updatedCriteriaStatusReport.setFullyUpToDateCount(updatedCriteriaStatusReport.getFullyUpToDateCount() + 1);
-        }
-    }
-
-    private Boolean isAttributeUpToDate(List<? extends AttributeUpToDate> attributeUpToDate) {
-        //TODO
-        return true;
-    }
-
-//    private void updateStandardsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate) {
-//        if (standardsUpToDate.getEligibleForAttribute() && standardsUpToDate.getUpToDate()) {
-//            updatedCriteriaStatusReport.setStandardsUpToDateCount(updatedCriteriaStatusReport.getStandardsUpToDateCount() + 1);
-//        }
-//    }
-//
-//    private void updateFunctionalitiesTestedUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate functionalitiesTestedUpToDate) {
-//        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && functionalitiesTestedUpToDate.getUpToDate()) {
-//            updatedCriteriaStatusReport.setFunctionalitiesTestedUpToDateCount(updatedCriteriaStatusReport.getFunctionalitiesTestedUpToDateCount() + 1);
-//        }
-//    }
-//
-//    private void updateCodeSetsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate codeSetsUpToDate) {
-//        if (codeSetsUpToDate.getEligibleForAttribute() && codeSetsUpToDate.getUpToDate()) {
-//            updatedCriteriaStatusReport.setCodeSetsUpToDateCount(updatedCriteriaStatusReport.getCodeSetsUpToDateCount() + 1);
-//        }
-//    }
-
     private Boolean doStatisticsExistForDate(LocalDate dateToCheck) {
-        return updatedCriteriaStatusReportDAO.getUpdatedCriteriaStatusReportsByDate(dateToCheck).size() > 0;
+        return updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(dateToCheck).size() > 0;
     }
 
     private void deleteStatisticsForDate(LocalDate dateToCheck) {
-        updatedCriteriaStatusReportDAO.deleteUpdatedCriteriaStatusReportsByDate(dateToCheck);
-    }
-
-    private UpdatedCriteriaStatusReport getInitializedUpdatedCriteriaStatusReport(CertificationCriterion criterion, Integer listingCount) {
-        return UpdatedCriteriaStatusReport.builder()
-                .reportDay(LocalDate.now())
-                .certificationCriterionId(criterion.getId())
-                .listingsWithCriterionCount(listingCount)
-                .fullyUpToDateCount(0)
-                .standardsUpToDateCount(0)
-                .functionalitiesTestedUpToDateCount(0)
-                .codeSetsUpToDateCount(0)
-                .build();
+        LOGGER.info("Deleting all criteria stats for " + dateToCheck.toString());
+        updatedCriterionStatusReportDao.deleteUpdatedCriterionStatusReportsByDay(dateToCheck);
     }
 }

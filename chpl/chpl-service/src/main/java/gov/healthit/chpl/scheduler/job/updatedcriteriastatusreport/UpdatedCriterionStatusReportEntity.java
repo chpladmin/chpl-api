@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import java.time.LocalDate;
 
@@ -33,8 +33,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "updated_listing_status_report")
-public class UpdatedListingStatusReportEntity extends EntityAudit {
+@Table(name = "updated_criterion_status_report")
+public class UpdatedCriterionStatusReportEntity extends EntityAudit {
     private static final long serialVersionUID = 6345202720550402100L;
 
     @Override
@@ -89,26 +89,26 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
     private CodeSetEntity codeSet;
 
     @Basic(optional = false)
-    @Column(name = "listing_not_up_to_date_reason_id", nullable = false)
-    private Long listingNotUpToDateReasonId;
+    @Column(name = "criterion_not_up_to_date_reason_id", nullable = false)
+    private Long criterionNotUpToDateReasonId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "listing_not_up_to_date_reason_id", insertable = false, updatable = false)
-    private ListingNotUpToDateReasonEntity listingNotUpToDateReason;
+    @JoinColumn(name = "criterion_not_up_to_date_reason_id", insertable = false, updatable = false)
+    private CriterionNotUpToDateReasonEntity criterionNotUpToDateReason;
 
     @Column(name = "chpl_product_number", nullable = false)
     private String chplProductNumber;
 
-    @Column(name = "product", nullable = false)
+    @Column(name = "product_name", nullable = false)
     private String product;
 
-    @Column(name = "version", nullable = false)
+    @Column(name = "version_name", nullable = false)
     private String version;
 
-    @Column(name = "developer", nullable = false)
+    @Column(name = "developer_name", nullable = false)
     private String developer;
 
-    @Column(name = "certification_body", nullable = false)
+    @Column(name = "certification_body_name", nullable = false)
     private String certificationBody;
 
     @Column(name = "certification_status_name", nullable = false)
@@ -123,8 +123,8 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
     @Column(name = "certification_status_id", nullable = false)
     private Long certificationStatusId;
 
-    public UpdatedListingStatusReport toDomain() {
-        return UpdatedListingStatusReport.builder()
+    public UpdatedCriterionStatusReport toDomain() {
+        return UpdatedCriterionStatusReport.builder()
                 .id(id)
                 .reportDay(reportDay)
                 .certifiedProductId(certifiedProductId)
@@ -134,7 +134,7 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
                 .standard(standard != null ? standard.toDomain() : null)
                 .functionalityTested(functionalityTested != null ? functionalityTested.toDomain() : null)
                 .codeSet(codeSet != null ? codeSet.toDomain() : null)
-                .listingNotUpToDateReason(listingNotUpToDateReason.toDomain())
+                .criterionNotUpToDateReason(criterionNotUpToDateReason.toDomain())
                 .product(product)
                 .version(version)
                 .developer(developer)

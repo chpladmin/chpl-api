@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import java.time.LocalDate;
 
@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class UpdatedListingStatusReport {
+public class UpdatedCriterionStatusReport {
     private Long id;
     private LocalDate reportDay;
 
@@ -23,7 +23,7 @@ public class UpdatedListingStatusReport {
     private Standard standard;
     private FunctionalityTested functionalityTested;
     private CodeSet codeSet;
-    private ListingNotUpToDateReason listingNotUpToDateReason;
+    private CriterionNotUpToDateReason criterionNotUpToDateReason;
 
     private String chplProductNumber;
     private String product;
