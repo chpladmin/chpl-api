@@ -2,6 +2,10 @@ package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
 import java.time.LocalDate;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.codeset.CodeSet;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.standard.Standard;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +15,16 @@ import lombok.Data;
 @AllArgsConstructor
 public class UpdatedListingStatusReport {
     private Long id;
-    private Long certifiedProductId;
     private LocalDate reportDay;
-    private Long criteriaRequireUpdateCount;
-    private Long daysUpdatedEarly;
+
+    private Long certifiedProductId;
+    private Long certificationResultId;
+    private CertificationCriterion certificationCriterion;
+    private Standard standard;
+    private FunctionalityTested functionalityTested;
+    private CodeSet codeSet;
+    private ListingNotUpToDateReason listingNotUpToDateReason;
+
     private String chplProductNumber;
     private String product;
     private String version;

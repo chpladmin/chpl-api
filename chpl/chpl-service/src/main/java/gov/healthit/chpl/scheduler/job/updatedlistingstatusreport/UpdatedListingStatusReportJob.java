@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,33 +22,34 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import one.util.streamex.StreamEx;
 
 @Log4j2(topic = "updatedListingStatusReportJobLogger")
 public class UpdatedListingStatusReportJob extends QuartzJob {
-    @Autowired
-    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    private Environment env;
+    private UpdatedListingStatusReportDao updatedListingStatusReportDao;
 
     @Autowired
     private UpdatedListingStatusReportCsvCreator updatedListingStatusReportCsvCreator;
 
     @Autowired
-    private ChplEmailFactory chplEmailFactory;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    private UpdatedListingStatusReportDAO updatedListingStatusReportDAO;
+    private ChplEmailFactory chplEmailFactory;
 
     @Autowired
     private JpaTransactionManager txManager;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Updated Listing Status Report job. *********");
+        LOGGER.info("********* Starting the Updated Listing Status Report Email job. *********");
 
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
@@ -70,7 +72,7 @@ public class UpdatedListingStatusReportJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
-            LOGGER.info("********* Completed the Updated Listing Status Report job. *********");
+            LOGGER.info("********* Completed the Updated Listing Status Report Email job. *********");
         }
     }
 
@@ -94,40 +96,24 @@ public class UpdatedListingStatusReportJob extends QuartzJob {
     }
 
     private List<UpdatedListingStatusReport> getReportData() {
-        return updatedListingStatusReportDAO.getUpdatedListingStatusReportsByDate(getMaxReportDate());
+        return updatedListingStatusReportDao.getUpdatedListingStatusReportsByDate(getMaxReportDate());
     }
 
     private LocalDate getMaxReportDate() {
-        LocalDate maxReportDate = updatedListingStatusReportDAO.getMaxReportDate();
+        LocalDate maxReportDate = updatedListingStatusReportDao.getMaxReportDate();
         LOGGER.info("Report Date: {}", maxReportDate);
         return maxReportDate;
     }
 
     private String getStatisticsParagraph(List<UpdatedListingStatusReport> rows) {
-        UpdatedListingStatusReportSummarryCounts counts = getCounts(rows);
-
-        return String.format("Total number of active listings: %s<br />"
-                + "Total number of listings requiring updates: %s<br />"
-                + "Total number of listings that are up to date: %s<br />",
-                counts.activeListings, counts.listingsRequiringUpdates, counts.updatedListings);
+        return String.format("%s Active listings were found requiring criteria attribute updates<br />",
+                getCountOfListingsRequiringUpdates(rows));
     }
 
-    private UpdatedListingStatusReportSummarryCounts getCounts(List<UpdatedListingStatusReport> rows) {
-        UpdatedListingStatusReportSummarryCounts counts = new UpdatedListingStatusReportSummarryCounts();
-        counts.activeListings = Long.valueOf(rows.size());
-        counts.listingsRequiringUpdates = rows.stream()
-                .filter(row -> row.getCriteriaRequireUpdateCount() > 0)
-                .count();
-        counts.updatedListings = counts.activeListings - counts.listingsRequiringUpdates;
+    private int getCountOfListingsRequiringUpdates(List<UpdatedListingStatusReport> rows) {
+        List<UpdatedListingStatusReport> distinctRowsPerListing =
+                StreamEx.of(rows).distinct(UpdatedListingStatusReport::getCertifiedProductId).collect(Collectors.toList());
 
-        return counts;
-    }
-
-
-    @Data
-    private class UpdatedListingStatusReportSummarryCounts {
-        public Long activeListings;
-        public Long listingsRequiringUpdates;
-        public Long updatedListings;
+        return distinctRowsPerListing.size();
     }
 }

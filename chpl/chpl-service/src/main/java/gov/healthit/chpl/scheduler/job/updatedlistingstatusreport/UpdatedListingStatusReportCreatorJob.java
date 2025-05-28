@@ -1,11 +1,13 @@
 package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.attribute.AttributeType;
 import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
+import gov.healthit.chpl.attribute.CodeSetUpToDate;
+import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
+import gov.healthit.chpl.attribute.StandardUpToDate;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -27,7 +32,10 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.CertificationStatusUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
+
 @Log4j2(topic = "updatedListingStatusReportCreatorJobLogger")
 public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
@@ -38,13 +46,18 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private UpdatedListingStatusReportDAO updatedListingStatusReportDAO;
+    private UpdatedListingStatusReportDao updatedListingStatusReportDao;
+
+    @Autowired
+    private ListingNotUpToDateReasonDao listingNotUpToDateReasonDao;
 
     @Autowired
     private AttributeUpToDateService attributeUpToDateService;
 
     @Autowired
     private JpaTransactionManager txManager;
+
+    private List<ListingNotUpToDateReason> reasons;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -80,110 +93,156 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     }
 
     private void calculateStatisticsForActiveListings() throws ValidationException {
+        reasons = listingNotUpToDateReasonDao.getAll();
+
         SearchRequest request = SearchRequest.builder()
-                .certificationStatuses(Set.of("Active", "Suspended by ONC", "Suspended by ONC-ACB"))
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .pageSize(SearchRequest.MAX_PAGE_SIZE)
                 .build();
 
         listingSearchService.getAllPagesOfSearchResults(request).stream()
                 .map(result -> getCertifiedProductDetails(result.getId()))
                 .filter(listing -> listing.isPresent())
-                .peek(x -> LOGGER.info("Processing {}", x.get().getChplProductNumber()))
-                .map(certifiedProductDetails -> calculateUpdatedListingStatusReport(certifiedProductDetails.get()))
-                .forEach(updatedListingStatusReport -> updatedListingStatusReportDAO.create(updatedListingStatusReport));
+                .peek(x -> LOGGER.info("Calculating all criteria updates needed for {}", x.get().getChplProductNumber()))
+                .flatMap(certifiedProductDetails -> calculateUpdatedListingStatusReports(certifiedProductDetails.get()).stream())
+                .forEach(updatedListingStatusReport -> updatedListingStatusReportDao.create(updatedListingStatusReport));
     }
 
-    private UpdatedListingStatusReport calculateUpdatedListingStatusReport(CertifiedProductSearchDetails certifiedProductDetails) {
-        Long criteriaRequireUpdateCount = getCriteriaRequireUpdateCount(certifiedProductDetails);
-        LOGGER.info("Criteria requiring update count: {}", criteriaRequireUpdateCount);
-        Long daysUpdatedEarly = 0L;
-        if (criteriaRequireUpdateCount.equals(0L)) {
-            daysUpdatedEarly = getDaysUpdatedEarly(certifiedProductDetails);
-            LOGGER.info("Days updated early: {}", daysUpdatedEarly);
+    private List<UpdatedListingStatusReport> calculateUpdatedListingStatusReports(CertifiedProductSearchDetails listing) {
+        List<UpdatedListingStatusReport> updatedListingStatusReports = new ArrayList<UpdatedListingStatusReport>();
+        if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
+            listing.getCertificationResults().stream()
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
+                .flatMap(certResult -> calculateUpdatedCertificationResultStatusReports(listing, certResult).stream())
+                .filter(criterionStatusReport -> criterionStatusReport != null)
+                .forEach(criterionStatusReport -> updatedListingStatusReports.add(criterionStatusReport));
         }
+        return updatedListingStatusReports;
+    }
 
+    private List<UpdatedListingStatusReport> calculateUpdatedCertificationResultStatusReports(
+            CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<UpdatedListingStatusReport> updatesRequiredForCriterion = getUpdatesRequiredForCriterion(listing, certResult);
+        if (!CollectionUtils.isEmpty(updatesRequiredForCriterion)) {
+            LOGGER.info("Criterion {} is NOT up-to-date. It requires {} updates.",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    updatesRequiredForCriterion.size());
+        } else {
+            LOGGER.info("Criterion {} is up-to-date.", Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
+        return updatesRequiredForCriterion;
+    }
+
+    private List<UpdatedListingStatusReport> getUpdatesRequiredForCriterion(CertifiedProductSearchDetails listing,
+            CertificationResult certResult) {
+        List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(certResult, LOGGER);
+        List<FunctionalityTestedUpToDate> functionalityTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(certResult, LOGGER);
+        List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(certResult, LOGGER);
+
+        List<UpdatedListingStatusReport> updatesRequiredForCriterion = new ArrayList<UpdatedListingStatusReport>();
+        if (!CollectionUtils.isEmpty(standardsUpToDate)) {
+            standardsUpToDate.stream()
+                .map(stdReport -> buildReportFromStandardRequiringUpdate(listing, stdReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(functionalityTestedUpToDate)) {
+            functionalityTestedUpToDate.stream()
+                .map(ftReport -> buildReportFromFunctionalityTestedRequiringUpdate(listing, ftReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(codeSetsUpToDate)) {
+            codeSetsUpToDate.stream()
+                .map(codeSetReport -> buildReportFromCodeSetRequiringUpdate(listing, codeSetReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        return updatesRequiredForCriterion;
+    }
+
+    private UpdatedListingStatusReport buildReportFromStandardRequiringUpdate(CertifiedProductSearchDetails listing,
+            StandardUpToDate standardReport) {
         return UpdatedListingStatusReport.builder()
-            .certifiedProductId(certifiedProductDetails.getId())
-            .criteriaRequireUpdateCount(criteriaRequireUpdateCount)
-            .daysUpdatedEarly(daysUpdatedEarly)
-            .chplProductNumber(certifiedProductDetails.getChplProductNumber())
-            .product(certifiedProductDetails.getProduct().getName())
-            .version(certifiedProductDetails.getVersion().getVersion())
-            .developer(certifiedProductDetails.getDeveloper().getName())
-            .certificationBody(certifiedProductDetails.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
-            .certificationStatus(certifiedProductDetails.getCurrentStatus().getStatus().getName())
-            .developerId(certifiedProductDetails.getDeveloper().getId())
-            .certificationBodyId(Long.valueOf(certifiedProductDetails.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
-            .certificationStatusId(certifiedProductDetails.getCurrentStatus().getStatus().getId())
-            .build();
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(standardReport.getCriterion())
+            .standard(standardReport.getStandard())
+            .functionalityTested(null)
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, standardReport.getCriterion()))
+            .listingNotUpToDateReason(getListingNotUpToDateReason(standardReport))
+        .build();
     }
 
-
-
-    private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
-        return certifiedProductDetails.getCertificationResults().stream()
-                .filter(certResult -> !certResult.getCriterion().isRemoved()
-                        && !isCriteriaUpdated(certResult))
-                .count();
+    private UpdatedListingStatusReport buildReportFromFunctionalityTestedRequiringUpdate(
+            CertifiedProductSearchDetails listing,
+            FunctionalityTestedUpToDate ftReport) {
+        return UpdatedListingStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(ftReport.getCriterion())
+            .standard(null)
+            .functionalityTested(ftReport.getFunctionalityTested())
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, ftReport.getCriterion()))
+            .listingNotUpToDateReason(getListingNotUpToDateReason(ftReport))
+        .build();
     }
 
-
-    private boolean isCriteriaUpdated(CertificationResult certificationResult) {
-        AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.STANDARDS, certificationResult, LOGGER);
-
-        AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.FUNCTIONALITIES_TESTED, certificationResult, LOGGER);
-
-        AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.CODE_SETS, certificationResult, LOGGER);
-
-        if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
-            LOGGER.info("{} is NOT up to date due to standards", certificationResult.getCriterion().getNumber());
-            return false;
-        }
-        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
-            LOGGER.info("{} is NOT up to date due to functionalities tested", certificationResult.getCriterion().getNumber());
-            return false;
-        }
-        if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
-            LOGGER.info("{} is NOT up to date due to code sets", certificationResult.getCriterion().getNumber());
-            return false;
-        }
-        LOGGER.info("{} is up to date", certificationResult.getCriterion().getNumber());
-        return true;
+    private UpdatedListingStatusReport buildReportFromCodeSetRequiringUpdate(CertifiedProductSearchDetails listing,
+            CodeSetUpToDate codeSetReport) {
+        return UpdatedListingStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(codeSetReport.getCriterion())
+            .standard(null)
+            .functionalityTested(null)
+            .codeSet(codeSetReport.getCodeSet())
+            .certificationResultId(getCertificationResultId(listing, codeSetReport.getCriterion()))
+            .listingNotUpToDateReason(getListingNotUpToDateReason(codeSetReport))
+        .build();
     }
 
-    private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
-        return certifiedProductDetails.getCertificationResults().stream()
-                .filter(certResult -> !certResult.getCriterion().isRemoved())
-                .mapToLong(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
-                .filter(daysEarly -> daysEarly > 0)
-                .min()
-                .orElse(0L);
+    private ListingNotUpToDateReason getListingNotUpToDateReason(AttributeUpToDate attributeReport) {
+        ListingNotUpToDateReasonEnum reasonEnum = ListingNotUpToDateReasonEnum.calculateReason(attributeReport, LOGGER);
+        return getReason(reasonEnum);
     }
 
-    private Long getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
-        AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.STANDARDS, certificationResult, LOGGER);
+    private ListingNotUpToDateReason getReason(ListingNotUpToDateReasonEnum reasonEnum) {
+        return reasons.stream()
+                .filter(reason -> reason.getName().equals(reasonEnum.getName()))
+                .findAny()
+                .orElse(null);
+    }
 
-        AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.FUNCTIONALITIES_TESTED, certificationResult, LOGGER);
-
-        AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.CODE_SETS, certificationResult, LOGGER);
-
-        OptionalLong standardsDaysEarly = standardsUpToDate.getDaysUpdatedEarly();
-        OptionalLong functionalityTestedDaysEarly = functionalitiesTestedUpToDate.getDaysUpdatedEarly();
-        OptionalLong codeSetsDaysEarly = codeSetsUpToDate.getDaysUpdatedEarly();
-
-
-        return List.of(standardsDaysEarly, functionalityTestedDaysEarly, codeSetsDaysEarly).stream()
-                .filter(OptionalLong::isPresent)
-                .map(OptionalLong::getAsLong)
-                .map(Long::valueOf)
-                .reduce(Long::min)
-                .orElse(0L);
+    private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
+                .map(certResult -> certResult.getId())
+                .findAny()
+                .orElse(null);
     }
 
     private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
@@ -196,10 +255,10 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     }
 
     private Boolean doStatisticsExistForDate(LocalDate dateToCheck) {
-        return updatedListingStatusReportDAO.getUpdatedListingStatusReportsByDate(dateToCheck).size() > 0;
+        return updatedListingStatusReportDao.getUpdatedListingStatusReportsByDate(dateToCheck).size() > 0;
     }
 
     private void deleteStatisticsForDate(LocalDate dateToCheck) {
-        updatedListingStatusReportDAO.deleteUpdatedListingStatusReportsByDate(dateToCheck);
+        updatedListingStatusReportDao.deleteUpdatedListingStatusReportsByDay(dateToCheck);
     }
 }

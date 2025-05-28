@@ -16,9 +16,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.attribute.AttributeType;
 import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
+import gov.healthit.chpl.attribute.CodeSetUpToDate;
+import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
+import gov.healthit.chpl.attribute.StandardUpToDate;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.certificationCriteria.CriterionStatus;
@@ -110,29 +112,27 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                         listingSearchResults.forEach(searchResult -> {
                             LOGGER.info("Checking " + searchResult.getChplProductNumber() + " for up-to-date attributes");
                             Optional<CertifiedProductSearchDetails> listing = getCertifiedProductDetails(searchResult.getId());
-                            if (listing.isPresent()) {
-                                AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                                        AttributeType.STANDARDS,
-                                        getCertificationResult(listing.get(), criterion.getId()),
-                                        LOGGER);
-                                AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                                        AttributeType.FUNCTIONALITIES_TESTED,
-                                        getCertificationResult(listing.get(), criterion.getId()),
-                                        LOGGER);
-                                AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                                        AttributeType.CODE_SETS,
-                                        getCertificationResult(listing.get(), criterion.getId()),
-                                        LOGGER);
-
-                                updateFullyUpToDate(updatedCriteriaStatusReport, standardsUpToDate, functionalitiesTestedUpToDate, codeSetsUpToDate);
-                                updateStandardsUpToDate(updatedCriteriaStatusReport, standardsUpToDate);
-                                updateFunctionalitiesTestedUpToDate(updatedCriteriaStatusReport, functionalitiesTestedUpToDate);
-                                updateCodeSetsUpToDate(updatedCriteriaStatusReport, codeSetsUpToDate);
-                            }
+//                            if (listing.isPresent()) {
+//                                List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(
+//                                        getCertificationResult(listing.get(), criterion.getId()),
+//                                        LOGGER);
+//                                List<FunctionalityTestedUpToDate> functionalitiesTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(
+//                                        getCertificationResult(listing.get(), criterion.getId()),
+//                                        LOGGER);
+//                                List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(
+//                                        getCertificationResult(listing.get(), criterion.getId()),
+//                                        LOGGER);
+//
+//                                updateFullyUpToDate(updatedCriteriaStatusReport, standardsUpToDate, functionalitiesTestedUpToDate, codeSetsUpToDate);
+//                                updateStandardsUpToDate(updatedCriteriaStatusReport, standardsUpToDate);
+//                                updateFunctionalitiesTestedUpToDate(updatedCriteriaStatusReport, functionalitiesTestedUpToDate);
+//                                updateCodeSetsUpToDate(updatedCriteriaStatusReport, codeSetsUpToDate);
+//                            }
                         });
 
                         LOGGER.info(updatedCriteriaStatusReport.toString());
-                        updatedCriteriaStatusReportDAO.create(updatedCriteriaStatusReport);
+                        //TODO not saving data right now - need to figure out what we really want to be saved
+//                        updatedCriteriaStatusReportDAO.create(updatedCriteriaStatusReport);
                     } catch (ValidationException e) {
                         LOGGER.error("Could not process UpdatedCriteriaStatusReport - {}", e.getMessage(), e);
                     }
@@ -177,8 +177,9 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                 .collect(Collectors.toSet());
     }
 
-    private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate,
-            AttributeUpToDate functionalitiesTestedUpToDate, AttributeUpToDate codeSetsUpToDate) {
+    private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, List<StandardUpToDate> standardsUpToDate,
+            List<FunctionalityTestedUpToDate> functionalitiesTestedUpToDate,
+            List<CodeSetUpToDate> codeSetsUpToDate) {
         if (isAttributeUpToDate(standardsUpToDate)
                 && isAttributeUpToDate(functionalitiesTestedUpToDate)
                 && isAttributeUpToDate(codeSetsUpToDate)) {
@@ -186,29 +187,28 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
         }
     }
 
-    private Boolean isAttributeUpToDate(AttributeUpToDate attributeUpToDate) {
-        return (attributeUpToDate.getEligibleForAttribute()
-                && attributeUpToDate.getUpToDate())
-                || !attributeUpToDate.getAttributesExistForCriteria();
+    private Boolean isAttributeUpToDate(List<? extends AttributeUpToDate> attributeUpToDate) {
+        //TODO
+        return true;
     }
 
-    private void updateStandardsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate) {
-        if (standardsUpToDate.getEligibleForAttribute() && standardsUpToDate.getUpToDate()) {
-            updatedCriteriaStatusReport.setStandardsUpToDateCount(updatedCriteriaStatusReport.getStandardsUpToDateCount() + 1);
-        }
-    }
-
-    private void updateFunctionalitiesTestedUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate functionalitiesTestedUpToDate) {
-        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && functionalitiesTestedUpToDate.getUpToDate()) {
-            updatedCriteriaStatusReport.setFunctionalitiesTestedUpToDateCount(updatedCriteriaStatusReport.getFunctionalitiesTestedUpToDateCount() + 1);
-        }
-    }
-
-    private void updateCodeSetsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate codeSetsUpToDate) {
-        if (codeSetsUpToDate.getEligibleForAttribute() && codeSetsUpToDate.getUpToDate()) {
-            updatedCriteriaStatusReport.setCodeSetsUpToDateCount(updatedCriteriaStatusReport.getCodeSetsUpToDateCount() + 1);
-        }
-    }
+//    private void updateStandardsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate) {
+//        if (standardsUpToDate.getEligibleForAttribute() && standardsUpToDate.getUpToDate()) {
+//            updatedCriteriaStatusReport.setStandardsUpToDateCount(updatedCriteriaStatusReport.getStandardsUpToDateCount() + 1);
+//        }
+//    }
+//
+//    private void updateFunctionalitiesTestedUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate functionalitiesTestedUpToDate) {
+//        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && functionalitiesTestedUpToDate.getUpToDate()) {
+//            updatedCriteriaStatusReport.setFunctionalitiesTestedUpToDateCount(updatedCriteriaStatusReport.getFunctionalitiesTestedUpToDateCount() + 1);
+//        }
+//    }
+//
+//    private void updateCodeSetsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate codeSetsUpToDate) {
+//        if (codeSetsUpToDate.getEligibleForAttribute() && codeSetsUpToDate.getUpToDate()) {
+//            updatedCriteriaStatusReport.setCodeSetsUpToDateCount(updatedCriteriaStatusReport.getCodeSetsUpToDateCount() + 1);
+//        }
+//    }
 
     private Boolean doStatisticsExistForDate(LocalDate dateToCheck) {
         return updatedCriteriaStatusReportDAO.getUpdatedCriteriaStatusReportsByDate(dateToCheck).size() > 0;

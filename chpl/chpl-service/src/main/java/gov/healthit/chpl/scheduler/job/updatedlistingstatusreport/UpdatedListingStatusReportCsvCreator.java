@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -67,8 +68,11 @@ public class UpdatedListingStatusReportCsvCreator {
                 "Developer",
                 "ONC-ACB",
                 "Certification Status",
-                "Criteria Require Update Count",
-                "Days Updated Early");
+                "Certification Criterion",
+                "Standard",
+                "Functionality Tested",
+                "Code Set",
+                "Reason Update is Required");
     }
 
     private List<String> getRow(UpdatedListingStatusReport report) {
@@ -80,8 +84,11 @@ public class UpdatedListingStatusReportCsvCreator {
                 report.getDeveloper(),
                 report.getCertificationBody(),
                 report.getCertificationStatus(),
-                report.getCriteriaRequireUpdateCount().toString(),
-                report.getDaysUpdatedEarly().toString());
+                Util.formatCriteriaNumber(report.getCertificationCriterion()),
+                report.getStandard() != null ? report.getStandard().getValue() : "",
+                report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
+                report.getCodeSet() != null ? report.getCodeSet().getName() : "",
+                report.getListingNotUpToDateReason().getName());
     }
 
     private void printRow(CSVPrinter csvFilePrinter, UpdatedListingStatusReport report) {

@@ -1,118 +1,104 @@
 package gov.healthit.chpl.attribute;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Component
 public class FunctionalitiesTestedUpToDateService {
-    private FunctionalityTestedDAO functionalityTestedDAO;
-    private CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO;
+    private FunctionalityTestedDAO functionalityTestedDao;
     private CertificationResultRules certificationResultRules;
 
-    public FunctionalitiesTestedUpToDateService(FunctionalityTestedDAO functionalityTestedDAO, CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO,
+    public FunctionalitiesTestedUpToDateService(FunctionalityTestedDAO functionalityTestedDao,
             CertificationResultRules certificationResultRules) {
-        this.functionalityTestedDAO = functionalityTestedDAO;
-        this.certificationResultFunctionalityTestedDAO = certificationResultFunctionalityTestedDAO;
+        this.functionalityTestedDao = functionalityTestedDao;
         this.certificationResultRules = certificationResultRules;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult, Logger logger) {
-        Boolean isCriteriaEligible = isCriteriaEligibleForFunctionalitiesTested(certificationResult.getCriterion());
-        Boolean upToDate = false;
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-
+    public List<FunctionalityTestedUpToDate> getAttributeUpToDate(CertificationResult certResult, Logger logger) {
+        List<FunctionalityTestedUpToDate> functionalityTestedUpToDateReports = new ArrayList<FunctionalityTestedUpToDate>();
+        Boolean isCriteriaEligible = isCriteriaEligibleForFunctionalitiesTested(certResult.getCriterion(), logger);
         if (isCriteriaEligible) {
-            upToDate = areFunctionalitiesTestedUpToDate(certificationResult, logger);
-            if (upToDate) {
-                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(certificationResult);
+            List<FunctionalityTestedUpToDate> upToDateReportsForAttestedFunctionalitiesTested = getUpToDateReportsForAttestedFunctionalitiesTested(certResult, logger);
+            if (!CollectionUtils.isEmpty(upToDateReportsForAttestedFunctionalitiesTested)) {
+                functionalityTestedUpToDateReports.addAll(upToDateReportsForAttestedFunctionalitiesTested);
+            }
+            List<FunctionalityTestedUpToDate> upToDateReportsForUnattestedFunctionalitiesTested = getUpToDateReportsForUnattestedFunctionalitiesTested(certResult, logger);
+            if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedFunctionalitiesTested)) {
+                functionalityTestedUpToDateReports.addAll(upToDateReportsForUnattestedFunctionalitiesTested);
             }
         }
 
-        return AttributeUpToDate.builder()
-                .attributeType(AttributeType.FUNCTIONALITIES_TESTED)
-                .eligibleForAttribute(isCriteriaEligible)
-                .upToDate(upToDate)
-                .daysUpdatedEarly(daysUpdatedEarly)
-                .criterion(certificationResult.getCriterion())
-                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion(), logger))))
-                .build();    }
+        return functionalityTestedUpToDateReports;
+    }
 
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(CertificationResult certificationResult) {
-        //Get the CertificationResultFunctionalitiesTested using DAO, so that we have the create date
-        List<CertificationResultFunctionalityTested> certificationResultFunctionalitiesTested =
-                certificationResultFunctionalityTestedDAO.getFunctionalitiesTestedForCertificationResult(certificationResult.getId());
+    private List<FunctionalityTestedUpToDate> getUpToDateReportsForAttestedFunctionalitiesTested(CertificationResult certResult, Logger logger) {
+        logger.info("Checking attested functionalities tested for " + Util.formatCriteriaNumber(certResult.getCriterion()));
 
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-        if (CollectionUtils.isNotEmpty(certificationResultFunctionalitiesTested)) {
-            daysUpdatedEarly = certificationResultFunctionalitiesTested.stream()
-                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getRequiredDay() != null
-                            && LocalDate.now().isBefore(certResultFT.getFunctionalityTested().getRequiredDay())
-                            && DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()).isBefore(certResultFT.getFunctionalityTested().getRequiredDay()))
-                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getFunctionalityTested().getRequiredDay()))
-                    .min();
-
+        List<FunctionalityTestedUpToDate> functionalityTestedUpToDateReports = new ArrayList<FunctionalityTestedUpToDate>();
+        if (CollectionUtils.isNotEmpty(certResult.getFunctionalitiesTested())) {
+            certResult.getFunctionalitiesTested().stream()
+                    .peek(certResultFt -> logger.info("Checking attested functionality tested " + certResultFt.getFunctionalityTested().getRegulatoryTextCitation()))
+                    .filter(certResultFt -> certResultFt.getFunctionalityTested().getEndDay() != null)
+                    .peek(certResultFt -> logger.info("Attested functionality tested " + certResultFt.getFunctionalityTested().getRegulatoryTextCitation() + " is present but should not be"))
+                    .map(certResultFt -> FunctionalityTestedUpToDate.builder()
+                            .criterion(certResult.getCriterion())
+                            .eligibleForAttribute(true)
+                            .expiringButPresent(true)
+                            .requiredButNotPresent(false)
+                            .functionalityTested(certResultFt.getFunctionalityTested())
+                            .build())
+                    .forEach(ftUpToDate -> functionalityTestedUpToDateReports.add(ftUpToDate));
         }
-        return daysUpdatedEarly;
+        return functionalityTestedUpToDateReports;
     }
 
-    private Boolean areFunctionalitiesTestedUpToDate(CertificationResult certificationResult, Logger logger) {
-        return (areAttestedToFunctionalitiesTestedUpToDate(certificationResult, logger)
-                && areUnattestedFunctionalitiesTestedUpToDate(certificationResult, logger));
-    }
+    private List<FunctionalityTestedUpToDate> getUpToDateReportsForUnattestedFunctionalitiesTested(CertificationResult certResult, Logger logger) {
+        logger.info("Checking unattested functionalities tested for " + Util.formatCriteriaNumber(certResult.getCriterion()));
+        List<FunctionalityTested> unattestedFunctionalitiesTested = getUnattestedToFunctionalitiesTested(certResult, logger);
+        logger.info("There are " + unattestedFunctionalitiesTested.size() + " unattested functionalities tested for " + Util.formatCriteriaNumber(certResult.getCriterion()));
 
-    private Boolean areUnattestedFunctionalitiesTestedUpToDate(CertificationResult certificationResult, Logger logger) {
-        List<FunctionalityTested> unattestedFts = getUnattestedToFunctionalitiesTested(certificationResult, logger);
-        logger.info("Got " + unattestedFts.size() + " unattested functionalities tested for criteria " + Util.formatCriteriaNumber(certificationResult.getCriterion()));
-        unattestedFts.stream()
-            .forEach(ft -> logger.info("\t" + ft.getRegulatoryTextCitation()));
-
-        return getUnattestedToFunctionalitiesTested(certificationResult, logger).stream()
-                .filter(ft -> DateUtil.isDateBetweenInclusive(Pair.of(ft.getStartDay(), ft.getEndDay() == null ? LocalDate.MAX : ft.getEndDay()), LocalDate.now()))
-                .peek(ft -> logger.info("\t\t" + ft.getRegulatoryTextCitation() + " is NOT Up-To-Date"))
-                .findAny()
-                .isEmpty();
-    }
-
-    private Boolean areAttestedToFunctionalitiesTestedUpToDate(CertificationResult certificationResult, Logger logger) {
-        Boolean upToDate = false;
-        logger.info("Checking attested functionalities tested for " + Util.formatCriteriaNumber(certificationResult.getCriterion()));
-
-        if (CollectionUtils.isNotEmpty(certificationResult.getFunctionalitiesTested())) {
-            upToDate = certificationResult.getFunctionalitiesTested().stream()
-                    .peek(certResultFT -> logger.info("\t" + certResultFT.getFunctionalityTested().getRegulatoryTextCitation()))
-                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getEndDay() != null)
-                    .peek(certResultFT -> logger.info("\t\tNOT Up-To-Date"))
-                    .findAny()
-                    .isEmpty();
+        List<FunctionalityTestedUpToDate> functionalityTestedUpToDateReports = new ArrayList<FunctionalityTestedUpToDate>();
+        if (CollectionUtils.isNotEmpty(unattestedFunctionalitiesTested)) {
+            unattestedFunctionalitiesTested.stream()
+                    .peek(ft -> logger.info("Checking unattested functionality tested " + ft.getRegulatoryTextCitation()))
+                    .filter(ft -> DateUtil.isDateBetweenInclusive(Pair.of(ft.getStartDay(), ft.getEndDay() == null ? LocalDate.MAX : ft.getEndDay()), LocalDate.now()))
+                    .peek(ft -> logger.info("Unattested functionality tested " + ft.getRegulatoryTextCitation() + " is required but not found"))
+                    .map(ft -> FunctionalityTestedUpToDate.builder()
+                            .criterion(certResult.getCriterion())
+                            .eligibleForAttribute(true)
+                            .expiringButPresent(false)
+                            .requiredButNotPresent(true)
+                            .functionalityTested(ft)
+                            .build())
+                    .forEach(ftUpToDate -> functionalityTestedUpToDateReports.add(ftUpToDate));
         }
-        return upToDate;
+        return functionalityTestedUpToDateReports;
     }
 
-    private Boolean isCriteriaEligibleForFunctionalitiesTested(CertificationCriterion criterion) {
-        return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.FUNCTIONALITY_TESTED);
+    private Boolean isCriteriaEligibleForFunctionalitiesTested(CertificationCriterion criterion, Logger logger) {
+        List<FunctionalityTested> functionalitiesTested = getAllFunctionalitiesTestedForCriterion(criterion, logger);
+        return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.FUNCTIONALITY_TESTED)
+                && !CollectionUtils.isEmpty(functionalitiesTested);
     }
 
-    private List<FunctionalityTested> getUnattestedToFunctionalitiesTested(CertificationResult certificationResult, Logger logger) {
-        return getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion(), logger).stream()
-                .filter(ft -> !isFunctionalityTestedInList(ft, certificationResult.getFunctionalitiesTested().stream().map(crft -> crft.getFunctionalityTested()).toList()))
+    private List<FunctionalityTested> getUnattestedToFunctionalitiesTested(CertificationResult certResult, Logger logger) {
+        return getAllFunctionalitiesTestedForCriterion(certResult.getCriterion(), logger).stream()
+                .filter(ft -> !isFunctionalityTestedInList(ft, certResult.getFunctionalitiesTested().stream().map(crft -> crft.getFunctionalityTested()).toList()))
                 .toList();
     }
 
@@ -125,12 +111,12 @@ public class FunctionalitiesTestedUpToDateService {
 
     private List<FunctionalityTested> getAllFunctionalitiesTestedForCriterion(CertificationCriterion criterion, Logger logger) {
         try {
-            return functionalityTestedDAO.getAllFunctionalityTestedCriteriaMap().stream()
+            return functionalityTestedDao.getAllFunctionalityTestedCriteriaMap().stream()
                     .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
                     .map(map -> map.getFunctionalityTested())
                     .toList();
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Standards for Criterion.", e);
+            logger.error("Could not retrieve functionality tested for Criterion.", e);
             return List.of();
         }
     }
