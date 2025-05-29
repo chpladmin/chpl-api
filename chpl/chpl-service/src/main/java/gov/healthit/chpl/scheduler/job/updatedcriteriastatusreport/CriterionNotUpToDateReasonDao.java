@@ -16,7 +16,7 @@ public class CriterionNotUpToDateReasonDao extends BaseDAOImpl {
 
     public List<CriterionNotUpToDateReason> getAll() {
         String hql = "SELECT reason "
-                + "FROM ListingNotUpToDateReasonEntity reason "
+                + "FROM CriterionNotUpToDateReasonEntity reason "
                 + "WHERE deleted = false ";
         List<CriterionNotUpToDateReasonEntity> entities = entityManager.createQuery(hql).getResultList();
         return entities.stream()
@@ -26,7 +26,7 @@ public class CriterionNotUpToDateReasonDao extends BaseDAOImpl {
 
     public CriterionNotUpToDateReason getByName(String name) {
         String hql = "SELECT reason "
-                + "FROM ListingNotUpToDateReasonEntity reason "
+                + "FROM CriterionNotUpToDateReasonEntity reason "
                 + "WHERE deleted = false "
                 + "AND name = :name";
         Query query = entityManager.createQuery(hql);

@@ -100,6 +100,6 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private String getFilename() {
-        return env.getProperty("updatedListingStatusReport.fileName") + LocalDate.now().toString();
+        return env.getProperty("updatedCriteriaStatusReport.fileName") + LocalDate.now().toString();
     }
 }
