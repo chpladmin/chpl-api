@@ -15,6 +15,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.search.ListingSearchManager;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class StatisticsSnapshotCalculator {
     private ListingSearchManager listingSearchManager;
+    private CertificationCriterionDAO certificationCriterionDao;
     private SurveillanceDataCalculator surveillanceDataCalculator;
     private NonConformityDataCalculator nonConformityDataCalculator;
     private DirectReviewDataCalculator directReviewDataCalculator;
@@ -30,12 +33,14 @@ public class StatisticsSnapshotCalculator {
 
     @Autowired
     public StatisticsSnapshotCalculator(ListingSearchManager listingSearchManager,
+            CertificationCriterionDAO certificationCriterionDao,
             SurveillanceDataCalculator surveillanceDataCalculator,
             NonConformityDataCalculator nonConformityDataCalculator,
             DirectReviewDataCalculator directReviewDataCalculator,
             Environment env) {
 
         this.listingSearchManager = listingSearchManager;
+        this.certificationCriterionDao = certificationCriterionDao;
         this.surveillanceDataCalculator = surveillanceDataCalculator;
         this.nonConformityDataCalculator = nonConformityDataCalculator;
         this.directReviewDataCalculator = directReviewDataCalculator;
@@ -54,6 +59,10 @@ public class StatisticsSnapshotCalculator {
             List<ListingSearchResult> allListings = listingSearchManager.getAllListings();
             LOGGER.info("Completed getting all " + allListings.size() + " listings.");
 
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Listing Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+
             List<CertificationBodyStatusStatistic> developerCountsByStatus = new ArrayList<CertificationBodyStatusStatistic>();
             List<CertificationBodyStatusStatistic> productCountsByStatus = new ArrayList<CertificationBodyStatusStatistic>();
             List<CertificationBodyStatusStatistic> listingsByAcbAndStatus = new ArrayList<CertificationBodyStatusStatistic>();
@@ -68,6 +77,18 @@ public class StatisticsSnapshotCalculator {
             stats.setDeveloperCountsByStatus(developerCountsByStatus);
             stats.setProductCountsByStatus(productCountsByStatus);
             stats.setListingCountsByStatus(listingsByAcbAndStatus);
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            // Attested Criteria Statistics
+            /////////////////////////////////////////////////////////////////////////////////////
+            List<AttestedCriterionStatistic> criteriaStatistics = new ArrayList<AttestedCriterionStatistic>();
+            List<CertificationCriterion> criteria = certificationCriterionDao.findAll();
+            criteria.stream()
+                .forEach(criterion -> {
+                    allListings.stream()
+                        .forEach(listing -> putInCriteriaBucket(criterion, listing, criteriaStatistics));
+                });
+            stats.setAttestedCriterionStatistics(criteriaStatistics);
 
             /////////////////////////////////////////////////////////////////////////////////////
             // Surveillance Statistics
@@ -234,6 +255,43 @@ public class StatisticsSnapshotCalculator {
             CertificationBodyStatusStatistic statistic = listingStatisticForAcbAndStatus.get();
             statistic.getIds().add(listing.getId());
         }
+    }
+
+    private void putInCriteriaBucket(CertificationCriterion criterion, ListingSearchResult listing, List<AttestedCriterionStatistic> criteriaStatistics) {
+        if (!listingAttestsToCriterion(criterion, listing)) {
+            return;
+        }
+
+        Optional<AttestedCriterionStatistic> criterionStatisticsForAcbAndStatus = criteriaStatistics.stream()
+            .filter(criterionStatistic -> criterionStatistic.getCertificationCriterionId().equals(criterion.getId())
+                    && criterionStatistic.getListingStatusId().equals(listing.getCertificationStatus().getId())
+                    && criterionStatistic.getAcbId().equals(listing.getCertificationBody().getId()))
+            .findAny();
+        if (criterionStatisticsForAcbAndStatus.isEmpty()) {
+            //create new statistic
+            Set<Long> listingIds = new LinkedHashSet<Long>();
+            listingIds.add(listing.getId());
+            AttestedCriterionStatistic statistic = AttestedCriterionStatistic.builder()
+                    .certificationCriterionId(criterion.getId())
+                    .acbId(listing.getCertificationBody().getId())
+                    .acbName(listing.getCertificationBody().getName())
+                    .listingStatusId(listing.getCertificationStatus().getId())
+                    .listingIds(listingIds)
+                    .build();
+            criteriaStatistics.add(statistic);
+        } else {
+            //add listing id to existing
+            AttestedCriterionStatistic statistic = criterionStatisticsForAcbAndStatus.get();
+            statistic.getListingIds().add(listing.getId());
+        }
+    }
+
+    private boolean listingAttestsToCriterion(CertificationCriterion criterion, ListingSearchResult listing) {
+        return listing.getCriteriaMet().stream()
+                .map(crit -> crit.getId())
+                .filter(critId -> critId.equals(criterion.getId()))
+                .findAny()
+                .isPresent();
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

@@ -1,11 +1,8 @@
 package gov.healthit.chpl.report;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.IdNamePair;
-import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
@@ -22,14 +19,7 @@ public class SummaryStatisticsReportBaseService {
     }
 
     protected StatisticsSnapshot getStatistics() {
-        try {
-            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(summaryStatistics.getSummaryStatistics(), StatisticsSnapshot.class);
-        } catch (Exception e) {
-            LOGGER.error("Error retrieving summary statistics: {}", e.getMessage());
-            return null;
-        }
+        return summaryStatisticsDAO.getCurrentSummaryStatistics();
     }
 
     private CertificationBody getAcb(Long acbId) {

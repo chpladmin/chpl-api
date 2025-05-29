@@ -10,15 +10,12 @@
     </Logger>
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
     </Logger>
     <Logger name="org.springframework.cache" level="INFO">
-        <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
         <Logger name="sharedDataStoreLogger" level="ERROR">
         <AppenderRef ref="sharedDataStore" />
-        <AppenderRef ref="sharedDataStoreJson" />
     </Logger>
     <Logger name="reportDataMethodUsageLogger" level="INFO" additivity="false">
         <AppenderRef ref="reportDataMethodUsage" />

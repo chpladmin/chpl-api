@@ -47,5 +47,4 @@ public class SummaryStatisticsEntity extends EntityAudit {
     @Column(name = "summary_statistics")
     @ColumnTransformer(write = "?::jsonb")
     private String summaryStatistics;
-
 }

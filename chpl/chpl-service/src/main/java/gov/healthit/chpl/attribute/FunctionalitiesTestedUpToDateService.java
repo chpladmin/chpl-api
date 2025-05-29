@@ -1,11 +1,9 @@
 package gov.healthit.chpl.attribute;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +13,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component
@@ -76,7 +73,7 @@ public class FunctionalitiesTestedUpToDateService {
         if (CollectionUtils.isNotEmpty(unattestedFunctionalitiesTested)) {
             unattestedFunctionalitiesTested.stream()
                     .peek(ft -> logger.info("Checking unattested functionality tested " + ft.getRegulatoryTextCitation()))
-                    .filter(ft -> DateUtil.isDateBetweenInclusive(Pair.of(ft.getStartDay(), ft.getEndDay() == null ? LocalDate.MAX : ft.getEndDay()), LocalDate.now()))
+                    .filter(ft -> ft.getRequiredDay() != null)
                     .peek(ft -> logger.info("Unattested functionality tested " + ft.getRegulatoryTextCitation() + " is required but not found"))
                     .map(ft -> FunctionalityTestedUpToDate.builder()
                             .criterion(certResult.getCriterion())

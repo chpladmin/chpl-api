@@ -1,0 +1,50 @@
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.service.CertificationCriterionService;
+
+@Component
+public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsheetBase {
+    private UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet;
+    private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
+    private String template;
+    private CertificationCriterionService certificationCriterionService;
+    private CertificationCriterionComparator certificationCriterionComparator;
+
+    public UpdatedCriteriaStatusReportWorkbook(@Value("${updatedCriteriaStatusReportTemplate}") String template,
+            UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet,
+            UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
+            CertificationCriterionService certificationCriterionService,
+            CertificationCriterionComparator certificationCriterionComparator) {
+        this.template = template;
+        this.updatedCriteriaStatusReportSheet = updatedCriteriaStatusReportSheet;
+        this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
+        this.certificationCriterionService = certificationCriterionService;
+        this.certificationCriterionComparator = certificationCriterionComparator;
+    }
+
+    public File generateSpreadsheet() throws IOException {
+        File newFile = copyTemplateFileToTemporaryFile(template, "updated-criteria-status-report");
+        Workbook workbook = getWorkbook(newFile);
+
+        updatedCriteriaStatusReportDao.getCriteriaIdsFromUpdatedCritieriaStatusReport().stream()
+                .map(id -> certificationCriterionService.get(id))
+                .sorted(certificationCriterionComparator)
+                .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteria(crit, workbook));
+
+        //Remove the template sheet
+        workbook.removeSheetAt(0);
+
+        XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+        return writeFileToDisk(workbook, newFile);
+    }
+
+}
