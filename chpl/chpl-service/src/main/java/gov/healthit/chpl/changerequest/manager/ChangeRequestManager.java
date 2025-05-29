@@ -193,7 +193,7 @@ public class ChangeRequestManager {
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
         if (!ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
                 && changeRequest.getDetails() != null
-                && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType() != null
+                && changeRequest.getDetails() instanceof ChangeRequestListingUrl
                 && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
         }
