@@ -56,7 +56,7 @@ public class StandardsUpToDateService {
         if (CollectionUtils.isNotEmpty(unattestedStandards)) {
             unattestedStandards.stream()
                     .peek(std -> logger.info("Checking unattested standard " + std.getRegulatoryTextCitation()))
-                    .filter(std -> std.getRequiredDay() != null)
+                    .filter(std -> !std.isRetired() && std.getRequiredDay() != null)
                     .peek(std -> logger.info("Unattested standard " + std.getRegulatoryTextCitation() + " is required but not found"))
                     .map(std -> StandardUpToDate.builder()
                             .criterion(certResult.getCriterion())

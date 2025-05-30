@@ -44,7 +44,6 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
         File csvFile = getOutputFile();
 
-
         try (FileWriter fileWriter = new FileWriter(csvFile);
                 CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
@@ -52,9 +51,11 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
             List<UpdatedCriterionStatusReport> reports = getReportData();
             if (!CollectionUtils.isEmpty(reports)) {
+                LOGGER.info("Generating the CSV");
                 reports.stream()
                     .sorted(Comparator.comparing(UpdatedCriterionStatusReport::getChplProductNumber))
                     .forEach(report -> printRow(csvFilePrinter, report));
+                LOGGER.info("Completed generating the CSV");
             }
         }
         return csvFile;

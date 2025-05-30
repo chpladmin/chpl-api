@@ -47,7 +47,7 @@ public class FunctionalitiesTestedUpToDateService {
         if (CollectionUtils.isNotEmpty(unattestedFunctionalitiesTested)) {
             unattestedFunctionalitiesTested.stream()
                     .peek(ft -> logger.info("Checking unattested functionality tested " + ft.getRegulatoryTextCitation()))
-                    .filter(ft -> ft.getRequiredDay() != null)
+                    .filter(ft -> !ft.isRetired() && ft.getRequiredDay() != null)
                     .peek(ft -> logger.info("Unattested functionality tested " + ft.getRegulatoryTextCitation() + " is required but not found"))
                     .map(ft -> FunctionalityTestedUpToDate.builder()
                             .criterion(certResult.getCriterion())

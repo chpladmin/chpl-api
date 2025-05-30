@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
@@ -25,11 +24,10 @@ public class AttributeUpToDateService {
     public AttributeUpToDateService(StandardDAO standardDao,
             FunctionalityTestedDAO functionalityTestedDao,
             CodeSetDAO codeSetDao,
-            CertificationResultCodeSetDAO certificationResultCodeSetDao,
             CertificationResultRules certificationResultRules) {
         standardsUpToDateService = new StandardsUpToDateService(standardDao, certificationResultRules);
         functionalitiesTestedUpToDateService = new FunctionalitiesTestedUpToDateService(functionalityTestedDao, certificationResultRules);
-        codeSetsUpToDateService = new CodeSetsUpToDateService(codeSetDao, certificationResultCodeSetDao, certificationResultRules);
+        codeSetsUpToDateService = new CodeSetsUpToDateService(codeSetDao, certificationResultRules);
     }
 
     public List<StandardUpToDate> getStandardsUpToDate(CertificationResult certResult, Logger logger) {
