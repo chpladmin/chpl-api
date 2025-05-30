@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
 import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -20,14 +19,11 @@ import gov.healthit.chpl.util.Util;
 public class CodeSetsUpToDateService {
 
     private CertificationResultRules certificationResultRules;
-    private CertificationResultCodeSetDAO certificationResultCodeSetDao;
     private Map<Long, List<CodeSet>> codeSetMaps;
 
     public CodeSetsUpToDateService(CodeSetDAO codeSetDao,
-            CertificationResultCodeSetDAO certificationResultCodeSetDao,
             CertificationResultRules certificationResultRules) {
         this.codeSetMaps = codeSetDao.getCodeSetCriteriaMaps();
-        this.certificationResultCodeSetDao = certificationResultCodeSetDao;
         this.certificationResultRules = certificationResultRules;
     }
 
