@@ -73,6 +73,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private List<UpdatedCriterionStatusReport> getReportData() {
+        LOGGER.info("Getting report data for the CSV file");
         return updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
                 reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now()));
     }
@@ -87,6 +88,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 "ONC-ACB",
                 "Certification Status",
                 "Certification Criterion",
+                "Update Required By",
                 "Standard",
                 "Functionality Tested",
                 "Code Set",
@@ -103,10 +105,35 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 report.getCertificationBody(),
                 report.getCertificationStatus(),
                 Util.formatCriteriaNumber(report.getCertificationCriterion()),
+                getUpdateRequiredBy(report),
                 report.getStandard() != null ? report.getStandard().getValue() : "",
                 report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
                 report.getCodeSet() != null ? report.getCodeSet().getName() : "",
                 report.getCriterionNotUpToDateReason().getName());
+    }
+
+    private String getUpdateRequiredBy(UpdatedCriterionStatusReport report) {
+        if (report.getStandard() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_STANDARD_NOT_ATTESTED.getName())) {
+            return report.getStandard().getRequiredDay().toString();
+        } else if (report.getFunctionalityTested() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_FUNCTIONALITY_TESTED_NOT_ATTESTED.getName())) {
+            return report.getFunctionalityTested().getRequiredDay().toString();
+        } else if (report.getCodeSet() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_CODE_SET_NOT_ATTESTED.getName())) {
+            return report.getCodeSet().getRequiredDay().toString();
+        } else if (report.getStandard() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.STANDARD_ATTESTED.getName())) {
+            return report.getStandard().getEndDay().toString();
+        } else if (report.getFunctionalityTested() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.FUNCTIONALITY_TESTED_ATTESTED.getName())) {
+            return report.getFunctionalityTested().getEndDay().toString();
+        } else if (report.getCodeSet() != null
+                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.CODE_SET_ATTESTED.getName())) {
+            // code sets don't have an end date currently so we can't make a useful "required by" date in the last case
+        }
+        LOGGER.warn("Unable to calculate update required by date for report " + report);
+        return "";
     }
 
     private void printRow(CSVPrinter csvFilePrinter, UpdatedCriterionStatusReport report) {

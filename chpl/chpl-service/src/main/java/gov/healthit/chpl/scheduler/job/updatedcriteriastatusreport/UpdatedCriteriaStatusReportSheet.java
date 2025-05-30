@@ -25,8 +25,6 @@ import one.util.streamex.StreamEx;
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class UpdatedCriteriaStatusReportSheet {
-    private static final Integer TOTAL_NUMBER_OF_MONTHS = 12;
-
     private static final Integer DATE_ROW_IDX = 0;
     private static final Integer REQUIRES_UPDATE_ROW_IDX = 1;
     private static final Integer LISTING_COUNT_ROW_IDX = 3;
@@ -36,28 +34,24 @@ public class UpdatedCriteriaStatusReportSheet {
     private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
     private SummaryStatisticsDAO summaryStatisticsDao;
     private List<CertificationStatus> allCertificationStatuses;
-    private ReportDateService reportDateService;
 
     public UpdatedCriteriaStatusReportSheet(UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
             SummaryStatisticsDAO summaryStatisticsDao,
-            CertificationStatusDAO certificationStatusDao,
-            ReportDateService reportDateService) {
+            CertificationStatusDAO certificationStatusDao) {
         this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
         this.summaryStatisticsDao = summaryStatisticsDao;
-        this.reportDateService = reportDateService;
         this.allCertificationStatuses = certificationStatusDao.findAll();
     }
 
-    public void generateSheetForCriteria(CertificationCriterion criterion, Workbook workbook) {
+    public void generateSheetForCriteriaOnDates(CertificationCriterion criterion, List<LocalDate> reportDates, Workbook workbook) {
         LOGGER.info("Generating worksheet for " + Util.formatCriteriaNumber(criterion));
         Sheet sheet = addWorksheetForCriteria(criterion, workbook);
 
         CellUtil.getCell(CellUtil.getRow(DATE_ROW_IDX, sheet), DESCRIPTIONS_COL_IDX).setCellValue(criterion.getNumber() + " Up-to-Date Progress");
         updateChartTitle(sheet, criterion);
 
-        LocalDate preferredReportDay = LocalDate.now();
-        for (int i = TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
-            LocalDate actualReportDay = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(preferredReportDay);
+        for (int i = UpdatedCriteriaStatusReportWorkbook.TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
+            LocalDate actualReportDay = reportDates.get(i - 1);
             List<UpdatedCriterionStatusReport> criterionStatusReports = getCriterionStatusReportsForDateAndCriterion(actualReportDay, criterion);
             StatisticsSnapshot statisticsSnapshot = getSummaryStatisticsSnapshotForDate(actualReportDay);
 
@@ -67,8 +61,6 @@ public class UpdatedCriteriaStatusReportSheet {
             CellUtil.getCell(CellUtil.getRow(DATE_ROW_IDX, sheet), i).setCellValue(actualReportDay);
             CellUtil.getCell(CellUtil.getRow(REQUIRES_UPDATE_ROW_IDX, sheet), i).setCellValue(totalListingsRequiringUpdates);
             CellUtil.getCell(CellUtil.getRow(LISTING_COUNT_ROW_IDX, sheet), i).setCellValue(totalActiveListingsWithCriterion);
-
-            preferredReportDay = actualReportDay.minusMonths(1);
         }
     }
 

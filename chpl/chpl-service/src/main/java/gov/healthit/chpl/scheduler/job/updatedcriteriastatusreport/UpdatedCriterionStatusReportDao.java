@@ -59,6 +59,17 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public boolean doUpdatedCriterionStatusReportsExistOnDay(LocalDate reportDay) {
+        String hql = "SELECT count(ucsr) "
+                + "FROM UpdatedCriterionStatusReportEntity ucsr "
+                + "WHERE reportDay = :reportDay "
+                + "AND deleted = false ";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("reportDay", reportDay);
+        Long countOfReports = (Long) query.getSingleResult();
+        return countOfReports != null && countOfReports.longValue() > 0;
+    }
+
     public void deleteUpdatedCriterionStatusReportsByDay(LocalDate reportDay) {
         String hql = "UPDATE UpdatedCriterionStatusReportEntity "
                 + "SET deleted = true "

@@ -108,6 +108,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     }
 
     private LocalDate getReportDate() {
+        LOGGER.info("Getting report date for the email body");
         return reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
     }
 }

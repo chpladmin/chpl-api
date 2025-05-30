@@ -29,21 +29,19 @@ public class ReportDateService {
 
     public LocalDate findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate preferredDate) {
         LOGGER.info("Looking for date with all necessary report data closest to " + preferredDate);
-        List<UpdatedCriterionStatusReport> criterionStatusReports = null;
-        StatisticsSnapshot statisticsSnapshot = null;
 
         for (Integer offset : getDayOffsetList()) {
             LocalDate possibleReportDate = preferredDate.plusDays(offset);
-            criterionStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(possibleReportDate);
-            statisticsSnapshot = summaryStatisticsDao.getSummaryStatistics(possibleReportDate);
-            if (!CollectionUtils.isEmpty(criterionStatusReports) && statisticsSnapshot != null
+            boolean criterionStatusReportsExist = updatedCriteriaStatusReportDao.doUpdatedCriterionStatusReportsExistOnDay(possibleReportDate);
+            StatisticsSnapshot statisticsSnapshot = summaryStatisticsDao.getSummaryStatistics(possibleReportDate);
+            if (criterionStatusReportsExist && statisticsSnapshot != null
                     && !CollectionUtils.isEmpty(statisticsSnapshot.getAttestedCriterionStatistics())) {
                 LOGGER.info("Using " + possibleReportDate + " as report date");
                 return possibleReportDate;
             }
         }
 
-        LOGGER.warn("No dates with both Update Criteria Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " of today.");
+        LOGGER.warn("No dates with both Update Criteria Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of today.");
         // we don't really ever expect to get to this point - there must be a date with both reports having data
         return preferredDate;
     }
