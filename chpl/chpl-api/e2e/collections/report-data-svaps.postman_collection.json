@@ -1,0 +1,205 @@
+{
+	"info": {
+		"name": "report-data/svaps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"		
+	},
+	"item": [
+		{
+			"name": "GET /report-data/svaps/svaps-by-criteria-and-certification-status - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/svaps-by-criteria-and-certification-status should retrieve the data used to generate the SVAP usage by criteria report in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"svapId\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"approvedStandardVersion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"replaced\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"criterion\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/svaps/svaps-by-criteria-and-certification-status",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"svaps",
+						"svaps-by-criteria-and-certification-status"
+					]
+				},
+				"description": "GET /report-data/svaps-by-criteria-and-certification-status - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/svaps/listings - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/svaps/listings should retrieve the data used to generate the SVAP usage - Listing with SVAP report in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"svapId\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"approvedStandardVersion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"replaced\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/svaps/listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"svaps",
+						"listings"
+					]
+				},
+				"description": "GET /report-data/svaps/listings - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/svaps/criteria - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/svaps/criteria should retrieve list of Certification Criteria that can be associated with an SVAP and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"number\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"title\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/svaps/criteria",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"svaps",
+						"criteria"
+					]
+				},
+				"description": "GET /svaps/criteria - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/svaps/criteria-with-any-svap-counts - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/svaps/criteria-with-any-svap-counts should retrieve the data used to generate the SVAP usage - Criteria with any SVAP report in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"certificationCriterion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"number\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"title\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"listingCountAttestingToCriteria\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"listingCountAttestingToCriteriaAndAnySvap\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/svaps/criteria-with-any-svap-counts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"svaps",
+						"criteria-with-any-svap-counts"
+					]
+				},
+				"description": "GET /report-data/svaps/criteria-with-any-svap-counts - 200 status and valid response"
+			},
+			"response": []
+		}
+	]
+}
