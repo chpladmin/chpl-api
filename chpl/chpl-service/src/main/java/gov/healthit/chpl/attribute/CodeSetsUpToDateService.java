@@ -1,6 +1,5 @@
 package gov.healthit.chpl.attribute;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +36,6 @@ public class CodeSetsUpToDateService {
 
         Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certResult.getCriterion());
         if (isCriteriaEligible) {
-            // No up-to-date reports for attested code sets at this time
-            // There is only 1 code set and it doesn't have an end day so if a criteria has a code set then it is up-to-date.
-
             List<CodeSetUpToDate> upToDateReportsForUnattestedCodeSets = getUpToDateReportsForUnattestedCodeSets(certResult, logger);
             if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedCodeSets)) {
                 codeSetUpToDateReports.addAll(upToDateReportsForUnattestedCodeSets);
@@ -64,7 +60,7 @@ public class CodeSetsUpToDateService {
         if (CollectionUtils.isNotEmpty(unattestedCodeSets)) {
             unattestedCodeSets.stream()
                     .peek(cs -> logger.info("Checking unattested code set " + cs.getName()))
-                    .filter(cs -> cs.getStartDay().isBefore(LocalDate.now()))
+                    .filter(cs -> cs.getRequiredDay() != null)
                     .peek(cs -> logger.info("Unattested code set " + cs.getName() + " is required but not found"))
                     .map(cs -> CodeSetUpToDate.builder()
                             .criterion(certResult.getCriterion())

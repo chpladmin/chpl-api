@@ -1,12 +1,8 @@
 package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,23 +21,19 @@ import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
-import one.util.streamex.StreamEx;
 
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired
-    private ListingSearchService listingSearchService;
-
-    @Autowired
-    private UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao;
+    private ReportDateService reportDateService;
 
     @Autowired
     private UpdatedCriteriaStatusReportCsvCreator updatedCriteriaStatusReportCsvCreator;
+
+    @Autowired
+    private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbookCreator;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -59,7 +51,6 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<File> attachments = new ArrayList<File>();
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -72,7 +63,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
-                            sendEmail(context, getReportData());
+                            sendEmail(context);
                         } catch (IOException ex) {
                             LOGGER.error("Error creating email body", ex);
                         } catch (EmailNotSentException ex) {
@@ -88,58 +79,35 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is complete.*****");
     }
 
-    private void sendEmail(JobExecutionContext context, List<UpdatedCriterionStatusReport> criteriaReports)
-            throws EmailNotSentException, IOException, ValidationException {
+    private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
                 .recipient(emailAddress)
                 .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
-                .htmlMessage(createHtmlMessage(criteriaReports))
-                .fileAttachments(Arrays.asList(updatedCriteriaStatusReportCsvCreator.createCsvFile(criteriaReports)))
+                .htmlMessage(createHtmlMessage())
+                .fileAttachments(Arrays.asList(
+                        updatedCriteriaStatusReportCsvCreator.createCsvFile(),
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet()
+                        ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
     }
 
-    private String createHtmlMessage(List<UpdatedCriterionStatusReport> criteriaReports) throws ValidationException {
+    private String createHtmlMessage() throws ValidationException {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("updatedCriteriaStatusReport.subject"))
-                .paragraph("", getHtmlEmailBody(criteriaReports))
+                .paragraph("", getHtmlEmailBody())
                 .footer(AdminFooter.class)
                 .build();
     }
 
-    private String getHtmlEmailBody(List<UpdatedCriterionStatusReport> criteriaReports) throws ValidationException {
+    private String getHtmlEmailBody() throws ValidationException {
         return String.format(env.getProperty("updatedCriteriaStatusReport.body"),
-                getCountOfCurrentlyActiveListings() + "",
-                LocalDate.now().toString(),
-                getCountOfListingsRequiringUpdates(criteriaReports) + "",
-                getMaxReportDate().toString());
+                getReportDate().toString());
     }
 
-    private List<UpdatedCriterionStatusReport> getReportData() {
-        return updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(getMaxReportDate());
-    }
-
-    private LocalDate getMaxReportDate() {
-        LocalDate maxReportDate = updatedCriterionStatusReportDao.getMaxReportDate();
-        LOGGER.info("Report Date: {}", maxReportDate);
-        return maxReportDate;
-    }
-
-    private int getCountOfListingsRequiringUpdates(List<UpdatedCriterionStatusReport> rows) {
-        List<UpdatedCriterionStatusReport> distinctRowsPerListing =
-                StreamEx.of(rows).distinct(UpdatedCriterionStatusReport::getCertifiedProductId).collect(Collectors.toList());
-
-        return distinctRowsPerListing.size();
-    }
-
-    private int getCountOfCurrentlyActiveListings() throws ValidationException {
-        SearchRequest request = SearchRequest.builder()
-                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
-                .pageSize(SearchRequest.MAX_PAGE_SIZE)
-                .build();
-
-        return listingSearchService.getAllPagesOfSearchResults(request).size();
+    private LocalDate getReportDate() {
+        return reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
     }
 }

@@ -30,36 +30,10 @@ public class FunctionalitiesTestedUpToDateService {
         List<FunctionalityTestedUpToDate> functionalityTestedUpToDateReports = new ArrayList<FunctionalityTestedUpToDate>();
         Boolean isCriteriaEligible = isCriteriaEligibleForFunctionalitiesTested(certResult.getCriterion(), logger);
         if (isCriteriaEligible) {
-            List<FunctionalityTestedUpToDate> upToDateReportsForAttestedFunctionalitiesTested = getUpToDateReportsForAttestedFunctionalitiesTested(certResult, logger);
-            if (!CollectionUtils.isEmpty(upToDateReportsForAttestedFunctionalitiesTested)) {
-                functionalityTestedUpToDateReports.addAll(upToDateReportsForAttestedFunctionalitiesTested);
-            }
             List<FunctionalityTestedUpToDate> upToDateReportsForUnattestedFunctionalitiesTested = getUpToDateReportsForUnattestedFunctionalitiesTested(certResult, logger);
             if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedFunctionalitiesTested)) {
                 functionalityTestedUpToDateReports.addAll(upToDateReportsForUnattestedFunctionalitiesTested);
             }
-        }
-
-        return functionalityTestedUpToDateReports;
-    }
-
-    private List<FunctionalityTestedUpToDate> getUpToDateReportsForAttestedFunctionalitiesTested(CertificationResult certResult, Logger logger) {
-        logger.info("Checking attested functionalities tested for " + Util.formatCriteriaNumber(certResult.getCriterion()));
-
-        List<FunctionalityTestedUpToDate> functionalityTestedUpToDateReports = new ArrayList<FunctionalityTestedUpToDate>();
-        if (CollectionUtils.isNotEmpty(certResult.getFunctionalitiesTested())) {
-            certResult.getFunctionalitiesTested().stream()
-                    .peek(certResultFt -> logger.info("Checking attested functionality tested " + certResultFt.getFunctionalityTested().getRegulatoryTextCitation()))
-                    .filter(certResultFt -> certResultFt.getFunctionalityTested().getEndDay() != null)
-                    .peek(certResultFt -> logger.info("Attested functionality tested " + certResultFt.getFunctionalityTested().getRegulatoryTextCitation() + " is present but should not be"))
-                    .map(certResultFt -> FunctionalityTestedUpToDate.builder()
-                            .criterion(certResult.getCriterion())
-                            .eligibleForAttribute(true)
-                            .expiringButPresent(true)
-                            .requiredButNotPresent(false)
-                            .functionalityTested(certResultFt.getFunctionalityTested())
-                            .build())
-                    .forEach(ftUpToDate -> functionalityTestedUpToDateReports.add(ftUpToDate));
         }
         return functionalityTestedUpToDateReports;
     }

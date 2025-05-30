@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,32 +18,44 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class UpdatedCriteriaStatusReportCsvCreator {
+
+    private UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao;
+    private ReportDateService reportDateService;
     private Environment env;
 
     @Autowired
-    public UpdatedCriteriaStatusReportCsvCreator(Environment env) {
+    public UpdatedCriteriaStatusReportCsvCreator(UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao,
+            ReportDateService reportDateService,
+            Environment env) {
+        this.updatedCriterionStatusReportDao = updatedCriterionStatusReportDao;
+        this.reportDateService = reportDateService;
         this.env = env;
     }
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<UpdatedCriterionStatusReport> reports) throws IOException {
+    public File createCsvFile() throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
 
         File csvFile = getOutputFile();
+
+
         try (FileWriter fileWriter = new FileWriter(csvFile);
                 CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
             csvFilePrinter.printRecord(getHeaderRow());
 
-            reports.stream()
-                .sorted(Comparator.comparing(UpdatedCriterionStatusReport::getChplProductNumber))
-                .forEach(report -> printRow(csvFilePrinter, report));
+            List<UpdatedCriterionStatusReport> reports = getReportData();
+            if (!CollectionUtils.isEmpty(reports)) {
+                reports.stream()
+                    .sorted(Comparator.comparing(UpdatedCriterionStatusReport::getChplProductNumber))
+                    .forEach(report -> printRow(csvFilePrinter, report));
+            }
         }
         return csvFile;
     }
@@ -57,6 +70,11 @@ public class UpdatedCriteriaStatusReportCsvCreator {
         }
 
         return temp;
+    }
+
+    private List<UpdatedCriterionStatusReport> getReportData() {
+        return updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
+                reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now()));
     }
 
     private List<String> getHeaderRow() {
@@ -100,6 +118,6 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private String getFilename() {
-        return env.getProperty("updatedCriteriaStatusReport.fileName") + LocalDate.now().toString();
+        return env.getProperty("updatedCriteriaStatusReport.details.fileName") + LocalDate.now().toString();
     }
 }

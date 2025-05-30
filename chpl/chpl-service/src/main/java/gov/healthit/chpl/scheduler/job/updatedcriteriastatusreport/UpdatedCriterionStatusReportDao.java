@@ -59,14 +59,6 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getCriteriaIdsFromUpdatedCritieriaStatusReport() {
-        return entityManager
-                .createQuery("SELECT DISTINCT ucsr.certificationCriterionId "
-                            + "FROM UpdatedCriterionStatusReportEntity ucsr "
-                            + "WHERE (NOT ucsr.deleted = true) ", Long.class)
-                .getResultList();
-    }
-
     public void deleteUpdatedCriterionStatusReportsByDay(LocalDate reportDay) {
         String hql = "UPDATE UpdatedCriterionStatusReportEntity "
                 + "SET deleted = true "
@@ -74,14 +66,6 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
         Query query = entityManager.createQuery(hql);
         query.setParameter("reportDay", reportDay);
         query.executeUpdate();
-    }
-
-    public LocalDate getMaxReportDate() {
-        return entityManager
-                .createQuery("SELECT MAX(reportDay) "
-                            + "FROM UpdatedCriterionStatusReportEntity ucsr "
-                            + "WHERE (NOT ucsr.deleted = true) ", LocalDate.class)
-                .getSingleResult();
     }
 
     private List<UpdatedCriterionStatusReportEntity> getUpdatedCriterionStandardReportEntitiesByDate(LocalDate reportDate) {

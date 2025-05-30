@@ -36,10 +36,6 @@ public class StandardsUpToDateService {
 
         Boolean isCriteriaEligible = isCriteriaEligibleForStandards(certResult.getCriterion(), logger);
         if (isCriteriaEligible) {
-            List<StandardUpToDate> upToDateReportsForAttestedStandards = getUpToDateReportsForAttestedStandards(certResult, logger);
-            if (!CollectionUtils.isEmpty(upToDateReportsForAttestedStandards)) {
-                standardUpToDateReports.addAll(upToDateReportsForAttestedStandards);
-            }
             List<StandardUpToDate> upToDateReportsForUnattestedStandards = getUpToDateReportsForUnattestedStandards(certResult, logger);
             if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedStandards)) {
                 standardUpToDateReports.addAll(upToDateReportsForUnattestedStandards);
@@ -53,27 +49,6 @@ public class StandardsUpToDateService {
         List<Standard> standardsForCriterion = getAllStandardsForCriterion(criterion, logger);
         return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.STANDARD)
                 && !CollectionUtils.isEmpty(standardsForCriterion);
-    }
-
-    private List<StandardUpToDate> getUpToDateReportsForAttestedStandards(CertificationResult certResult, Logger logger) {
-        logger.info("Checking attested standards for " + Util.formatCriteriaNumber(certResult.getCriterion()));
-
-        List<StandardUpToDate> standardUpToDateReports = new ArrayList<StandardUpToDate>();
-        if (CollectionUtils.isNotEmpty(certResult.getStandards())) {
-            certResult.getStandards().stream()
-                    .peek(certResultStandard -> logger.info("Checking attested standard " + certResultStandard.getStandard().getRegulatoryTextCitation()))
-                    .filter(certResultStandard -> certResultStandard.getStandard().getEndDay() != null)
-                    .peek(certResultStandard -> logger.info("Attested standard " + certResultStandard.getStandard().getRegulatoryTextCitation() + " is present but should not be"))
-                    .map(certResultStandard -> StandardUpToDate.builder()
-                            .criterion(certResult.getCriterion())
-                            .eligibleForAttribute(true)
-                            .expiringButPresent(true)
-                            .requiredButNotPresent(false)
-                            .standard(certResultStandard.getStandard())
-                            .build())
-                    .forEach(stdUpToDate -> standardUpToDateReports.add(stdUpToDate));
-        }
-        return standardUpToDateReports;
     }
 
     private List<StandardUpToDate> getUpToDateReportsForUnattestedStandards(CertificationResult certResult, Logger logger) {

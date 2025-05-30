@@ -6,37 +6,37 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsheetBase {
     private UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet;
-    private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
     private String template;
-    private CertificationCriterionService certificationCriterionService;
+    private CertificationCriteriaManager criteriaManager;
     private CertificationCriterionComparator certificationCriterionComparator;
+    private Environment env;
 
     public UpdatedCriteriaStatusReportWorkbook(@Value("${updatedCriteriaStatusReportTemplate}") String template,
             UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet,
-            UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
-            CertificationCriterionService certificationCriterionService,
-            CertificationCriterionComparator certificationCriterionComparator) {
+            CertificationCriteriaManager criteriaManager,
+            CertificationCriterionComparator certificationCriterionComparator,
+            Environment env) {
         this.template = template;
         this.updatedCriteriaStatusReportSheet = updatedCriteriaStatusReportSheet;
-        this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
-        this.certificationCriterionService = certificationCriterionService;
+        this.criteriaManager = criteriaManager;
         this.certificationCriterionComparator = certificationCriterionComparator;
+        this.env = env;
     }
 
     public File generateSpreadsheet() throws IOException {
-        File newFile = copyTemplateFileToTemporaryFile(template, "updated-criteria-status-report");
+        File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
 
-        updatedCriteriaStatusReportDao.getCriteriaIdsFromUpdatedCritieriaStatusReport().stream()
-                .map(id -> certificationCriterionService.get(id))
+        criteriaManager.getActiveToday().stream()
                 .sorted(certificationCriterionComparator)
                 .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteria(crit, workbook));
 
@@ -47,4 +47,7 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
         return writeFileToDisk(workbook, newFile);
     }
 
+    private String getFilename() {
+        return env.getProperty("updatedCriteriaStatusReport.fileName").toString();
+    }
 }
