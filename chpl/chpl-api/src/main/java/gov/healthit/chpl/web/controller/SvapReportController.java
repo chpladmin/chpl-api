@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.common.CertificationCriterionWithOrder;
 import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
+import gov.healthit.chpl.report.criteriaattribute.SvapReportByCertificationStatus;
 import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -30,6 +31,17 @@ public class SvapReportController {
     @Autowired
     public SvapReportController(ReportDataManager reportDataManager) {
         this.reportDataManager = reportDataManager;
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the SVAP Usage by Criteria report.",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @LogMethodUsage
+    @RequestMapping(value = "/svaps-by-criteria-and-certification-status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SvapReportByCertificationStatus> getSvapReportsByAllCertificationStatuses() {
+        return reportDataManager.getSvapReportService().getSvapReportsByAllCertificationStatuses();
     }
 
     @Operation(summary = "Retrieves the data used to generate the SVAP Usage - Criteria with Any SVAP report.",
