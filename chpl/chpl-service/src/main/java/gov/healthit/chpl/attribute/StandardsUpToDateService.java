@@ -1,12 +1,9 @@
 package gov.healthit.chpl.attribute;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +13,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component
@@ -60,8 +56,7 @@ public class StandardsUpToDateService {
         if (CollectionUtils.isNotEmpty(unattestedStandards)) {
             unattestedStandards.stream()
                     .peek(std -> logger.info("Checking unattested standard " + std.getRegulatoryTextCitation()))
-                    .filter(std -> DateUtil.isDateBetweenInclusive(Pair.of(std.getStartDay(), std.getEndDay() == null ? LocalDate.MAX : std.getEndDay()), LocalDate.now())
-                            && StringUtils.isEmpty(std.getGroupName()))
+                    .filter(std -> std.getRequiredDay() != null)
                     .peek(std -> logger.info("Unattested standard " + std.getRegulatoryTextCitation() + " is required but not found"))
                     .map(std -> StandardUpToDate.builder()
                             .criterion(certResult.getCriterion())
