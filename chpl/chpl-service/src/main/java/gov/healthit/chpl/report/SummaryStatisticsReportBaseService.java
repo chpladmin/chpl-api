@@ -19,7 +19,14 @@ public class SummaryStatisticsReportBaseService {
     }
 
     protected StatisticsSnapshot getStatistics() {
-        return summaryStatisticsDAO.getCurrentSummaryStatistics();
+        StatisticsSnapshot result = null;
+        try {
+            result = summaryStatisticsDAO.getCurrentSummaryStatistics();
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving summary statistics: {}", e.getMessage());
+            return null;
+        }
+        return result;
     }
 
     private CertificationBody getAcb(Long acbId) {
