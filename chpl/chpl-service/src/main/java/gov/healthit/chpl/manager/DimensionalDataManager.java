@@ -20,7 +20,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -33,7 +32,6 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -50,6 +48,8 @@ import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.testdata.TestDataCriteriaMap;
 import gov.healthit.chpl.testdata.TestDataDAO;
+import gov.healthit.chpl.teststandard.TestStandard;
+import gov.healthit.chpl.teststandard.TestStandardDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -166,6 +166,7 @@ public class DimensionalDataManager {
         return standards;
     }
 
+    @Deprecated
     @Transactional
     public Set<TestStandard> getTestStandards() {
         LOGGER.debug("Getting all test standards from the database (not cached).");

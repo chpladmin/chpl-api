@@ -9,41 +9,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.testprocedure.TestProcedure;
-import gov.healthit.chpl.testprocedure.TestProcedureManager;
+import gov.healthit.chpl.teststandard.TestStandard;
+import gov.healthit.chpl.teststandard.TestStandardManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "test-procedures", description = "Endpoints related to Test Procedures.")
+@Tag(name = "test-standards", description = "Endpoints related to Test Standards.")
 @RestController
-@RequestMapping("/test-procedures")
-public class TestProcedureController {
-    private TestProcedureManager testProcedureManager;
+@RequestMapping("/test-standards")
+public class TestStandardController {
+    private TestStandardManager testStandardManager;
 
     @Autowired
-    public TestProcedureController(TestProcedureManager testProcedureManager) {
-        this.testProcedureManager = testProcedureManager;
+    public TestStandardController(TestStandardManager testStandardManager) {
+        this.testStandardManager = testStandardManager;
     }
 
-    @Operation(summary = "Retrieve all current Test Procedures. ",
-            description = "Returns all of the Test Procedures that are currently in the CHPL.",
+    @Operation(summary = "Retrieve all current Test Standards. ",
+            description = "Returns all of the Test Standards that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestProcedure> getAllTestProcedures() {
-        return testProcedureManager.getAll();
+    public @ResponseBody List<TestStandard> getAllTestStandards() {
+        return testStandardManager.getAll();
     }
 
-    @Operation(summary = "Get all criteria that Test Procedures can be associated with.",
-            description = "Returns all of the Criteria that a Test Procedure can be associated to.",
+    @Operation(summary = "Get all criteria that Test Standards can be associated with.",
+            description = "Returns all of the Criteria that a Test Standard can be associated to.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForTestProcedure() {
-        return testProcedureManager.getCertificationCriteriaForTestProcedures();
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForTestStandards() {
+        return testStandardManager.getCertificationCriteriaForTestStandards();
     }
 }

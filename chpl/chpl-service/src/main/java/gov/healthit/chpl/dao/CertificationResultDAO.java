@@ -21,13 +21,11 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -47,6 +45,8 @@ import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureEntity;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import gov.healthit.chpl.testtool.TestToolDAO;
@@ -648,27 +648,20 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestStandard> getTestStandardsForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestStandardEntity> entities = getTestStandardsForCertification(certificationResultId);
-        List<CertificationResultTestStandardDTO> dtos = new ArrayList<CertificationResultTestStandardDTO>();
-
-        for (CertificationResultTestStandardEntity entity : entities) {
-            CertificationResultTestStandardDTO dto = new CertificationResultTestStandardDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public CertificationResultTestStandardDTO addTestStandardMapping(CertificationResultTestStandardDTO dto)
-            throws EntityCreationException {
+    public void addTestStandardMapping(Long certResultId, CertificationResultTestStandard testStandard) throws EntityCreationException {
         CertificationResultTestStandardEntity mapping = new CertificationResultTestStandardEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestStandardId(dto.getTestStandardId());
+        mapping.setCertificationResultId(certResultId);
+        mapping.setTestStandardId(testStandard.getTestStandardId());
         entityManager.persist(mapping);
         entityManager.flush();
-
-        return new CertificationResultTestStandardDTO(mapping);
     }
 
     public void deleteTestStandardMapping(Long mappingId) {
@@ -678,24 +671,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(toDelete);
             entityManager.flush();
         }
-    }
-
-    public CertificationResultTestStandardDTO lookupTestStandardMapping(Long certificationResultId,
-            Long testStandardId) {
-        Query query = entityManager.createQuery("SELECT ts " + "FROM CertificationResultTestStandardEntity ts "
-                + "LEFT OUTER JOIN FETCH ts.testStandard " + "where (NOT ts.deleted = true) "
-                + "AND (ts.certificationResultId = :certificationResultId) "
-                + "AND (ts.testStandardId = :testStandardId)", CertificationResultTestStandardEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-        query.setParameter("testStandardId", testStandardId);
-        List<CertificationResultTestStandardEntity> entities = query.getResultList();
-
-        CertificationResultTestStandardDTO result = null;
-        if (entities != null && entities.size() > 0) {
-            result = new CertificationResultTestStandardDTO(entities.get(0));
-        }
-
-        return result;
     }
 
     private CertificationResultTestStandardEntity getCertificationResultTestStandardById(Long id) {

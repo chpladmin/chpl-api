@@ -32,6 +32,7 @@ import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testdata.CertificationResultTestDataComparator;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureComparator;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolComparator;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -447,7 +448,6 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestStandard> getTestStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARDS_TESTED)) {
             return certResult.getTestStandards().stream()
-                    .map(item -> new CertificationResultTestStandard(item))
                     .sorted(testStandardComparator)
                     .collect(Collectors.toList());
         } else {

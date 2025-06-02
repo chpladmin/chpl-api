@@ -11,6 +11,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.sed.CertificationResultTestTask;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import lombok.Data;
 
@@ -43,14 +44,14 @@ public class CertificationResultDTO implements Serializable {
     private List<CertificationResultTestProcedure> testProcedures;
     private List<CertificationResultTestData> testData;
     private List<CertificationResultTestTool> testTools;
-    private List<CertificationResultTestStandardDTO> testStandards;
+    private List<CertificationResultTestStandard> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultTestTask> testTasks;
 
     public CertificationResultDTO() {
         ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
         additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
-        testStandards = new ArrayList<CertificationResultTestStandardDTO>();
+        testStandards = new ArrayList<CertificationResultTestStandard>();
         testTools = new ArrayList<CertificationResultTestTool>();
         testData = new ArrayList<CertificationResultTestData>();
         testProcedures = new ArrayList<CertificationResultTestProcedure>();

@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.teststandard;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.TestStandardEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,5 +46,14 @@ public class CertificationResultTestStandardEntity extends EntityAudit {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
     private TestStandardEntity testStandard;
+
+    public CertificationResultTestStandard toDomain() {
+        return CertificationResultTestStandard.builder()
+                .id(getId())
+                .testStandardDescription(getTestStandard().getDescription())
+                .testStandardId(getTestStandard().getId())
+                .testStandardName(getTestStandard().getName())
+                .build();
+    }
 
 }

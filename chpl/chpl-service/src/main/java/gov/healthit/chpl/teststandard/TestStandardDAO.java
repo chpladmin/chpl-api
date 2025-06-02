@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.teststandard;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,8 +8,6 @@ import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.entity.TestStandardEntity;
 
 @Repository("testStandardDAO")
 public class TestStandardDAO extends BaseDAOImpl {

@@ -1,5 +1,7 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.teststandard;
 
+import gov.healthit.chpl.entity.CertificationEditionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.TestStandard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

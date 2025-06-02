@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.teststandard;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.teststandard;
 
 import java.io.Serializable;
 
@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,12 +32,6 @@ public class CertificationResultTestStandard implements Serializable {
     @Schema(description = "Name of test standard")
     private String testStandardName;
 
-    public CertificationResultTestStandard(CertificationResultTestStandardDTO dto) {
-        this.id = dto.getId();
-        this.testStandardId = dto.getTestStandardId();
-        this.testStandardDescription = dto.getTestStandardDescription();
-        this.testStandardName = dto.getTestStandardName();
-    }
 
     public boolean matches(CertificationResultTestStandard anotherStd) {
         boolean result = false;
