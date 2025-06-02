@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.testprocedure;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,5 +35,12 @@ public class TestProcedureEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "name", nullable = false)
     private String name;
+
+    public TestProcedure toDomain() {
+        return TestProcedure.builder()
+                .id(getId())
+                .name(getName())
+                .build();
+    }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.cqm.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -23,7 +22,6 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -45,7 +43,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -64,7 +61,6 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private TestStandardDAO testStandardDao;
-    private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
@@ -74,7 +70,6 @@ public class DimensionalDataManager {
     private DeveloperDAO devDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
-    private CQMCriterionDAO cqmCriterionDao;
     private CertificationEditionDAO certEditionDao;
 
     @Autowired
@@ -82,12 +77,12 @@ public class DimensionalDataManager {
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao,
-                                  TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
+                                  TestStandardDAO testStandardDao,
                                   TestDataDAO testDataDao,
                                   TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
-                                  ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
+                                  ListingMeasureDAO listingMeasureDao,
                                   CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
@@ -95,7 +90,6 @@ public class DimensionalDataManager {
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
         this.testStandardDao = testStandardDao;
-        this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
@@ -105,7 +99,6 @@ public class DimensionalDataManager {
         this.devDao = devDao;
         this.measureDao = measureDao;
         this.listingMeasureDao = listingMeasureDao;
-        this.cqmCriterionDao = cqmCriterionDao;
         this.certEditionDao = certEditionDao;
     }
 
@@ -239,22 +232,6 @@ public class DimensionalDataManager {
     @Cacheable(value = CacheNames.MEASURE_TYPES)
     public Set<MeasureType> getMeasureTypes() {
         return listingMeasureDao.getMeasureTypes();
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.TEST_PROCEDURES)
-    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures() {
-        LOGGER.debug("Getting all test procedures from the database (not cached).");
-
-        List<TestProcedureCriteriaMapDTO> testProcedureDtos = testProcedureDao.findAllWithMappedCriteria();
-        Set<CriteriaSpecificDescriptiveModel> testProcedures = new HashSet<CriteriaSpecificDescriptiveModel>();
-
-        for (TestProcedureCriteriaMapDTO dto : testProcedureDtos) {
-            testProcedures.add(new CriteriaSpecificDescriptiveModel(
-                    dto.getTestProcedureId(), dto.getTestProcedure().getName(), null,
-                    null, dto.getCriteria()));
-        }
-        return testProcedures;
     }
 
     @Deprecated

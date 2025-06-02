@@ -1,5 +1,7 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.testprocedure;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,4 +50,11 @@ public class TestProcedureCriteriaMapEntity extends EntityAudit {
     @JoinColumn(name = "test_procedure_id", insertable = false, updatable = false)
     private TestProcedureEntity testProcedure;
 
+    public TestProcedureCriteriaMap toDomain() {
+        return TestProcedureCriteriaMap.builder()
+                .id(getId())
+                .criteria(certificationCriterion.toDomain())
+                .testProcedure(testProcedure.toDomain())
+                .build();
+    }
 }

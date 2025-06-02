@@ -18,7 +18,6 @@ import gov.healthit.chpl.codeset.CertificationResultCodeSetComparator;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.comparator.CertificationResultAdditionalSoftwareComparator;
-import gov.healthit.chpl.domain.comparator.CertificationResultTestProcedureComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestStandardComparator;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
@@ -31,6 +30,8 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testdata.CertificationResultTestDataComparator;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureComparator;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolComparator;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -415,7 +416,6 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_PROCEDURE)) {
             return certResult.getTestProcedures().stream()
-                    .map(item -> new CertificationResultTestProcedure(item))
                     .sorted(testProcComparator)
                     .collect(Collectors.toList());
         } else {

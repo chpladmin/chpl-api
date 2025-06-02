@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
+import gov.healthit.chpl.testprocedure.TestProcedureManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -38,6 +40,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/data")
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
+    private TestProcedureManager tpManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
@@ -45,6 +48,7 @@ public class DimensionalDataController {
 
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
+            TestProcedureManager tpManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
@@ -210,6 +214,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/test_procedures",
+        message = "This is deprecated and will be removed. Please GET from /test-procedures.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -219,7 +227,15 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestProcedures() {
-        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestProcedures();
+        Set<CriteriaSpecificDescriptiveModel> data = tpManager.getAllWithMappedCriteria().stream()
+                .map(tp -> {
+                    CriteriaSpecificDescriptiveModel model = new CriteriaSpecificDescriptiveModel();
+                    model.setId(tp.getTestProcedureId());
+                    model.setName(tp.getTestProcedure().getName());
+                    model.setCriteria(tp.getCriteria());
+                    return model;
+                })
+                .collect(Collectors.toSet());
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

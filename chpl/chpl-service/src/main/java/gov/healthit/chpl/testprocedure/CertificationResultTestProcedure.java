@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.testprocedure;
 
 import java.io.Serializable;
 
@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,19 +29,6 @@ public class CertificationResultTestProcedure implements Serializable {
     @Schema(description = "The test procedure version used for a given certification criteria. This "
             + "variable is a string variable that does not take any restrictions on formatting or values.")
     private String testProcedureVersion;
-
-    public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
-        this.id = dto.getId();
-        TestProcedure tp = new TestProcedure();
-        if (dto.getTestProcedure() == null) {
-            tp.setId(dto.getTestProcedureId());
-        } else {
-            tp.setId(dto.getTestProcedure().getId());
-            tp.setName(dto.getTestProcedure().getName());
-        }
-        this.testProcedure = tp;
-        this.testProcedureVersion = dto.getVersion();
-    }
 
     public boolean matches(final CertificationResultTestProcedure anotherProc) {
         boolean result = false;

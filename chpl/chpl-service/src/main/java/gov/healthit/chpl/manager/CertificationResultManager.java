@@ -20,7 +20,6 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -28,7 +27,6 @@ import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -44,6 +42,7 @@ import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStan
 import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
 import gov.healthit.chpl.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.util.CertifiedProductUtil;
 import lombok.extern.log4j.Log4j2;
@@ -656,7 +655,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestProcedure> existingTestProcedures,
             List<CertificationResultTestProcedure> updatedTestProcedures) throws EntityCreationException {
         int numChanges = 0;
-        List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
+        List<CertificationResultTestProcedure> testProceduresToAdd = new ArrayList<CertificationResultTestProcedure>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test procedures to add
@@ -664,11 +663,7 @@ public class CertificationResultManager extends SecuredManager {
             if (existingTestProcedures == null || existingTestProcedures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
-                    CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
-                    toAdd.setCertificationResultId(certResult.getId());
-                    toAdd.setVersion(updatedItem.getTestProcedureVersion());
-                    toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
-                    testProceduresToAdd.add(toAdd);
+                    testProceduresToAdd.add(updatedItem);
                 }
             } else if (existingTestProcedures.size() > 0) {
                 // existing listing has some, compare to the update to see if
@@ -680,11 +675,7 @@ public class CertificationResultManager extends SecuredManager {
                     }
 
                     if (!inExistingListing) {
-                        CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setVersion(updatedItem.getTestProcedureVersion());
-                        toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
-                        testProceduresToAdd.add(toAdd);
+                        testProceduresToAdd.add(updatedItem);
                     }
                 }
             }
@@ -711,8 +702,8 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         numChanges = testProceduresToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestProcedureDTO toAdd : testProceduresToAdd) {
-            certResultDAO.addTestProcedureMapping(toAdd);
+        for (CertificationResultTestProcedure toAdd : testProceduresToAdd) {
+            certResultDAO.addTestProcedureMapping(certResult.getId(), toAdd);
         }
 
         for (Long idToRemove : idsToRemove) {

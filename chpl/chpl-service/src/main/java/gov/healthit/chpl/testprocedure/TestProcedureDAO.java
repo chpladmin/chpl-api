@@ -1,50 +1,48 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.testprocedure;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity;
-import gov.healthit.chpl.entity.TestProcedureEntity;
+import jakarta.persistence.Query;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("testProcedureDAO")
 public class TestProcedureDAO extends BaseDAOImpl {
-    private static Logger LOGGER = LogManager.getLogger(TestProcedureDAO.class);
 
-    public List<TestProcedureDTO> getByCriterionId(Long criterionId) {
-        Set<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criterionId);
-        List<TestProcedureDTO> dtos = new ArrayList<TestProcedureDTO>();
-
-        for (TestProcedureEntity entity : entities) {
-            TestProcedureDTO dto = new TestProcedureDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+    public List<TestProcedure> getAll() {
+        List<TestProcedureEntity> entities =
+                entityManager.createQuery("SELECT tp "
+                        + "FROM TestProcedureEntity tp "
+                        + "WHERE tp.deleted <> true ",
+                        TestProcedureEntity.class).getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
+    public List<TestProcedure> getByCriterionId(Long criterionId) {
+        Set<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criterionId);
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
+    }
 
-    public TestProcedureDTO getByCriterionIdAndValue(Long criterionId, String value) {
+    public TestProcedure getByCriterionIdAndValue(Long criterionId, String value) {
         TestProcedureEntity entity = getTestProcedureByCertificationCriteriaAndValue(criterionId, value);
         if (entity == null) {
             return null;
         }
-        return new TestProcedureDTO(entity);
+        return entity.toDomain();
     }
 
-
-    public List<TestProcedureCriteriaMapDTO> findAllWithMappedCriteria() {
-
+    public List<TestProcedureCriteriaMap> findAllWithMappedCriteria() {
         List<TestProcedureCriteriaMapEntity> entities =
                 entityManager.createQuery("SELECT tpMap "
                         + "FROM TestProcedureCriteriaMapEntity tpMap "
@@ -55,14 +53,11 @@ public class TestProcedureDAO extends BaseDAOImpl {
                         + "WHERE tpMap.deleted <> true "
                         + "AND tp.deleted <> true ",
                         TestProcedureCriteriaMapEntity.class).getResultList();
-        List<TestProcedureCriteriaMapDTO> dtos = new ArrayList<TestProcedureCriteriaMapDTO>();
-
-        for (TestProcedureCriteriaMapEntity entity : entities) {
-            TestProcedureCriteriaMapDTO dto = new TestProcedureCriteriaMapDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
+
     private Set<TestProcedureEntity> getTestProcedureByCertificationCriteria(Long criterionId) {
         Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "

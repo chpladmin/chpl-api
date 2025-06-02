@@ -21,6 +21,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.standard.CertificationResultStandardEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import lombok.Data;
 

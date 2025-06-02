@@ -18,13 +18,11 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -34,7 +32,6 @@ import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEnt
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
@@ -46,6 +43,8 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import gov.healthit.chpl.testtool.TestToolDAO;
@@ -909,23 +908,17 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(
-            Long certificationResultId) {
-
+    public List<CertificationResultTestProcedure> getTestProceduresForCertificationResult(Long certificationResultId) {
         List<CertificationResultTestProcedureEntity> entities = getTestProceduresForCertification(
                 certificationResultId);
-        List<CertificationResultTestProcedureDTO> dtos = new ArrayList<CertificationResultTestProcedureDTO>();
-
-        for (CertificationResultTestProcedureEntity entity : entities) {
-            CertificationResultTestProcedureDTO dto = new CertificationResultTestProcedureDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<CertificationResultTestProcedureDTO> getTestProceduresForListing(Long listingId) {
+    public List<CertificationResultTestProcedure> getTestProceduresForListing(Long listingId) {
         return getTestProcedureEntitiesForListing(listingId).stream()
-                .map(tp -> new CertificationResultTestProcedureDTO(tp))
+                .map(tp -> tp.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -943,16 +936,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CertificationResultTestProcedureDTO addTestProcedureMapping(CertificationResultTestProcedureDTO dto)
-            throws EntityCreationException {
+    public void addTestProcedureMapping(Long certResultId, CertificationResultTestProcedure tp) throws EntityCreationException {
         CertificationResultTestProcedureEntity mapping = new CertificationResultTestProcedureEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestProcedureId(dto.getTestProcedureId());
-        mapping.setVersion(dto.getVersion());
+        mapping.setCertificationResultId(certResultId);
+        mapping.setTestProcedureId(tp.getTestProcedure().getId());
+        mapping.setVersion(tp.getTestProcedureVersion());
         entityManager.persist(mapping);
         entityManager.flush();
-
-        return new CertificationResultTestProcedureDTO(mapping);
     }
 
     public void deleteTestProcedureMapping(Long mappingId) {
@@ -967,8 +957,10 @@ public class CertificationResultDAO extends BaseDAOImpl {
     private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(Long id) {
         CertificationResultTestProcedureEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
-                + "LEFT OUTER JOIN FETCH tp.testProcedure " + "WHERE (NOT tp.deleted = true) "
+        Query query = entityManager.createQuery("SELECT tp "
+                + "FROM CertificationResultTestProcedureEntity tp "
+                + "LEFT OUTER JOIN FETCH tp.testProcedure "
+                + "WHERE (NOT tp.deleted = true) "
                 + "AND (tp.id = :entityid) ", CertificationResultTestProcedureEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestProcedureEntity> result = query.getResultList();
