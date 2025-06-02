@@ -34,12 +34,12 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         return getEntityById(entity.getId()).toDomain();
     }
 
-    public UrlUptimeMonitor updateAcbsForMonitor(UrlUptimeMonitor datadogMonitor, List<CertificationBody> acbs) throws EntityRetrievalException {
+    public void updateAcbsForMonitor(UrlUptimeMonitor datadogMonitor, List<CertificationBody> acbs) throws EntityRetrievalException {
         UrlUptimeMonitorEntity entity = getEntityById(datadogMonitor.getId());
-        entity.setDelimitedAcbIds(acbs.stream().map(acb -> acb.getId().toString()).collect(Collectors.joining(",")));
-        update(entity);
-
-        return getEntityById(entity.getId()).toDomain();
+        if (entity != null) {
+            entity.setDelimitedAcbIds(acbs.stream().map(acb -> acb.getId().toString()).collect(Collectors.joining(",")));
+            update(entity);
+        }
     }
 
     public void delete(UrlUptimeMonitor datadogMonitor) {
