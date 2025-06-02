@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
@@ -68,6 +69,9 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
             allReportDates.add(actualReportDay);
             preferredReportDay = actualReportDay.minusMonths(1);
         }
+        allReportDates = allReportDates.stream()
+            .sorted()
+            .collect(Collectors.toList());
         return allReportDates;
     }
 }
