@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
@@ -28,7 +29,7 @@ import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "developerAttestationCheckinReportJobLogger")
+@Log4j2(topic = "attestationReportCreatorJobLogger")
 public class CheckInReportDataCollector {
     private static final Integer MAX_PAGE_SIZE = 100;
 
@@ -39,6 +40,8 @@ public class CheckInReportDataCollector {
     private DirectReviewSearchService directReviewSearchService;
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
+    private AttestationCertificationBodyService attestationCertificationBodyService;
+
     private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     public CheckInReportDataCollector(AttestationManager attestationManager,
@@ -49,7 +52,8 @@ public class CheckInReportDataCollector {
             CertificationCriterionService certificationCriterionService,
             RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CheckInReportSourceService checkInReportSourceService,
-            CheckInReportValidation checkInReportValidation) {
+            CheckInReportValidation checkInReportValidation,
+            AttestationCertificationBodyService attestationCertificationBodyService) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
@@ -58,6 +62,7 @@ public class CheckInReportDataCollector {
         this.directReviewSearchService = directReviewSearchService;
         this.checkInReportSourceService = checkInReportSourceService;
         this.checkInReportValidation = checkInReportValidation;
+        this.attestationCertificationBodyService = attestationCertificationBodyService;
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
@@ -88,6 +93,7 @@ public class CheckInReportDataCollector {
     private CheckInReport convert(Developer developer, CheckInAttestation checkInAttestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
         CheckInReport checkInReport = new CheckInReport();
         Form form = null;
+        checkInReport.setMostRecentAttestationChangeRequest(checkInAttestation.getChangeRequest());
         checkInReport = addDeveloperInformation(checkInReport, developer);
         if (checkInAttestation.getChangeRequest() != null) {
             form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
@@ -107,7 +113,8 @@ public class CheckInReportDataCollector {
     }
 
     private CheckInReport addDeveloperInformation(CheckInReport checkInReport, Developer developer) {
-        List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
+        List<CertificationBody> acbs = attestationCertificationBodyService.getAssociatedCertificationBodies(developer.getId());
+        checkInReport.setDeveloper(developer);
         checkInReport.setDeveloperName(developer.getName());
         checkInReport.setDeveloperCode(developer.getDeveloperCode());
         checkInReport.setDeveloperId(developer.getId());
@@ -115,6 +122,7 @@ public class CheckInReportDataCollector {
         checkInReport.setRelevantAcbs(acbs.stream()
                 .map(acb -> acb.getName())
                 .collect(Collectors.joining("; ")));
+        checkInReport.setCertificationBodies(acbs);
         return checkInReport;
     }
 
@@ -254,9 +262,10 @@ public class CheckInReportDataCollector {
     }
 
     private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
-        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId()).stream()
+        return attestationCertificationBodyService.getAssociatedCertificationBodies(developer.getId()).stream()
                 .filter(acb -> acbIds.contains(acb.getId()))
                 .findAny()
                 .isPresent();
     }
+
 }
