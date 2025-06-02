@@ -198,7 +198,7 @@ public class ChangeRequestManager {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
         }
         ChangeRequest cr = saveChangeRequest(changeRequest);
-        if (cr == null ) {
+        if (cr == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
         }
         return cr;
@@ -322,7 +322,10 @@ public class ChangeRequestManager {
     private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
-        ValidationException validationException = new ValidationException(crValidationService.getErrorMessages(crValidationContext));
+        ValidationException validationException = new ValidationException(
+                crValidationService.getErrorMessages(crValidationContext).stream()
+                        .filter(msg -> msg != null && !msg.isEmpty())
+                        .toList());
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
