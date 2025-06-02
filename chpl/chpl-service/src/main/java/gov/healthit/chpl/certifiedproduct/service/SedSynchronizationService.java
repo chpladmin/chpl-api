@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.TestParticipantDAO;
-import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.sed.TestParticipant;
+import gov.healthit.chpl.sed.TestParticipantDAO;
+import gov.healthit.chpl.sed.TestTask;
+import gov.healthit.chpl.sed.TestTaskDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

@@ -1,20 +1,17 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.sed;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
-import gov.healthit.chpl.entity.AgeRangeEntity;
+import jakarta.persistence.Query;
 
 @Repository("ageRangeDao")
 public class AgeRangeDAO extends BaseDAOImpl {
 
-    public TestParticipantAge getById(Long id) {
+    public AgeRange getById(Long id) {
         AgeRangeEntity entity = getEntityById(id);
         if (entity != null) {
             return entity.toDomain();
@@ -22,7 +19,7 @@ public class AgeRangeDAO extends BaseDAOImpl {
         return null;
     }
 
-    public TestParticipantAge getByName(String name) {
+    public AgeRange getByName(String name) {
         AgeRangeEntity entity = getEntityByName(name);
         if (entity == null) {
             return null;
@@ -30,7 +27,7 @@ public class AgeRangeDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public List<TestParticipantAge> getAll() {
+    public List<AgeRange> getAll() {
         List<AgeRangeEntity> entities = getAllEntities();
         return entities.stream()
                 .map(entity -> entity.toDomain())

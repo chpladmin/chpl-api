@@ -182,6 +182,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getAllAcbs();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/education_types",
+        message = "This is deprecated and will be removed. Please GET from /sed/education-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible education types in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -198,6 +202,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/age_ranges",
+        message = "This is deprecated and will be removed. Please GET from /sed/age-ranges.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test participant age ranges in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

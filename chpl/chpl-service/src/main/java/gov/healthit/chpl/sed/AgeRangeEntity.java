@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.sed;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,8 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,8 +34,8 @@ public class AgeRangeEntity extends EntityAudit {
 
     @Column(name = "age")
     private String age;
-    public TestParticipantAge toDomain() {
-        return TestParticipantAge.builder()
+    public AgeRange toDomain() {
+        return AgeRange.builder()
                 .id(id)
                 .name(age)
                 .build();

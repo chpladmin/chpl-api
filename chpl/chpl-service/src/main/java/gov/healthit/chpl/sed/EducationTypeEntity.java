@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.sed;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,8 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,8 +38,8 @@ public class EducationTypeEntity extends EntityAudit {
     @Column(name = "name")
     private String name;
 
-    public TestParticipantEducation toDomain() {
-        return TestParticipantEducation.builder()
+    public EducationType toDomain() {
+        return EducationType.builder()
                 .id(id)
                 .name(name)
                 .build();

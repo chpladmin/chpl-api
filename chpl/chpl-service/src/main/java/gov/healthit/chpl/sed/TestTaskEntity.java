@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.sed;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -7,9 +7,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

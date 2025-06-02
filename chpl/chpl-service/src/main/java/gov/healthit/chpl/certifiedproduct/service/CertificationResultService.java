@@ -13,16 +13,16 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.domain.comparator.CertificationResultComparator;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.sed.CertificationResultTestTask;
+import gov.healthit.chpl.sed.TestTask;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.testtool.TestTool;
@@ -102,8 +102,8 @@ public class CertificationResultService {
 
     private void populateTestTasks(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationCriterion criteria) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SED)) {
-            List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
-            for (CertificationResultTestTaskDTO currResult : testTask) {
+            List<CertificationResultTestTask> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
+            for (CertificationResultTestTask currResult : testTask) {
                 boolean alreadyExists = false;
                 TestTask newTestTask = currResult.getTestTask();
                 for (TestTask currTestTask : searchDetails.getSed().getTestTasks()) {

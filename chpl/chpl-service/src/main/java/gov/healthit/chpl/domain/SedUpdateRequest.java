@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.sed.TestTask;
+
 public class SedUpdateRequest {
     private List<TestTask> testTasks;
 

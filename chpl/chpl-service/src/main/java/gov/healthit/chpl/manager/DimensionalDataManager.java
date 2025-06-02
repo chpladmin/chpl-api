@@ -13,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -35,8 +33,6 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
@@ -46,6 +42,10 @@ import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
+import gov.healthit.chpl.sed.AgeRange;
+import gov.healthit.chpl.sed.AgeRangeDAO;
+import gov.healthit.chpl.sed.EducationType;
+import gov.healthit.chpl.sed.EducationTypeDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.testdata.TestDataCriteriaMap;
@@ -123,19 +123,21 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     @Transactional
     public Set<KeyValueModel> getEducationTypes() {
         LOGGER.debug("Getting all education types from the database (not cached).");
-        List<TestParticipantEducation> educationTypes = this.educationTypeDao.getAll();
+        List<EducationType> educationTypes = this.educationTypeDao.getAll();
         return educationTypes.stream()
                 .map(et -> new KeyValueModel(et.getId(), et.getName()))
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     @Transactional
     public Set<KeyValueModel> getAgeRanges() {
         LOGGER.debug("Getting all age ranges from the database (not cached).");
-        List<TestParticipantAge> ageRanges = this.ageRangeDao.getAll();
+        List<AgeRange> ageRanges = this.ageRangeDao.getAll();
         return ageRanges.stream()
                 .map(ar -> new KeyValueModel(ar.getId(), ar.getName()))
                 .collect(Collectors.toSet());

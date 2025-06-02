@@ -1,5 +1,8 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.sed;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,12 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.TestParticipantEntity;
-import gov.healthit.chpl.entity.TestTaskEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,33 +27,36 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "test_task_participant_map")
-public class TestTaskParticipantMapEntity extends EntityAudit {
-    private static final long serialVersionUID = -1114257207589782550L;
+@Table(name = "certification_result_test_task")
+public class CertificationResultTestTaskEntity extends EntityAudit {
+    private static final long serialVersionUID = 6403327555743092296L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(name = "certification_result_test_task_id")
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "test_task_id", nullable = false)
+    @Column(name = "certification_result_id", nullable = false)
+    private Long certificationResultId;
+
+    @Column(name = "test_task_id")
     private Long testTaskId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private TestTaskEntity testTask;
 
-    @Basic(optional = false)
-    @Column(name = "test_participant_id", nullable = false)
-    private Long testParticipantId;
+    public CertificationResultTestTask toDomain() {
+        return CertificationResultTestTask.builder()
+                .id(getId())
+                .certificationResultId(getCertificationResultId())
+                .testTask(testTask.toDomain())
+                .testTaskId(testTask.getId())
+                .build();
+    }
 
-    @Basic(optional = true)
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_participant_id", unique = true, nullable = true, insertable = false, updatable = false)
-    @Where(clause = "deleted <> 'true'")
-    private TestParticipantEntity testParticipant;
 }

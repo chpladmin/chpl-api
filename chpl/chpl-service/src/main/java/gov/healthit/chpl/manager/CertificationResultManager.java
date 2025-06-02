@@ -28,7 +28,6 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
@@ -39,6 +38,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.sed.CertificationResultTestTask;
 import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
@@ -769,7 +769,7 @@ public class CertificationResultManager extends SecuredManager {
         return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
     }
 
-    public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestTask> getTestTasksForCertificationResult(Long certificationResultId) {
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
     }
 

@@ -1,21 +1,18 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.sed;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
-import gov.healthit.chpl.entity.EducationTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("educationTypeDao")
 public class EducationTypeDAO extends BaseDAOImpl {
 
-    public TestParticipantEducation getById(Long id) throws EntityRetrievalException {
+    public EducationType getById(Long id) throws EntityRetrievalException {
         EducationTypeEntity entity = getEntityById(id);
         if (entity != null) {
             return entity.toDomain();
@@ -23,7 +20,7 @@ public class EducationTypeDAO extends BaseDAOImpl {
         return null;
     }
 
-    public TestParticipantEducation getByName(String name) {
+    public EducationType getByName(String name) {
         EducationTypeEntity entity = getEntityByName(name);
         if (entity == null) {
             return null;
@@ -31,7 +28,7 @@ public class EducationTypeDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public List<TestParticipantEducation> getAll() {
+    public List<EducationType> getAll() {
         List<EducationTypeEntity> entities = getAllEntities();
         return entities.stream()
                 .map(entity -> entity.toDomain())
@@ -43,7 +40,6 @@ public class EducationTypeDAO extends BaseDAOImpl {
                 .createQuery("from EducationTypeEntity where (NOT deleted = true) ", EducationTypeEntity.class)
                 .getResultList();
         return result;
-
     }
 
     private EducationTypeEntity getEntityByName(String name) {

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.testprocedure;
+package gov.healthit.chpl.sed;
 
 import java.util.List;
 
@@ -12,30 +12,34 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class TestProcedureManager {
+public class SedManager {
 
-    private TestProcedureDAO testProcedureDao;
+    private AgeRangeDAO ageRangeDao;
+    private EducationTypeDAO educationTypeDao;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDao;
 
     @Autowired
-    public TestProcedureManager(TestProcedureDAO testProcedureDao,
+    public SedManager(AgeRangeDAO ageRangeDao,
+            EducationTypeDAO educationTypeDao,
             CertificationCriterionAttributeDAO certificationCriterionAttributeDao) {
-        this.testProcedureDao = testProcedureDao;
+        this.ageRangeDao = ageRangeDao;
+        this.educationTypeDao = educationTypeDao;
         this.certificationCriterionAttributeDao = certificationCriterionAttributeDao;
     }
 
     @Transactional
-    public List<TestProcedure> getAll() {
-        return testProcedureDao.getAll();
+    public List<AgeRange> getAllAgeRanges() {
+        return ageRangeDao.getAll();
     }
 
     @Transactional
-    public List<TestProcedureCriteriaMap> getAllWithMappedCriteria() {
-        return testProcedureDao.findAllWithMappedCriteria();
+    public List<EducationType> getAllEducationTypes() {
+        return educationTypeDao.getAll();
     }
 
     @Transactional
-    public List<CertificationCriterion> getCertificationCriteriaForTestProcedures() {
-        return certificationCriterionAttributeDao.getCriteriaForTestProcedures();
+    public List<CertificationCriterion> getCertificationCriteriaForSed() {
+        return certificationCriterionAttributeDao.getCriteriaForSed();
     }
+
 }

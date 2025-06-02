@@ -54,6 +54,20 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<CertificationCriterion> getCriteriaForTestProcedures() {
+        return getAllCriteriaAttributeEntities().stream()
+                .filter(att -> att.getTestProcedure())
+                .map(cca -> cca.getCriterion().toDomain())
+                .collect(Collectors.toList());
+    }
+
+    public List<CertificationCriterion> getCriteriaForSed() {
+        return getAllCriteriaAttributeEntities().stream()
+                .filter(att -> att.getSed())
+                .map(cca -> cca.getCriterion().toDomain())
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<CertificationCriterionAttributeEntity> getAllCriteriaAttributes() {
         return getAllCriteriaAttributeEntities().stream()

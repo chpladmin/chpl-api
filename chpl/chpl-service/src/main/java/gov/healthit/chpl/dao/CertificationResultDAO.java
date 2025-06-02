@@ -19,26 +19,28 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.entity.TestParticipantEntity;
-import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
-import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.sed.CertificationResultTestTask;
+import gov.healthit.chpl.sed.CertificationResultTestTaskEntity;
+import gov.healthit.chpl.sed.TestParticipant;
+import gov.healthit.chpl.sed.TestParticipantDAO;
+import gov.healthit.chpl.sed.TestParticipantEntity;
+import gov.healthit.chpl.sed.TestTask;
+import gov.healthit.chpl.sed.TestTaskDAO;
+import gov.healthit.chpl.sed.TestTaskEntity;
+import gov.healthit.chpl.sed.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
@@ -1009,16 +1011,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestTask> getTestTasksForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestTaskEntity> entities = getTestTasksForCertification(certificationResultId);
-        List<CertificationResultTestTaskDTO> dtos = new ArrayList<CertificationResultTestTaskDTO>();
-
-        for (CertificationResultTestTaskEntity entity : entities) {
-            CertificationResultTestTaskDTO dto = new CertificationResultTestTaskDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public Long createTestTaskMapping(Long certificationResultId, TestTask testTask, List<TestTask> allTestTasks)
@@ -1042,7 +1040,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return mapping.getId();
     }
 
-    public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto)
+    public CertificationResultTestTask addTestTaskMapping(CertificationResultTestTask dto)
             throws EntityCreationException {
         CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
@@ -1055,7 +1053,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 addTestParticipantMapping(dto.getTestTask(), participant);
             }
         }
-        return new CertificationResultTestTaskDTO(mapping);
+        return mapping.toDomain();
     }
 
     public void deleteTestTaskMapping(Long certResultId, Long taskId) {

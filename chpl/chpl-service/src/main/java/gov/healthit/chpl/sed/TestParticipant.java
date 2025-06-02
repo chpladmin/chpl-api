@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.sed;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -48,11 +48,11 @@ public class TestParticipant implements Serializable {
 
     @Schema(description = "The education level for the corresponding participant.")
     @Builder.Default
-    private TestParticipantEducation educationType = new TestParticipantEducation();
+    private EducationType educationType = new EducationType();
 
     @Schema(description = "The age range for the corresponding participant.")
     @Builder.Default
-    private TestParticipantAge age = new TestParticipantAge();
+    private AgeRange age = new AgeRange();
 
     @Schema(description = "This variable illustrates occupation or role of corresponding participant. "
             + "It is a string variable that does not take any restrictions on formatting or values.")
@@ -187,23 +187,5 @@ public class TestParticipant implements Serializable {
                 LOGGER.error("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static final class TestParticipantAge {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static final class TestParticipantEducation {
-        private Long id;
-        private String name;
     }
 }

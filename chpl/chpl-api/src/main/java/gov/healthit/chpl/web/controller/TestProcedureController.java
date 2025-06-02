@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.testprocedure.TestProcedure;
 import gov.healthit.chpl.testprocedure.TestProcedureManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -34,5 +35,15 @@ public class TestProcedureController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestProcedure> getAllTestProcedures() {
         return testProcedureManager.getAll();
+    }
+
+    @Operation(summary = "Get all criteria that Test Procedures can be associated with.",
+            description = "Returns all of the Criteria that a Test Procedure can be associated to.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForTestProcedure() {
+        return testProcedureManager.getCertificationCriteriaForTestProcedures();
     }
 }
