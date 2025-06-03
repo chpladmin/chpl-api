@@ -44,8 +44,8 @@ import gov.healthit.chpl.sed.EducationType;
 import gov.healthit.chpl.sed.EducationTypeDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
-import gov.healthit.chpl.targeteduser.TargetedUserDAO;
 import gov.healthit.chpl.targeteduser.TargetedUser;
+import gov.healthit.chpl.targeteduser.TargetedUserDAO;
 import gov.healthit.chpl.testdata.TestDataCriteriaMap;
 import gov.healthit.chpl.testdata.TestDataDAO;
 import gov.healthit.chpl.teststandard.TestStandard;
@@ -226,14 +226,14 @@ public class DimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.MEASURES)
     public Set<Measure> getMeasures() {
         return measureDao.findAll();
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.MEASURE_TYPES)
     public Set<MeasureType> getMeasureTypes() {
         return listingMeasureDao.getMeasureTypes();
     }
