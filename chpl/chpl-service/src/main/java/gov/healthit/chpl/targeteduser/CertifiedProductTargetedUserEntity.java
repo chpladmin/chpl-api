@@ -1,5 +1,6 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.targeteduser;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.TargetedUserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,4 +48,11 @@ public class CertifiedProductTargetedUserEntity extends EntityAudit {
     @JoinColumn(name = "targeted_user_id", unique = true, nullable = true, insertable = false, updatable = false)
     private TargetedUserEntity targetedUser;
 
+    public CertifiedProductTargetedUser toDomain() {
+        return CertifiedProductTargetedUser.builder()
+                .id(getId())
+                .targetedUserId(getTargetedUserId())
+                .targetedUserName(getTargetedUser().getName())
+                .build();
+    }
 }

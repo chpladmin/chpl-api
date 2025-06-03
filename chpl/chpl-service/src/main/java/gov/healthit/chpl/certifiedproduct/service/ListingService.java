@@ -22,7 +22,6 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -51,6 +49,8 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -361,7 +361,6 @@ public class ListingService {
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id) throws EntityRetrievalException {
         return certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id).stream()
-                .map(dto -> new CertifiedProductTargetedUser(dto))
                 .sorted(tuComparator)
                 .collect(Collectors.toList());
     }

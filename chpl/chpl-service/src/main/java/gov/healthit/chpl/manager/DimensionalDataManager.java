@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -46,6 +44,8 @@ import gov.healthit.chpl.sed.EducationType;
 import gov.healthit.chpl.sed.EducationTypeDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
+import gov.healthit.chpl.targeteduser.TargetedUserDAO;
+import gov.healthit.chpl.targeteduser.TargetedUser;
 import gov.healthit.chpl.testdata.TestDataCriteriaMap;
 import gov.healthit.chpl.testdata.TestDataDAO;
 import gov.healthit.chpl.teststandard.TestStandard;
@@ -156,11 +156,12 @@ public class DimensionalDataManager {
         return statuses;
     }
 
+    @Deprecated
     public Set<KeyValueModel> getTargetedUesrs() {
-        List<TargetedUserDTO> dtos = this.tuDao.findAll();
+        List<TargetedUser> dtos = this.tuDao.findAll();
         Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
 
-        for (TargetedUserDTO dto : dtos) {
+        for (TargetedUser dto : dtos) {
             standards.add(new KeyValueModel(dto.getId(), dto.getName()));
         }
         return standards;

@@ -1,31 +1,20 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.targeteduser;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.Query;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.entity.TargetedUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("targetedUserDao")
 @Log4j2
 public class TargetedUserDAO extends BaseDAOImpl {
-    private ErrorMessageUtil msgUtil;
-
-    @Autowired
-    public TargetedUserDAO(ErrorMessageUtil msgUtil) {
-        this.msgUtil = msgUtil;
-    }
 
     public Long create(String name) throws EntityCreationException {
         try {
@@ -38,37 +27,13 @@ public class TargetedUserDAO extends BaseDAOImpl {
         }
     }
 
-    public TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException {
-        TargetedUserEntity entity = null;
-        if (dto.getId() != null) {
-            entity = this.getEntityById(dto.getId());
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            try {
-                entity = new TargetedUserEntity();
-                entity.setDeleted(false);
-                entity.setName(dto.getName());
-                create(entity);
-            } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.badTargetedUser", dto.getName());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-            return new TargetedUserDTO(entity);
-        }
-    }
-
-    public TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException {
-        TargetedUserEntity entity = this.getEntityById(dto.getId());
+    public void update(TargetedUser targetedUser) throws EntityRetrievalException {
+        TargetedUserEntity entity = this.getEntityById(targetedUser.getId());
         if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + targetedUser.getId() + " does not exist");
         }
-        entity.setName(dto.getName());
+        entity.setName(targetedUser.getName());
         update(entity);
-        return new TargetedUserDTO(entity);
     }
 
     public void delete(Long id) throws EntityRetrievalException {
@@ -80,39 +45,32 @@ public class TargetedUserDAO extends BaseDAOImpl {
         }
     }
 
-    public TargetedUserDTO getById(Long id) {
-        TargetedUserDTO dto = null;
+    public TargetedUser getById(Long id) {
         TargetedUserEntity entity = getEntityById(id);
         if (entity != null) {
-            dto = new TargetedUserDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public TargetedUserDTO getByName(String name) {
-        TargetedUserDTO dto = null;
+    public TargetedUser getByName(String name) {
         List<TargetedUserEntity> entities = getEntitiesByName(name);
 
         if (entities != null && entities.size() > 0) {
-            dto = new TargetedUserDTO(entities.get(0));
+            return entities.get(0).toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<TargetedUserDTO> findAll() {
+    public List<TargetedUser> findAll() {
         List<TargetedUserEntity> entities = getAllEntities();
-        List<TargetedUserDTO> dtos = new ArrayList<TargetedUserDTO>();
-
-        for (TargetedUserEntity entity : entities) {
-            TargetedUserDTO dto = new TargetedUserDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException {
-        TargetedUserDTO result = null;
+    public TargetedUser findOrCreate(Long id, String name) throws EntityCreationException {
+        TargetedUser result = null;
         if (id != null) {
             result = getById(id);
         } else if (!StringUtils.isEmpty(name)) {
@@ -120,9 +78,8 @@ public class TargetedUserDAO extends BaseDAOImpl {
         }
 
         if (result == null) {
-            TargetedUserDTO toCreate = new TargetedUserDTO();
-            toCreate.setName(name.trim());
-            result = create(toCreate);
+            create(name.trim());
+            result = getByName(name.trim());
         }
         return result;
     }
@@ -134,9 +91,7 @@ public class TargetedUserDAO extends BaseDAOImpl {
     }
 
     private TargetedUserEntity getEntityById(Long id) {
-
         TargetedUserEntity entity = null;
-
         Query query = entityManager.createQuery(
                 "from TargetedUserEntity where (NOT deleted = true) AND (id = :entityid) ", TargetedUserEntity.class);
         query.setParameter("entityid", id);
@@ -149,7 +104,6 @@ public class TargetedUserDAO extends BaseDAOImpl {
     }
 
     private List<TargetedUserEntity> getEntitiesByName(String name) {
-
         Query query = entityManager.createQuery(
                 "from TargetedUserEntity where " + "(NOT deleted = true) AND (UPPER(name) = :name) ",
                 TargetedUserEntity.class);
@@ -157,5 +111,4 @@ public class TargetedUserDAO extends BaseDAOImpl {
         List<TargetedUserEntity> result = query.getResultList();
         return result;
     }
-
 }

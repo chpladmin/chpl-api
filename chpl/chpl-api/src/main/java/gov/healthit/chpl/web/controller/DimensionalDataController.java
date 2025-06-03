@@ -269,6 +269,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/test_standards",
+        message = "This is deprecated and will be removed. Please GET from /test-standards.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -285,6 +289,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/targeted_users",
+        message = "This is deprecated and will be removed. Please GET from /targeted-users.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible targeted user options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

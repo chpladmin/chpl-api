@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.targeteduser;
 
 import java.io.Serializable;
 
@@ -6,15 +6,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertifiedProductTargetedUser implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
@@ -27,16 +28,6 @@ public class CertifiedProductTargetedUser implements Serializable {
 
     @Schema(description = "Targeted user name")
     private String targetedUserName;
-
-    public CertifiedProductTargetedUser() {
-        super();
-    }
-
-    public CertifiedProductTargetedUser(final CertifiedProductTargetedUserDTO dto) {
-        this.id = dto.getId();
-        this.targetedUserId = dto.getTargetedUserId();
-        this.targetedUserName = dto.getTargetedUserName();
-    }
 
     public boolean matches(final CertifiedProductTargetedUser other) {
         boolean result = false;
