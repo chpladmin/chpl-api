@@ -76,7 +76,7 @@ public class ListingMeasureEntity extends EntityAudit {
         ListingMeasure listingMeasure = new ListingMeasure();
         listingMeasure.setId(getId());
         if (getMeasure() != null) {
-            listingMeasure.setMeasure(getMeasure().convert());
+            listingMeasure.setMeasure(getMeasure().toDomain());
         }
         if (getType() != null) {
             listingMeasure.setMeasureType(getType().convert());
