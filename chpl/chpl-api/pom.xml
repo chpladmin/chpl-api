@@ -45,8 +45,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
-        <!-- springboot needed for springdoc (swagger) -->
 
+        <!-- springboot needed for springdoc (swagger) -->
+        <!-- NOTE TO FUTURE SELF: ALWAYS CHECK THE COMPATIBILITY MATRIX FOR THE CORRECT
+             SPRING BOOT VERSION TO GO ALONG WITH THE SPRINGDOC VERSION 
+             https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot
+        --> 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
