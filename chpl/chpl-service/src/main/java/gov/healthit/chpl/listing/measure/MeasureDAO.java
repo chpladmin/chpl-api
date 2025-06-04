@@ -34,7 +34,7 @@ public class MeasureDAO extends BaseDAOImpl {
 
         Measure result = null;
         if (entities != null && entities.size() > 0) {
-            result = entities.get(0).convert();
+            result = entities.get(0).toDomain();
         }
         return result;
     }
@@ -52,7 +52,7 @@ public class MeasureDAO extends BaseDAOImpl {
 
         Measure result = null;
         if (entities != null && entities.size() > 0) {
-            result = entities.get(0).convert();
+            result = entities.get(0).toDomain();
             if (entities.size() > 1) {
                 LOGGER.warn("Expected only one measure to match '" + measureDomain + "' and '" + rtAbbreviation + "' but found more than one match. Only the first match is being used for flexible upload.");
             }
@@ -69,7 +69,7 @@ public class MeasureDAO extends BaseDAOImpl {
         Set<Measure> results = new LinkedHashSet<Measure>(entities.size());
         if (entities != null && entities.size() > 0) {
             entities.stream().forEach(entity -> {
-                results.add(entity.convert());
+                results.add(entity.toDomain());
             });
         }
         return results;
