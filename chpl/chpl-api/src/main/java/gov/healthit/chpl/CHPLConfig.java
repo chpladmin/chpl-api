@@ -74,7 +74,6 @@ import lombok.extern.log4j.Log4j2;
 })
 @Log4j2
 public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
-    private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
     private String chplServiceUrl;
     private String apiLicenseUrl;
@@ -197,8 +196,8 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     public OpenAPI chplOpenAPI() {
         OpenAPI api = new OpenAPI()
                 .info(new Info().title("Certified Health IT Product Listing API")
-                .version(apiVersion)
-                .description(String.format(apiDescriptionHtml, feedbackFormUrl, feedbackFormUrl))
+                .version("3.1.0")
+                .description(String.format(apiDescriptionHtml, apiVersion, feedbackFormUrl, feedbackFormUrl))
                 .license(new License().name("BSD License").url(apiLicenseUrl)))
                 .addServersItem(new Server().url(chplServiceUrl));
         if (BooleanUtils.isTrue(tryItOutEnabled)) {

@@ -210,6 +210,10 @@
               </exclusion>
             </exclusions>
         </dependency>
+        
+        <!-- log4j2 is provided with the newer version of spring boot jar (which is needed for the newer 
+        version of the swagger jar) and there is an error on startup if we provide log4j here as well
+        but we need it for the chpl-service code to compile -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -234,12 +238,7 @@
             <artifactId>httpclient5</artifactId>
             <version>5.3.1</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <version>10.1.23</version>
-            <artifactId>tomcat-jasper-el</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
