@@ -11,7 +11,7 @@
     <name>CHPL api</name>
 
     <properties>
-      <org.springdoc.version>2.8.8</org.springdoc.version>
+      <org.springdoc.version>2.7.0</org.springdoc.version>
     </properties>
 
     <dependencies>

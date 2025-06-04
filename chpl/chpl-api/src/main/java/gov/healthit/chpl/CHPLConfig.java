@@ -48,7 +48,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.SpecVersion;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Schema;
@@ -197,7 +196,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     public OpenAPI chplOpenAPI() {
         OpenAPI api = new OpenAPI()
                 .info(new Info().title("Certified Health IT Product Listing API")
-                .version("3.0.1")
+                .version(apiVersion)
                 .description(String.format(apiDescriptionHtml, feedbackFormUrl, feedbackFormUrl))
                 .license(new License().name("BSD License").url(apiLicenseUrl)))
                 .addServersItem(new Server().url(chplServiceUrl));
@@ -208,8 +207,6 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 .addSecuritySchemes(SwaggerSecurityRequirement.BEARER,
                         new SecurityScheme().type(SecurityScheme.Type.HTTP).in(In.HEADER).name("Bearer").scheme("Bearer").bearerFormat("JWT")));
         }
-        api.setSpecVersion(SpecVersion.V30);
-        api.setOpenapi("3.0.1");
         return api;
     }
 
