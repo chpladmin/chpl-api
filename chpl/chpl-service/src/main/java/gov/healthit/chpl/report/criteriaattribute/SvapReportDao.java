@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
 import gov.healthit.chpl.report.svap.CriterionCount;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -41,6 +42,7 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
+                + "AND cr.success = true "
                 + "AND crs.deleted = false "
                 + "AND cpd.deleted = false "
                 + "AND s.deleted = false "
@@ -58,8 +60,8 @@ public class SvapReportDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<SvapListingReport> getSvapListingReports() {
-        String hql = "SELECT cc, s, cpd.chplProductNumber "
+    public List<SvapReportByCertificationStatus> getSvapReports(CertificationStatus certificationStatus) {
+        String hql = "SELECT cc, s, count(*) as svapCount "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -69,9 +71,44 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crs.certificationResultId "
                 + "AND crs.svap.id = s.id "
-                + "AND cpd.certificationStatusId IN (1,6,7) "
+                + "AND cpd.certificationStatusId = :certificationStatusId "
+                + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
+                + "AND cr.success = true "
+                + "AND crs.deleted = false "
+                + "AND cpd.deleted = false "
+                + "AND s.deleted = false "
+                + "GROUP BY cc.id, s.id ";
+
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("certificationStatusId", certificationStatus.getId());
+        List<Object[]> results = query.getResultList();
+
+        return results.stream()
+                .map(result -> SvapReportByCertificationStatus.builder()
+                        .criterion(((CertificationCriterionEntity) result[0]).toDomain())
+                        .svap(((SvapEntity) result[1]).toDomain())
+                        .certificationStatus(certificationStatus.getName())
+                        .count((Long) result[2])
+                        .build())
+                .toList();
+    }
+
+    public List<SvapListingReport> getSvapListingReports() {
+        String hql = "SELECT cc, s, cpd.chplProductNumber, cpd.certificationStatusName "
+                + "FROM CertificationCriterionEntity cc, "
+                + "CertificationResultEntity cr, "
+                + "CertifiedProductDetailsEntity cpd, "
+                + "CertificationResultSvapEntity crs, "
+                + "SvapEntity s "
+                + "WHERE cc.id = cr.certificationCriterionId "
+                + "AND cr.certifiedProductId = cpd.id "
+                + "AND cr.id = crs.certificationResultId "
+                + "AND crs.svap.id = s.id "
+                + "AND cc.deleted = false "
+                + "AND cr.deleted = false "
+                + "AND cr.success = true "
                 + "AND crs.deleted = false "
                 + "AND cpd.deleted = false "
                 + "AND s.deleted = false ";
@@ -84,11 +121,12 @@ public class SvapReportDao extends BaseDAOImpl {
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .svap(((SvapEntity) result[1]).toDomain())
                         .chplProductNumber((String) result[2])
+                        .certificationStatus((String) result[3])
                         .build())
                 .toList();
     }
 
-    public List<CriteriaWithAnySvap> getCriteriaWithAnySvap() {
+    public List<CriteriaWithAnySvap> getCriteriaWithAnySvap(CertificationStatus certificationStatus) {
         String criteriaCountsWithSvapHql = "SELECT cc, count(*) as criteriaCount "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
@@ -97,18 +135,20 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "CertificationCriterionAttributeEntity cca "
                 + "WHERE cc.id = cr.certificationCriterionId "
                 + "AND cr.certifiedProductId = cpd.id "
+                + "AND cpd.certificationStatusId = :certificationStatusId "
                 + "AND cr.id = crs.certificationResultId "
                 + "AND cc.id = cca.criterion.id "
-                + "AND cpd.certificationStatusId IN (1,6,7) "
                 + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
                 + "AND cca.svap = true "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
+                + "AND cr.success = true "
                 + "AND crs.deleted = false "
                 + "AND cpd.deleted = false "
                 + "GROUP BY cc.id";
 
         Query criteriaWithAnySvapCountsQuery = entityManager.createQuery(criteriaCountsWithSvapHql);
+        criteriaWithAnySvapCountsQuery.setParameter("certificationStatusId", certificationStatus.getId());
         List<Object[]> criteriaWithAnySvapCountsResults = criteriaWithAnySvapCountsQuery.getResultList();
 
         List<CriterionCount> criteriaWithAnySvapCounts = criteriaWithAnySvapCountsResults.stream()
@@ -126,7 +166,7 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "WHERE cc.id = cr.certificationCriterionId "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cc.id = cca.criterion.id "
-                + "AND cpd.certificationStatusId IN (1,6,7) "
+                + "AND cpd.certificationStatusId = :certificationStatusId "
                 + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
                 + "AND cca.svap = true "
                 + "AND cc.deleted = false "
@@ -135,6 +175,7 @@ public class SvapReportDao extends BaseDAOImpl {
                 + "GROUP BY cc.id";
 
         Query criteriaCountsQuery = entityManager.createQuery(criteriaCountsHql);
+        criteriaCountsQuery.setParameter("certificationStatusId", certificationStatus.getId());
         List<Object[]> criteriaCountsResults = criteriaCountsQuery.getResultList();
 
         List<CriterionCount> criteriaCounts = criteriaCountsResults.stream()
@@ -147,8 +188,9 @@ public class SvapReportDao extends BaseDAOImpl {
         return criteriaCounts.stream()
                 .map(cc -> CriteriaWithAnySvap.builder()
                         .certificationCriterion(cc.getCriterion())
-                        .activeListingCountAttestingToCriteria(cc.getCount())
-                        .activeListingCountAttestingToCriteriaAndAnySvap(lookupCountByCriteria(criteriaWithAnySvapCounts, cc.getCriterion()))
+                        .listingCountAttestingToCriteria(cc.getCount())
+                        .listingCountAttestingToCriteriaAndAnySvap(lookupCountByCriteria(criteriaWithAnySvapCounts, cc.getCriterion()))
+                        .certificationStatusName(certificationStatus.getName())
                         .sortOrder(certificationCriterionService.getCertificationResultSortIndex(cc.getCriterion().getId()))
                         .build())
                 .peek(x -> LOGGER.info(x.toString()))

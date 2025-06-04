@@ -8,7 +8,8 @@ import lombok.Data;
 @Builder
 public class CriteriaWithAnySvap {
     private CertificationCriterion certificationCriterion;
-    private Long activeListingCountAttestingToCriteria;
-    private Long activeListingCountAttestingToCriteriaAndAnySvap;
+    private Long listingCountAttestingToCriteria;
+    private Long listingCountAttestingToCriteriaAndAnySvap;
+    private String certificationStatusName;
     private Integer sortOrder;
 }

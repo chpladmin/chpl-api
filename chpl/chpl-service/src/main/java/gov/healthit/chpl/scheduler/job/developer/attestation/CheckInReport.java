@@ -3,6 +3,9 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +46,10 @@ public class CheckInReport {
     private String realWorldTestingValidation;
     private String apiValidation;
     private String warnings;
+
+    private ChangeRequest mostRecentAttestationChangeRequest;
+    private Developer developer;
+    private List<CertificationBody> certificationBodies;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,

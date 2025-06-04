@@ -328,6 +328,16 @@ const reportDataListingAttributesControllerTests = {
   },
 };
 
+const reportDataSvapControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-svaps.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-svaps-controller-tests.xml',
+    },
+  },
+};
+
 const subscriptionsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/search-subscriptions-controller.postman_collection.json',
@@ -367,6 +377,7 @@ const jobs = [
   cb => newman.run(reportDataControllerTests,cb),
   cb => newman.run(reportDataCriteriaAttributesControllerTests,cb),
   cb => newman.run(reportDataListingAttributesControllerTests,cb),
+  cb => newman.run(reportDataSvapControllerTests,cb),
   cb => newman.run(rulesControllerTests,cb),
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),

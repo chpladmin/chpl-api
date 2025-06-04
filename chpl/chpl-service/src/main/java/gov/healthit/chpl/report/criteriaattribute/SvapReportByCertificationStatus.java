@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SvapListingReport {
-    private String chplProductNumber;
-    private String certificationStatus;
+public class SvapReportByCertificationStatus {
     private CertificationCriterion criterion;
     private Svap svap;
+    private String certificationStatus;
+    private Long count;
 }
