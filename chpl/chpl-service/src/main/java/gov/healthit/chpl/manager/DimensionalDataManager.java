@@ -50,6 +50,7 @@ import gov.healthit.chpl.teststandard.TestStandard;
 import gov.healthit.chpl.teststandard.TestStandardDAO;
 import lombok.extern.log4j.Log4j2;
 
+@Deprecated
 @Log4j2
 @Service("dimensionalDataManager")
 public class DimensionalDataManager {

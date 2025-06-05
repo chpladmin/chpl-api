@@ -18,6 +18,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
@@ -47,7 +48,6 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUserDAO;
@@ -67,11 +67,11 @@ public class ListingService {
     private PromotingInteroperabilityUserHistoryService piuService;
 
     private ChplProductNumberUtil chplProductNumberUtil;
-    private DimensionalDataManager dimensionalDataManager;
     private SurveillanceManager survManager;
 
     private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
     private ListingGraphDAO listingGraphDao;
+    private CertificationEditionDAO editionDao;
     private CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
@@ -99,8 +99,8 @@ public class ListingService {
             DirectReviewSearchService drService,
             PromotingInteroperabilityUserHistoryService piuService,
             ChplProductNumberUtil chplProductNumberUtil,
-            DimensionalDataManager dimensionalDataManager,
             SurveillanceManager survManager,
+            CertificationEditionDAO editionDao,
             CertifiedProductTestingLabDAO certifiedProductTestingLabDao,
             ListingGraphDAO listingGraphDao,
             @Qualifier("certifiedProductChplProductNumberHistoryDao")
@@ -118,8 +118,8 @@ public class ListingService {
         this.drService = drService;
         this.piuService = piuService;
         this.chplProductNumberUtil = chplProductNumberUtil;
-        this.dimensionalDataManager = dimensionalDataManager;
         this.survManager = survManager;
+        this.editionDao = editionDao;
         this.certifiedProductTestingLabDao = certifiedProductTestingLabDao;
         this.listingGraphDao = listingGraphDao;
         this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
@@ -299,7 +299,7 @@ public class ListingService {
         if (editionId == null) {
             return null;
         }
-        Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
+        Optional<CertificationEdition> certEdition = editionDao.findAll().stream()
                 .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
 

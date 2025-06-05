@@ -45,6 +45,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Deprecated
 @Tag(name = "dimensional-data", description = "Access lookup data.")
 @RestController
 @RequestMapping("/data")
