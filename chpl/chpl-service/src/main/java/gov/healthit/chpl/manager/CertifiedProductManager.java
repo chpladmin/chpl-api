@@ -201,6 +201,11 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
+    public List<CertificationStatus> getAllCertificationStatuses() {
+        return certStatusDao.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
         CertifiedProductDTO result = cpDao.getById(id);
         return result;

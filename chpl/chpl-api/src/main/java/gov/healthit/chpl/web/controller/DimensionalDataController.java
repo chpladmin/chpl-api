@@ -28,6 +28,10 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.testprocedure.TestProcedureManager;
 import gov.healthit.chpl.teststandard.TestStandard;
@@ -66,6 +70,10 @@ public class DimensionalDataController {
         this.svapManager = svapManager;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/quarters",
+        message = "This is deprecated and will be removed. Please GET from /surveillance-report/quarters.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get a list of quarters for which a surveillance report can be created.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -77,6 +85,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getQuarters();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance-process-types",
+        message = "This is deprecated and will be removed. Please GET from /surveillance-report/surveillance-process-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get a list of surveillance process types.",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
@@ -87,9 +99,16 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceProcessTypes() {
-        return survReportManager.getSurveillanceProcessTypes();
+        List<SurveillanceProcessType> spts = survReportManager.getSurveillanceProcessTypes();
+        return spts.stream()
+                .map(spt -> new KeyValueModel(spt.getId(), spt.getName()))
+                .collect(Collectors.toSet());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance-outcomes",
+        message = "This is deprecated and will be removed. Please GET from /surveillance-report/surveillance-outcomes.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get a list of surveillance outcomes.",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
@@ -100,9 +119,16 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceOutcomes() {
-        return survReportManager.getSurveillanceOutcomes();
+        List<SurveillanceOutcome> outcomes = survReportManager.getSurveillanceOutcomes();
+        return outcomes.stream()
+                .map(outcome -> new KeyValueModel(outcome.getId(), outcome.getName()))
+                .collect(Collectors.toSet());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance-grounds-for-initiating",
+        message = "This is deprecated and will be removed. Please GET from /surveillance-report/surveillance-grounds-for-initiating.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get a list of options for grounds for initiating surveillance.",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
@@ -113,9 +139,16 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceGroundsForInitiating() {
-        return survReportManager.getSurveillanceGroundsForInitiating();
+        List<SurveillanceGroundsForInitiating> grounds = survReportManager.getSurveillanceGroundsForInitiating();
+        return grounds.stream()
+                .map(ground -> new KeyValueModel(ground.getId(), ground.getName()))
+                .collect(Collectors.toSet());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/cap-statuses",
+        message = "This is deprecated and will be removed. Please GET from /surveillance-report/cap-statuses.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get a list of options for Corrective Action Plan (CAP) status values.",
             description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
@@ -126,9 +159,16 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getSurveillanceCapStatuses() {
-        return survReportManager.getSurveillanceCapStatuses();
+        List<SurveillanceCapStatus> capStatuses = survReportManager.getSurveillanceCapStatuses();
+        return capStatuses.stream()
+                .map(cs -> new KeyValueModel(cs.getId(), cs.getName()))
+                .collect(Collectors.toSet());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/classification_types",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible classifications in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -141,6 +181,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getClassificationNames();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/certification_editions",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible certificaiton editions in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -153,6 +197,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getEditionNames(false);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/certification_statuses",
+        message = "This is deprecated and will be removed. Please use /certified_products/certification-statuses",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible certification statuses in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -165,6 +213,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getCertificationStatuses();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/practice_types",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible practice types in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -177,6 +229,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getPracticeTypeNames();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/certification_bodies",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible ACBs in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

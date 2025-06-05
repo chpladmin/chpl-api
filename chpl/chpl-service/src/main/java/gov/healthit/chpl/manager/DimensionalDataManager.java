@@ -6,11 +6,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -102,6 +100,7 @@ public class DimensionalDataManager {
         this.certEditionDao = certEditionDao;
     }
 
+    @Deprecated
     @Transactional
     public Set<KeyValueModel> getQuarters() {
         LOGGER.debug("Getting all quarters from the database (not cached).");
@@ -116,6 +115,7 @@ public class DimensionalDataManager {
     }
 
     @Transactional
+    @Deprecated
     public Set<CertificationBody> getAllAcbs() {
         LOGGER.debug("Getting all certification body names from the database (not cached).");
         List<CertificationBody> acbs = this.certificationBodyDao.findAll();
@@ -260,8 +260,8 @@ public class DimensionalDataManager {
         return testData;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.EDITIONS)
     public List<CertificationEdition> getCertificationEditions() {
         return certEditionDao.findAll();
     }
@@ -299,22 +299,27 @@ public class DimensionalDataManager {
     // Since they are called from within the same class, any annotations on the below methods
     // are ignored due to Spring's proxying mechanism. Therefore the caching of these methods
     // has been moved to the CacheableDimensionalDataModel class which is called through.
+    @Deprecated
     public Set<KeyValueModel> getClassificationNames() {
         return cacheableDimensionalDataManager.getClassificationNames();
     }
 
+    @Deprecated
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
        return cacheableDimensionalDataManager.getEditionNames(simple);
     }
 
+    @Deprecated
     public Set<KeyValueModel> getCertificationStatuses() {
         return cacheableDimensionalDataManager.getCertificationStatuses();
     }
 
+    @Deprecated
     public Set<KeyValueModel> getPracticeTypeNames() {
         return cacheableDimensionalDataManager.getPracticeTypeNames();
     }
 
+    @Deprecated
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         return cacheableDimensionalDataManager.getCQMCriterionNumbers(simple);
     }

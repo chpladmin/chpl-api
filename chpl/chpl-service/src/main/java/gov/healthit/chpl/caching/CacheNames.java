@@ -6,14 +6,9 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
-    public static final String EDITIONS = "editions";
-    public static final String EDITION_NAMES = "editionNames";
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
-    public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
-    public static final String CLASSIFICATION_NAMES = "classificationNames";
     public static final String MEASURES = "measures";
     public static final String MEASURE_TYPES = "measureTypes";
-    public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
     public static final String CERTIFICATION_CRITERIA = "certificationCriteria";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
     public static final String GET_ALL_UNRESTRICTED_APIKEYS = "getAllUnrestrictedApiKeys";
