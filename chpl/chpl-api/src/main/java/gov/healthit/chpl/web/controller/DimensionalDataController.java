@@ -349,6 +349,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/developer_statuses",
+        message = "This is deprecated and will be removed. Please GET from /developers/statuses.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible developer status options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)

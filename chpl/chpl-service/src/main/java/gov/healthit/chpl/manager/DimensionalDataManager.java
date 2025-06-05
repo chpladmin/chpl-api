@@ -143,6 +143,7 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     @Transactional
     public Set<KeyValueModel> getDeveloperStatuses() {
         LOGGER.debug("Getting all developer statuses from the database (not cached).");

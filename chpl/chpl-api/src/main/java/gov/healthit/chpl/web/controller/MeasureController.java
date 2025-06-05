@@ -39,7 +39,7 @@ public class MeasureController {
     }
 
     @Operation(summary = "Retrieve all current Measure Types. ",
-            description = "Returns all of the Measures that are currently in the CHPL.",
+            description = "Returns all of the Measures Types that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })

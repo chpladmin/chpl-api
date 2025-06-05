@@ -29,6 +29,7 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
 import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.auth.User;
@@ -124,6 +125,16 @@ public class DeveloperController {
     public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
         return developerManager.getHierarchyById(developerId);
+    }
+
+    @Operation(summary = "List all developer statuses in the system.",
+            description = "List all developer statuses in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/statuses", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<DeveloperStatus> getDeveloperStatuses() {
+        return developerManager.getAllStatuses();
     }
 
     @Operation(summary = "Get all direct reviews for a specified developer.",
