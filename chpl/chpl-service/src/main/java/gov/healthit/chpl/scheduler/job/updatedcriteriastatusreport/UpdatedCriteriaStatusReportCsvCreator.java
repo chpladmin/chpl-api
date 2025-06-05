@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -75,8 +76,12 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
     private List<UpdatedCriterionStatusReport> getReportData() {
         LOGGER.info("Getting report data for the CSV file");
-        return updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
+        List<UpdatedCriterionStatusReport> reportData = updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
                 reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now()));
+        reportData = reportData.stream()
+                .filter(dataRecord -> !dataRecord.getCertificationCriterion().isRemoved())
+                .collect(Collectors.toList());
+        return reportData;
     }
 
     private List<String> getHeaderRow() {
