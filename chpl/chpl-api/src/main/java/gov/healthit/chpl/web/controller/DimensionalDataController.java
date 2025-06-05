@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
+import gov.healthit.chpl.complaint.domain.ComplainantType;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
@@ -475,6 +479,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getDimensionalData(simple);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/complaint-types",
+        message = "This is deprecated and will be removed. Please GET from /complaints/types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible complaint types in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -483,13 +491,21 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getComplaintTypes() {
-        Set<KeyValueModel> data = complaintManager.getComplaintTypes();
+        List<ComplaintType> complaintTypes = complaintManager.getComplaintTypes();
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+        for (ComplaintType complaintType : complaintTypes) {
+            results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
+        }
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
+        result.setData(results);
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/complainant-types",
+        message = "This is deprecated and will be removed. Please GET from /complaints/complainant-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible complainant types in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -498,10 +514,14 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getComplainantTypes() {
-        Set<KeyValueModel> data = complaintManager.getComplainantTypes();
+        List<ComplainantType> complainantTypes = complaintManager.getComplainantTypes();
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+        for (ComplainantType complainantType : complainantTypes) {
+            results.add(new KeyValueModel(complainantType.getId(), complainantType.getName()));
+        }
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
+        result.setData(results);
         return result;
     }
 
