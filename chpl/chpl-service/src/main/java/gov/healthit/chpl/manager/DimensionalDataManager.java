@@ -176,6 +176,7 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     public Set<KeyValueModel> getSurveillanceTypes() {
         LOGGER.debug("Getting all surveillance types from the database (not cached).");
 
@@ -188,6 +189,7 @@ public class DimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     @Transactional
     public Set<RequirementType> getRequirementTypes() {
         LOGGER.debug("Getting all requirement detail types from the database (not cached).");
@@ -196,6 +198,7 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     public Set<NonconformityType> getNonconformityTypes() {
         LOGGER.debug("Getting all nonconformity types from the database (not cached).");
 
@@ -203,6 +206,7 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     public Set<KeyValueModel> getRequirementGroupTypes() {
         LOGGER.debug("Getting all requirement group types from the database (not cached).");
 
@@ -215,6 +219,7 @@ public class DimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     public Set<KeyValueModel> getSurveillanceResultTypes() {
         LOGGER.debug("Getting all surveillance result types from the database (not cached).");
 

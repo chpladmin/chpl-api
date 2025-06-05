@@ -368,6 +368,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance_types",
+        message = "This is deprecated and will be removed. Please GET from /surveillance/types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible surveillance type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -383,6 +387,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance_result_types",
+        message = "This is deprecated and will be removed. Please GET from /surveillance/result-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible surveillance result type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -398,6 +406,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/requirement-group-types",
+        message = "This is deprecated and will be removed. Please GET from /surveillance/requirement-group-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible requirement group type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -413,6 +425,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/requirement-types",
+        message = "This is deprecated and will be removed. Please GET from /surveillance/requirement-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible surveillance requirement detail type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -427,6 +443,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/nonconformity-types/v2",
+        message = "This is deprecated and will be removed. Please GET from /surveillance/non-conformity-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible nonconformity type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)

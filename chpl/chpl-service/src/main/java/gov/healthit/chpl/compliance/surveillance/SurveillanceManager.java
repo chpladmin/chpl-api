@@ -28,10 +28,15 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -102,6 +107,31 @@ public class SurveillanceManager extends SecuredManager {
         this.survComparator = new SurveillanceComparator();
         this.reqComparator = new SurveillanceRequirementComparator();
         this.ncComparator = new SurveillanceNonconformityComparator();
+    }
+
+    @Transactional
+    public List<SurveillanceType> getAllSurveillanceTypes() {
+        return survDao.getAllSurveillanceTypes();
+    }
+
+    @Transactional
+    public List<RequirementType> getAllRequirementTypes() {
+        return survDao.getRequirementTypes();
+    }
+
+    @Transactional
+    public List<RequirementGroupType> getAllRequirementGroupTypes() {
+        return survDao.getAllRequirementGroupTypes();
+    }
+
+    @Transactional
+    public List<NonconformityType> getAllNonconformityTypes() {
+        return survDao.getNonconformityTypes();
+    }
+
+    @Transactional
+    public List<SurveillanceResultType> getAllSurveillanceResultTypes() {
+        return survDao.getAllSurveillanceResultTypes();
     }
 
     @Transactional(readOnly = true)
