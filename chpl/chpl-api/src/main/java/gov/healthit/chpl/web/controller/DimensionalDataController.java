@@ -571,6 +571,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/svaps",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible SVAP and associated criteria in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
