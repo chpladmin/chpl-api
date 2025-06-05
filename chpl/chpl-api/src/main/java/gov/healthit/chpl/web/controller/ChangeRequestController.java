@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
@@ -41,6 +43,28 @@ public class ChangeRequestController {
     @Autowired
     public ChangeRequestController(ChangeRequestManager changeRequestManager) {
         this.changeRequestManager = changeRequestManager;
+    }
+
+    @Operation(summary = "Get all available change request types  in the system",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ChangeRequestType> getChangeRequestTypes() {
+        return changeRequestManager.getChangeRequestTypes();
+    }
+
+    @Operation(summary = "Get all available change request status types in the system",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/status-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ChangeRequestStatusType> getChangeRequestStatusTypes() {
+        return changeRequestManager.getChangeRequestStatusTypes();
     }
 
     @Operation(summary = "Get details about a specific change request.",

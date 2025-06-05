@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
@@ -525,6 +527,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/change-request-types",
+        message = "This is deprecated and will be removed. Please GET from /change-requests/types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible change request types in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -533,13 +539,20 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getChangeRequestTypes() {
-        Set<KeyValueModel> data = changeRequestManager.getChangeRequestTypes();
+        List<ChangeRequestType> crTypes = changeRequestManager.getChangeRequestTypes();
+        Set<KeyValueModel> data = crTypes.stream()
+            .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
+            .collect(Collectors.<KeyValueModel>toSet());
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/change-request-status-types",
+        message = "This is deprecated and will be removed. Please GET from /change-requests/status-types.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all possible change request status types in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -548,7 +561,10 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getChangeRequestStatusTypes() {
-        Set<KeyValueModel> data = changeRequestManager.getChangeRequestStatusTypes();
+        List<ChangeRequestStatusType> crStatusTypes = changeRequestManager.getChangeRequestStatusTypes();
+        Set<KeyValueModel> data = crStatusTypes.stream()
+                .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
+                .collect(Collectors.<KeyValueModel>toSet());
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
