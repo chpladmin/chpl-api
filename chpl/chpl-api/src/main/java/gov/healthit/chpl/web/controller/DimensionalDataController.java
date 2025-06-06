@@ -524,6 +524,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/search-options",
+        message = "This is deprecated and will be removed.",
+        removalDate = "2025-12-31")
     @Operation(summary = "Get all search options in the CHPL",
             description = "This returns all of the other /data/{something} results in one single response.",
             security = {

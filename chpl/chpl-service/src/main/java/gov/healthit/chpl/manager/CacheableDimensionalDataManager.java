@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import lombok.extern.log4j.Log4j2;
 
+@Deprecated
 @Log4j2
 @Service("CacheableDimensionalDataManager")
 public class CacheableDimensionalDataManager {

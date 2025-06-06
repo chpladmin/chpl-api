@@ -267,6 +267,7 @@ public class DimensionalDataManager {
         return certEditionDao.findAll();
     }
 
+    @Deprecated
     public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
         DimensionalData result = new DimensionalData();
 
