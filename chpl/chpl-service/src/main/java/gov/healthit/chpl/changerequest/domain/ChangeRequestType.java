@@ -16,6 +16,7 @@ public class ChangeRequestType implements Serializable {
 
     public static final String ATTESTATION_TYPE = "Developer Attestation Change Request";
     public static final String DEMOGRAPHICS_TYPE = "Developer Demographics Change Request";
+    public static final String LISTING_URL_TYPE = "Listing URL Change Request";
 
     private Long id;
     private String name;

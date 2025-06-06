@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.manager;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,11 +26,13 @@ import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestListingUrlDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
@@ -66,6 +69,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestManager {
+    private static final String SERVICE_BASE_URL_LIST_TYPE = "Service Base URL List";
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
@@ -106,6 +110,7 @@ public class ChangeRequestManager {
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FormValidator formValidator;
+    private ChangeRequestListingUrlDAO changeRequestListingUrlDAO;
 
     private FF4j ff4j;
 
@@ -132,7 +137,8 @@ public class ChangeRequestManager {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
             FormValidator formValidator,
-            FF4j ff4j) {
+            FF4j ff4j,
+            ChangeRequestListingUrlDAO changeRequestListingUrlDAO) {
         this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
@@ -152,6 +158,7 @@ public class ChangeRequestManager {
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;
         this.ff4j = ff4j;
+        this.changeRequestListingUrlDAO = changeRequestListingUrlDAO;
     }
 
     @Transactional(readOnly = true)
@@ -159,7 +166,10 @@ public class ChangeRequestManager {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
                 .filter(entity -> entity.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
                         || (entity.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
-                                && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
+                                && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
+                        || (entity.getName().equals(ChangeRequestType.LISTING_URL_TYPE)
+                                && ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST))
+                        )
                 .collect(Collectors.toList());
     }
 
@@ -178,7 +188,17 @@ public class ChangeRequestManager {
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
-        return saveChangeRequest(changeRequest);
+        if (!ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
+                && changeRequest.getDetails() != null
+                && changeRequest.getDetails() instanceof ChangeRequestListingUrl
+                && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
+        }
+        ChangeRequest cr = saveChangeRequest(changeRequest);
+        if (cr == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+        }
+        return cr;
     }
 
     @Transactional(readOnly = true)
@@ -266,7 +286,10 @@ public class ChangeRequestManager {
             return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
+        } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.LISTING_URL_TYPE);
         }
+
         return null;
     }
 
@@ -282,10 +305,24 @@ public class ChangeRequestManager {
         return crMap.containsKey("form");
     }
 
+    private boolean isServiceBaseUrlListChangeRequest(ChangeRequest cr) {
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        try {
+            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(SERVICE_BASE_URL_LIST_TYPE).getId().intValue();
+            return crMap.containsKey("changeRequestListingUrlType")
+                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
-        ValidationException validationException = new ValidationException(crValidationService.getErrorMessages(crValidationContext));
+        ValidationException validationException = new ValidationException(
+                crValidationService.getErrorMessages(crValidationContext).stream()
+                        .filter(msg -> msg != null && !msg.isEmpty())
+                        .toList());
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -293,10 +330,13 @@ public class ChangeRequestManager {
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());
         newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
-        newCr = getChangeRequest(newCr.getId());
+        if (newCr != null) {
+            newCr = getChangeRequest(newCr.getId());
 
-        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
-        return newCr;
+            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
+            return newCr;
+        }
+        return null;
     }
 
     private ChangeRequest createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {
@@ -313,6 +353,9 @@ public class ChangeRequestManager {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
         } else if (isDeveloperAttestationChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
+        } else if (isServiceBaseUrlListChangeRequest(cr)) {
+            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
+            ((ChangeRequestListingUrl) cr.getDetails()).setUrl(((ChangeRequestListingUrl) cr.getDetails()).getUrl().trim());
         }
         return cr;
     }
