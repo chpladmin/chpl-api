@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -16,9 +17,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -31,7 +35,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
     private JpaTransactionManager txManager;
 
     @Autowired
-    private CheckInReportDataCollector checkInReportDataCollection;
+    private AttestationCheckinReportDAO attestationCheckinReportDAO;
 
     @Autowired
     private CheckInReportSummaryDataCollector checkInReportSummaryDataCollection;
@@ -47,6 +51,9 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
 
     @Autowired
     private SchedulerSecurityContextService securityContextService;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
 
     @Value("${developer.attestation.checkin.report.subject}")
     private String emailSubject;
@@ -92,7 +99,12 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
                     securityContextService.setAdminSecurityContext();
                     LOGGER.info("Set the Security Context");
 
-                    List<CheckInReport> reportRows = checkInReportDataCollection.collect(getAcbIds(context));
+                    List<CertificationBody> acbs = getAcbIds(context).stream()
+                            .map(acbId -> getCertificationBody(acbId))
+                            .toList();
+
+                    List<CheckInReport> reportRows = getCheckInReports(acbs);
+
                     CheckInReportSummary reportSummary = checkInReportSummaryDataCollection.collect(reportRows);
                     File csv = checkInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
@@ -122,9 +134,35 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
         LOGGER.info("********* Completed Developer Attestation Check-in Report job. *********");
     }
 
+    private List<CheckInReport> getCheckInReports(List<CertificationBody> acbs) {
+        return attestationCheckinReportDAO.getCheckinReports(attestationCheckinReportDAO.getMaxReportDate()).stream()
+                .filter(cr -> isCheckinreportValidOForAcbs(cr, acbs))
+                .toList();
+    }
+
+    private boolean isCheckinreportValidOForAcbs(CheckInReport report, List<CertificationBody> acbs) {
+        List<String> acbNames = acbs.stream()
+                .map(acb -> acb.getName())
+                .collect(Collectors.toList());
+
+        return Stream.of(report.getRelevantAcbs().split(";"))
+                .filter(acbNames::contains)
+                .findAny()
+                .isPresent();
+    }
+
     private List<Long> getAcbIds(JobExecutionContext context) {
         return Arrays.asList(context.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
                 .map(acb -> Long.parseLong(acb))
                 .collect(Collectors.toList());
+    }
+
+    private CertificationBody getCertificationBody(Long id) {
+        try {
+            return certificationBodyDAO.getById(id);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Unable to retrieve certification body with id: {}", id, e);
+            return null;
+        }
     }
 }

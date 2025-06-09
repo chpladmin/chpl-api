@@ -3,6 +3,12 @@ package gov.healthit.chpl.listing.measure;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.listing.measure.domain.SimpleMeasure;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +20,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,7 +69,7 @@ public class MeasureEntity extends EntityAudit {
     @Where(clause = " deleted = false ")
     private Set<MeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MeasureCriterionMapEntity>();
 
-    public Measure convert() {
+    public Measure toDomain() {
         LinkedHashSet<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();
         if (getAllowedCriteria() != null) {
             getAllowedCriteria().stream()
@@ -88,6 +88,18 @@ public class MeasureEntity extends EntityAudit {
             .removed(removed)
             .domain(getDomain().convert())
             .allowedCriteria(convertedAllowedCriteria)
+            .build();
+    }
+
+    public SimpleMeasure toSimpleMeasure() {
+        return SimpleMeasure.builder()
+            .id(getId())
+            .abbreviation(getAbbreviation())
+            .name(getName())
+            .requiredTest(getRequiredTest())
+            .requiresCriteriaSelection(getCriteriaSelectionRequired())
+            .removed(removed)
+            .domain(getDomain().convert())
             .build();
     }
 }
