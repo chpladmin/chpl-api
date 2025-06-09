@@ -33,6 +33,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
@@ -70,6 +71,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class ChangeRequestManager {
     private static final String SERVICE_BASE_URL_LIST_TYPE = "Service Base URL List";
+    private static final String RWT_PLANS_URL_TYPE = "RWT Plans URL";
+    private static final String RWT_RESULTS_URL_TYPE = "RWT Results URL";
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
@@ -168,10 +171,15 @@ public class ChangeRequestManager {
                         || (entity.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
                                 && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
                         || (entity.getName().equals(ChangeRequestType.LISTING_URL_TYPE)
-                                && ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST))
+                                && isAnyListingUrlChangeRequestTypeAvailable())
                         )
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
+    }
+
+    private boolean isAnyListingUrlChangeRequestTypeAvailable() {
+        return ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
+                || ff4j.check(FeatureList.RWT_CHANGE_REQUEST);
     }
 
     @Transactional(readOnly = true)
@@ -196,12 +204,22 @@ public class ChangeRequestManager {
                 && changeRequest.getDetails() instanceof ChangeRequestListingUrl
                 && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
+        } else if (!ff4j.check(FeatureList.RWT_CHANGE_REQUEST)
+                && changeRequest.getDetails() != null
+                && changeRequest.getDetails() instanceof ChangeRequestListingUrl
+                && isRwtChangeRequestType(((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType())) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtPlansUrl.featureDisabled"));
         }
         ChangeRequest cr = saveChangeRequest(changeRequest);
         if (cr == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
         }
         return cr;
+    }
+
+    private boolean isRwtChangeRequestType(ChangeRequestListingUrlType changeRequestListingUrlType) {
+        return changeRequestListingUrlType.getName().equals(RWT_PLANS_URL_TYPE)
+                || changeRequestListingUrlType.getName().equals(RWT_RESULTS_URL_TYPE);
     }
 
     @Transactional(readOnly = true)

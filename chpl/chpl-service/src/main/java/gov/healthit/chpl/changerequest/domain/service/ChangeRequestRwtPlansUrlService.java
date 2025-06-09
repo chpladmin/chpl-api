@@ -39,40 +39,44 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListingUrlService {
+public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlService {
+    private ChangeRequestDAO crDAO;
+    private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertificationCriterionService certificationCriterionService;
+    private ActivityManager activityManager;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.approval.subject}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.approval.body}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.rejected.subject}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.rejected.body}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.pendingDeveloperAction.body}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.cancelled.subject}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.cancelled.subject}")
     private String cancelledEmailSubject;
 
-    @Value("${changeRequest.listingUrl.serviceBaseUrlList.cancelled.body}")
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.cancelled.body}")
     private String cancelledEmailBody;
 
     @Autowired
-    public ChangeRequestServiceBaseUrlListService(ChangeRequestDAO crDAO,
+    public ChangeRequestRwtPlansUrlService(ChangeRequestDAO crDAO,
             ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductManager certifiedProductManager,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
@@ -83,12 +87,33 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, activityManager, developerCertificationBodyMapDAO);
+        this.crDAO = crDAO;
+        this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certificationCriterionService = certificationCriterionService;
+        this.activityManager = activityManager;
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+    }
+
+    @Override
+    public ChangeRequest create(ChangeRequest cr) {
+        try {
+            ChangeRequestListingUrl details = (ChangeRequestListingUrl) cr.getDetails();
+            //TODO Ask about this
+            // If CR details match the values from the existing listing, just return
+            if (getAffectedUrl(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
+                return null;
+            }
+
+            crListingUrlDAO.create(cr, (ChangeRequestListingUrl) cr.getDetails());
+            return crDAO.get(cr.getId());
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -97,10 +122,8 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
         ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
         try {
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListing().getId());
-
-            listing.getCertificationResults().stream()
-                    .filter(crResult -> crResult.getCriterion().getId().equals(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId()))
-                    .forEach(crResult -> crResult.setServiceBaseUrlList(crListingUrl.getUrl()));
+            listing.setRwtPlansUrl(crListingUrl.getUrl());
+            //TODO how do we get the RWT Plans Check Date in here??
 
             ListingUpdateRequest listingUpdateRequest = ListingUpdateRequest.builder()
                     .listing(listing)
@@ -128,11 +151,12 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
 
     private String createApprovalHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("Service Base URL List Change Request Approved")
+                .heading("RWT Plans URL Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
                         ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
+                        //TODO we might like to put the RWT Plans Check Date in here too
                         getApprovalBody(cr)))
                 .footer(PublicFooter.class)
                 .build();
@@ -151,7 +175,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("Service Base URL List Change Request Pending Developer Action")
+                .heading("RWT Plans URL Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -174,7 +198,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("Service Base URL List Change Request Rejected")
+                .heading("RWT Plans URL Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -197,7 +221,7 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
 
     private String createCancelledHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("Service Base URL List Change Request Cancelled")
+                .heading("RWT Plans URL Change Request Cancelled")
                 .paragraph("", String.format(cancelledEmailBody,
                         cr.getDeveloper().getName(),
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
@@ -210,14 +234,6 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
 
     @Override
     protected String getAffectedUrl(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationResults() != null) {
-            return listing.getCertificationResults().stream()
-                    .filter(crResult -> crResult.getCriterion().getId().equals(
-                            certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10).getId()))
-                    .map(crResult -> crResult.getServiceBaseUrlList())
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
+        return listing.getRwtPlansUrl();
     }
 }
