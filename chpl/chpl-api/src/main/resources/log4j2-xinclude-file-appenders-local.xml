@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  Used in deployed environments to still physically write the log files to disk -->
+<!--  Used locally only for Tomcat logs, chplservice.log -->
+
 <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n</Pattern>
+        </PatternLayout>
+    </Console>
+    <File name="chplServiceJsonLog" fileName="${logDir}/chplservice.json.log" filePermissions="rw-rw-r--" >
+        <JsonLayout compact="true" eventEol="true" >
+            <KeyValuePair key="service" value="java-app" />
+        </JsonLayout>
+    </File>
     <RollingFile name="reportDataMethodUsage"
         fileName="${logDir}/reports/reportDataMethodUsage.log"
         filePattern="${logDir}/reports/history/reportDataMethodUsage-%d{yyyy-MM-dd}.log"
