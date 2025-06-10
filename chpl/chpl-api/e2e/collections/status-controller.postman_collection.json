@@ -126,6 +126,56 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET /api-docs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/v3/api-docs endpoint should return status 200 and api documentation details in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(pm.response.text()).to.include(\"tags\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"security\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/v3/api-docs",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"v3",
+						"api-docs"
+					]
+				},
+				"description": "verify that API page loads swagger documentation"
+			},
+			"response": []
 		}
 	]
 }

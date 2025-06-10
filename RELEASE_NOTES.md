@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 51.2.0
+_9 June 2025_
+
+### Features
+* Improve performance of Attestations Check-in report
+* Add SVAP report endpoint returning SVAPs by criteria and listing status
+* Add listing status to SVAP listings response
+* Add listing attribute endpoints to return listing counts by QMS Standards, Accessibility Standards, and Measures
+* Create POST endpoint to download surveillance reports
+* Deprecate GET endpoint to download surveillance reports
+
+### Bug Fixes
+* Correct error in overnight job when Developer changes their Service Base URL List
+
+### Flagged Features
+* Add Service Base URL List Change Request
+
+---
+
 ## Version 51.1.0
 _19 May 2025_
 

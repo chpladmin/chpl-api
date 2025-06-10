@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--  Used in deployed environments to write logs to the console for DataDog -->
 <Appenders>
     <Console name="reportDataMethodUsageJson" target="SYSTEM_OUT">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">

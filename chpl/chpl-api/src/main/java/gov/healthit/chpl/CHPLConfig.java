@@ -74,7 +74,6 @@ import lombok.extern.log4j.Log4j2;
 })
 @Log4j2
 public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
-    private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
     private static final int MAX_COOKIE_AGE_SECONDS = 3600;
     private String chplServiceUrl;
     private String apiLicenseUrl;
