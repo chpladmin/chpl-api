@@ -17,6 +17,7 @@ import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.listingattribute.ListingAttributeReportService;
 import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
@@ -50,6 +51,7 @@ public class ReportDataManager {
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
+    private ListingAttributeReportService listingAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
@@ -65,6 +67,7 @@ public class ReportDataManager {
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
+            ListingAttributeReportService listingAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService,
@@ -80,6 +83,7 @@ public class ReportDataManager {
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
+        this.listingAttributeReportService = listingAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
@@ -264,6 +268,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
         return criteriaAttributeReportService;
+    }
+
+    @Synchronized("lock")
+    public ListingAttributeReportService getListingAttributeService() {
+        return listingAttributeReportService;
     }
 
     @Synchronized("lock")
