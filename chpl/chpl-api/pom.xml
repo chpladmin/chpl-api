@@ -11,7 +11,7 @@
     <name>CHPL api</name>
 
     <properties>
-      <org.springdoc.version>2.5.0</org.springdoc.version>
+      <org.springdoc.version>2.7.0</org.springdoc.version>
     </properties>
 
     <dependencies>
@@ -45,8 +45,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
-        <!-- springboot needed for springdoc (swagger) -->
 
+        <!-- springboot needed for springdoc (swagger) -->
+        <!-- NOTE TO FUTURE SELF: ALWAYS CHECK THE COMPATIBILITY MATRIX FOR THE CORRECT
+             SPRING BOOT VERSION TO GO ALONG WITH THE SPRINGDOC VERSION 
+             https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot
+        --> 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -57,11 +61,16 @@
             <artifactId>spring-boot</artifactId>
             <version>${org.springboot.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
             <version>${org.springdoc.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
