@@ -307,7 +307,9 @@ public class ChangeRequestManager {
             return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
-        } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)) {
+        } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)
+                || isRwtPlansUrlChangeRequest(parentChangeRequest)
+                || isRwtResultsUrlChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.LISTING_URL_TYPE);
         }
 
@@ -337,8 +339,29 @@ public class ChangeRequestManager {
         }
     }
 
-    private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
+    private boolean isRwtPlansUrlChangeRequest(ChangeRequest cr) {
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        try {
+            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(RWT_PLANS_URL_TYPE).getId().intValue();
+            return crMap.containsKey("changeRequestListingUrlType")
+                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
+    private boolean isRwtResultsUrlChangeRequest(ChangeRequest cr) {
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        try {
+            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(RWT_RESULTS_URL_TYPE).getId().intValue();
+            return crMap.containsKey("changeRequestListingUrlType")
+                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException(
                 crValidationService.getErrorMessages(crValidationContext).stream()
@@ -374,7 +397,9 @@ public class ChangeRequestManager {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
         } else if (isDeveloperAttestationChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
-        } else if (isServiceBaseUrlListChangeRequest(cr)) {
+        } else if (isServiceBaseUrlListChangeRequest(cr)
+                || isRwtPlansUrlChangeRequest(cr)
+                || isRwtResultsUrlChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
             ((ChangeRequestListingUrl) cr.getDetails()).setUrl(((ChangeRequestListingUrl) cr.getDetails()).getUrl().trim());
         }

@@ -18,16 +18,22 @@ public class ChangeRequestValidationService {
     private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
     private Long sbulChangeRequestTypeId;
+    private Long rwtPlansUrlChangeRequestTypeId;
+    private Long rwtResultsUrlChangeRequestTypeId;
 
     @Autowired
     public ChangeRequestValidationService(
             @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId,
-            @Value("${changerequest.serviceBaseUrlList}") Long sbulChangeRequestTypeId) {
+            @Value("${changerequest.serviceBaseUrlList}") Long sbulChangeRequestTypeId,
+            @Value("${changerequest.rwtPlansUrl}") Long rwtPlansUrlChangeRequestTypeId,
+            @Value("${changerequest.rwtResultsUrl}") Long rwtResultsUrlChangeRequestTypeId) {
 
         this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
         this.sbulChangeRequestTypeId = sbulChangeRequestTypeId;
+        this.rwtPlansUrlChangeRequestTypeId = rwtPlansUrlChangeRequestTypeId;
+        this.rwtResultsUrlChangeRequestTypeId = rwtResultsUrlChangeRequestTypeId;
     }
 
     public List<String> getErrorMessages(ChangeRequestValidationContext context) {
@@ -124,8 +130,10 @@ public class ChangeRequestValidationService {
     }
 
     private ValidationRule<ChangeRequestValidationContext> getChangeRequestUniquenessValidator(ChangeRequestType changeRequestType) {
-        if (changeRequestType.getId().equals(sbulChangeRequestTypeId)) {
-            return new SbulChangeRequestTypeAndListingInProcessValidation();
+        if (changeRequestType.getId().equals(sbulChangeRequestTypeId)
+                || changeRequestType.getId().equals(rwtPlansUrlChangeRequestTypeId)
+                || changeRequestType.getId().equals(rwtResultsUrlChangeRequestTypeId)){
+            return new ListingUrlChangeRequestTypeAndListingInProcessValidation();
         } else {
             return new ChangeRequestTypeInProcessValidation();
         }
