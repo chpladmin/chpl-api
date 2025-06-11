@@ -10,6 +10,7 @@ public class ChangeRequestDetailsFactory {
     private ChangeRequestAttestationService crAttestattionService;
     private ChangeRequestServiceBaseUrlListService crServiceBaseUrlListService;
     private ChangeRequestRwtPlansUrlService crRwtPlansUrlService;
+    private ChangeRequestRwtResultsUrlService crRwtResultsUrlService;
 
     @Value("${changerequest.developerDemographics}")
     private Long developerDemographicsChangeRequestType;
@@ -30,11 +31,13 @@ public class ChangeRequestDetailsFactory {
     public ChangeRequestDetailsFactory(ChangeRequestDeveloperDemographicsService crDevDemographicsService,
             ChangeRequestAttestationService crAttestationService,
             ChangeRequestServiceBaseUrlListService crServiceBaseUrlListService,
-            ChangeRequestRwtPlansUrlService crRwtPlansUrlService) {
+            ChangeRequestRwtPlansUrlService crRwtPlansUrlService,
+            ChangeRequestRwtResultsUrlService crRwtResultsUrlService) {
         this.crDeveloperDemographicsService = crDevDemographicsService;
         this.crAttestattionService = crAttestationService;
         this.crServiceBaseUrlListService = crServiceBaseUrlListService;
         this.crRwtPlansUrlService = crRwtPlansUrlService;
+        this.crRwtResultsUrlService = crRwtResultsUrlService;
     }
 
     public ChangeRequestDetailsService<?> get(Long changeRequestType) {
@@ -49,7 +52,7 @@ public class ChangeRequestDetailsFactory {
         } else if (changeRequestType.equals(rwtPlansUrlChangeRequestType)) {
             crDetailsService = crRwtPlansUrlService;
         } else if (changeRequestType.equals(rwtResultsUrlChangeRequestType)) {
-            //TODO
+            crDetailsService = crRwtResultsUrlService;
         }
         return crDetailsService;
     }

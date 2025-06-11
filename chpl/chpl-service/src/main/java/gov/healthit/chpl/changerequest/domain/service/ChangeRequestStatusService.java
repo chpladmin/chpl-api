@@ -15,7 +15,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -43,18 +42,16 @@ public class ChangeRequestStatusService {
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private UserDAO userDAO;
 
     @Autowired
     public ChangeRequestStatusService(ChangeRequestStatusDAO crStatusDAO, ChangeRequestStatusTypeDAO crStatusTypeDAO, ChangeRequestDAO crDAO,
-            ChangeRequestDetailsFactory crDetailsFactory, ActivityManager activityManager, UserDAO userDAO,
+            ChangeRequestDetailsFactory crDetailsFactory, ActivityManager activityManager,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
-        this.userDAO = userDAO;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 

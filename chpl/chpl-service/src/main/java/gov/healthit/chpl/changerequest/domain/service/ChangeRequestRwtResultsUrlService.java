@@ -39,7 +39,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlService {
+public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlService {
     private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
@@ -48,32 +48,32 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.approval.subject}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.approval.body}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.rejected.subject}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.rejected.body}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.pendingDeveloperAction.body}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.cancelled.subject}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.cancelled.subject}")
     private String cancelledEmailSubject;
 
-    @Value("${changeRequest.listingUrl.rwtPlansUrl.cancelled.body}")
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.cancelled.body}")
     private String cancelledEmailBody;
 
     @Autowired
-    public ChangeRequestRwtPlansUrlService(ChangeRequestDAO crDAO,
+    public ChangeRequestRwtResultsUrlService(ChangeRequestDAO crDAO,
             ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductManager certifiedProductManager,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
@@ -109,8 +109,8 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
         ChangeRequestListingUrl crListingUrl = (ChangeRequestListingUrl) cr.getDetails();
         try {
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(crListingUrl.getListing().getId());
-            listing.setRwtPlansUrl(crListingUrl.getUrl());
-            listing.setRwtPlansCheckDate(crListingUrl.getCheckDate());
+            listing.setRwtResultsUrl(crListingUrl.getUrl());
+            listing.setRwtResultsCheckDate(crListingUrl.getCheckDate());
 
             ListingUpdateRequest listingUpdateRequest = ListingUpdateRequest.builder()
                     .listing(listing)
@@ -138,7 +138,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createApprovalHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Approved")
+                .heading("RWT Results URL Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -162,7 +162,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Pending Developer Action")
+                .heading("RWT Results URL Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -185,7 +185,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Rejected")
+                .heading("RWT Results URL Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -208,7 +208,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createCancelledHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Cancelled")
+                .heading("RWT Results URL Change Request Cancelled")
                 .paragraph("", String.format(cancelledEmailBody,
                         cr.getDeveloper().getName(),
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
@@ -221,6 +221,6 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     @Override
     protected String getAffectedUrl(CertifiedProductSearchDetails listing) {
-        return listing.getRwtPlansUrl();
+        return listing.getRwtResultsUrl();
     }
 }
