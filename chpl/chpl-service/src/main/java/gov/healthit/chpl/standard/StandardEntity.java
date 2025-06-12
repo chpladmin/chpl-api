@@ -7,6 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,12 +23,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -75,7 +74,7 @@ public class StandardEntity extends EntityAudit implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "standardId")
     @Basic(optional = false)
     @Column(name = "standard_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction(value = "deleted <> 'true'")
     private Set<StandardCriteriaMapEntity> mappedCriteria = new HashSet<StandardCriteriaMapEntity>();
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)

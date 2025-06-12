@@ -11,7 +11,7 @@ import java.nio.file.StandardCopyOption;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public abstract class CriteriaUpdateSpreadsheetBase {
+public abstract class UpdatedCriteriaSpreadsheetBase {
     protected File copyTemplateFileToTemporaryFile(String template, String destinationBaseFileName) throws IOException {
         try (InputStream srcInputStream = getTemplateAsStream(template)) {
             File tempFile = File.createTempFile(destinationBaseFileName + "_", ".xlsx");
