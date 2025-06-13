@@ -15,16 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
-import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -77,9 +72,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
             activeAcbs = certificationBodyDAO.findAllActive();
 
-            SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            StatisticsSnapshot stats = getStatistics(summaryStatistics);
-            String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
+            StatisticsSnapshot stats = summaryStatisticsDAO.getCurrentSummaryStatistics();
+            String message = createHtmlMessage(stats, stats.getSnapshotDate());
             LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
         } catch (Exception e) {
@@ -107,12 +101,6 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         List<File> files = new ArrayList<File>();
         files.add(summaryStatisticsPdf.generate());
         return files;
-    }
-
-    private StatisticsSnapshot getStatistics(SummaryStatisticsEntity summaryStatistics)
-            throws JsonParseException, JsonMappingException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(summaryStatistics.getSummaryStatistics(), StatisticsSnapshot.class);
     }
 
     private String createHtmlMessage(StatisticsSnapshot stats, Date endDate) throws EntityRetrievalException {
