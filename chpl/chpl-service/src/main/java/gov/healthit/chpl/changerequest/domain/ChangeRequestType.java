@@ -28,4 +28,8 @@ public class ChangeRequestType implements Serializable {
     public Boolean isAttestation() {
         return this.name.equalsIgnoreCase(ATTESTATION_TYPE);
     }
+
+    public Boolean isListingUrl() {
+        return this.name.equalsIgnoreCase(LISTING_URL_TYPE);
+    }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -16,7 +17,7 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
         try {
             List<ChangeRequest> crs = context.getValidationDAOs().getChangeRequestDAO()
                         .getByDeveloper(context.getNewChangeRequest().getDeveloper().getId(), false).stream()
-                    .filter(cr -> cr.getChangeRequestType().getId().equals(context.getNewChangeRequest().getChangeRequestType().getId()))
+                    .filter(cr -> isChangeRequestOfSameType(cr, context.getNewChangeRequest()))
                     .filter(cr -> getInProcessStatuses(context).stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()
                                     .equals(status)))
@@ -31,6 +32,17 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
             return true;
         }
         return true;
+    }
+
+    private boolean isChangeRequestOfSameType(ChangeRequest origCr, ChangeRequest newCr) {
+        if (newCr.getChangeRequestType().isListingUrl()
+                && origCr.getChangeRequestType().isListingUrl()) {
+            ChangeRequestListingUrl origCrDetails = (ChangeRequestListingUrl) origCr.getDetails();
+            ChangeRequestListingUrl newCrDetails = (ChangeRequestListingUrl) newCr.getDetails();
+            return newCrDetails.getChangeRequestListingUrlType().getId().equals(origCrDetails.getChangeRequestListingUrlType().getId());
+        }
+        return origCr.getChangeRequestType().getId().equals(newCr.getChangeRequestType().getId());
+
     }
 
     private List<Long> getInProcessStatuses(ChangeRequestValidationContext context) {

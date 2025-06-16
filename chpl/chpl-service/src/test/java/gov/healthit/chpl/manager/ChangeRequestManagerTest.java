@@ -29,6 +29,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -101,7 +102,7 @@ public class ChangeRequestManagerTest {
     @Test
     public void updateChangeRequest_ValidCr_ReturnsUpdatedCr()
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -118,7 +119,6 @@ public class ChangeRequestManagerTest {
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
@@ -160,7 +160,7 @@ public class ChangeRequestManagerTest {
 
     @Test(expected = ValidationException.class)
     public void updateChangeRequest_ValidationErrors_ThrowsException()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -205,7 +205,7 @@ public class ChangeRequestManagerTest {
 
     @Test
     public void updateChangeRequest_UserIsNotDeveloper_CrDetailsAreNotUpdate()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -223,7 +223,6 @@ public class ChangeRequestManagerTest {
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
@@ -265,7 +264,7 @@ public class ChangeRequestManagerTest {
 
     @Test(expected = InvalidArgumentsException.class)
     public void updateChangeRequest_CrCurrentStatusIsNull_InvalidArgumentsException()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -283,7 +282,6 @@ public class ChangeRequestManagerTest {
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);

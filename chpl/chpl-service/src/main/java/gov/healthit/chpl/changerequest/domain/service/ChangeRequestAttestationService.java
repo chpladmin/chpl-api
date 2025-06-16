@@ -91,33 +91,38 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     @Transactional
-    public ChangeRequest create(ChangeRequest cr) {
+    public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
-            ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-            attestation.setSignatureEmail(AuthUtil.getCurrentUser().getEmail());
-            attestation.setAttestationPeriod(getAttestationPeriod(cr));
-            ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
+            //details (submission form) not present yet so get the CR without that
+            ChangeRequest baseChangeRequest = crDAO.getWithoutDetails(changeRequestId);
 
+            //save the attestation submissiom
+            ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) changeRequestDetails;
+            attestation.setSignatureEmail(AuthUtil.getCurrentUser().getEmail());
+            attestation.setAttestationPeriod(getAttestationPeriod(baseChangeRequest.getDeveloper().getId()));
+            Long createdAttestationSubmissionId = crAttestationDAO.create(changeRequestId, attestation);
+
+            //save the actual responses and form data
             attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
             List<FormItem> rolledUpFormItems = attestation.getForm().extractFlatFormItems();
-            crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestation, rolledUpFormItems);
+            crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestationSubmissionId, rolledUpFormItems);
 
-            ChangeRequest newCr = crDAO.get(cr.getId());
-
+            //now get with details to send an appropriate email
+            ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
             try {
-                attestationEmails.getSubmittedEmail().send(newCr);
+                attestationEmails.getSubmittedEmail().send(changeRequestWithDetails);
             } catch (EmailNotSentException e) {
                 LOGGER.error(e);
             }
 
-            return newCr;
+            return createdAttestationSubmissionId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
+    public void update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
@@ -137,17 +142,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
                 cr.setDetails(getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
-
-                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
-                        "Change request details updated",
-                        crFromDb, cr);
-
                 sendUpdatedDetailsEmail(cr);
-            } else {
-                return null;
             }
-            return cr;
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -210,8 +206,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         attestationEmails.getRejectedEmail().send(cr);
     }
 
-    private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId());
+    private AttestationPeriod getAttestationPeriod(Long developerId) {
+        return attestationPeriodService.getSubmittableAttestationPeriod(developerId);
     }
 
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {

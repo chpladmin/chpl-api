@@ -22,7 +22,9 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("changeRequestDAO")
 public class ChangeRequestDAO extends BaseDAOImpl {
 
@@ -45,11 +47,11 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         this.changeRequestConverter = changeRequestConverter;
     }
 
-    public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
+    public Long create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
         addCertificationBodies(entity.getId(), cr.getCertificationBodies());
-        return changeRequestConverter.convert(getEntityById(entity.getId()));
+        return entity.getId();
     }
 
     private void addCertificationBodies(Long changeRequestId, List<CertificationBody> certificationBodies) {
@@ -66,6 +68,10 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {
         ChangeRequest cr = changeRequestConverter.convert(getEntityById(changeRequestId));
         return populateDependentObjects(cr);
+    }
+
+    public ChangeRequest getWithoutDetails(Long changeRequestId) throws EntityRetrievalException {
+        return changeRequestConverter.convert(getEntityById(changeRequestId));
     }
 
     public List<ChangeRequestSearchResult> getAll() {
@@ -272,12 +278,14 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     }
 
     private ChangeRequest populateDependentObjects(ChangeRequest cr) {
+        System.out.println("Populating dependent objects for change request " + cr.getId());
         try {
             cr.setDetails(
                     changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())
                             .getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
             return cr;
         } catch (Exception e) {
+            LOGGER.error("Could not get dependent objects for change request.", e);
             throw new RuntimeException(e);
         }
     }

@@ -55,7 +55,7 @@ public class ChangeRequestStatusService {
         this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
-    public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
+    public Long saveInitialStatus(Long changeRequestId) throws EntityRetrievalException {
         ChangeRequestStatusType crStatusType = new ChangeRequestStatusType();
         crStatusType.setId(this.pendingAcbActionStatus);
 
@@ -67,7 +67,7 @@ public class ChangeRequestStatusService {
                 .orElseThrow(() -> new RuntimeException("Could not determine the current user's authority name."))
                 .toString());
 
-        return crStatusDAO.create(cr, crStatus);
+        return crStatusDAO.create(changeRequestId, crStatus);
     }
 
     public ChangeRequest updateChangeRequestStatus(ChangeRequest crFromCaller)
@@ -91,7 +91,7 @@ public class ChangeRequestStatusService {
                 && isStatusChangeValid(statusTypeIdFromDB, statusTypeIdFromCaller)) {
 
             createNewStatusForChangeRequest(
-                    crFromDb,
+                    crFromDb.getId(),
                     statusTypeIdFromCaller,
                     crFromCaller.getCurrentStatus().getComment());
 
@@ -139,8 +139,8 @@ public class ChangeRequestStatusService {
         return true;
     }
 
-    private ChangeRequest createNewStatusForChangeRequest(final ChangeRequest cr, final Long crStatusTypeId,
-            final String comment) throws EntityRetrievalException {
+    private Long createNewStatusForChangeRequest(Long changeRequestId, Long crStatusTypeId, String comment)
+            throws EntityRetrievalException {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         ChangeRequestStatusType crStatusType = new ChangeRequestStatusType();
         crStatusType.setId(crStatusTypeId);
@@ -156,11 +156,7 @@ public class ChangeRequestStatusService {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }
 
-        crStatus = crStatusDAO.create(cr, crStatus);
-        cr.setCurrentStatus(crStatus);
-        cr.getStatuses().add(crStatus);
-
-        return cr;
+        return crStatusDAO.create(changeRequestId, crStatus);
     }
 
     private CertificationBody getCertificationBodyForCurrentUser() {

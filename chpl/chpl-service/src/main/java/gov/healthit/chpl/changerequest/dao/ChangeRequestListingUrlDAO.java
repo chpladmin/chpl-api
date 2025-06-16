@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
@@ -28,29 +27,28 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
         return getChangeRequestListingUrlTypeEntity(name).toDomain();
     }
 
-    public ChangeRequestListingUrl create(ChangeRequest cr, ChangeRequestListingUrl crListingUrl)
-            throws EntityRetrievalException {
-        ChangeRequestListingUrlEntity entity = getNewEntity(cr, crListingUrl);
+    public Long create(Long changeRequestId, ChangeRequestListingUrl crListingUrl) throws EntityRetrievalException {
+        System.out.println("Creating new change request listing url entity");
+        ChangeRequestListingUrlEntity entity = getNewEntity(changeRequestId, crListingUrl);
         create(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
+        System.out.println("Created change request listing url entity with ID " + entity.getId());
+        return entity.getId();
     }
 
     public ChangeRequestListingUrl getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
-
-    public ChangeRequestListingUrl update(ChangeRequestListingUrl crListingUpdate) throws EntityRetrievalException {
+    public void update(ChangeRequestListingUrl crListingUpdate) throws EntityRetrievalException {
         ChangeRequestListingUrlEntity entity = getEntity(crListingUpdate.getId());
         entity.setUrl(crListingUpdate.getUrl());
         entity.setListingId(crListingUpdate.getListing().getId());
         update(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-    private ChangeRequestListingUrlEntity getNewEntity(ChangeRequest cr, ChangeRequestListingUrl crListingUpdate) {
+    private ChangeRequestListingUrlEntity getNewEntity(Long changeRequestId, ChangeRequestListingUrl crListingUpdate) {
         ChangeRequestListingUrlEntity entity = new ChangeRequestListingUrlEntity();
-        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, cr.getId()));
+        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, changeRequestId));
         entity.setChangeRequestListingUrlType(getSession().get(ChangeRequestListingUrlTypeEntity.class, crListingUpdate.getChangeRequestListingUrlType().getId()));
         entity.setUrl(crListingUpdate.getUrl());
         entity.setListingId(crListingUpdate.getListing().getId());
@@ -85,6 +83,8 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
 
     private ChangeRequestListingUrlEntity getEntityByChangeRequestId(Long changeRequestId)
             throws EntityRetrievalException {
+        System.out.println("Getting Change Request Listing URL Entity with change request ID " + changeRequestId);
+
         String hql = "FROM ChangeRequestListingUrlEntity crListingUrl "
                 + "JOIN FETCH crListingUrl.changeRequest "
                 + "JOIN FETCH crListingUrl.changeRequestListingUrlType "
@@ -95,14 +95,6 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
                 .createQuery(hql, ChangeRequestListingUrlEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Change request listing url not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate change request listing url in database.");
-        }
 
         if (result.size() == 0) {
             return null;

@@ -13,10 +13,8 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.ActivityManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -25,20 +23,17 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
     private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private ActivityManager activityManager;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     @Autowired
     public ChangeRequestListingUrlService(ChangeRequestDAO crDAO,
             ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            ActivityManager activityManager,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         super();
         this.crDAO = crDAO;
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
-        this.activityManager = activityManager;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
     }
 
@@ -48,23 +43,25 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
     }
 
     @Override
-    public ChangeRequest create(ChangeRequest cr) {
+    public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
-            ChangeRequestListingUrl details = (ChangeRequestListingUrl) cr.getDetails();
+            ChangeRequestListingUrl details = (ChangeRequestListingUrl) changeRequestDetails;
             // If CR details match the values from the existing listing, just return
             if (getAffectedUrl(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
                 return null;
             }
 
-            crListingUrlDAO.create(cr, (ChangeRequestListingUrl) cr.getDetails());
-            return crDAO.get(cr.getId());
+            System.out.println("Creating new listing url change request");
+            Long newCrId = crListingUrlDAO.create(changeRequestId, details);
+            System.out.println("Created listing url change request with id " + newCrId);
+            return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
+    public void update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the request details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -75,15 +72,8 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
             cr.setDetails(crListingUrl);
 
             if (!((ChangeRequestListingUrl) cr.getDetails()).equals((crFromDb.getDetails()))) {
-                cr.setDetails(crListingUrlDAO.update((ChangeRequestListingUrl) cr.getDetails()));
-
-                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
-                        "Change request details updated",
-                        crFromDb, cr);
-            } else {
-                return null;
+                crListingUrlDAO.update((ChangeRequestListingUrl) cr.getDetails());
             }
-            return cr;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

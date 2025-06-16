@@ -37,6 +37,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
@@ -210,11 +211,15 @@ public class ChangeRequestManager {
                 && isRwtChangeRequestType(((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType())) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtPlansUrl.featureDisabled"));
         }
-        ChangeRequest cr = saveChangeRequest(changeRequest);
-        if (cr == null) {
+        Long newCrId = saveChangeRequest(changeRequest);
+        ChangeRequest newCr = null;
+        if (newCrId == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+        } else {
+            newCr = getChangeRequest(newCrId);
+            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
         }
-        return cr;
+        return newCr;
     }
 
     private boolean isRwtChangeRequestType(ChangeRequestListingUrlType changeRequestListingUrlType) {
@@ -235,7 +240,7 @@ public class ChangeRequestManager {
     @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
     public ChangeRequest updateChangeRequest(ChangeRequestUpdateRequest crUpdateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
 
         ChangeRequest cr = updateChangeRequestWithCastedDetails(crUpdateRequest.getChangeRequest());
 
@@ -253,26 +258,24 @@ public class ChangeRequestManager {
             throw validationException;
         }
 
-        ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
         if (resourcePermissionsFactory.get().isUserRoleDeveloperAdmin()
                 && cr.getDetails() != null
                 && ChangeRequestStatusService.doesCurrentStatusExist(cr)
                 && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
-            updatedDetails = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 
         // Update the status
         if (ChangeRequestStatusService.doesCurrentStatusExist(cr)) {
-            updatedStatus = crStatusService.updateChangeRequestStatus(cr);
+            crStatusService.updateChangeRequestStatus(cr);
         }
 
-        if (updatedDetails == null && updatedStatus == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
-        }
-
-        ChangeRequest newCr = getChangeRequest(cr.getId());
-        return newCr;
+        ChangeRequest updatedCr = getChangeRequest(cr.getId());
+        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
+                "Change request details updated",
+                crFromDb, updatedCr);
+        return updatedCr;
     }
 
     @Transactional(readOnly = true)
@@ -361,7 +364,7 @@ public class ChangeRequestManager {
         }
     }
 
-    private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
+    private Long saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException(
                 crValidationService.getErrorMessages(crValidationContext).stream()
@@ -371,25 +374,24 @@ public class ChangeRequestManager {
             throw validationException;
         }
 
-        ChangeRequest newCr = createBaseChangeRequest(cr);
-        newCr.setDetails(cr.getDetails());
-        newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
-        if (newCr != null) {
-            newCr = getChangeRequest(newCr.getId());
-
-            activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
-            return newCr;
-        }
-        return null;
+        Long newCrId = createBaseChangeRequest(cr);
+        System.out.println("Created base change request with id " + newCrId);
+        System.out.println("Creating change request details for change request type " + cr.getChangeRequestType().getId());
+        Long crDetailsId = createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
+        System.out.println("Created change request details with id " + crDetailsId + " for base change request " + newCrId);
+        return newCrId;
     }
 
-    private ChangeRequest createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {
+    private Long createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {
         cr.setCertificationBodies(crDetailsFactory.get(cr.getChangeRequestType().getId()).getAssociatedCertificationBodies(cr));
+        Long newCrId = changeRequestDAO.create(cr);
+        crStatusService.saveInitialStatus(newCrId);
+        return newCrId;
+    }
 
-        ChangeRequest newCr = changeRequestDAO.create(cr);
-        newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
-
-        return newCr;
+    private Long createChangeRequestDetails(Long changeRequestId, Long changeRequestTypeId, Object changeRequestDetails) {
+        ChangeRequestDetailsService<?> crDetailsService = crDetailsFactory.get(changeRequestTypeId);
+        return crDetailsService.create(changeRequestId, changeRequestDetails);
     }
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {

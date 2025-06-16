@@ -48,9 +48,9 @@ public abstract class ChangeRequestDetailsService<T> {
 
     public abstract T getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException;
 
-    public abstract ChangeRequest create(ChangeRequest cr);
+    public abstract Long create(Long changeRequestId, Object changeRequestDetails);
 
-    public abstract ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException;
+    public abstract void update(ChangeRequest cr) throws InvalidArgumentsException;
 
     public abstract List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr);
 

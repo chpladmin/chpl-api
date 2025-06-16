@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
@@ -23,19 +22,18 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
         this.changeRequestConverter = changeRequestConverter;
     }
 
-    public ChangeRequestDeveloperDemographics create(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev)
+    public Long create(Long changeRequestId, ChangeRequestDeveloperDemographics crDevDetails)
             throws EntityRetrievalException {
-        ChangeRequestDeveloperDemographicsEntity entity = getNewEntity(cr, crDev);
+        ChangeRequestDeveloperDemographicsEntity entity = getNewEntity(changeRequestId, crDevDetails);
         create(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
+        return entity.getId();
     }
 
     public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
-
-    public ChangeRequestDeveloperDemographics update(ChangeRequestDeveloperDemographics crDev) throws EntityRetrievalException {
+    public void update(ChangeRequestDeveloperDemographics crDev) throws EntityRetrievalException {
         ChangeRequestDeveloperDemographicsEntity entity = getEntity(crDev.getId());
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
@@ -55,12 +53,11 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactPhoneNumber(crDev.getContact().getPhoneNumber());
         }
         update(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-    private ChangeRequestDeveloperDemographicsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev) {
+    private ChangeRequestDeveloperDemographicsEntity getNewEntity(Long changeRequestId, ChangeRequestDeveloperDemographics crDev) {
         ChangeRequestDeveloperDemographicsEntity entity = new ChangeRequestDeveloperDemographicsEntity();
-        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, cr.getId()));
+        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, changeRequestId));
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }
@@ -119,14 +116,6 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
                 .createQuery(hql, ChangeRequestDeveloperDemographicsEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Change request developer demographics not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate change request developer demographics in database.");
-        }
 
         if (result.size() == 0) {
             return null;

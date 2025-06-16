@@ -28,7 +28,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -40,7 +39,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlService {
-    private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -78,13 +76,11 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
             CertifiedProductManager certifiedProductManager,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             CertificationCriterionService certificationCriterionService,
-            ActivityManager activityManager,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
             ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
-        super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, activityManager, developerCertificationBodyMapDAO);
-        this.crDAO = crDAO;
+        super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, developerCertificationBodyMapDAO);
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
@@ -94,10 +90,10 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
     }
 
     @Override
-    public ChangeRequest create(ChangeRequest cr) {
+    public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
-            crListingUrlDAO.create(cr, (ChangeRequestListingUrl) cr.getDetails());
-            return crDAO.get(cr.getId());
+            Long newCrId = crListingUrlDAO.create(changeRequestId, (ChangeRequestListingUrl) changeRequestDetails);
+            return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
