@@ -65,6 +65,7 @@ public class DimensionalDataController {
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
+        this.tpManager = tpManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
