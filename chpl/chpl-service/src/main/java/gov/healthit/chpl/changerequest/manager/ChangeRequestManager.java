@@ -23,7 +23,6 @@ import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestListingUrlDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -100,7 +99,6 @@ public class ChangeRequestManager {
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FormValidator formValidator;
-    private ChangeRequestListingUrlDAO changeRequestListingUrlDAO;
 
     private FF4j ff4j;
 
@@ -127,8 +125,7 @@ public class ChangeRequestManager {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
             FormValidator formValidator,
-            FF4j ff4j,
-            ChangeRequestListingUrlDAO changeRequestListingUrlDAO) {
+            FF4j ff4j) {
         this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
@@ -148,7 +145,6 @@ public class ChangeRequestManager {
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;
         this.ff4j = ff4j;
-        this.changeRequestListingUrlDAO = changeRequestListingUrlDAO;
     }
 
     @Transactional(readOnly = true)
