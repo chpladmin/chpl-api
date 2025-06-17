@@ -278,7 +278,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     }
 
     private ChangeRequest populateDependentObjects(ChangeRequest cr) {
-        System.out.println("Populating dependent objects for change request " + cr.getId());
         try {
             cr.setDetails(
                     changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())

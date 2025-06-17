@@ -187,10 +187,6 @@ public final class ChangeRequestConverter {
         try {
             ChangeRequestListingUrl crListingUrl = new ChangeRequestListingUrl();
             crListingUrl.setId(entity.getId());
-            crListingUrl.setChangeRequestListingUrlType(ChangeRequestListingUrlType.builder()
-                    .id(entity.getChangeRequestListingUrlType().getId())
-                    .name(entity.getChangeRequestListingUrlType().getName())
-                    .build());
             crListingUrl.setUrl(entity.getUrl());
             crListingUrl.setListing(certifiedProductDetailsManager.getCertifiedProductDetails(entity.getListingId()));
             return crListingUrl;

@@ -7,7 +7,7 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getDeveloperDemographicsChangeRequestTypeId())) {
+        if (context.getNewChangeRequest().getChangeRequestType().isDemographics()) {
             ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (context.getNewChangeRequest().getDetails() == null) {
                 getMessages().add(getErrorMessage("changeRequest.demographics.invalid"));

@@ -51,9 +51,7 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
                 return null;
             }
 
-            System.out.println("Creating new listing url change request");
             Long newCrId = crListingUrlDAO.create(changeRequestId, details);
-            System.out.println("Created listing url change request with id " + newCrId);
             return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);

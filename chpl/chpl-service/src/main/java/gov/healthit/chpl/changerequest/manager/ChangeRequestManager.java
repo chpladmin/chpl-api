@@ -1,11 +1,8 @@
 package gov.healthit.chpl.changerequest.manager;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -33,7 +30,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
@@ -71,10 +67,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestManager {
-    private static final String SERVICE_BASE_URL_LIST_TYPE = "Service Base URL List";
-    private static final String RWT_PLANS_URL_TYPE = "RWT Plans URL";
-    private static final String RWT_RESULTS_URL_TYPE = "RWT Results URL";
-
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
 
@@ -89,12 +81,6 @@ public class ChangeRequestManager {
 
     @Value("${changerequest.status.rejected}")
     private Long rejectedStatus;
-
-    @Value("${changerequest.developerDemographics}")
-    private Long developerDemographicsChangeRequestTypeId;
-
-    @Value("${changerequest.attestation}")
-    private Long attestationChangeRequestTypeId;
 
     private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
@@ -168,19 +154,18 @@ public class ChangeRequestManager {
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
-                .filter(entity -> entity.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
-                        || (entity.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
+                .filter(type -> type.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
+                        || (type.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
                                 && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
-                        || (entity.getName().equals(ChangeRequestType.LISTING_URL_TYPE)
-                                && isAnyListingUrlChangeRequestTypeAvailable())
+                        || (type.getName().equals(ChangeRequestType.SBUL_TYPE)
+                                && ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST))
+                        || (type.getName().equals(ChangeRequestType.RWT_PLANS_TYPE)
+                                && ff4j.check(FeatureList.RWT_CHANGE_REQUEST))
+                        || (type.getName().equals(ChangeRequestType.RWT_RESULTS_TYPE)
+                                && ff4j.check(FeatureList.RWT_CHANGE_REQUEST))
                         )
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
-    }
-
-    private boolean isAnyListingUrlChangeRequestTypeAvailable() {
-        return ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
-                || ff4j.check(FeatureList.RWT_CHANGE_REQUEST);
     }
 
     @Transactional(readOnly = true)
@@ -198,18 +183,14 @@ public class ChangeRequestManager {
             throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
 
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
-        changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
+        changeRequest.setChangeRequestType(getChangeRequestTypeFromDb(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
         if (!ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
-                && changeRequest.getDetails() != null
-                && changeRequest.getDetails() instanceof ChangeRequestListingUrl
-                && ((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType().getName().equals(SERVICE_BASE_URL_LIST_TYPE)) {
+                && changeRequest.getChangeRequestType().isSbul()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
         } else if (!ff4j.check(FeatureList.RWT_CHANGE_REQUEST)
-                && changeRequest.getDetails() != null
-                && changeRequest.getDetails() instanceof ChangeRequestListingUrl
-                && isRwtChangeRequestType(((ChangeRequestListingUrl) changeRequest.getDetails()).getChangeRequestListingUrlType())) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtPlansUrl.featureDisabled"));
+                && isRwtChangeRequestType(changeRequest.getChangeRequestType())) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtUrl.featureDisabled"));
         }
         Long newCrId = saveChangeRequest(changeRequest);
         ChangeRequest newCr = null;
@@ -222,9 +203,8 @@ public class ChangeRequestManager {
         return newCr;
     }
 
-    private boolean isRwtChangeRequestType(ChangeRequestListingUrlType changeRequestListingUrlType) {
-        return changeRequestListingUrlType.getName().equals(RWT_PLANS_URL_TYPE)
-                || changeRequestListingUrlType.getName().equals(RWT_RESULTS_URL_TYPE);
+    private boolean isRwtChangeRequestType(ChangeRequestType changeRequestType) {
+        return changeRequestType.isRwtPlans() || changeRequestType.isRwtResults();
     }
 
     @Transactional(readOnly = true)
@@ -305,63 +285,20 @@ public class ChangeRequestManager {
         return devManager.getById(changeRequest.getDeveloper().getId());
     }
 
-    private ChangeRequestType getChangeRequestType(ChangeRequest parentChangeRequest) throws EntityRetrievalException {
-        if (isDeveloperDemogrpahicChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
-        } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
-        } else if (isServiceBaseUrlListChangeRequest(parentChangeRequest)
-                || isRwtPlansUrlChangeRequest(parentChangeRequest)
-                || isRwtResultsUrlChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.LISTING_URL_TYPE);
+    private ChangeRequestType getChangeRequestTypeFromDb(ChangeRequest changeRequest) throws EntityRetrievalException {
+        if (changeRequest.getChangeRequestType().isDemographics()) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.DEMOGRAPHICS_TYPE);
+        } else if (changeRequest.getChangeRequestType().isAttestation()) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.ATTESTATION_TYPE);
+        } else if (changeRequest.getChangeRequestType().isSbul()) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.SBUL_TYPE);
+        } else if (changeRequest.getChangeRequestType().isRwtPlans()) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.RWT_PLANS_TYPE);
+        } else if (changeRequest.getChangeRequestType().isRwtResults()) {
+            return changeRequestTypeDAO.getChangeRequestTypeByName(ChangeRequestType.RWT_RESULTS_TYPE);
         }
 
         return null;
-    }
-
-    private boolean isDeveloperDemogrpahicChangeRequest(ChangeRequest cr) {
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("developerId")
-                || (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
-                && cr.getChangeRequestType().isDemographics());
-    }
-
-    private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("form");
-    }
-
-    private boolean isServiceBaseUrlListChangeRequest(ChangeRequest cr) {
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        try {
-            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(SERVICE_BASE_URL_LIST_TYPE).getId().intValue();
-            return crMap.containsKey("changeRequestListingUrlType")
-                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean isRwtPlansUrlChangeRequest(ChangeRequest cr) {
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        try {
-            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(RWT_PLANS_URL_TYPE).getId().intValue();
-            return crMap.containsKey("changeRequestListingUrlType")
-                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean isRwtResultsUrlChangeRequest(ChangeRequest cr) {
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        try {
-            Integer listingUrlTypeId = changeRequestListingUrlDAO.getChangeRequestListingUrlType(RWT_RESULTS_URL_TYPE).getId().intValue();
-            return crMap.containsKey("changeRequestListingUrlType")
-                    &&  ((Map) crMap.get("changeRequestListingUrlType")).get("id").equals(listingUrlTypeId);
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private Long saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
@@ -375,10 +312,7 @@ public class ChangeRequestManager {
         }
 
         Long newCrId = createBaseChangeRequest(cr);
-        System.out.println("Created base change request with id " + newCrId);
-        System.out.println("Creating change request details for change request type " + cr.getChangeRequestType().getId());
         Long crDetailsId = createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
-        System.out.println("Created change request details with id " + crDetailsId + " for base change request " + newCrId);
         return newCrId;
     }
 
@@ -395,13 +329,11 @@ public class ChangeRequestManager {
     }
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {
-        if (isDeveloperDemogrpahicChangeRequest(cr)) {
+        if (cr.getChangeRequestType().isDemographics()) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
-        } else if (isDeveloperAttestationChangeRequest(cr)) {
+        } else if (cr.getChangeRequestType().isAttestation()) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
-        } else if (isServiceBaseUrlListChangeRequest(cr)
-                || isRwtPlansUrlChangeRequest(cr)
-                || isRwtResultsUrlChangeRequest(cr)) {
+        } else if (cr.getChangeRequestType().isListingUrl()) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
             ((ChangeRequestListingUrl) cr.getDetails()).setUrl(((ChangeRequestListingUrl) cr.getDetails()).getUrl().trim());
         }
@@ -424,8 +356,6 @@ public class ChangeRequestManager {
                 changeRequestStatusTypeDAO,
                 changeRequestTypeDAO,
                 attestationManager,
-                developerDemographicsChangeRequestTypeId,
-                attestationChangeRequestTypeId,
                 cancelledStatus,
                 acceptedStatus,
                 rejectedStatus,

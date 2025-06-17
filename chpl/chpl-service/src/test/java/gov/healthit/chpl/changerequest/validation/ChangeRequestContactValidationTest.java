@@ -266,8 +266,6 @@ public class ChangeRequestContactValidationTest {
                         null,
                         null,
                         null,
-                        null,
-                        null,
                         null);
     }
 }

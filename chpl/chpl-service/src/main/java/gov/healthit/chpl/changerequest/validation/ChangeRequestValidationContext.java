@@ -34,7 +34,6 @@ public class ChangeRequestValidationContext {
     private ListingSearchService listingSearchService;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ValidationUtils validationUtils;
-    private ChangeRequestTypeIds changeRequestTypeIds;
     private ChangeRequestStatusIds changeRequestStatusIds;
 
     public ChangeRequestValidationContext(JWTAuthenticatedUser user,
@@ -51,8 +50,6 @@ public class ChangeRequestValidationContext {
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             AttestationManager attestationManager,
-            Long developerDemographicsChangeRequestTypeId,
-            Long attestationChangeRequestTypeId,
             Long cancelledStatus,
             Long acceptedStatus,
             Long rejectedStatus,
@@ -71,7 +68,6 @@ public class ChangeRequestValidationContext {
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);
         this.domainManagers = new DomainManagers(attestationManager);
         this.changeRequestStatusIds = new ChangeRequestStatusIds(cancelledStatus, acceptedStatus, rejectedStatus, pendingAcbActionStatus, pendingDeveloperActionStatus);
-        this.changeRequestTypeIds = new ChangeRequestTypeIds(developerDemographicsChangeRequestTypeId, attestationChangeRequestTypeId);
     }
 
     @Data
@@ -99,17 +95,6 @@ public class ChangeRequestValidationContext {
 
         public DomainManagers(AttestationManager attestationManager) {
             this.attestationManager = attestationManager;
-        }
-    }
-
-    @Data
-    public static class ChangeRequestTypeIds {
-        private Long developerDemographicsChangeRequestTypeId;
-        private Long attestationChangeRequestTypeId;
-
-        public ChangeRequestTypeIds(Long developerDemographicsChangeRequestTypeId, Long attestationChangeRequestTypeId) {
-            this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
-            this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
         }
     }
 

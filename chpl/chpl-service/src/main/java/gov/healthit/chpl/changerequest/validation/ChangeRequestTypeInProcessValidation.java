@@ -35,11 +35,12 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
     }
 
     private boolean isChangeRequestOfSameType(ChangeRequest origCr, ChangeRequest newCr) {
-        if (newCr.getChangeRequestType().isListingUrl()
-                && origCr.getChangeRequestType().isListingUrl()) {
+        if (origCr.getChangeRequestType().isListingUrl()
+                && newCr.getChangeRequestType().isListingUrl()
+                && origCr.getChangeRequestType().getId().equals(newCr.getChangeRequestType().getId())) {
             ChangeRequestListingUrl origCrDetails = (ChangeRequestListingUrl) origCr.getDetails();
             ChangeRequestListingUrl newCrDetails = (ChangeRequestListingUrl) newCr.getDetails();
-            return newCrDetails.getChangeRequestListingUrlType().getId().equals(origCrDetails.getChangeRequestListingUrlType().getId());
+            return origCrDetails.getListing().getId().equals(newCrDetails.getListing().getId());
         }
         return origCr.getChangeRequestType().getId().equals(newCr.getChangeRequestType().getId());
 

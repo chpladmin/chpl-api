@@ -39,10 +39,6 @@ public class ChangeRequestListingUrlEntity extends EntityAudit {
     @JoinColumn(name = "change_request_id", nullable = false, insertable = true, updatable = false)
     private ChangeRequestEntity changeRequest;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "change_request_listing_url_type_id", nullable = false, insertable = true, updatable = false)
-    private ChangeRequestListingUrlTypeEntity changeRequestListingUrlType;
-
     @Column(name = "url", nullable = false)
     private String url;
 

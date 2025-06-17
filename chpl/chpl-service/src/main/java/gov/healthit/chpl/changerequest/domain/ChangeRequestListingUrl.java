@@ -28,7 +28,6 @@ public class ChangeRequestListingUrl implements Serializable, ChangeRequestDetai
     @EqualsAndHashCode.Exclude
     private Long id;
 
-    private ChangeRequestListingUrlType changeRequestListingUrlType;
     private String url;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
