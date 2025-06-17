@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.Measure;
-import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.listing.measure.MeasureManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,15 +35,5 @@ public class MeasureController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Measure> getAllTargetedUsers() {
         return measureManager.getAll().stream().collect(Collectors.toList());
-    }
-
-    @Operation(summary = "Retrieve all current Measure Types. ",
-            description = "Returns all of the Measures Types that are currently in the CHPL.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/measure-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<MeasureType> getAllMeasureTypes() {
-        return measureManager.getMeasureTypes().stream().collect(Collectors.toList());
     }
 }

@@ -248,7 +248,7 @@ public class DimensionalDataController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/education_types",
-        message = "This is deprecated and will be removed. Please GET from /sed/education-types.",
+        message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
     @Operation(summary = "Get all possible education types in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
@@ -268,7 +268,7 @@ public class DimensionalDataController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/age_ranges",
-        message = "This is deprecated and will be removed. Please GET from /sed/age-ranges.",
+        message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test participant age ranges in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
@@ -288,7 +288,7 @@ public class DimensionalDataController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/test_procedures",
-        message = "This is deprecated and will be removed. Please GET from /test-procedures.",
+        message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
@@ -335,7 +335,7 @@ public class DimensionalDataController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/test_standards",
-        message = "This is deprecated and will be removed. Please GET from /test-standards.",
+        message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
     @Operation(summary = "Get all possible test standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
@@ -415,7 +415,7 @@ public class DimensionalDataController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/developer_statuses",
-        message = "This is deprecated and will be removed. Please GET from /developers/statuses.",
+        message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
     @Operation(summary = "Get all possible developer status options in the CHPL",
             security = {
