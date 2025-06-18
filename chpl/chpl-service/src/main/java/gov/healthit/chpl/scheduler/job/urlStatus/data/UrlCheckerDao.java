@@ -3,8 +3,7 @@ package gov.healthit.chpl.scheduler.job.urlStatus.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.Query;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +14,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.CertificationStatusUtil;
+import jakarta.persistence.Query;
 
 @Repository("urlCheckerDao")
 public class UrlCheckerDao extends BaseDAOImpl {
@@ -63,110 +63,11 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * Also gets the last time each of those URLs was checked.
      */
     @Transactional
-    public List<UrlResult> getAllSystemUrls(Logger logger) {
+    public List<UrlResult> getAllSystemUrls(List<UrlType> excludeUrlTypes, Logger logger) {
         List<UrlResult> results = new ArrayList<UrlResult>();
-        for (UrlType urlType : UrlType.values()) {
-            switch (urlType) {
-                case CERTIFICATION_CRITERION:
-                    logger.info("Getting all Certification Criteria URLs in the system...");
-                    List<UrlResult> criteriaUrls = getCriteriaUrls();
-                    results.addAll(criteriaUrls);
-                    logger.info("Got " + criteriaUrls.size() + " Certification Criteria URLs in the system.");
-                    break;
-                case ACB:
-                    logger.info("Getting all ACB URLs in the system...");
-                    List<UrlResult> acbUrls = getAcbUrls();
-                    results.addAll(acbUrls);
-                    logger.info("Got " + acbUrls.size() + " ACB URLs in the system.");
-                    break;
-                case ATL:
-                    logger.info("Getting all ATL URLs in the system...");
-                    List<UrlResult> atlUrls = getAtlUrls();
-                    results.addAll(atlUrls);
-                    logger.info("Got " + atlUrls.size() + " ATL URLs in the system.");
-                    break;
-                case DEVELOPER:
-                    logger.info("Getting all Developer URLs in the system...");
-                    List<UrlResult> developerUrls = getDeveloperUrls();
-                    results.addAll(developerUrls);
-                    logger.info("Got " + developerUrls.size() + " Developer URLs in the system.");
-                    break;
-                case MANDATORY_DISCLOSURE:
-                    logger.info("Getting all Mandatory Disclosure URLs in the system...");
-                    List<UrlResult> mandatoryDisclosureUrls = getMandatoryDisclosureUrls();
-                    results.addAll(mandatoryDisclosureUrls);
-                    logger.info("Got " + mandatoryDisclosureUrls.size() + " Mandatory Disclosure URLs in the system.");
-                    break;
-                case TEST_RESULTS_SUMMARY:
-                    logger.info("Getting all Test Results Summary URLs in the system...");
-                    List<UrlResult> testResultsSummaryUrls = getTestResultsSummaryUrls();
-                    results.addAll(testResultsSummaryUrls);
-                    logger.info("Got " + testResultsSummaryUrls.size() + " Test Results Summary URLs in the system.");
-                    break;
-                case FULL_USABILITY_REPORT:
-                    logger.info("Getting all Full Usability Report URLs in the system...");
-                    List<UrlResult> fullUsabilityReportUrls = getFullUsabilityReportUrls();
-                    results.addAll(fullUsabilityReportUrls);
-                    logger.info("Got " + fullUsabilityReportUrls.size() + " Full Usability Report URLs in the system.");
-                    break;
-                case API_DOCUMENTATION:
-                    logger.info("Getting all API Documentation URLs in the system...");
-                    List<UrlResult> apiDocumentationUrls = getApiDocumentationUrls();
-                    results.addAll(apiDocumentationUrls);
-                    logger.info("Got " + apiDocumentationUrls.size() + " API Documentation URLs in the system.");
-                    break;
-                case EXPORT_DOCUMENTATION:
-                    logger.info("Getting all Export Documentation URLs in the system...");
-                    List<UrlResult> exportDocumentationUrls = getExportDocumentationUrls();
-                    results.addAll(exportDocumentationUrls);
-                    logger.info("Got " + exportDocumentationUrls.size() + " Export Documentation URLs in the system.");
-                    break;
-                case DOCUMENTATION:
-                    logger.info("Getting all Documentation URLs in the system...");
-                    List<UrlResult> documentationUrls = getDocumentationUrls();
-                    results.addAll(documentationUrls);
-                    logger.info("Got " + documentationUrls.size() + " Documentation URLs in the system.");
-                    break;
-                case USE_CASES:
-                    logger.info("Getting all Use Cases URLs in the system...");
-                    List<UrlResult> useCaseUrls = getUseCaseUrls();
-                    results.addAll(useCaseUrls);
-                    logger.info("Got " + useCaseUrls.size() + " Use Cases URLs in the system.");
-                    break;
-                case SERVICE_BASE_URL_LIST:
-                    logger.info("Getting all Service Base URLs in the system...");
-                    List<UrlResult> serviceBaseUrls = getServiceBaseUrlLists();
-                    results.addAll(serviceBaseUrls);
-                    logger.info("Got " + serviceBaseUrls.size() + " Service Base URLs in the system.");
-                    break;
-                case RISK_MANAGEMENT_SUMMARY_INFORMATION:
-                    logger.info("Getting all Risk Management Summary Info URLs in the system...");
-                    List<UrlResult> riskManagementSummaryInfoUrls = getRiskManagementSummaryInformationUrls();
-                    results.addAll(riskManagementSummaryInfoUrls);
-                    logger.info("Got " + riskManagementSummaryInfoUrls.size() + " Risk Management Summary Info URLs in the system.");
-                    break;
-                case REAL_WORLD_TESTING_PLANS:
-                    logger.info("Getting all RWT Plan URLs in the system...");
-                    List<UrlResult> rwtPlanUrls = getRealWorldTestingPlanUrls();
-                    results.addAll(rwtPlanUrls);
-                    logger.info("Got " + rwtPlanUrls.size() + " RWT Plan URLs in the system.");
-                    break;
-                case REAL_WORLD_TESTING_RESULTS:
-                    logger.info("Getting all RWT Result URLs in the system...");
-                    List<UrlResult> rwtResultUrls = getRealWorldTestingResultUrls();
-                    results.addAll(rwtResultUrls);
-                    logger.info("Got " + rwtResultUrls.size() + " RWT Result URLs in the system.");
-                    break;
-                case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
-                    logger.info("Getting all SVAP URLs in the system...");
-                    List<UrlResult> svapUrls = getSvapUrls();
-                    results.addAll(svapUrls);
-                    logger.info("Got " + svapUrls.size() + " SVAP URLs in the system.");
-                    break;
-                default:
-                    break;
-            }
-        }
+        Stream.of(UrlType.values())
+            .filter(urlType -> !excludeUrlTypes.contains(urlType))
+            .forEach(urlType -> results.addAll(getAllUrlsOfType(urlType, logger)));
 
         //get all the existing URL check results to set the last checked time on the returned objects
         List<UrlResult> existingUrlResults = getAllUrlResults();
@@ -181,6 +82,95 @@ public class UrlCheckerDao extends BaseDAOImpl {
             }
         }
         return results;
+    }
+
+    private List<UrlResult> getAllUrlsOfType(UrlType urlType, Logger logger) {
+        List<UrlResult> urlsOfType = new ArrayList<UrlResult>();
+        switch (urlType) {
+        case CERTIFICATION_CRITERION:
+            logger.info("Getting all Certification Criteria URLs in the system...");
+            urlsOfType = getCriteriaUrls();
+            logger.info("Got " + urlsOfType.size() + " Certification Criteria URLs in the system.");
+            break;
+        case ACB:
+            logger.info("Getting all ACB URLs in the system...");
+            urlsOfType = getAcbUrls();
+            logger.info("Got " + urlsOfType.size() + " ACB URLs in the system.");
+            break;
+        case ATL:
+            logger.info("Getting all ATL URLs in the system...");
+            urlsOfType = getAtlUrls();
+            logger.info("Got " + urlsOfType.size() + " ATL URLs in the system.");
+            break;
+        case DEVELOPER:
+            logger.info("Getting all Developer URLs in the system...");
+            urlsOfType = getDeveloperUrls();
+            logger.info("Got " + urlsOfType.size() + " Developer URLs in the system.");
+            break;
+        case MANDATORY_DISCLOSURE:
+            logger.info("Getting all Mandatory Disclosure URLs in the system...");
+            urlsOfType = getMandatoryDisclosureUrls();
+            logger.info("Got " + urlsOfType.size() + " Mandatory Disclosure URLs in the system.");
+            break;
+        case TEST_RESULTS_SUMMARY:
+            logger.info("Getting all Test Results Summary URLs in the system...");
+            urlsOfType = getTestResultsSummaryUrls();
+            logger.info("Got " + urlsOfType.size() + " Test Results Summary URLs in the system.");
+            break;
+        case FULL_USABILITY_REPORT:
+            logger.info("Getting all Full Usability Report URLs in the system...");
+            urlsOfType = getFullUsabilityReportUrls();
+            logger.info("Got " + urlsOfType.size() + " Full Usability Report URLs in the system.");
+            break;
+        case API_DOCUMENTATION:
+            logger.info("Getting all API Documentation URLs in the system...");
+            urlsOfType = getApiDocumentationUrls();
+            logger.info("Got " + urlsOfType.size() + " API Documentation URLs in the system.");
+            break;
+        case EXPORT_DOCUMENTATION:
+            logger.info("Getting all Export Documentation URLs in the system...");
+            urlsOfType = getExportDocumentationUrls();
+            logger.info("Got " + urlsOfType.size() + " Export Documentation URLs in the system.");
+            break;
+        case DOCUMENTATION:
+            logger.info("Getting all Documentation URLs in the system...");
+            urlsOfType = getDocumentationUrls();
+            logger.info("Got " + urlsOfType.size() + " Documentation URLs in the system.");
+            break;
+        case USE_CASES:
+            logger.info("Getting all Use Cases URLs in the system...");
+            urlsOfType = getUseCaseUrls();
+            logger.info("Got " + urlsOfType.size() + " Use Cases URLs in the system.");
+            break;
+        case SERVICE_BASE_URL_LIST:
+            logger.info("Getting all Service Base URLs in the system...");
+            urlsOfType = getServiceBaseUrlLists();
+            logger.info("Got " + urlsOfType.size() + " Service Base URLs in the system.");
+            break;
+        case RISK_MANAGEMENT_SUMMARY_INFORMATION:
+            logger.info("Getting all Risk Management Summary Info URLs in the system...");
+            urlsOfType = getRiskManagementSummaryInformationUrls();
+            logger.info("Got " + urlsOfType.size() + " Risk Management Summary Info URLs in the system.");
+            break;
+        case REAL_WORLD_TESTING_PLANS:
+            logger.info("Getting all RWT Plan URLs in the system...");
+            urlsOfType = getRealWorldTestingPlanUrls();
+            logger.info("Got " + urlsOfType.size() + " RWT Plan URLs in the system.");
+            break;
+        case REAL_WORLD_TESTING_RESULTS:
+            logger.info("Getting all RWT Result URLs in the system...");
+            urlsOfType = getRealWorldTestingResultUrls();
+            logger.info("Got " + urlsOfType.size() + " RWT Result URLs in the system.");
+            break;
+        case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
+            logger.info("Getting all SVAP URLs in the system...");
+            urlsOfType = getSvapUrls();
+            logger.info("Got " + urlsOfType.size() + " SVAP URLs in the system.");
+            break;
+        default:
+            break;
+        }
+        return urlsOfType;
     }
 
     private List<UrlResult> getCriteriaUrls() {

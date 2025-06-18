@@ -8,6 +8,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.htmlunit.BrowserVersion;
@@ -28,6 +30,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCallerAsync;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCheckerDao;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
+import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "urlStatusDataCollectorJobLogger")
@@ -74,7 +77,7 @@ public class UrlStatusDataCollector extends QuartzJob {
 
         try {
             //get all urls in the system
-            List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls(LOGGER);
+            List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls(getUrlTypesToExclude(), LOGGER);
             LOGGER.info("Found " + allSystemUrls.size() + " urls in the system.");
             List<UrlResult> existingUrlResults = urlCheckerDao.getAllUrlResults();
 
@@ -100,6 +103,10 @@ public class UrlStatusDataCollector extends QuartzJob {
             }
         }
         LOGGER.info("********* Completed the URL Status Data Collector job. *********");
+    }
+
+    private List<UrlType> getUrlTypesToExclude() {
+        return Stream.of(UrlType.SERVICE_BASE_URL_LIST).collect(Collectors.toList());
     }
 
     /**
