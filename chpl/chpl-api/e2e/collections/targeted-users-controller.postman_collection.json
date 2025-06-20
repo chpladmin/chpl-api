@@ -1,0 +1,62 @@
+{
+	"info": {
+		"_postman_id": "6db11480-911b-473e-ab4f-c0e529f2feda",
+		"name": "targeted-users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8125082"
+	},
+	"item": [
+		{
+			"name": "/targeted-users - status 200 and correct response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/targeted-users endpoint returns 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/targeted-users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"targeted-users"
+					]
+				},
+				"description": "/targeted-users - status 200 and correct response"
+			},
+			"response": []
+		}
+	]
+}
