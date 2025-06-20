@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,13 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
-import gov.healthit.chpl.entity.CertificationIdEntity;
-import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
@@ -48,14 +42,13 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final int MAX_COUNT_ALPHAS = 3;
 
     @Transactional
-    public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year) throws EntityCreationException {
+    public CertificationIdDTO create(List<Long> listingIds, String year) throws EntityCreationException {
         CertificationIdEntity entity = null;
         CertificationIdDTO newDto = null;
 
-        List<Long> productIds = listings.stream().map(listing -> listing.getId()).collect(Collectors.toList());
         // Create a new EHR Certification ID record
         entity = new CertificationIdEntity();
-        entity.setCertificationId(this.generateCertificationIdString(listings, year));
+        entity.setCertificationId(this.generateCertificationIdString(year));
         entity.setYear(year);
         entity.setPracticeTypeId(null);
 
@@ -64,9 +57,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
         newDto = new CertificationIdDTO(entity);
 
         // Create map records
-        for (Long prodId : productIds) {
+        for (Long listingId : listingIds) {
             CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
-            mapEntity.setCertifiedProductId(prodId);
+            mapEntity.setCertifiedProductId(listingId);
             mapEntity.setCertificationIdId(newDto.getId());
             entityManager.persist(mapEntity);
         }
@@ -308,7 +301,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
                 CertificationIdAndCertifiedProductEntity.class).getResultList();
     }
 
-    private String generateCertificationIdString(List<CertifiedProductDetailsDTO> listings, String year) throws EntityCreationException {
+    private String generateCertificationIdString(String year) throws EntityCreationException {
         // Form the EHR Certification ID prefix and edition year identifier.
         // The identifier begins with the two-digit year followed by a "C" to indicate
         // "2015 Cures Update" edition year, an "E" to indicate edition year "2014" or "2015",

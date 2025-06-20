@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dto.CQMMetDTO;
 
 public abstract class Validator {
     protected Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>(100);

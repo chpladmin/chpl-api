@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.SimpleCertificationId;
-import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
+import gov.healthit.chpl.certificationId.SimpleCertificationId;
+import gov.healthit.chpl.certificationId.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 

@@ -20,12 +20,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationId.CQMMetDTO;
+import gov.healthit.chpl.certificationId.CertificationIdDTO;
+import gov.healthit.chpl.certificationId.CertificationIdManager;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertificationIdException;
@@ -33,7 +34,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
@@ -249,18 +249,15 @@ public class CertificationIdController {
         return results;
     }
 
-    private CertificationIdResults findCertificationByProductIds(List<Long> productIdListIncoming, Boolean create)
+    private CertificationIdResults findCertificationByProductIds(List<Long> listingIds, Boolean create)
             throws InvalidArgumentsException, CertificationIdException {
-        List<Long> productIdList;
-        if (null == productIdListIncoming) {
-            productIdList = new ArrayList<Long>();
-        } else {
-            productIdList = productIdListIncoming;
+        if (listingIds == null) {
+            listingIds = new ArrayList<Long>();
         }
 
         List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
         try {
-            productDtos = certifiedProductManager.getDetailsByIds(productIdList);
+            productDtos = certifiedProductManager.getDetailsByIds(listingIds);
         } catch (EntityRetrievalException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -291,10 +288,10 @@ public class CertificationIdController {
         Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
-        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(listingIds);
 
         // Lookup CQMs for Validating
-        List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
+        List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(listingIds);
 
         boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
         results.setValid(isValid);
@@ -315,7 +312,7 @@ public class CertificationIdController {
                 } else {
                     if ((create) && (results.isValid())) {
                         // Generate a new ID
-                        idDto = certificationIdManager.create(productDtos, year);
+                        idDto = certificationIdManager.create(listingIds, year);
                         results.setEhrCertificationId(idDto.getCertificationId());
                     }
                 }
