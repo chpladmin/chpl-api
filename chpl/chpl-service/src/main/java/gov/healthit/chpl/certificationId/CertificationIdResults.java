@@ -1,4 +1,4 @@
-package gov.healthit.chpl.web.controller.results;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.ArrayList;
