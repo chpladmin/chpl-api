@@ -1,12 +1,9 @@
-package gov.healthit.chpl.entity.statistics;
-
-import java.util.Date;
-
-import org.hibernate.annotations.ColumnTransformer;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,9 +24,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "summary_statistics")
-public class SummaryStatisticsEntity extends EntityAudit {
-    private static final long serialVersionUID = 4752929481454934958L;
+@Table(name = "criterion_not_up_to_date_reason")
+public class CriterionNotUpToDateReasonEntity extends EntityAudit {
+    private static final long serialVersionUID = 631120272172402100L;
 
     @Override
     public LastModifiedUserStrategy getLastModifiedUserStrategy() {
@@ -38,13 +35,18 @@ public class SummaryStatisticsEntity extends EntityAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "summary_statistics_id", nullable = false)
-    private Long summaryStatisticsId;
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    @Column(name = "end_Date", nullable = false)
-    private Date endDate;
+    @Basic(optional = false)
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "summary_statistics")
-    @ColumnTransformer(write = "?::jsonb")
-    private String summaryStatistics;
+    public CriterionNotUpToDateReason toDomain() {
+        return CriterionNotUpToDateReason.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
 }

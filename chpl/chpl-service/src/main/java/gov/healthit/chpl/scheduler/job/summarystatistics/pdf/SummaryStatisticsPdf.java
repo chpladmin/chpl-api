@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -20,7 +19,6 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -62,9 +60,9 @@ public class SummaryStatisticsPdf {
         pdf.addEventHandler(PdfDocumentEvent.END_PAGE, new SummaryStatisticsPdfFooterEvent());
 
         try (Document document = new Document(pdf)) {
-            SummaryStatisticsEntity recentStats = getSummaryStatisticsAsOf(LocalDate.now());
-            SummaryStatisticsEntity previousStats = getSummaryStatisticsAsOf(
-                    DateUtil.toLocalDate(recentStats.getEndDate().getTime()).minusDays(DAYS_IN_ONE_WEEK));
+            StatisticsSnapshot recentStats = getSummaryStatisticsAsOf(LocalDate.now());
+            StatisticsSnapshot previousStats = getSummaryStatisticsAsOf(
+                    DateUtil.toLocalDate(recentStats.getSnapshotDate().getTime()).minusDays(DAYS_IN_ONE_WEEK));
             addDocumentHeader(document);
             addTables(document, recentStats, previousStats);
             document.close();
@@ -91,10 +89,7 @@ public class SummaryStatisticsPdf {
         document.add(currentDate);
 
     }
-    private void addTables(Document document, SummaryStatisticsEntity currStats, SummaryStatisticsEntity prevStats) {
-        StatisticsSnapshot currSnapshot = getSnapshotFromSummaryStatistics(currStats);
-        StatisticsSnapshot prevSnapshot = getSnapshotFromSummaryStatistics(prevStats);
-
+    private void addTables(Document document, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         List<SummaryStatisticsSectionPdf> tableGenerators = Arrays.asList(
                 developerSummaryStatisticsSectionPdf,
                 productSummaryStatisticsSectionPdf,
@@ -105,8 +100,8 @@ public class SummaryStatisticsPdf {
         tableGenerators.forEach(generator -> {
             addTable(document,
                     generator,
-                    DateUtil.toLocalDate(currStats.getEndDate().getTime()),
-                    DateUtil.toLocalDate(prevStats.getEndDate().getTime()),
+                    DateUtil.toLocalDate(currSnapshot.getSnapshotDate().getTime()),
+                    DateUtil.toLocalDate(prevSnapshot.getSnapshotDate().getTime()),
                     currSnapshot, prevSnapshot);
             generator.addTableEndNote(document, currSnapshot, prevSnapshot);
             document.add(new Paragraph(""));
@@ -118,22 +113,8 @@ public class SummaryStatisticsPdf {
         document.add(tableGenerator.generateTable(recentDate, previousDate, recentEmailStats, previousEmailStats));
     }
 
-    private StatisticsSnapshot getSnapshotFromSummaryStatistics(SummaryStatisticsEntity stats) {
-        if (stats == null) {
-            return null;
-        }
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(stats.getSummaryStatistics(), StatisticsSnapshot.class);
-        } catch (IOException ex) {
-            LOGGER.error("Unable to convert SummaryStatisticsEntity JSON into StatisticsSnapshot java object.", ex);
-            return null;
-        }
-    }
-
-    private SummaryStatisticsEntity getSummaryStatisticsAsOf(LocalDate asOf) {
-        SummaryStatisticsEntity stats = null;
+    private StatisticsSnapshot getSummaryStatisticsAsOf(LocalDate asOf) {
+        StatisticsSnapshot stats = null;
         while (stats == null) {
             stats = summaryStatisticsDao.getSummaryStatistics(asOf);
             asOf = asOf.minusDays(1);

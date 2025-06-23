@@ -1,74 +1,86 @@
 package gov.healthit.chpl.attribute;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codeset.CertificationResultCodeSet;
-import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
 import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.DateUtil;
-import lombok.extern.log4j.Log4j2;
+import gov.healthit.chpl.util.Util;
 
-@Log4j2
+@Component
 public class CodeSetsUpToDateService {
 
     private CertificationResultRules certificationResultRules;
-    private CertificationResultCodeSetDAO certificationResultCodeSetDAO;
     private Map<Long, List<CodeSet>> codeSetMaps;
 
-    public CodeSetsUpToDateService(CodeSetDAO codeSetDAO, CertificationResultCodeSetDAO certificationResultCodeSetDAO, CertificationResultRules certificationResultRules) {
-        this.codeSetMaps = codeSetDAO.getCodeSetCriteriaMaps();
-        this.certificationResultCodeSetDAO = certificationResultCodeSetDAO;
+    public CodeSetsUpToDateService(CodeSetDAO codeSetDao,
+            CertificationResultRules certificationResultRules) {
+        this.codeSetMaps = codeSetDao.getCodeSetCriteriaMaps();
         this.certificationResultRules = certificationResultRules;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
-        Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certificationResult.getCriterion());
-        Boolean upToDate = false;
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
+    public List<CodeSetUpToDate> getAttributeUpToDate(CertificationResult certResult, Logger logger) {
+        List<CodeSetUpToDate> codeSetUpToDateReports = new ArrayList<CodeSetUpToDate>();
 
+        Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certResult.getCriterion());
         if (isCriteriaEligible) {
-            upToDate = areCodeSetsUpToDate(certificationResult);
-            if (upToDate) {
-                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult);
+            List<CodeSetUpToDate> upToDateReportsForUnattestedCodeSets = getUpToDateReportsForUnattestedCodeSets(certResult, logger);
+            if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedCodeSets)) {
+                codeSetUpToDateReports.addAll(upToDateReportsForUnattestedCodeSets);
             }
         }
 
-        return AttributeUpToDate.builder()
-                .attributeType(AttributeType.CODE_SETS)
-                .eligibleForAttribute(isCriteriaEligible)
-                .upToDate(upToDate)
-                .daysUpdatedEarly(daysUpdatedEarly)
-                .criterion(certificationResult.getCriterion())
-                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()))))
-                .build();
+        return codeSetUpToDateReports;
     }
 
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(CertificationResult certificationResult) {
-        //Get the CertificationResultCodeSet using DAO, so that we have the create date
-        List<CertificationResultCodeSet> certificationResultCodeSets =
-                certificationResultCodeSetDAO.getCodeSetsForCertificationResult(certificationResult.getId());
+    private Boolean isCriteriaEligibleForCodeSets(CertificationCriterion criterion) {
+        List<CodeSet> codeSetsForCriterion = getAllCodeSetsForCriterion(criterion);
+        return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.CODE_SET)
+                && !CollectionUtils.isEmpty(codeSetsForCriterion);
+    }
 
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-        if (CollectionUtils.isNotEmpty(certificationResultCodeSets)) {
-            daysUpdatedEarly = certificationResultCodeSets.stream()
-                    .filter(certResultCS -> certResultCS.getCodeSet().getRequiredDay() != null
-                            && LocalDate.now().isBefore(certResultCS.getCodeSet().getRequiredDay())
-                            && DateUtil.toLocalDate(certResultCS.getCreationDate().getTime()).isBefore(certResultCS.getCodeSet().getRequiredDay()))
-                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getCodeSet().getRequiredDay()))
-                    .min();
+    private List<CodeSetUpToDate> getUpToDateReportsForUnattestedCodeSets(CertificationResult certResult, Logger logger) {
+        logger.info("Checking unattested code sets for " + Util.formatCriteriaNumber(certResult.getCriterion()));
+        List<CodeSet> unattestedCodeSets = getUnattestedToCodeSets(certResult);
+        logger.info("There are " + unattestedCodeSets.size() + " unattested code sets for " + Util.formatCriteriaNumber(certResult.getCriterion()));
 
+        List<CodeSetUpToDate> codeSetUpToDateReports = new ArrayList<CodeSetUpToDate>();
+        if (CollectionUtils.isNotEmpty(unattestedCodeSets)) {
+            unattestedCodeSets.stream()
+                    .peek(cs -> logger.info("Checking unattested code set " + cs.getName()))
+                    .filter(cs -> cs.getRequiredDay() != null)
+                    .peek(cs -> logger.info("Unattested code set " + cs.getName() + " is required but not found"))
+                    .map(cs -> CodeSetUpToDate.builder()
+                            .criterion(certResult.getCriterion())
+                            .eligibleForAttribute(true)
+                            .expiringButPresent(false)
+                            .requiredButNotPresent(true)
+                            .codeSet(cs)
+                            .build())
+                    .forEach(csUpToDate -> codeSetUpToDateReports.add(csUpToDate));
         }
-        return daysUpdatedEarly;
+        return codeSetUpToDateReports;
+    }
+
+    private List<CodeSet> getUnattestedToCodeSets(CertificationResult certResult) {
+        return getAllCodeSetsForCriterion(certResult.getCriterion()).stream()
+                .filter(codeSet -> !isCodeSetInList(codeSet, certResult.getCodeSets().stream().map(crcs -> crcs.getCodeSet()).toList()))
+                .toList();
+    }
+
+    private Boolean isCodeSetInList(CodeSet codeSetToCheck, List<CodeSet> codeSets) {
+        return codeSets.stream()
+                .filter(cs -> cs.getId().equals(codeSetToCheck.getId()))
+                .findAny()
+                .isPresent();
     }
 
     private Boolean areCodeSetsUpToDate(CertificationResult certificationResult) {
@@ -81,11 +93,6 @@ public class CodeSetsUpToDateService {
         return (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
                 && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size())
                 || CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()));
-    }
-
-
-    private Boolean isCriteriaEligibleForCodeSets(CertificationCriterion criterion) {
-        return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.CODE_SET);
     }
 
     private List<CodeSet> getAllCodeSetsForCriterion(CertificationCriterion criterion) {

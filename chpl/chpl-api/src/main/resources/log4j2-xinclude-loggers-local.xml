@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
+    <Logger name="org.jose4j" level="ERROR" additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
+    <Logger name="org.hibernate" level="ERROR" additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
+    <Logger name="org.springframework" level="WARN"
+        additivity="false">
+        <AppenderRef ref="STDOUT" />
+    </Logger>
+    <Logger name="org.springdoc" level="WARN"
+        additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
+    <Logger name="org.ff4j" level="INFO"
+        additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
+    <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
     <Logger name="com.amazonaws.request" level="INFO" additivity="false">
         <AppenderRef ref="STDOUT" />
         <AppenderRef ref="chplServiceJsonLog" />
@@ -10,15 +36,12 @@
     </Logger>
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
     </Logger>
     <Logger name="org.springframework.cache" level="INFO">
-        <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
         <Logger name="sharedDataStoreLogger" level="ERROR">
         <AppenderRef ref="sharedDataStore" />
-        <AppenderRef ref="sharedDataStoreJson" />
     </Logger>
     <Logger name="reportDataMethodUsageLogger" level="INFO" additivity="false">
         <AppenderRef ref="reportDataMethodUsage" />
@@ -177,12 +200,6 @@
     </Logger>
     <Logger name="serviceBaseUrlListUptimeEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
-    </Logger>
-    <Logger name="updatedListingStatusReportEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReportEmailJob" />
-    </Logger>
-    <Logger name="updatedListingStatusReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReportCreatorJob" />
     </Logger>
     <Logger name="updatedCriteriaStatusReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedCriteriaStatusReportCreatorJob" />

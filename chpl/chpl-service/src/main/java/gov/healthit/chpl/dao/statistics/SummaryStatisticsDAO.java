@@ -1,17 +1,23 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
+import jakarta.persistence.Query;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAO extends BaseDAOImpl {
 
@@ -25,7 +31,7 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
         return summaryStatistics;
     }
 
-    public SummaryStatisticsEntity getCurrentSummaryStatistics() throws EntityRetrievalException {
+    public StatisticsSnapshot getCurrentSummaryStatistics() {
         Query currStatQuery = entityManager.createQuery("SELECT stats "
                 + "FROM SummaryStatisticsEntity stats "
                 + "WHERE (stats.deleted <> true) "
@@ -34,13 +40,13 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
         List<SummaryStatisticsEntity> entities = currStatQuery.getResultList();
 
         if (entities.size() > 0) {
-            return entities.get(0);
+            return toSnapshot(entities.get(0));
         } else {
             return null;
         }
     }
 
-    public SummaryStatisticsEntity getSummaryStatistics(LocalDate asOf) {
+    public StatisticsSnapshot getSummaryStatistics(LocalDate asOf) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM SummaryStatisticsEntity stats "
                 + "WHERE MONTH(stats.endDate) = :month "
@@ -55,8 +61,23 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
         List<SummaryStatisticsEntity> entities = query.getResultList();
 
         if (entities.size() > 0) {
-            return entities.get(0);
+            return toSnapshot(entities.get(0));
         } else {
+            return null;
+        }
+    }
+
+    private StatisticsSnapshot toSnapshot(SummaryStatisticsEntity entity) {
+        if (StringUtils.isEmpty(entity.getSummaryStatistics())) {
+            return null;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            StatisticsSnapshot snapshot = mapper.readValue(entity.getSummaryStatistics(), StatisticsSnapshot.class);
+            snapshot.setSnapshotDate(entity.getEndDate());
+            return snapshot;
+        } catch (IOException ex) {
+            LOGGER.error("Unable to convert SummaryStatisticsEntity JSON into StatisticsSnapshot java object.", ex);
             return null;
         }
     }
