@@ -177,7 +177,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
-                    "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
+                    "SELECT new gov.healthit.chpl.certificationId.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
                             + "FROM CQMResultDetailsEntity AS crde"
                             + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
                             + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
