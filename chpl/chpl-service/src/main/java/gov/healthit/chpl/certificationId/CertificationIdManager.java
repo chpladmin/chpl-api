@@ -52,7 +52,7 @@ public class CertificationIdManager {
         return certificationIdDao.getByCertificationId(certificationId);
     }
 
-    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+    public List<Long> getListingIdsByCertificationId(Long id) throws EntityRetrievalException {
         return certificationIdDao.getProductIdsById(id);
     }
 

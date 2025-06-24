@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certificationId;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,13 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final int CERT_ID_LENGTH = 15;
     private static final String CERT_ID_15C_BEGIN = "0015C";
     private static final int MAX_COUNT_ALPHAS = 3;
+
+    private CertificationIdYearCalculator certIdYearCalculator;
+
+    @Autowired
+    public CertificationIdDAO(CertificationIdYearCalculator certIdYearCalculator) {
+        this.certIdYearCalculator = certIdYearCalculator;
+    }
 
     @Transactional
     public CertificationIdDTO create(List<Long> listingIds, String year) throws EntityCreationException {
@@ -278,10 +287,12 @@ public class CertificationIdDAO extends BaseDAOImpl {
         query.setParameter("productCount", Long.valueOf(productIds.size()));
         query.setParameter("year", year);
         List<CertificationIdEntity> results = query.getResultList();
-        if (!CollectionUtils.isEmpty(results)) {
+        if (!CollectionUtils.isEmpty(results) && results.size() > 1) {
             //there could be more than one cert ID that matches for this set of products (15E and 15C)
             //if there is a 15C cert ID available, that is the one we want
             entity = get15CCertIdEntity(results);
+        } else if (!CollectionUtils.isEmpty(results) && results.size() == 1) {
+            entity = results.get(0);
         }
         return entity;
     }
@@ -308,8 +319,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
         // or "H" to indicate a hybrid edition year (e.g. "2014/2015").
         // To create it we take the last two digits of the year value which
         // would represent the highest (current) year number...
-        StringBuffer newId = new StringBuffer("00");
-        newId.append(year.substring(year.length() - 2));
+        StringBuffer newId = new StringBuffer();
+        newId.append(getYearPartOfNewCertIdString(year));
         newId.append("C");
 
         int suffixLength = (CERT_ID_LENGTH - newId.length());
@@ -347,5 +358,14 @@ public class CertificationIdDAO extends BaseDAOImpl {
         }
 
         return newId.toString();
+    }
+
+    private String getYearPartOfNewCertIdString(String year) {
+        LocalDate now = LocalDate.now();
+        //TODO: Remove with //OCD-4928
+        if (now.isBefore(certIdYearCalculator.getCmsIdTransitionDay())) {
+            return "00" + year.substring(year.length() - 2);
+        }
+        return now.getYear() + "";
     }
 }

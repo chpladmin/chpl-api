@@ -1,7 +1,5 @@
 package gov.healthit.chpl.certificationId;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -10,7 +8,6 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -32,17 +29,17 @@ public class CertificationIdSearchService {
 
     private CertificationIdManager certificationIdManager;
     private CertifiedProductManager certifiedProductManager;
-    private Environment env;
+    private CertificationIdYearCalculator certIdYearCalculator;
     private ValidatorFactory validatorFactory;
 
     @Autowired
     public CertificationIdSearchService(CertificationIdManager certificationIdManager,
             CertifiedProductManager certifiedProductManager,
-            Environment env,
+            CertificationIdYearCalculator certIdYearCalculator,
             ValidatorFactory validatorFactory) {
         this.certificationIdManager = certificationIdManager;
         this.certifiedProductManager = certifiedProductManager;
-        this.env = env;
+        this.certIdYearCalculator = certIdYearCalculator;
         this.validatorFactory = validatorFactory;
     }
 
@@ -59,7 +56,7 @@ public class CertificationIdSearchService {
                 results.setYear(certId.getYear());
 
                 // Find the listings associated with the Cert ID
-                List<Long> listingIds = certificationIdManager.getProductIdsById(certId.getId());
+                List<Long> listingIds = certificationIdManager.getListingIdsByCertificationId(certId.getId());
                 List<CertifiedProductDetailsDTO> listingDtos = certifiedProductManager.getDetailsByIds(listingIds);
 
                 SortedSet<Integer> yearSet = new TreeSet<Integer>();
@@ -135,7 +132,7 @@ public class CertificationIdSearchService {
             }
             CertificationIdResults.Product p = new CertificationIdResults.Product(listingDto);
             resultProducts.add(p);
-            yearSet.add(Integer.valueOf(getCurrentCertIdYear(listingDto.getYear())));
+            yearSet.add(Integer.valueOf(certIdYearCalculator.getCurrentCertIdYear(listingDto.getYear())));
         }
         results.setProducts(resultProducts);
         String year = Validator.calculateAttestationYear(yearSet);
@@ -186,19 +183,5 @@ public class CertificationIdSearchService {
         }
         return listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                 && BooleanUtils.isTrue(listing.getCuresUpdate());
-    }
-
-
-    private String getCurrentCertIdYear(String defaultYear) {
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        String mmdd = env.getProperty("cmsIdStartDayOfYear");
-        String mmddyyyy = mmdd + "/" + now.getYear();
-        LocalDate startDateForCertIdThisCalendarYear = LocalDate.parse(mmddyyyy, formatter);
-        if (now.isEqual(startDateForCertIdThisCalendarYear)
-                || now.isAfter(startDateForCertIdThisCalendarYear)) {
-            return now.getYear() + "";
-        }
-        return defaultYear;
     }
 }
