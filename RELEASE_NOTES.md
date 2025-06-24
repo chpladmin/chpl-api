@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 51.3.0
+_23 June 2025_
+
+### Features
+* Remove Service Base URL List URLs from Questionable URL Report
+* Collect detailed criteria attribute updates needed
+
+---
+
 ## Version 51.2.0
 _9 June 2025_
 

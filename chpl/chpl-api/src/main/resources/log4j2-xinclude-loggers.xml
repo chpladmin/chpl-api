@@ -222,14 +222,6 @@
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJobJson" />
     </Logger>
-    <Logger name="updatedListingStatusReportJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReportJob" />
-        <AppenderRef ref="updatedListingStatusReportJobJson" />
-    </Logger>
-    <Logger name="updatedListingStatusReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReportCreatorJob" />
-        <AppenderRef ref="updatedListingStatusReportCreatorJobJson" />
-    </Logger>
     <Logger name="updatedCriteriaStatusReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedCriteriaStatusReportCreatorJob" />
         <AppenderRef ref="updatedCriteriaStatusReportCreatorJobJson" />

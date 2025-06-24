@@ -2,9 +2,12 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +17,16 @@ import lombok.NoArgsConstructor;
 public class StatisticsSnapshot implements Serializable {
     private static final long serialVersionUID = 6977674702447509179L;
 
+    @JsonIgnore
+    private Date snapshotDate;
+
     private List<CertificationBodyStatusStatistic> developerCountsByStatus;
     private List<CertificationBodyStatusStatistic> productCountsByStatus;
     private List<CertificationBodyStatusStatistic> listingCountsByStatus;
+
+    //////////////////////////////////////////////////////////////////////
+
+    private List<AttestedCriterionStatistic> attestedCriterionStatistics;
 
     //////////////////////////////////////////////////////////////////////
 

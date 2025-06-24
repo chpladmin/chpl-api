@@ -1,9 +1,8 @@
 package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Arrays;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -20,6 +19,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,10 +27,13 @@ import lombok.extern.log4j.Log4j2;
 public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired
-    private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbook;
+    private ReportDateService reportDateService;
 
     @Autowired
-    private Environment env;
+    private UpdatedCriteriaStatusReportCsvCreator updatedCriteriaStatusReportCsvCreator;
+
+    @Autowired
+    private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbookCreator;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -41,11 +44,13 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     @Autowired
     private JpaTransactionManager txManager;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<File> attachments = new ArrayList<File>();
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -58,13 +63,13 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
-                            attachments.add(updatedCriteriaStatusReportWorkbook.generateSpreadsheet());
-
-                            sendEmail(context, attachments);
+                            sendEmail(context);
                         } catch (IOException ex) {
-                            LOGGER.error("Error creating charts spreadsheet", ex);
+                            LOGGER.error("Error creating email body", ex);
                         } catch (EmailNotSentException ex) {
                             LOGGER.error("Error sending email!", ex);
+                        } catch (ValidationException ex) {
+                            LOGGER.error("Error searching for active listings!", ex);
                         }
                 }
             });
@@ -74,23 +79,36 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is complete.*****");
     }
 
-    private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
+    private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
                 .recipient(emailAddress)
                 .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
                 .htmlMessage(createHtmlMessage())
-                .fileAttachments(attachments)
+                .fileAttachments(Arrays.asList(
+                        updatedCriteriaStatusReportCsvCreator.createCsvFile(),
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet()
+                        ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
     }
 
-    private String createHtmlMessage() {
+    private String createHtmlMessage() throws ValidationException {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("updatedCriteriaStatusReport.subject"))
-                .paragraph("", env.getProperty("updatedCriteriaStatusReport.body"))
+                .paragraph("", getHtmlEmailBody())
                 .footer(AdminFooter.class)
                 .build();
+    }
+
+    private String getHtmlEmailBody() throws ValidationException {
+        return String.format(env.getProperty("updatedCriteriaStatusReport.body"),
+                getReportDate().toString());
+    }
+
+    private LocalDate getReportDate() {
+        LOGGER.info("Getting report date for the email body");
+        return reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
     }
 }

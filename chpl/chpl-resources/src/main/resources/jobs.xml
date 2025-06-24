@@ -9,11 +9,11 @@
         <!-- BEGIN REMOVE after PROD push -->
         <!--  Remove after OCD-4704 is deployed to production -->
         <delete-job>
-            <name>massRequirePasswordChangeJob</name>
+            <name>updatedListingStatusReportCreatorJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>Developer Access Report</name>
+            <name>Updated Listing Status Report</name>
             <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -781,30 +781,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <job>
-            <name>updatedListingStatusReportCreatorJob</name>
-            <group>systemJobs</group>
-            <description>Updated Listing Status Report Creator Job</description>
-            <job-class>gov.healthit.chpl.scheduler.job.updatedlistingstatusreport.UpdatedListingStatusReportCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
-            <name>Updated Listing Status Report</name>
-            <group>chplJobs</group>
-            <description>Sends the Updated Listing Status Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.updatedlistingstatusreport.UpdatedListingStatusReportJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>chpl-admin;chpl-onc</value>
                 </entry>
             </job-data-map>
         </job>
