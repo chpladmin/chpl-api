@@ -363,9 +363,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private String getYearPartOfNewCertIdString(String year) {
         LocalDate now = LocalDate.now();
         //TODO: Remove with //OCD-4928
-        if (now.isBefore(certIdYearCalculator.getCmsIdTransitionDay())) {
+        if (now.isBefore(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay())) {
             return "00" + year.substring(year.length() - 2);
         }
-        return now.getYear() + "";
+        return certIdYearCalculator.getCurrentCertIdYear();
     }
 }

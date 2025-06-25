@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.certificationId;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,9 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.certificationId.CertificationIdDAO;
-import gov.healthit.chpl.certificationId.CertificationIdDTO;
-import gov.healthit.chpl.certificationId.CertificationIdYearCalculator;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.EntityManager;
@@ -27,7 +24,7 @@ public class CertificationIdDaoTest {
     public void setup() {
         EntityManager entityManager = Mockito.mock(EntityManager.class);
         CertificationIdYearCalculator certIdYearCalculator = Mockito.mock(CertificationIdYearCalculator.class);
-        Mockito.when(certIdYearCalculator.getCmsIdTransitionDay()).thenReturn(LocalDate.now().plusDays(1));
+        Mockito.when(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay()).thenReturn(LocalDate.now().plusDays(1));
         certIdDao = new CertificationIdDAO(certIdYearCalculator);
         certIdDao.setEntityManager(entityManager);
     }

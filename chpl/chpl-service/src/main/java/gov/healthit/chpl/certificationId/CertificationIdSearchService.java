@@ -2,9 +2,10 @@ package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,6 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CertificationIdSearchService {
-    private static final String DEFAULT_YEAR = "2015";
-
     private CertificationIdManager certificationIdManager;
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdYearCalculator certIdYearCalculator;
@@ -58,33 +57,22 @@ public class CertificationIdSearchService {
                 // Find the listings associated with the Cert ID
                 List<Long> listingIds = certificationIdManager.getListingIdsByCertificationId(certId.getId());
                 List<CertifiedProductDetailsDTO> listingDtos = certifiedProductManager.getDetailsByIds(listingIds);
-
-                SortedSet<Integer> yearSet = new TreeSet<Integer>();
-                List<Long> certProductIds = new ArrayList<Long>();
-
                 // Add product data to results
-                List<CertificationIdLookupResults.Product> productList = results.getProducts();
-                for (CertifiedProductDetailsDTO listingDto : listingDtos) {
-                    if (StringUtils.isEmpty(listingDto.getYear())) {
-                        listingDto.setYear(DEFAULT_YEAR);
-                    }
-                    productList.add(new CertificationIdLookupResults.Product(listingDto));
-                    yearSet.add(Integer.valueOf(listingDto.getYear()));
-                    certProductIds.add(listingDto.getId());
-                }
+                results.setProducts(listingDtos.stream()
+                        .map(listing -> new CertificationIdLookupResults.Product(listing))
+                        .collect(Collectors.toList()));
 
                 // Add criteria and cqms met to results
                 if (includeCriteria || includeCqms) {
                     Validator validator = this.validatorFactory.getValidator(certId.getYear());
 
                     // Lookup Criteria for Validating
-                    List<CertificationCriterion> criteria = certificationIdManager
-                            .getCriteriaMetByCertifiedProductIds(certProductIds);
+                    List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(listingIds);
 
                     // Lookup CQMs for Validating
-                    List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(certProductIds);
+                    List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(listingIds);
 
-                    boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
+                    boolean isValid = validator.validate(criteria, cqmDtos);
                     if (isValid) {
                         if (includeCriteria) {
                             results.setCriteria(validator.getCriteriaMet().keySet());
@@ -94,9 +82,11 @@ public class CertificationIdSearchService {
                         }
                     }
                 }
-
+            } else {
+                LOGGER.error("Certification ID " + certificationId + " does not exist.");
             }
-        } catch (final EntityRetrievalException ex) {
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Unable to lookup Certification ID " + certificationId, ex);
             throw new EntityRetrievalException("Unable to lookup Certification ID " + certificationId + ".");
         }
 
@@ -105,8 +95,8 @@ public class CertificationIdSearchService {
 
     public CertificationIdResults findCertificationByProductIds(List<Long> listingIds, Boolean create)
             throws InvalidArgumentsException, CertificationIdException {
-        if (listingIds == null) {
-            listingIds = new ArrayList<Long>();
+        if (CollectionUtils.isEmpty(listingIds)) {
+            return null;
         }
 
         List<CertifiedProductDetailsDTO> listingDtos = new ArrayList<CertifiedProductDetailsDTO>();
@@ -116,30 +106,25 @@ public class CertificationIdSearchService {
             LOGGER.error(ex.getMessage(), ex);
         }
 
+        if (create) {
+            Optional<CertifiedProductDetailsDTO> invalidListing = listingDtos.stream()
+                .filter(listing -> !isEditionlessOrCuresUpdate(listing))
+                .findAny();
+            if (invalidListing.isPresent()) {
+                throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
+            }
+        }
+
         // Add products to results
         CertificationIdResults results = new CertificationIdResults();
-        SortedSet<Integer> yearSet = new TreeSet<Integer>();
-        List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
-        for (CertifiedProductDetailsDTO listingDto : listingDtos) {
-            if (create) {
-                if (!isEditionlessOrCuresUpdate(listingDto)) {
-                    throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
-                }
-            }
-
-            if (StringUtils.isEmpty(listingDto.getYear())) {
-                listingDto.setYear(DEFAULT_YEAR);
-            }
-            CertificationIdResults.Product p = new CertificationIdResults.Product(listingDto);
-            resultProducts.add(p);
-            yearSet.add(Integer.valueOf(certIdYearCalculator.getCurrentCertIdYear(listingDto.getYear())));
-        }
-        results.setProducts(resultProducts);
-        String year = Validator.calculateAttestationYear(yearSet);
-        results.setYear(year);
+        results.setProducts(listingDtos.stream()
+                .map(listing -> new CertificationIdResults.Product(listing))
+                .collect(Collectors.toList()));
+        //get the "year" for this cms id
+        results.setYear(certIdYearCalculator.getCurrentCertIdYear());
 
         // Validate the collection
-        Validator validator = this.validatorFactory.getValidator(year);
+        Validator validator = this.validatorFactory.getValidator(results.getYear());
 
         // Lookup Criteria for Validating
         List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(listingIds);
@@ -147,7 +132,7 @@ public class CertificationIdSearchService {
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(listingIds);
 
-        boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
+        boolean isValid = validator.validate(criteria, cqmDtos);
         results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());
@@ -158,19 +143,20 @@ public class CertificationIdSearchService {
 
         // Lookup CERT ID
         if (validator.isValid()) {
-            CertificationIdDTO idDto = null;
+            CertificationIdDTO existingCertId = null;
             try {
-                idDto = certificationIdManager.getByListings(listingDtos, year);
-                if (null != idDto) {
-                    results.setEhrCertificationId(idDto.getCertificationId());
+                existingCertId = certificationIdManager.getByListings(listingDtos, results.getYear());
+                if (existingCertId != null) {
+                    results.setEhrCertificationId(existingCertId.getCertificationId());
                 } else {
                     if ((create) && (results.isValid())) {
                         // Generate a new ID
-                        idDto = certificationIdManager.create(listingIds, year);
-                        results.setEhrCertificationId(idDto.getCertificationId());
+                        existingCertId = certificationIdManager.create(listingIds, results.getYear());
+                        results.setEhrCertificationId(existingCertId.getCertificationId());
                     }
                 }
             } catch (EntityRetrievalException | EntityCreationException | ActivityException ex) {
+                LOGGER.error("Unable to look up cert id by listings", ex);
                 throw new CertificationIdException("Unable to retrieve a Certification ID.");
             }
         }
