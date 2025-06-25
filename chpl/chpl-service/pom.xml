@@ -86,7 +86,7 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -104,7 +104,7 @@
             <artifactId>hibernate-validator</artifactId>
             <version>8.0.1.Final</version>
         </dependency>
-        
+
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -229,7 +229,7 @@
             <version>6.1.0-M2</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
@@ -337,7 +337,7 @@
             <artifactId>commonmark</artifactId>
             <version>${commonmark.version}</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/org.eclipse.collections/eclipse-collections -->
         <dependency>
             <groupId>org.eclipse.collections</groupId>
@@ -370,17 +370,17 @@
             <artifactId>datadog-api-client</artifactId>
             <version>2.27.0</version>
         </dependency>
-        
+
         <!-- jars provided by the system and not included in the packaged jar -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
-            <version>10.1.41</version>
+            <version>10.1.42</version>
             <scope>provided</scope>
         </dependency>
 
         <!-- Spring Doc (Swagger) -->
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
