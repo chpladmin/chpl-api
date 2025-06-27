@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
 
 @Component
 public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsheetBase {
@@ -24,14 +25,14 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
     private String template;
     private CertificationCriteriaManager criteriaManager;
     private CertificationCriterionComparator certificationCriterionComparator;
-    private ReportDateService reportDateService;
+    private CriteriaUpToDateStatusReportDateService reportDateService;
     private Environment env;
 
     public UpdatedCriteriaStatusReportWorkbook(@Value("${updatedCriteriaStatusReportTemplate}") String template,
             UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet,
             CertificationCriteriaManager criteriaManager,
             CertificationCriterionComparator certificationCriterionComparator,
-            ReportDateService reportDateService,
+            CriteriaUpToDateStatusReportDateService reportDateService,
             Environment env) {
         this.template = template;
         this.updatedCriteriaStatusReportSheet = updatedCriteriaStatusReportSheet;
