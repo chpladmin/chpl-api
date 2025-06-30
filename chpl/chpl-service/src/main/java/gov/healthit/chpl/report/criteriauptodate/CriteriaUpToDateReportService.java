@@ -1,7 +1,9 @@
 package gov.healthit.chpl.report.criteriauptodate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -23,6 +25,8 @@ import one.util.streamex.StreamEx;
 @Log4j2
 @Component
 public class CriteriaUpToDateReportService {
+    private static final int ONE_YEAR_IN_MONTHS = 12;
+
     private CriteriaUpToDateStatusReportDateService reportDateService;
     private CertificationCriteriaManager criteriaManager;
     private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
@@ -40,6 +44,17 @@ public class CriteriaUpToDateReportService {
         this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
         this.summaryStatisticsDao = summaryStatisticsDao;
         this.allCertificationStatuses = certificationStatusDao.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
+        List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(ONE_YEAR_IN_MONTHS);
+        LOGGER.info("Generating criteria up-to-date counts for the past year using report dates: "
+                + Util.joinListGrammatically(allReportDates.stream().map(reportDate -> reportDate.toString()).collect(Collectors.toList())));
+
+        return allReportDates.stream()
+            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate).stream())
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -67,10 +82,24 @@ public class CriteriaUpToDateReportService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<CriteriaUpToDateListingReport> getAllCriteriaUpToDateListingReports() {
+        LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(
+                LocalDate.now());
+
+        List<CertificationCriterion> activeCriteria = criteriaManager.getActiveToday();
+        StatisticsSnapshot statisticsSnapshot = getSummaryStatisticsSnapshotForDate(reportDate);
+        List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
+
+        List<CriteriaUpToDateListingReport> results = new ArrayList<CriteriaUpToDateListingReport>();
+        //TODO
+        return results;
+    }
+
     private CriteriaUpToDateReport buildCriteriaUpToDateReport(CertificationCriterion criterion, StatisticsSnapshot statisticsSnapshot,
             List<UpdatedCriterionStatusReport> criteriaStatusReports, LocalDate reportDate) {
         long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(statisticsSnapshot, criterion);
-        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion);
+        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion, reportDate);
 
         return CriteriaUpToDateReport.builder()
                 .accurateAsOfDate(reportDate)
@@ -80,12 +109,6 @@ public class CriteriaUpToDateReportService {
                 .build();
     }
 
-    private List<UpdatedCriterionStatusReport> getCriterionStatusReportsForDateAndCriterion(LocalDate reportDate, CertificationCriterion criterion) {
-        return updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate).stream()
-                .filter(report -> report.getCertificationCriterion().getId().equals(criterion.getId()))
-                .collect(Collectors.toList());
-    }
-
     private StatisticsSnapshot getSummaryStatisticsSnapshotForDate(LocalDate reportDate) {
         return summaryStatisticsDao.getSummaryStatistics(reportDate);
     }
@@ -93,7 +116,7 @@ public class CriteriaUpToDateReportService {
     private long calculateActiveListingsWithCriterionCount(StatisticsSnapshot statisticsSnapshot, CertificationCriterion criterion) {
         if (statisticsSnapshot == null
                 || CollectionUtils.isEmpty(statisticsSnapshot.getAttestedCriterionStatistics())) {
-            LOGGER.info("No attested criterion statistics were found in the statistics snapshot");
+            LOGGER.info("No attested criterion statistics were found in the statistics snapshot for date " + statisticsSnapshot.getSnapshotDate());
             return 0;
         }
         List<Long> activeStatusIds = allCertificationStatuses.stream()
@@ -109,18 +132,32 @@ public class CriteriaUpToDateReportService {
         return countOfListingsInActiveStatusWithCriteria;
     }
 
-    private long calculateListingsRequiringUpdatesCount(List<UpdatedCriterionStatusReport> reports, CertificationCriterion criterion) {
+    private long calculateListingsRequiringUpdatesCount(List<UpdatedCriterionStatusReport> reports, CertificationCriterion criterion,
+            LocalDate reportDate) {
         List<UpdatedCriterionStatusReport> reportsForCriterion = reports.stream()
             .filter(report -> report.getCertificationCriterion().getId().equals(criterion.getId()))
             .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(reportsForCriterion)) {
-            LOGGER.info("No updated criteria status reports were found for " + Util.formatCriteriaNumber(criterion));
+            LOGGER.info("No updated criteria status reports were found for " + Util.formatCriteriaNumber(criterion) + " from date " + reportDate);
             return 0;
         }
 
         return StreamEx.of(reportsForCriterion)
                 .distinct(UpdatedCriterionStatusReport::getCertifiedProductId)
                 .count();
+    }
+
+    private void addUpToDateStatus(CriteriaUpToDateListingReport report, List<UpdatedCriterionStatusReport> criteriaStatusReports) {
+        Optional<UpdatedCriterionStatusReport> updateReportForListingAndCriterion = criteriaStatusReports.stream()
+            .filter(criteriaStatusReport -> criteriaStatusReport.getChplProductNumber().equals(report.getChplProductNumber())
+                    && criteriaStatusReport.getCertificationCriterion().getId().equals(report.getCriterion().getId()))
+            .findAny();
+
+        if (updateReportForListingAndCriterion.isEmpty()) {
+            report.setUpToDateStatus("Up-To-Date");
+        } else {
+            report.setUpToDateStatus("Not Up-To-Date");
+        }
     }
 }

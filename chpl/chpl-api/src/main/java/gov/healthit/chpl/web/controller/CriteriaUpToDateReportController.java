@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateListingReport;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReport;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -41,13 +41,23 @@ public class CriteriaUpToDateReportController {
         return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateReports();
     }
 
+    @Operation(summary = "Retrieves the data used to generate the Criteria up-to-date counts monthly for the past year",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @LogMethodUsage
+    @RequestMapping(value = "/monthly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
+        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports();
+    }
+
     @Operation(summary = "Retrieves the data used to generate the Criteria Up-To-Date Listing report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @LogMethodUsage
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestToolListingReport> getCriteriaUpToDateListings() {
-        return reportDataManager.getCriteriaAttributeAttributeService().getTestToolListingReports();
+    public @ResponseBody List<CriteriaUpToDateListingReport> getCriteriaUpToDateListings() {
+        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateListingReports();
     }
 }

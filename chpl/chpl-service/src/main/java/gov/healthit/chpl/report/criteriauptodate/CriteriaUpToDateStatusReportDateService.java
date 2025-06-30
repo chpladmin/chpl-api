@@ -3,6 +3,7 @@ package gov.healthit.chpl.report.criteriauptodate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,20 @@ public class CriteriaUpToDateStatusReportDateService {
         LOGGER.warn("No dates with both Criteria Update Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of today.");
         // we don't really ever expect to get to this point - there must be a date with both reports having data
         return preferredDate;
+    }
+
+    public List<LocalDate> calculateAllMonthsOfReportDatesBasedOnAvailableData(int numberOfMonths) {
+        List<LocalDate> allReportDates = new ArrayList<LocalDate>();
+        LocalDate preferredReportDay = LocalDate.now();
+        for (int i = numberOfMonths; i >= 1; --i) {
+            LocalDate actualReportDay = findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(preferredReportDay);
+            allReportDates.add(actualReportDay);
+            preferredReportDay = actualReportDay.minusMonths(1);
+        }
+        allReportDates = allReportDates.stream()
+            .sorted()
+            .collect(Collectors.toList());
+        return allReportDates;
     }
 
     private List<Integer> getDayOffsetList() {
