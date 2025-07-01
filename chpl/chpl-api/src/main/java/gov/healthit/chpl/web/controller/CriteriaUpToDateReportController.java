@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateListingReport;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReport;
+import gov.healthit.chpl.report.criteriauptodate.ListingNotUpToDateReport;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,13 +51,14 @@ public class CriteriaUpToDateReportController {
         return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Criteria Up-To-Date Listing report.",
+    @Operation(summary = "Retrieves all listing and attested criteria combinations that were not up-to-date on the "
+            + "most recent day data was available.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @LogMethodUsage
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaUpToDateListingReport> getCriteriaUpToDateListings() {
-        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateListingReports();
+    public @ResponseBody List<ListingNotUpToDateReport> getCriteriaUpToDateListings() {
+        return reportDataManager.getCriteriaAttributeUpToDateService().getAllListingNotUpToDateReports();
     }
 }

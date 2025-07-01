@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 @Builder
-@Schema(description = "Gives the set of listings attesting to the criteria and their up-to-date status")
-public class CriteriaUpToDateListingReport {
+@Schema(description = "Gives a listing and a criteria that it attests to which is not up-to-date for that listing")
+public class ListingNotUpToDateReport {
 
     private CertificationCriterion criterion;
+    private Long certifiedProductId;
     private String chplProductNumber;
-    private String upToDateStatus;
 }
