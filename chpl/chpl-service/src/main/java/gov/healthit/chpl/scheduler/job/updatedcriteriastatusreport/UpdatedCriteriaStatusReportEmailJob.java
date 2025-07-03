@@ -37,6 +37,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbookCreator;
 
     @Autowired
+    private CriteriaUpToDateChartWorkbook criteriaUpToDateChartWorkbookCreator;
+
+    @Autowired
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
@@ -89,7 +92,8 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(),
-                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet()
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(),
+                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet()
                         ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
