@@ -29,13 +29,10 @@ import jakarta.persistence.Query;
 public class CertificationIdDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationIdDAO.class);
     // Note that in the ALPHA string the characters O and I have been removed.
-    // This is to
-    // prevent confusion of characters. So characters that may appear to be I/1
-    // or O/0 will
-    // always be numeric 1 and 0.
+    // This is to prevent confusion of characters. So characters that may appear to be I/1
+    // or O/0 will always be numeric 1 and 0.
     //
-    // The number of possible combinations of IDs within a specific
-    // certification year is 10^34.
+    // The number of possible combinations of IDs within a specific certification year is 10^34.
     private static final String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     private static final String CERT_ID_CHARS_NUMERIC = "0123456789";
     private static final String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
@@ -252,14 +249,10 @@ public class CertificationIdDAO extends BaseDAOImpl {
         CertificationIdEntity entity = null;
 
         // Lookup the EHR Certification ID record by:
-        // 1. Looking up all CertificationIDs that are associated with the
-        // products.
-        // 2. Reduce the set by removing records that contain products other
-        // than those specified.
-        // 3. Make sure the number of products for the CertID matches the number
-        // of products specified,
-        // this filters out CertIDs that only contain a subset of those products
-        // specified.
+        // 1. Looking up all CertificationIDs that are associated with the products.
+        // 2. Reduce the set by removing records that contain products other than those specified.
+        // 3. Make sure the number of products for the CertID matches the number of products specified,
+        // this filters out CertIDs that only contain a subset of those products specified.
         Query query = entityManager.createQuery(
                 "FROM CertificationIdEntity "
                 + "WHERE id in ("
@@ -313,46 +306,29 @@ public class CertificationIdDAO extends BaseDAOImpl {
     }
 
     private String generateCertificationIdString(String year) throws EntityCreationException {
-        // Form the EHR Certification ID prefix and edition year identifier.
-        // The identifier begins with the two-digit year followed by a "C" to indicate
-        // "2015 Cures Update" edition year, an "E" to indicate edition year "2014" or "2015",
-        // or "H" to indicate a hybrid edition year (e.g. "2014/2015").
-        // To create it we take the last two digits of the year value which
-        // would represent the highest (current) year number...
         StringBuffer newId = new StringBuffer();
         newId.append(getYearPartOfNewCertIdString(year));
         newId.append("C");
 
         int suffixLength = (CERT_ID_LENGTH - newId.length());
-        // Generate the remainder of the ID
         int alphaCount = 1;
         for (int i = 0; i < suffixLength; ++i) {
             char newChar = CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length()));
 
-            // In order to prevent words from forming within the ID, we do not
-            // allow strings of
-            // more than 3 sequential alpha characters. After 3 the next
-            // character is forced to
-            // to be numeric.
-
-            // Check if newChar is numeric or alpha
+            // In order to prevent words from forming within the ID, we do not allow strings of
+            // more than 3 sequential alpha characters. After 3 the next character is forced to to be numeric.
             if (Pattern.matches("[0-9]", Character.toString(newChar))) {
                 alphaCount = 0;
             } else {
                 ++alphaCount;
-                // If we've already had 3 alpha characters in a row, make the
-                // next one numeric
                 if (alphaCount > MAX_COUNT_ALPHAS) {
                     newChar = CERT_ID_CHARS_NUMERIC.charAt(new Random().nextInt(CERT_ID_CHARS_NUMERIC.length()));
                     alphaCount = 0;
                 }
             }
-
-            // Add newChar to Cert ID string
             newId.append(newChar);
         }
 
-        // Safeguard we have a proper ID
         if (newId.length() != CERT_ID_LENGTH) {
             return null;
         }
