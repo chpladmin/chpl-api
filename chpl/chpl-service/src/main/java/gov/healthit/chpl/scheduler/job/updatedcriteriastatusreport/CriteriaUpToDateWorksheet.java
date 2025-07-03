@@ -103,8 +103,8 @@ public class CriteriaUpToDateWorksheet {
     }
 
     private void writeDataForCriterionUpToDateChartStatistic(CriteriaUpToDateReport data, Row row) {
-        row.getCell(FULLY_UP_TO_DATE_COL_IDX).setCellValue(data.getActiveListingsAttestingToCriterionCount() - data.getActiveListingsUpToDateOnCriterionCount());
-        row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getActiveListingsUpToDateOnCriterionCount());
+        row.getCell(FULLY_UP_TO_DATE_COL_IDX).setCellValue(data.getActiveListingsUpToDateOnCriterionCount());
+        row.getCell(REQUIRES_UPDATE_COL_IDX).setCellValue(data.getActiveListingsAttestingToCriterionCount() - data.getActiveListingsUpToDateOnCriterionCount());
     }
 
     private CriteriaUpToDateReport getUpToDateReportByCriterion(List<CriteriaUpToDateReport> reports, CertificationCriterion criterion) {
