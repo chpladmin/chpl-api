@@ -15,10 +15,10 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
 import gov.healthit.chpl.fuzzyMatching.FuzzyType;
+import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
 import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;

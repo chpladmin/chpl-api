@@ -1,9 +1,7 @@
 package gov.healthit.chpl.surveillance.report;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -78,61 +75,36 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
-    public Set<KeyValueModel> getSurveillanceOutcomes() {
-        List<SurveillanceOutcome> outcomes = quarterlySurvMapDao.getSurveillanceOutcomes();
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-        for (SurveillanceOutcome outcome : outcomes) {
-            KeyValueModel currOutcome = new KeyValueModel();
-            currOutcome.setId(outcome.getId());
-            currOutcome.setName(outcome.getName());
-            result.add(currOutcome);
-        }
-        return result;
+    public List<Quarter> getQuarters() {
+        return quarterDao.getAll();
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
-    public Set<KeyValueModel> getSurveillanceProcessTypes() {
-        List<SurveillanceProcessType> pts = quarterlySurvMapDao.getSurveillanceProcessTypes();
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-        for (SurveillanceProcessType pt : pts) {
-            KeyValueModel currProcessType = new KeyValueModel();
-            currProcessType.setId(pt.getId());
-            currProcessType.setName(pt.getName());
-            result.add(currProcessType);
-        }
-        return result;
+    public List<SurveillanceOutcome> getSurveillanceOutcomes() {
+        return quarterlySurvMapDao.getSurveillanceOutcomes();
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
-    public Set<KeyValueModel> getSurveillanceGroundsForInitiating() {
-        List<SurveillanceGroundsForInitiating> grounds = quarterlySurvMapDao.getSurveillanceGroundsForInitiating();
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-        for (SurveillanceGroundsForInitiating ground : grounds) {
-            KeyValueModel currGround = new KeyValueModel();
-            currGround.setId(ground.getId());
-            currGround.setName(ground.getName());
-            result.add(currGround);
-        }
-        return result;
+    public List<SurveillanceProcessType> getSurveillanceProcessTypes() {
+        return quarterlySurvMapDao.getSurveillanceProcessTypes();
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
-    public Set<KeyValueModel> getSurveillanceCapStatuses() {
-        List<SurveillanceCapStatus> capStatuses = quarterlySurvMapDao.getSurveillanceCapStatuses();
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-        for (SurveillanceCapStatus capStatus : capStatuses) {
-            KeyValueModel currCapStatus = new KeyValueModel();
-            currCapStatus.setId(capStatus.getId());
-            currCapStatus.setName(capStatus.getName());
-            result.add(currCapStatus);
-        }
-        return result;
+    public List<SurveillanceGroundsForInitiating> getSurveillanceGroundsForInitiating() {
+        return quarterlySurvMapDao.getSurveillanceGroundsForInitiating();
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
+    public List<SurveillanceCapStatus>  getSurveillanceCapStatuses() {
+        return quarterlySurvMapDao.getSurveillanceCapStatuses();
     }
 
     @Transactional

@@ -4,10 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
+import gov.healthit.chpl.targeteduser.TargetedUserDAO;
+import gov.healthit.chpl.targeteduser.TargetedUser;
 
 @Component
 public class TargetedUserNormalizer {
@@ -27,7 +27,7 @@ public class TargetedUserNormalizer {
 
     private void populateTargetedUserId(CertifiedProductTargetedUser targetedUser) {
         if (!StringUtils.isEmpty(targetedUser.getTargetedUserName())) {
-            TargetedUserDTO targetedUserDto =
+            TargetedUser targetedUserDto =
                     targetedUserDao.getByName(targetedUser.getTargetedUserName());
             if (targetedUserDto != null) {
                 targetedUser.setTargetedUserId(targetedUserDto.getId());

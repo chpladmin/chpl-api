@@ -15,8 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.sed.TestParticipant;
+import gov.healthit.chpl.sed.TestTask;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class Sed2015CsvPresenter extends CertifiedProductPresenter implements AutoCloseable {

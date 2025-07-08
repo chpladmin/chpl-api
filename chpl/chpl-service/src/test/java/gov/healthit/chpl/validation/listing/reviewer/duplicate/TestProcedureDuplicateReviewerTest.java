@@ -9,9 +9,9 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestProcedure;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.testprocedure.TestProcedure;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestProcedureDuplicateReviewerTest {

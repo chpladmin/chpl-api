@@ -2,9 +2,7 @@ package gov.healthit.chpl.complaint;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +26,6 @@ import gov.healthit.chpl.complaint.search.ComplaintSearchResponse;
 import gov.healthit.chpl.complaint.search.ComplaintSearchService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -75,23 +72,13 @@ public class ComplaintManager extends SecuredManager {
     }
 
     @Transactional
-    public Set<KeyValueModel> getComplaintTypes() {
-        List<ComplaintType> complaintTypes = complaintDAO.getComplaintTypes();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplaintType complaintType : complaintTypes) {
-            results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
-        }
-        return results;
+    public List<ComplaintType> getComplaintTypes() {
+        return complaintDAO.getComplaintTypes();
     }
 
     @Transactional
-    public Set<KeyValueModel> getComplainantTypes() {
-        List<ComplainantType> complainantTypes = complaintDAO.getComplainantTypes();
-        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplainantType complainantType : complainantTypes) {
-            results.add(new KeyValueModel(complainantType.getId(), complainantType.getName()));
-        }
-        return results;
+    public List<ComplainantType> getComplainantTypes() {
+        return complaintDAO.getComplainantTypes();
     }
 
     @Transactional
