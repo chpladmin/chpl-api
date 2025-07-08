@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.standard.StandardEntity;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -180,8 +179,8 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
             Long conformanceMethodId, Long certificationCriterionId) throws EntityRetrievalException {
         List<ConformanceMethodCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT cmcm "
                         + "FROM ConformanceMethodCriteriaMapEntity cmcm "
-                        + "JOIN FETCH cmcm.criterion c "
-                        + "JOIN FETCH cmcm.conformnceMethod cm "
+                        + "JOIN FETCH cmcm.certificationCriterion c "
+                        + "JOIN FETCH cmcm.conformanceMethod cm "
                         + "WHERE c.id = :certificationCriterionId "
                         + "AND cm.id= :conformanceMethodId "
                         + "AND cmcm.deleted <> true "
@@ -207,13 +206,12 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery("SELECT DISTINCT cm "
                         + "FROM ConformanceMethodEntity cm "
-                        + "LEFT OUTER JOIN FETCH cm.criteria criteriaMapping "
-                        + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
+                        + "LEFT OUTER JOIN FETCH cm.criteria criterion "
                         + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
                         + "LEFT JOIN FETCH criterion.rule "
                         + "WHERE (NOT cm.deleted = true) "
                         + "AND (cm.id = :id) ",
-                        StandardEntity.class);
+                        ConformanceMethodEntity.class);
         query.setParameter("id", id);
         List<ConformanceMethodEntity> result = query.getResultList();
 
