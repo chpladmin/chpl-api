@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -18,9 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -50,6 +56,56 @@ public class SurveillanceController {
             ErrorMessageUtil errorMessageUtil) {
         this.survManager = survManager;
         this.errorMessageUtil = errorMessageUtil;
+    }
+
+    @Operation(summary = "List all surveillance types in the system.",
+            description = "List all surveillance types in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SurveillanceType> getSurveillanceTypes() {
+        return survManager.getAllSurveillanceTypes();
+    }
+
+    @Operation(summary = "List all surveillance result types in the system.",
+            description = "List all surveillance result types in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/result-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SurveillanceResultType> getSurveillanceResultTypes() {
+        return survManager.getAllSurveillanceResultTypes();
+    }
+
+    @Operation(summary = "List all surveillance requirement group types in the system.",
+            description = "List all surveillance requirement group types in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/requirement-group-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RequirementGroupType> getRequirementGroupTypes() {
+        return survManager.getAllRequirementGroupTypes();
+    }
+
+    @Operation(summary = "List all surveillance requirement types in the system.",
+            description = "List all surveillance requirement types in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/requirement-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RequirementType> getRequirementTypes() {
+        return survManager.getAllRequirementTypes();
+    }
+
+    @Operation(summary = "List all surveillance non-conformity types in the system.",
+            description = "List all surveillance non-conformity types in the system.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/non-conformity-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<NonconformityType> getNonconformityTypes() {
+        return survManager.getAllNonconformityTypes();
     }
 
     @Deprecated

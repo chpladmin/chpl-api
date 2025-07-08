@@ -16,11 +16,16 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.cqm.CqmCriterionService;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
@@ -56,7 +61,11 @@ public class SearchRequestValidatorTest {
     private static final String MISSING_SVAP_OPERATOR = "Multiple SVAPs were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
-    private DimensionalDataManager dimensionalDataManager;
+    private CertificationStatusDAO certStatusDao;
+    private CertificationEditionDAO editionDao;
+    private CqmCriterionService cqmCriterionService;
+    private CertificationBodyDAO acbDao;
+    private PracticeTypeDAO practiceTypeDao;
     private CertificationCriteriaManager certificationCriteriaManager;
     private SvapDAO svapDao;
     private DirectReviewSearchService drService;
@@ -65,7 +74,11 @@ public class SearchRequestValidatorTest {
 
     @Before
     public void setup() {
-        dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        certStatusDao = Mockito.mock(CertificationStatusDAO.class);
+        editionDao = Mockito.mock(CertificationEditionDAO.class);
+        cqmCriterionService = Mockito.mock(CqmCriterionService.class);
+        acbDao = Mockito.mock(CertificationBodyDAO.class);
+        practiceTypeDao = Mockito.mock(PracticeTypeDAO.class);
         certificationCriteriaManager = Mockito.mock(CertificationCriteriaManager.class);
         svapDao = Mockito.mock(SvapDAO.class);
         drService = Mockito.mock(DirectReviewSearchService.class);
@@ -119,7 +132,8 @@ public class SearchRequestValidatorTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, certificationCriteriaManager, svapDao, msgUtil);
+        validator = new SearchRequestValidator(certStatusDao, editionDao, cqmCriterionService, acbDao,
+                practiceTypeDao, certificationCriteriaManager, svapDao, msgUtil);
     }
 
     @Test
@@ -207,8 +221,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationStatuses())
-            .thenReturn(null);
+        Mockito.when(certStatusDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -225,8 +238,16 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationStatuses())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Suspended"), new KeyValueModel(2L, "Withdrawn")).collect(Collectors.toSet()));
+        Mockito.when(certStatusDao.findAll())
+            .thenReturn(Stream.of(CertificationStatus.builder()
+                    .id(1L)
+                    .name("Suspended")
+                    .build(),
+                    CertificationStatus.builder()
+                    .id(2L)
+                    .name("Withdrawn")
+                    .build())
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -243,8 +264,12 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationStatuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationStatuses())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active")).collect(Collectors.toSet()));
+        Mockito.when(certStatusDao.findAll())
+        .thenReturn(Stream.of(CertificationStatus.builder()
+                .id(1L)
+                .name("Active")
+                .build())
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -258,8 +283,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(null);
+        Mockito.when(editionDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -276,8 +300,16 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2021").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(Stream.of(new KeyValueModel(1L, "2011"), new KeyValueModel(2L, "2014")).collect(Collectors.toSet()));
+        Mockito.when(editionDao.findAll())
+            .thenReturn(Stream.of(CertificationEdition.builder()
+                    .id(1L)
+                    .name("2011")
+                    .build(),
+                    CertificationEdition.builder()
+                    .id(2L)
+                    .name("2014")
+                    .build())
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -294,8 +326,12 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationEditions(Stream.of("2014").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getEditionNames(ArgumentMatchers.anyBoolean()))
-            .thenReturn(Stream.of(new KeyValueModel(1L, "2014")).collect(Collectors.toSet()));
+        Mockito.when(editionDao.findAll())
+        .thenReturn(Stream.of(CertificationEdition.builder()
+                .id(1L)
+                .name("2014")
+                .build())
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -530,7 +566,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
+        Mockito.when(cqmCriterionService.getAllCqmCriterionNumbers(ArgumentMatchers.anyBoolean()))
             .thenReturn(null);
 
         try {
@@ -548,9 +584,8 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .cqms(Stream.of("CMS3").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
-            .thenReturn(Stream.of(new DescriptiveModel(1L, "CMS1", ""), new DescriptiveModel(2L, "CMS2", ""))
-                    .collect(Collectors.toSet()));
+        Mockito.when(cqmCriterionService.getAllCqmCriterionNumbers(ArgumentMatchers.anyBoolean()))
+            .thenReturn(Stream.of("CMS1", "CMS2").collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -567,9 +602,8 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
                 .cqms(Stream.of("CMS1").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
-        .thenReturn(Stream.of(new DescriptiveModel(1L, "CMS1", ""), new DescriptiveModel(2L, "CMS2", ""))
-                .collect(Collectors.toSet()));
+        Mockito.when(cqmCriterionService.getAllCqmCriterionNumbers(ArgumentMatchers.anyBoolean()))
+            .thenReturn(Stream.of("CMS1", "CMS2").collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -628,11 +662,8 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .cqms(Stream.of("CMS1", "CMS2").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCQMCriterionNumbers(ArgumentMatchers.anyBoolean()))
-        .thenReturn(Stream.of(
-                new DescriptiveModel(1L, "CMS1", ""),
-                new DescriptiveModel(2L, "CMS2", ""))
-                .collect(Collectors.toSet()));
+        Mockito.when(cqmCriterionService.getAllCqmCriterionNumbers(ArgumentMatchers.anyBoolean()))
+        .thenReturn(Stream.of("CMS1", "CMS2").collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -649,8 +680,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
-            .thenReturn(null);
+        Mockito.when(acbDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -667,10 +697,10 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
             .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                     CertificationBody.builder().id(2L).name("SLI").build())
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -687,10 +717,10 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
         .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                 CertificationBody.builder().id(2L).name("ICSA").build())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -704,8 +734,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .practiceType("Inpatient")
             .build();
-        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
-            .thenReturn(null);
+        Mockito.when(practiceTypeDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -722,10 +751,16 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .practiceType("Bad")
             .build();
-        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Inpatient"),
-                    new KeyValueModel(2L, "Ambulatory"))
-                    .collect(Collectors.toSet()));
+        Mockito.when(practiceTypeDao.findAll())
+            .thenReturn(Stream.of(PracticeType.builder()
+                    .id(1L)
+                    .name("Inpatient")
+                    .build(),
+                    PracticeType.builder()
+                    .id(2L)
+                    .name("Ambulatory")
+                    .build())
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -742,10 +777,16 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .practiceType("Inpatient")
             .build();
-        Mockito.when(dimensionalDataManager.getPracticeTypeNames())
-        .thenReturn(Stream.of(new KeyValueModel(1L, "Inpatient"),
-                new KeyValueModel(2L, "Ambulatory"))
-                .collect(Collectors.toSet()));
+        Mockito.when(practiceTypeDao.findAll())
+        .thenReturn(Stream.of(PracticeType.builder()
+                .id(1L)
+                .name("Inpatient")
+                .build(),
+                PracticeType.builder()
+                .id(2L)
+                .name("Ambulatory")
+                .build())
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
