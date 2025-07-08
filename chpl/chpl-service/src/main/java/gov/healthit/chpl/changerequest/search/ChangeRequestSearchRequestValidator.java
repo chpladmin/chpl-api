@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,10 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -99,10 +101,11 @@ public class ChangeRequestSearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allChangeRequestStatuses = changeRequestManager.getChangeRequestStatusTypes();
+        List<ChangeRequestStatusType> allChangeRequestStatuses = changeRequestManager.getChangeRequestStatusTypes();
         Set<String> allChangeRequestStatusNames;
         if (!CollectionUtils.isEmpty(allChangeRequestStatuses)) {
-            allChangeRequestStatusNames = allChangeRequestStatuses.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+            allChangeRequestStatusNames = allChangeRequestStatuses.stream()
+                    .map(crs -> crs.getName()).collect(Collectors.toSet());
         } else {
             allChangeRequestStatusNames = Collections.emptySet();
         }
@@ -117,10 +120,11 @@ public class ChangeRequestSearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allChangeRequestTypes = changeRequestManager.getChangeRequestTypes();
+        List<ChangeRequestType> allChangeRequestTypes = changeRequestManager.getChangeRequestTypes();
         Set<String> allChangeRequestTypeNames;
         if (!CollectionUtils.isEmpty(allChangeRequestTypes)) {
-            allChangeRequestTypeNames = allChangeRequestTypes.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+            allChangeRequestTypeNames = allChangeRequestTypes.stream()
+                    .map(crt -> crt.getName()).collect(Collectors.toSet());
         } else {
             allChangeRequestTypeNames = Collections.emptySet();
         }
@@ -137,10 +141,9 @@ public class ChangeRequestSearchRequestValidator {
         }
 
         Set<String> errors = new LinkedHashSet<String>();
-        LocalDateTime startDateTime = null, endDateTime = null;
         if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeStart())) {
             try {
-                startDateTime = LocalDateTime.parse(request.getCurrentStatusChangeDateTimeStart(), dateFormatter);
+                LocalDateTime.parse(request.getCurrentStatusChangeDateTimeStart(), dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.changeRequest.currentStatusDateTime.invalid",
                         request.getCurrentStatusChangeDateTimeStart(),
@@ -150,7 +153,7 @@ public class ChangeRequestSearchRequestValidator {
 
         if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeEnd())) {
             try {
-                endDateTime = LocalDateTime.parse(request.getCurrentStatusChangeDateTimeEnd(), dateFormatter);
+                LocalDateTime.parse(request.getCurrentStatusChangeDateTimeEnd(), dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.changeRequest.currentStatusDateTime.invalid",
                         request.getCurrentStatusChangeDateTimeEnd(),
@@ -168,10 +171,9 @@ public class ChangeRequestSearchRequestValidator {
         }
 
         Set<String> errors = new LinkedHashSet<String>();
-        LocalDateTime startDateTime = null, endDateTime = null;
         if (!StringUtils.isEmpty(request.getSubmittedDateTimeStart())) {
             try {
-                startDateTime = LocalDateTime.parse(request.getSubmittedDateTimeStart(), dateFormatter);
+                LocalDateTime.parse(request.getSubmittedDateTimeStart(), dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.changeRequest.submittedDateTime.invalid",
                         request.getSubmittedDateTimeStart(),
@@ -181,7 +183,7 @@ public class ChangeRequestSearchRequestValidator {
 
         if (!StringUtils.isEmpty(request.getSubmittedDateTimeEnd())) {
             try {
-                endDateTime = LocalDateTime.parse(request.getSubmittedDateTimeEnd(), dateFormatter);
+                LocalDateTime.parse(request.getSubmittedDateTimeEnd(), dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.changeRequest.submittedDateTime.invalid",
                         request.getSubmittedDateTimeEnd(),

@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

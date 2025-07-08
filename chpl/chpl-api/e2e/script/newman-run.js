@@ -348,6 +348,36 @@ const subscriptionsControllerTests = {
   },
 };
 
+const meauresControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/measures-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/measures-controller-tests.xml',
+    },
+  },
+};
+
+const targetedUsersControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/targeted-users-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/targeted-users-controller-tests.xml',
+    },
+  },
+};
+
+const surveillanceControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/surveillance-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/surveillance-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -382,6 +412,9 @@ const jobs = [
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),
   cb => newman.run(subscriptionsControllerTests,cb),
+  cb => newman.run(meauresControllerTests,cb),
+  cb => newman.run(targetedUsersControllerTests,cb),
+  cb => newman.run(surveillanceControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

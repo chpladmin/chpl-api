@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import lombok.extern.log4j.Log4j2;
 
+@Deprecated
 @Log4j2
 @Service("CacheableDimensionalDataManager")
 public class CacheableDimensionalDataManager {
@@ -47,8 +48,8 @@ public class CacheableDimensionalDataManager {
         this.cqmCriterionService = cqmCriterionService;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.CLASSIFICATION_NAMES)
     public Set<KeyValueModel> getClassificationNames() {
         LOGGER.debug("Getting all classification names from the database (not cached).");
         List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDao.findAll();
@@ -61,8 +62,8 @@ public class CacheableDimensionalDataManager {
         return classificationTypeNames;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.EDITION_NAMES)
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
         LOGGER.debug("Getting all edition names from the database (not cached).");
         List<CertificationEdition> certificationEditions = certificationEditionDao.findAll();
@@ -81,6 +82,7 @@ public class CacheableDimensionalDataManager {
         return editionNames;
     }
 
+    @Deprecated
     @Transactional
     @Cacheable(value = CacheNames.CERTIFICATION_STATUSES)
     public Set<KeyValueModel> getCertificationStatuses() {
@@ -95,8 +97,8 @@ public class CacheableDimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.PRACTICE_TYPE_NAMES)
     public Set<KeyValueModel> getPracticeTypeNames() {
         LOGGER.debug("Getting all practice type names from the database (not cached).");
         List<PracticeType> practiceTypes = practiceTypeDao.findAll();
@@ -109,8 +111,8 @@ public class CacheableDimensionalDataManager {
         return practiceTypeNames;
     }
 
+    @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.CQM_CRITERION_NUMBERS)
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         LOGGER.debug("Getting all CQM numbers from the database (not cached).");
 

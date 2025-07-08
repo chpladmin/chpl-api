@@ -48,13 +48,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -107,13 +107,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -162,13 +162,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -220,13 +220,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -278,13 +278,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -360,13 +360,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -425,13 +425,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -480,13 +480,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -538,13 +538,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -596,13 +596,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -624,8 +624,307 @@
 								"description": "Expect ROLE ONC user to get error on quarterly surveillance report DELETE request"
 							},
 							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarters - status 200 and valid response for ONC user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"For ONC user, /surveillance-report/quarters endpoint returns 200 status and valid response\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.response).not.eq(null);\r",
+											"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endDay\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarters",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarters"
+									]
+								},
+								"description": "GET /surveillance-report/quarters - status 200 and valid response"
+							},
+							"response": []
 						}
 					]
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-process-types - returns 200 status and valid response for ONC users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ONC user, /surveillance-report/surveillance-process-types endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-process-types",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-process-types"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-process-types - returns 200 status and valid response for ONC users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ONC users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ONC user, /surveillance-report/surveillance-outcomes endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-outcomes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-outcomes"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ONC users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-grounds-for-initiating - returns 200 status and valid response for ONC user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ONC user, /surveillance-report/surveillance-grounds-for-initiating endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-grounds-for-initiating",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-grounds-for-initiating"
+							]
+						},
+						"description": "GET /surveillance-grounds-for-initiating - returns 200 status and valid response for ONC user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/cap-statuses - status 200 and valid response for ONC user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ONC user, /surveillance-report/cap-statuses endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/cap-statuses",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"cap-statuses"
+							]
+						},
+						"description": "GET /surveillance-report/cap-statuses - status 200 and valid response for ONC user"
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -707,13 +1006,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -766,13 +1065,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -843,13 +1142,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -908,13 +1207,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -932,8 +1231,307 @@
 								"description": "Expect ROLE ADMIN to get details of quarterly surveillance report for specific year"
 							},
 							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarters - 200 status and valid response for ADMIN user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"For ADMIN user, /surveillance-report/quarters endpoint returns 200 status and valid response\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.response).not.eq(null);\r",
+											"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endDay\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarters",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarters"
+									]
+								},
+								"description": "GET /surveillance-report/quarters - 200 status and valid response for ADMIN user"
+							},
+							"response": []
 						}
 					]
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-process-types - 200 status and valid response for ADMIN user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ADMIN user, /surveillance-report/surveillance-process-types endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-process-types",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-process-types"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-process-types - 200 status and valid response for ADMIN user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ADMIN user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ADMIN user, /surveillance-report/surveillance-outcomes endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-outcomes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-outcomes"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ADMIN user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-grounds-for-initiating - status 200 and valid response for ADMIN users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ADMIN user, /surveillance-report/surveillance-grounds-for-initiating endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-grounds-for-initiating",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-grounds-for-initiating"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-grounds-for-initiating - status 200 and valid response for ADMIN users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/cap-statuses - returns 200 status and valid response for ADMIN user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ADMIN user, /surveillance-report/cap-statuses endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/cap-statuses",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"cap-statuses"
+							]
+						},
+						"description": "GET /surveillance-report/cap-statuses - returns 200 status and valid response for ADMIN user"
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -1011,13 +1609,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1070,13 +1668,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1144,13 +1742,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1209,13 +1807,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1233,8 +1831,307 @@
 								"description": "Expect ROLE_ACB to get details of own quarterly surveillance report for specific year"
 							},
 							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarters - 200 status and valid response for ACB user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"For ACB user, /surveillance-report/quarters endpoint returns 200 status and valid response\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.response).not.eq(null);\r",
+											"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endMonth\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"endDay\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarters",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarters"
+									]
+								},
+								"description": "GET /surveillance-report/quarters - 200 status and valid response for ACB user"
+							},
+							"response": []
 						}
 					]
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-process-types - returns 200 status and valid response for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ACB user, /surveillance-report/surveillance-process-types endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-process-types",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-process-types"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-process-types - returns 200 status and valid response for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ACB user, /surveillance-report/surveillance-outcomes endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-outcomes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-outcomes"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-outcomes - returns 200 status and valid response for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-grounds-for-initiating - 200 status and valid response for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ACB user, /surveillance-report/surveillance-grounds-for-initiating endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-grounds-for-initiating",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-grounds-for-initiating"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-grounds-for-initiating - 200 status and valid response for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/cap-statuses - returns 200 status and valid response for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"For ACB user, /surveillance-report/cap-statuses endpoint returns 200 status and valid response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/cap-statuses",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"cap-statuses"
+							]
+						},
+						"description": "GET /surveillance-report/cap-statuses - returns 200 status and valid response for ACB user"
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -1301,13 +2198,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1348,13 +2245,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1399,13 +2296,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1450,13 +2347,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1507,13 +2404,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -1554,13 +2451,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1605,13 +2502,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1656,13 +2553,13 @@
 								"header": [
 									{
 										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									},
 									{
 										"key": "API-KEY",
-										"type": "text",
-										"value": "{{apiKey}}"
+										"value": "{{apiKey}}",
+										"type": "text"
 									}
 								],
 								"body": {
@@ -1684,8 +2581,249 @@
 								"description": "Expect anonymous user to get error on quarterly surveillance report DELETE request"
 							},
 							"response": []
+						},
+						{
+							"name": "GET /surveillance-report/quarters - status 401 and access denied error for anonymous user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"expect anonymous user to get 401 unauthorized response on /surveillance-report/quarters request\", () => {\r",
+											"  pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/rest/surveillance-report/quarters",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"surveillance-report",
+										"quarters"
+									]
+								},
+								"description": "GET /surveillance-report/quarters - status 401 and access denied error"
+							},
+							"response": []
 						}
 					]
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-process-types - 401 status and access denied error for Anonymous users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get 401 unauthorized response on /surveillance-report/surveillance-process-types request\", () => {\r",
+									"  pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-process-types",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-process-types"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-process-types - 401 status and access denied error for Anonymous users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-outcomes - status 401 and access denied error for anonymous user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get 401 unauthorized response on /surveillance-report/surveillance-outcomes request\", () => {\r",
+									"  pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-outcomes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-outcomes"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-outcomes - status 401 and access denied error for anonymous user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/surveillance-grounds-for-initiating - status 401 and access denied error for anonymous user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get 401 unauthorized response on /surveillance-report/surveillance-grounds-for-initiating request\", () => {\r",
+									"  pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/surveillance-grounds-for-initiating",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"surveillance-grounds-for-initiating"
+							]
+						},
+						"description": "GET /surveillance-report/surveillance-grounds-for-initiating - status 401 and access denied error for anonymous user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /surveillance-report/cap-statuses - returns 401 status and access denied error for anonymous user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect anonymous user to get 401 unauthorized response on /surveillance-report/cap-statuses request\", () => {\r",
+									"  pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/surveillance-report/cap-statuses",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance-report",
+								"cap-statuses"
+							]
+						},
+						"description": "GET /surveillance-report/cap-statuses - returns 401 status and access denied error for anonymous user"
+					},
+					"response": []
 				}
 			]
 		}

@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain.comparator;
 
 import java.util.Comparator;
 
-import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.sed.TestTask;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
