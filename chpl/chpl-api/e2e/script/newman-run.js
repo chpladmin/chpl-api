@@ -378,6 +378,16 @@ const surveillanceControllerTests = {
   },
 };
 
+const searchQuestionableActivityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-questionable-activity-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-questionable-activity-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -415,6 +425,7 @@ const jobs = [
   cb => newman.run(meauresControllerTests,cb),
   cb => newman.run(targetedUsersControllerTests,cb),
   cb => newman.run(surveillanceControllerTests,cb),
+  cb => newman.run(searchQuestionableActivityControllerTests,cb),
   ];
 
 const responseCallback = (err) => {
