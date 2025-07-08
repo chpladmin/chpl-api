@@ -1,6 +1,6 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,7 +12,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -24,13 +23,13 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
     private static final Long NOT_FOUND = -1L;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
-    private Set<RequirementType> requirementTypes;
+    private List<RequirementType> requirementTypes;
 
     @Autowired
-    public SurveillanceRequirementReviewer(SurveillanceDAO survDao, ErrorMessageUtil msgUtil, DimensionalDataManager dimensionalDataManager) {
+    public SurveillanceRequirementReviewer(SurveillanceDAO survDao, ErrorMessageUtil msgUtil) {
         this.survDao = survDao;
         this.msgUtil = msgUtil;
-        this.requirementTypes = dimensionalDataManager.getRequirementTypes();
+        this.requirementTypes = survDao.getRequirementTypes();
     }
 
     @Override

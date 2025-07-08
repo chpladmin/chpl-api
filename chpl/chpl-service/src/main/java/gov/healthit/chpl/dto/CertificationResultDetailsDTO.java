@@ -13,6 +13,8 @@ import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStan
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,10 +50,10 @@ public class CertificationResultDetailsDTO implements Serializable {
     private List<CertificationResultOptionalStandard> optionalStandards;
     private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultConformanceMethodEntity> conformanceMethods;
-    private List<CertificationResultTestProcedureDTO> testProcedures;
+    private List<CertificationResultTestProcedure> testProcedures;
     private List<CertificationResultTestData> testData;
     private List<CertificationResultTestTool> testTools;
-    private List<CertificationResultTestStandardDTO> testStandards;
+    private List<CertificationResultTestStandard> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultSvap> svaps;
     private List<CertificationResultStandard> standards;
@@ -105,7 +107,7 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultTestProcedures() != null) {
             this.testProcedures = entity.getCertificationResultTestProcedures().stream()
-                    .map(e -> new CertificationResultTestProcedureDTO(e))
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
 
@@ -117,7 +119,7 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultTestStandards() != null) {
             this.testStandards = entity.getCertificationResultTestStandards().stream()
-                    .map(e -> new CertificationResultTestStandardDTO(e))
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
 

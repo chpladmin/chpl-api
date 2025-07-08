@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
+import gov.healthit.chpl.sed.AgeRange;
+import gov.healthit.chpl.sed.EducationType;
+import gov.healthit.chpl.sed.TestParticipant;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import lombok.extern.log4j.Log4j2;
@@ -113,8 +113,8 @@ public class TestParticipantsUploadHandler {
                 .uniqueId(id)
                 .friendlyId(id)
                 .gender(gender)
-                .age(TestParticipantAge.builder().name(age).build())
-                .educationType(TestParticipantEducation.builder().name(education).build())
+                .age(AgeRange.builder().name(age).build())
+                .educationType(EducationType.builder().name(education).build())
                 .occupation(occupation)
                 .professionalExperienceMonths(professionalExperienceMonths)
                 .professionalExperienceMonthsStr(professionalExperienceAtIndex)

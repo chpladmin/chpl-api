@@ -41,11 +41,9 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
-import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -53,7 +51,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
@@ -67,9 +64,7 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
@@ -91,6 +86,10 @@ import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertific
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.targeteduser.TargetedUser;
+import gov.healthit.chpl.targeteduser.TargetedUserDAO;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
@@ -199,6 +198,11 @@ public class CertifiedProductManager extends SecuredManager {
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertificationStatus> getAllCertificationStatuses() {
+        return certStatusDao.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -806,12 +810,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = tusToAdd.size() + idsToRemove.size();
         for (CertifiedProductTargetedUser toAdd : tusToAdd) {
-            TargetedUserDTO item = targetedUserDao.findOrCreate(toAdd.getTargetedUserId(), toAdd.getTargetedUserName());
-            CertifiedProductTargetedUserDTO tuDto = new CertifiedProductTargetedUserDTO();
-            tuDto.setTargetedUserId(item.getId());
-            tuDto.setTargetedUserName(item.getName());
-            tuDto.setCertifiedProductId(listingId);
-            cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
+            TargetedUser targetedUser = targetedUserDao.findOrCreate(toAdd.getTargetedUserId(), toAdd.getTargetedUserName());
+            cpTargetedUserDao.createCertifiedProductTargetedUser(listingId, targetedUser);
         }
 
         for (Long idToRemove : idsToRemove) {

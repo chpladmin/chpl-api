@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +19,11 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SurveillanceRequirementReviewerTest {
     private SurveillanceDAO surveillanceDAO;
     private ErrorMessageUtil errorMessageUtil;
-    private DimensionalDataManager dimensionalDataManager;
 
     private SurveillanceRequirementReviewer reviewer;
 
@@ -33,7 +31,6 @@ public class SurveillanceRequirementReviewerTest {
     public void before() {
         surveillanceDAO = Mockito.mock(SurveillanceDAO.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
 
         Mockito.when(surveillanceDAO.findSurveillanceResultType(ArgumentMatchers.anyLong()))
             .thenReturn(getNoNonConformityResultType());
@@ -66,10 +63,10 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(requirementType));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(requirementType));
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(0, surveillance.getErrorMessages().size());
@@ -88,11 +85,11 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(getRequirementType()));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(getRequirementType()));
 
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(0, surveillance.getErrorMessages().size());
@@ -111,11 +108,11 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(getRequirementType()));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(getRequirementType()));
 
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(0, surveillance.getErrorMessages().size());
@@ -134,11 +131,11 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(getRequirementType()));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(getRequirementType()));
 
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(0, surveillance.getErrorMessages().size());
@@ -157,11 +154,11 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(getRequirementType()));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(getRequirementType()));
 
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(1, surveillance.getErrorMessages().size());
@@ -180,11 +177,11 @@ public class SurveillanceRequirementReviewerTest {
                 .build();
         surveillance.setErrorMessages(new HashSet<String>());
 
-        Mockito.when(dimensionalDataManager.getRequirementTypes())
-                .thenReturn(Set.of(getRequirementType()));
+        Mockito.when(surveillanceDAO.getRequirementTypes())
+                .thenReturn(List.of(getRequirementType()));
 
 
-        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil, dimensionalDataManager);
+        reviewer = new SurveillanceRequirementReviewer(surveillanceDAO, errorMessageUtil);
         reviewer.review(surveillance);
 
         assertEquals(1, surveillance.getErrorMessages().size());

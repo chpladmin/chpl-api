@@ -11,14 +11,14 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
+import gov.healthit.chpl.teststandard.TestStandard;
+import gov.healthit.chpl.teststandard.TestStandardDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestStandardReviewerTest {

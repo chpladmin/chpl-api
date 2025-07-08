@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
