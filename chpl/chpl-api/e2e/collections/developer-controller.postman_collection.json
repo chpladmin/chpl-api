@@ -1,9 +1,7 @@
 {
 	"info": {
-		"_postman_id": "1861693f-895a-4a6d-b8d7-bfef747790de",
 		"name": "developer-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "131372"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
