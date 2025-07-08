@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -52,17 +51,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
                 .toList();
     }
 
-    public CertifiedProductTestingLab lookupMapping(Long certifiedProductId, Long tlId)
-            throws EntityRetrievalException {
-        List<CertifiedProductTestingLabMapEntity> entities = findSpecificMapping(certifiedProductId, tlId);
-
-        CertifiedProductTestingLab result = null;
-        if (entities != null && entities.size() > 0) {
-            result = entities.get(0).toDomain();
-        }
-        return result;
-    }
-
     private CertifiedProductTestingLabMapEntity getEntityById(final Long id) throws EntityRetrievalException {
         CertifiedProductTestingLabMapEntity entity = null;
         Query query = entityManager.createQuery(
@@ -90,24 +78,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
                         CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", productId);
-        List<CertifiedProductTestingLabMapEntity> result = query.getResultList();
-
-        return result;
-    }
-
-    private List<CertifiedProductTestingLabMapEntity> findSpecificMapping(final Long productId, final Long tlId)
-            throws EntityRetrievalException {
-        Query query = entityManager
-                .createQuery(
-                        "SELECT tu from CertifiedProductTestingLabEntity tu "
-                                + "LEFT OUTER JOIN FETCH tl.testingLab "
-                                + "WHERE (NOT tl.deleted = true) "
-                                + "AND (certifiedProductId = :productId) "
-                                + "AND (tl.testingLabId = :tlId)",
-                        CertifiedProductTargetedUserEntity.class);
-
-        query.setParameter("productId", productId);
-        query.setParameter("tlId", tlId);
         List<CertifiedProductTestingLabMapEntity> result = query.getResultList();
 
         return result;

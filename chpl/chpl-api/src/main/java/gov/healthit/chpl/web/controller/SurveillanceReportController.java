@@ -25,10 +25,18 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceCapStatus;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.CacheControl;
+import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
+import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +58,70 @@ public class SurveillanceReportController {
             SurveillanceReportManager reportManager) {
         this.msgUtil = msgUtil;
         this.reportManager = reportManager;
+    }
+
+    @Operation(summary = "Get a list of quarters for which a surveillance report can be created.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/quarters", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<Quarter> getQuarters() {
+        return reportManager.getQuarters();
+    }
+
+    @Operation(summary = "Get a list of surveillance process types.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/surveillance-process-types", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<SurveillanceProcessType> getSurveillanceProcessTypes() {
+        return reportManager.getSurveillanceProcessTypes();
+    }
+
+    @Operation(summary = "Get a list of surveillance outcomes.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/surveillance-outcomes", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<SurveillanceOutcome> getSurveillanceOutcomes() {
+        return reportManager.getSurveillanceOutcomes();
+    }
+
+    @Operation(summary = "Get a list of options for grounds for initiating surveillance.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/surveillance-grounds-for-initiating", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<SurveillanceGroundsForInitiating> getSurveillanceGroundsForInitiating() {
+        return reportManager.getSurveillanceGroundsForInitiating();
+    }
+
+    @Operation(summary = "Get a list of options for Corrective Action Plan (CAP) status values.",
+            description = "Security Restrictions: Users with either role chpl-admin, chpl-onc, or chpl-onc-acb",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/cap-statuses", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<SurveillanceCapStatus> getSurveillanceCapStatuses() {
+        return reportManager.getSurveillanceCapStatuses();
     }
 
     @Operation(summary = "Get all annual surveillance reports this user has access to.",

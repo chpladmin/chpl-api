@@ -1,6 +1,6 @@
 package gov.healthit.chpl.changerequest.manager;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.ff4j.FF4j;
@@ -29,6 +29,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
@@ -41,7 +42,6 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -148,7 +148,7 @@ public class ChangeRequestManager {
     }
 
     @Transactional(readOnly = true)
-    public Set<KeyValueModel> getChangeRequestTypes() {
+    public List<ChangeRequestType> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
                 .filter(type -> type.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
                         || (type.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
@@ -160,15 +160,12 @@ public class ChangeRequestManager {
                         || (type.getName().equals(ChangeRequestType.RWT_RESULTS_TYPE)
                                 && ff4j.check(FeatureList.RWT_CHANGE_REQUEST))
                         )
-                .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
-                .collect(Collectors.<KeyValueModel>toSet());
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public Set<KeyValueModel> getChangeRequestStatusTypes() {
-        return changeRequestStatusTypeDAO.getChangeRequestStatusTypes().stream()
-                .map(crStatusType -> new KeyValueModel(crStatusType.getId(), crStatusType.getName()))
-                .collect(Collectors.toSet());
+    public List<ChangeRequestStatusType> getChangeRequestStatusTypes() {
+        return changeRequestStatusTypeDAO.getChangeRequestStatusTypes();
     }
 
     @Transactional

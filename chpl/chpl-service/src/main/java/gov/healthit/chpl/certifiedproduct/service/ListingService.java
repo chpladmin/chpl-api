@@ -18,11 +18,11 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -32,8 +32,6 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -50,7 +48,9 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
+import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -67,11 +67,11 @@ public class ListingService {
     private PromotingInteroperabilityUserHistoryService piuService;
 
     private ChplProductNumberUtil chplProductNumberUtil;
-    private DimensionalDataManager dimensionalDataManager;
     private SurveillanceManager survManager;
 
     private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
     private ListingGraphDAO listingGraphDao;
+    private CertificationEditionDAO editionDao;
     private CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
@@ -99,8 +99,8 @@ public class ListingService {
             DirectReviewSearchService drService,
             PromotingInteroperabilityUserHistoryService piuService,
             ChplProductNumberUtil chplProductNumberUtil,
-            DimensionalDataManager dimensionalDataManager,
             SurveillanceManager survManager,
+            CertificationEditionDAO editionDao,
             CertifiedProductTestingLabDAO certifiedProductTestingLabDao,
             ListingGraphDAO listingGraphDao,
             @Qualifier("certifiedProductChplProductNumberHistoryDao")
@@ -118,8 +118,8 @@ public class ListingService {
         this.drService = drService;
         this.piuService = piuService;
         this.chplProductNumberUtil = chplProductNumberUtil;
-        this.dimensionalDataManager = dimensionalDataManager;
         this.survManager = survManager;
+        this.editionDao = editionDao;
         this.certifiedProductTestingLabDao = certifiedProductTestingLabDao;
         this.listingGraphDao = listingGraphDao;
         this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
@@ -299,7 +299,7 @@ public class ListingService {
         if (editionId == null) {
             return null;
         }
-        Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
+        Optional<CertificationEdition> certEdition = editionDao.findAll().stream()
                 .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
 
@@ -361,7 +361,6 @@ public class ListingService {
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id) throws EntityRetrievalException {
         return certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id).stream()
-                .map(dto -> new CertifiedProductTargetedUser(dto))
                 .sorted(tuComparator)
                 .collect(Collectors.toList());
     }

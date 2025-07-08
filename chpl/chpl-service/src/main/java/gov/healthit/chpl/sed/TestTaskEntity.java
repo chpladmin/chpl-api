@@ -1,0 +1,120 @@
+package gov.healthit.chpl.sed;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.EntityAudit;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "test_task")
+public class TestTaskEntity extends EntityAudit {
+    private static final long serialVersionUID = -6364783003138741063L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "test_task_id", nullable = false)
+    private Long id;
+
+    @Column(name = "friendly_id", nullable = true)
+    private String friendlyId;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "task_success_avg_pct", nullable = false)
+    private Float taskSuccessAverage;
+
+    @Column(name = "task_success_stddev_pct", nullable = false)
+    private Float taskSuccessStddev;
+
+    @Column(name = "task_path_deviation_observed", nullable = false)
+    private Integer taskPathDeviationObserved;
+
+    @Column(name = "task_path_deviation_optimal", nullable = false)
+    private Integer taskPathDeviationOptimal;
+
+    @Column(name = "task_time_avg_seconds", nullable = false)
+    private Long taskTimeAvg;
+
+    @Column(name = "task_time_stddev_seconds", nullable = false)
+    private Integer taskTimeStddev;
+
+    @Column(name = "task_time_deviation_observed_avg_seconds", nullable = false)
+    private Integer taskTimeDeviationObservedAvg;
+
+    @Column(name = "task_time_deviation_optimal_avg_seconds", nullable = false)
+    private Integer taskTimeDeviationOptimalAvg;
+
+    @Column(name = "task_errors_pct", nullable = false)
+    private Float taskErrors;
+
+    @Column(name = "task_errors_stddev_pct", nullable = false)
+    private Float taskErrorsStddev;
+
+    @Column(name = "task_rating_scale", nullable = false)
+    private String taskRatingScale;
+
+    @Column(name = "task_rating", nullable = false)
+    private Float taskRating;
+
+    @Column(name = "task_rating_stddev", nullable = false)
+    private Float taskRatingStddev;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testTaskId")
+    @Basic(optional = false)
+    @Column(name = "test_task_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
+
+    public TestTask toDomain() {
+        return TestTask.builder()
+                .description(this.getDescription())
+                .id(this.getId())
+                .uniqueId(this.getFriendlyId())
+                .friendlyId(this.getFriendlyId())
+                .taskErrors(this.getTaskErrors())
+                .taskErrorsStddev(this.getTaskErrorsStddev())
+                .taskPathDeviationObserved(this.getTaskPathDeviationObserved())
+                .taskPathDeviationOptimal(this.getTaskPathDeviationOptimal())
+                .taskRating(this.getTaskRating())
+                .taskRatingScale(this.getTaskRatingScale())
+                .taskRatingStddev(this.getTaskRatingStddev())
+                .taskSuccessAverage(this.getTaskSuccessAverage())
+                .taskSuccessStddev(this.getTaskSuccessStddev())
+                .taskTimeAvg(this.getTaskTimeAvg())
+                .taskTimeDeviationObservedAvg(this.getTaskTimeDeviationObservedAvg())
+                .taskTimeDeviationOptimalAvg(this.getTaskTimeDeviationOptimalAvg())
+                .taskTimeStddev(this.getTaskTimeStddev())
+                .testParticipants(this.getTestParticipants().stream()
+                        .map(tpMap -> tpMap.getTestParticipant().toDomain())
+                        .collect(Collectors.toCollection(LinkedHashSet<TestParticipant>::new)))
+                .build();
+
+    }
+}

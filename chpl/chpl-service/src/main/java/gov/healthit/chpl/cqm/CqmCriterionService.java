@@ -23,6 +23,20 @@ public class CqmCriterionService {
         this.cqmCriterionDao = cqmCriterionDao;
     }
 
+    public List<String> getAllCqmCriterionNumbers(boolean simple) {
+        List<String> cqmCriterionNumbers = new ArrayList<String>();
+
+        List<CQMCriterion> cmsCqms = getAllCmsCqmsMostRecentVersionOnly();
+        List<CQMCriterion> nqfCqms = getAllNqfCqms();
+        cmsCqms.stream()
+            .forEach(cmsCqm -> cqmCriterionNumbers.add(cmsCqm.getCmsId()));
+        if (!simple) {
+            nqfCqms.stream()
+                .forEach(nqfCqm -> cqmCriterionNumbers.add(nqfCqm.getNqfNumber()));
+        }
+        return cqmCriterionNumbers;
+    }
+
     public List<CQMCriterionAllVersions> getAllCmsCqmsWithAllVersions() {
         List<CQMCriterionAllVersions> result = new ArrayList<CQMCriterionAllVersions>();
         //this is an exploded list of CQMs - each one has only one version, but we can group by CMS ID

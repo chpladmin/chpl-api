@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,23 +15,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerSearchRequestValidator")
 public class SearchRequestValidator {
-    private DimensionalDataManager dimensionalDataManager;
+    private CertificationBodyDAO acbDao;
+    private DeveloperStatusDAO devStatusDao;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+    public SearchRequestValidator(CertificationBodyDAO acbDao,
+            DeveloperStatusDAO devStatusDao,
             ErrorMessageUtil msgUtil) {
-        this.dimensionalDataManager = dimensionalDataManager;
+        this.acbDao = acbDao;
+        this.devStatusDao = devStatusDao;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(DeveloperSearchRequest.DATE_SEARCH_FORMAT);
     }
@@ -55,10 +60,12 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allowedDeveloperStatuses = dimensionalDataManager.getDeveloperStatuses();
+        List<DeveloperStatus> allowedDeveloperStatuses = devStatusDao.findAll();
         Set<String> allowedDeveloperStatusNames;
         if (!CollectionUtils.isEmpty(allowedDeveloperStatuses)) {
-            allowedDeveloperStatusNames = allowedDeveloperStatuses.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+            allowedDeveloperStatusNames = allowedDeveloperStatuses.stream()
+                    .map(ds -> ds .getName())
+                    .collect(Collectors.toSet());
         } else {
             allowedDeveloperStatusNames = Collections.emptySet();
         }
@@ -75,9 +82,9 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<CertificationBody> allAcbs = dimensionalDataManager.getAllAcbs();
+        List<CertificationBody> allAcbs = acbDao.findAll();
         return acbs.stream()
-                .filter(acb -> !isInAcbSet(acb, allAcbs))
+                .filter(acb -> !isInAcbList(acb, allAcbs))
                 .map(acb -> msgUtil.getMessage("search.certificationBodies.invalid", acb))
                 .collect(Collectors.toSet());
     }
@@ -240,11 +247,11 @@ public class SearchRequestValidator {
         return Collections.emptySet();
     }
 
-    private boolean isInAcbSet(String value, Set<CertificationBody> setToSearch) {
-        if (setToSearch == null) {
+    private boolean isInAcbList(String value, List<CertificationBody> listToSearch) {
+        if (listToSearch == null) {
             return false;
         }
-        return setToSearch.stream()
+        return listToSearch.stream()
             .filter(item -> item.getName().equalsIgnoreCase(value))
             .count() > 0;
     }
