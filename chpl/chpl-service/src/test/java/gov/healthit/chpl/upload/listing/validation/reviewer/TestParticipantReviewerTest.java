@@ -16,11 +16,11 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSed;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
-import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
-import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.sed.AgeRange;
+import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.sed.EducationType;
+import gov.healthit.chpl.sed.TestParticipant;
+import gov.healthit.chpl.sed.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestParticipantReviewerTest {
@@ -157,7 +157,7 @@ public class TestParticipantReviewerTest {
                         .build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .age(TestParticipantAge.builder()
+                    .age(AgeRange.builder()
                             .id(null)
                             .name(null)
                             .build())
@@ -183,7 +183,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .age(TestParticipantAge.builder()
+                    .age(AgeRange.builder()
                             .id(null)
                             .name("")
                             .build())
@@ -209,7 +209,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .age(TestParticipantAge.builder()
+                    .age(AgeRange.builder()
                             .id(null)
                             .name("notanagerange")
                             .build())
@@ -235,7 +235,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationType(TestParticipantEducation.builder()
+                    .educationType(EducationType.builder()
                             .id(null)
                             .name(null)
                             .build())
@@ -261,7 +261,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationType(TestParticipantEducation.builder()
+                    .educationType(EducationType.builder()
                             .id(null)
                             .name("")
                             .build())
@@ -287,7 +287,7 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                .educationType(TestParticipantEducation.builder()
+                .educationType(EducationType.builder()
                         .id(null)
                         .name("notaneducation")
                         .build())
@@ -798,14 +798,14 @@ public class TestParticipantReviewerTest {
     private TestParticipant buildTestParticipant(String uniqueId) {
         return TestParticipant.builder()
                 .friendlyId(uniqueId)
-                .age(TestParticipantAge.builder()
+                .age(AgeRange.builder()
                         .id(1L)
                         .name("10-20")
                         .build())
                 .assistiveTechnologyNeeds("some needs")
                 .computerExperienceMonths(24)
                 .computerExperienceMonthsStr("24")
-                .educationType(TestParticipantEducation.builder()
+                .educationType(EducationType.builder()
                         .id(2L)
                         .name("Bachelor's Degree")
                         .build())

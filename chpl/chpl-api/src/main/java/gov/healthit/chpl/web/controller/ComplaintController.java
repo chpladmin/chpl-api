@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.List;
+
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.complaint.ComplaintManager;
+import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -32,6 +36,28 @@ public class ComplaintController {
     public ComplaintController(ComplaintManager complaintManager, ErrorMessageUtil errorMessageUtil) {
         this.complaintManager = complaintManager;
         this.errorMessageUtil = errorMessageUtil;
+    }
+
+    @Operation(summary = "Get all available complaint types in the system",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ComplaintType> getComplaintTypes() {
+        return complaintManager.getComplaintTypes();
+    }
+
+    @Operation(summary = "Get all available complainant types in the system",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/complainant-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ComplainantType> getComplainantTypes() {
+        return complaintManager.getComplainantTypes();
     }
 
     @Operation(summary = "Save complaint for use in Surveillance Quarterly Report.",

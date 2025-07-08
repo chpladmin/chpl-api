@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,12 +14,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -190,8 +192,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .currentStatusNames(Stream.of("Sandwich").collect(Collectors.toSet()))
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -208,8 +209,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .currentStatusNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -227,8 +227,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .currentStatusNames(Collections.EMPTY_SET)
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -241,8 +240,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     public void validate_nullStatusNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder().build();
         request.setCurrentStatusNames(null);
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -256,8 +254,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
                 .currentStatusNames(Stream.of("active").collect(Collectors.toSet()))
                 .build();
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -271,8 +268,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
                 .currentStatusNames(Stream.of("ActiVE", "Rejected").collect(Collectors.toSet()))
                 .build();
-        Mockito.when(changeRequestManager.getChangeRequestStatusTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active"), new KeyValueModel(2L, "Rejected")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestStatusTypes()).thenReturn(getStatusTypes());
 
         try {
             validator.validate(request);
@@ -286,8 +282,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .changeRequestTypeNames(Stream.of("Sandwich").collect(Collectors.toSet()))
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -304,8 +299,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .changeRequestTypeNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -323,8 +317,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .changeRequestTypeNames(Collections.EMPTY_SET)
             .build();
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -337,8 +330,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     public void validate_nullTypeNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder().build();
         request.setChangeRequestTypeNames(null);
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -352,8 +344,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
                 .changeRequestTypeNames(Stream.of("demographic").collect(Collectors.toSet()))
                 .build();
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -367,8 +358,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
                 .changeRequestTypeNames(Stream.of("DemoGRAPHic", "attestaTion").collect(Collectors.toSet()))
                 .build();
-        Mockito.when(changeRequestManager.getChangeRequestTypes())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
+        Mockito.when(changeRequestManager.getChangeRequestTypes()).thenReturn(getTypes());
 
         try {
             validator.validate(request);
@@ -745,5 +735,29 @@ public class ChangeRequestSearchRequestValidatorTest {
         } catch (ValidationException ex) {
             fail(ex.getMessage());
         }
+    }
+
+    private List<ChangeRequestStatusType> getStatusTypes() {
+        return Stream.of(ChangeRequestStatusType.builder()
+                    .id(1L)
+                    .name("Active")
+                    .build(),
+                ChangeRequestStatusType.builder()
+                    .id(2L)
+                    .name("Rejected")
+                    .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<ChangeRequestType> getTypes() {
+        return Stream.of(ChangeRequestType.builder()
+                    .id(1L)
+                    .name("Demographic")
+                    .build(),
+                ChangeRequestType.builder()
+                    .id(2L)
+                    .name("Attestation")
+                    .build())
+                .collect(Collectors.toList());
     }
 }

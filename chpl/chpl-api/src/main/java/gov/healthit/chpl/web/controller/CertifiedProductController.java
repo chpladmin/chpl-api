@@ -21,6 +21,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.csv.ListingCsvWriter;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -85,7 +86,8 @@ public class CertifiedProductController {
             "checkstyle:parameternumber"
     })
     @Autowired
-    public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
+    public CertifiedProductController(CertifiedProductDetailsManager cpdManager,
+            CertifiedProductManager cpManager,
             IcsManager icsManager, SurveillanceManager survManager,
             ListingCsvWriter listingCsvWriter,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
@@ -100,6 +102,17 @@ public class CertifiedProductController {
         this.validatorFactory = validatorFactory;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.fileUtils = fileUtils;
+    }
+
+    @Operation(summary = "Get all possible certification statuses in the CHPL",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/certification-statuses", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody List<CertificationStatus> getCertificationStatuses() {
+        return cpManager.getAllCertificationStatuses();
     }
 
     @Operation(summary = "Get all details for a specified certified product.",
