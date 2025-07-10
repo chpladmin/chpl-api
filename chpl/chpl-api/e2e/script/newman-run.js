@@ -378,6 +378,16 @@ const surveillanceControllerTests = {
   },
 };
 
+const conformanceMethodsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/conformance-methods-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/conformance-methods-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -415,6 +425,7 @@ const jobs = [
   cb => newman.run(meauresControllerTests,cb),
   cb => newman.run(targetedUsersControllerTests,cb),
   cb => newman.run(surveillanceControllerTests,cb),
+  cb => newman.run(conformanceMethodsControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

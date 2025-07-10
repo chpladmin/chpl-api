@@ -1,0 +1,616 @@
+{
+	"info": {
+		"name": "conformance-methods",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "POST /conformance-methods -status 401 for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to add new conformance-methods by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access Denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1115,\r\n  \"name\": \"Test1CM1\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "POST /conformance-methods -status 401 for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /conformance-methods - status 401 and access denied error for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to edit conformance-methods by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access Denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1113,\r\n  \"name\": \"Test1CM-Edit\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "PUT /conformance-methods - status 401 and access denied error for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /conformance-methods/5 - status 401 and error for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to delete conformance-methods by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access Denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods/5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods",
+								"5"
+							]
+						},
+						"description": "DELETE /conformance-methods/5 - status 401 and error for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET rest/conformance-methods - should get status 200 for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to GET conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "GET rest/conformance-methods - should get status 200 for ACB user"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "POST /conformance-methods - status 200 for ONC user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to add new conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1115,\r\n  \"name\": \"Test1CM1-Test1234\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "POST /conformance-methods - status 200 for ONC user"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /conformance-methods - status 200 for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to edit conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1115,\r\n  \"name\": \"Test1CM1-Test1234-Edit\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "PUT /conformance-methods - status 200 for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /conformance-methods/1115 - should return status 200 for ONC user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to delete conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods/1115",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods",
+								"1115"
+							]
+						},
+						"description": "DELETE /conformance-methods/1115 - should return status 200 for ONC user"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /rest/conformance-methods - status 200 for ONC user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to GET conformance-methods by ONC user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "GET /rest/conformance-methods - status 200 for ONC user"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "GET - rest/conformance-methods - status 200 for anonymous user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Anonymous user should be able to access GET conformance-methods, returns status code 200 \", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/conformance-methods",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"conformance-methods"
+					]
+				},
+				"description": "GET - rest/conformance-methods - status 200 for anonymous user"
+			},
+			"response": []
+		}
+	]
+}
