@@ -1,9 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.util.Util;
 
 public class SimpleCertificationId implements Serializable {

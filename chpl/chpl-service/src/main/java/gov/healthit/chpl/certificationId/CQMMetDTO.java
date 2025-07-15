@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 

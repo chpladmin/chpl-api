@@ -6,17 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dto.CQMMetDTO;
 
 public abstract class Validator {
     protected Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>(100);
     protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
-    protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
-    protected String attestationYear = null;
 
     // missing criteria where all in the set are required
     protected ArrayList<String> missingAnd = new ArrayList<String>();
@@ -67,10 +63,6 @@ public abstract class Validator {
         return this.domainsMet;
     }
 
-    public String getAttestationYear() {
-        return this.attestationYear;
-    }
-
     public boolean isValid() {
         return this.valid;
     }
@@ -87,9 +79,8 @@ public abstract class Validator {
     // validate
     //
     // **********************************************************************
-    public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
-        this.collectMetData(certDtos, cqmDtos, years);
-        this.attestationYear = Validator.calculateAttestationYear(this.editionYears);
+    public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
+        this.collectMetData(certDtos, cqmDtos);
         this.valid = this.onValidate();
         this.calculatePercentages();
         return this.isValid();
@@ -99,10 +90,7 @@ public abstract class Validator {
     // collectMetData
     //
     // **********************************************************************
-    protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
-
-        // Collect the certification years
-        editionYears.addAll(years);
+    protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
 
         // Collect criteria met
         if (null != certDtos) {
