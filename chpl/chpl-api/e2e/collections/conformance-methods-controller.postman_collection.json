@@ -114,7 +114,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": 1113,\r\n  \"name\": \"Test1CM-Edit\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }",
+							"raw": "{\r\n        \"id\": 4,\r\n        \"name\": \"HIMSS-IIP Test Method\",\r\n        \"removalDate\": null,\r\n        \"criteria\": [\r\n            {\r\n                \"id\": 43,\r\n                \"number\": \"170.315 (f)(1)\",\r\n                \"title\": \"Transmission to Immunization Registries\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/transmission-immunization-registries\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            }\r\n        ],\r\n        \"removed\": false\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -400,7 +400,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": 1115,\r\n  \"name\": \"Test1CM1-Test1234-Edit\",\r\n  \"removalDate\": \"N/A\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 165,\r\n      \"number\": \"170.315 (b)(1)\",\r\n      \"title\": \"Transitions of Care\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null,\r\n      \"description\": null,\r\n      \"rule\": {\r\n        \"id\": 4,\r\n        \"name\": \"Cures\"\r\n      },\r\n      \"companionGuideLink\": \"https://www.healthit.gov/test-method/transitions-care\",\r\n      \"editable\": true\r\n    }\r\n  ],\r\n  \"removed\": false\r\n  }",
+							"raw": "{\r\n        \"id\": 4,\r\n        \"name\": \"HIMSS-IIP Test Method\",\r\n        \"removalDate\": null,\r\n        \"criteria\": [\r\n            {\r\n                \"id\": 43,\r\n                \"number\": \"170.315 (f)(1)\",\r\n                \"title\": \"Transmission to Immunization Registries\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/transmission-immunization-registries\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            }\r\n        ],\r\n        \"removed\": false\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -422,14 +422,15 @@
 					"response": []
 				},
 				{
-					"name": "DELETE /conformance-methods/1115 - should return status 200 for ONC user",
+					"name": "DELETE /conformance-methods/1 - request to delete conformance-methods which is attested to listings giving proper error message",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"request to delete conformance-methods by ONC user should return Status code 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"request to delete conformance-methods which is attested to listings giving proper error message\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"This Conformance Method is attested to by\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -462,14 +463,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{url}}/rest/conformance-methods/1115",
+							"raw": "{{url}}/rest/conformance-methods/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"rest",
 								"conformance-methods",
-								"1115"
+								"1"
 							]
 						},
 						"description": "DELETE /conformance-methods/1115 - should return status 200 for ONC user"
