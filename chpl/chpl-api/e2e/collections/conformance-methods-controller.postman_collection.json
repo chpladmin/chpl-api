@@ -302,7 +302,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"request to add new conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"pm.test(\"request to add new conformance-methods by ONC user should return Status code 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
@@ -359,13 +359,13 @@
 					"response": []
 				},
 				{
-					"name": "PUT /conformance-methods - status 200 for ACB user",
+					"name": "PUT /conformance-methods - status 200 for ONC user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"request to edit conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"pm.test(\"request to edit conformance-methods by ONC user should return Status code 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
@@ -428,7 +428,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"request to delete conformance-methods by ACB user should return Status code 200\", function () {\r",
+									"pm.test(\"request to delete conformance-methods by ONC user should return Status code 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
