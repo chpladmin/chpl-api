@@ -1,9 +1,10 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.certificationId;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dto.CertificationIdDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.EntityManager;
@@ -24,18 +23,17 @@ public class CertificationIdDaoTest {
     @Before
     public void setup() {
         EntityManager entityManager = Mockito.mock(EntityManager.class);
-        certIdDao = new CertificationIdDAO();
+        CertificationIdYearCalculator certIdYearCalculator = Mockito.mock(CertificationIdYearCalculator.class);
+        Mockito.when(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay()).thenReturn(LocalDate.now().plusDays(1));
+        certIdDao = new CertificationIdDAO(certIdYearCalculator);
         certIdDao.setEntityManager(entityManager);
     }
 
     @Test
     public void create_2015CertificationId_generates15CString() throws EntityCreationException, EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(1L)
-                .year("2015")
-                .build());
-        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+        List<Long> listingIds = new ArrayList<Long>();
+        listingIds.add(1L);
+        CertificationIdDTO certId = certIdDao.create(listingIds, "2015");
 
         assertNotNull(certId);
         assertTrue(certId.getCertificationId().startsWith("0015C"));
@@ -43,18 +41,10 @@ public class CertificationIdDaoTest {
 
     @Test
     public void create_allCuresListings_generates15CString() throws EntityCreationException, EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(1L)
-                .year("2015")
-                .curesUpdate(true)
-                .build());
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(2L)
-                .year("2015")
-                .curesUpdate(true)
-                .build());
-        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+        List<Long> listingIds = new ArrayList<Long>();
+        listingIds.add(1L);
+        listingIds.add(2L);
+        CertificationIdDTO certId = certIdDao.create(listingIds, "2015");
 
         assertNotNull(certId);
         assertTrue(certId.getCertificationId().startsWith("0015C"));
@@ -62,18 +52,10 @@ public class CertificationIdDaoTest {
 
     @Test
     public void create_curesAndNotCuresListings_generates15CString() throws EntityCreationException, EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(1L)
-                .year("2015")
-                .curesUpdate(false)
-                .build());
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(2L)
-                .year("2015")
-                .curesUpdate(true)
-                .build());
-        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+        List<Long> listingIds = new ArrayList<Long>();
+        listingIds.add(1L);
+        listingIds.add(2L);
+        CertificationIdDTO certId = certIdDao.create(listingIds, "2015");
 
         assertNotNull(certId);
         assertTrue(certId.getCertificationId().startsWith("0015C"));
@@ -81,12 +63,9 @@ public class CertificationIdDaoTest {
 
     @Test
     public void create_curesCertificationId_generates15CString() throws EntityCreationException, EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(2L)
-                .year("2015")
-                .build());
-        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+        List<Long> listingIds = new ArrayList<Long>();
+        listingIds.add(2L);
+        CertificationIdDTO certId = certIdDao.create(listingIds, "2015");
 
         assertNotNull(certId);
         assertTrue(certId.getCertificationId().startsWith("0015C"));
@@ -96,12 +75,9 @@ public class CertificationIdDaoTest {
     public void findAll_WithData_ReturnsObjects() throws EntityCreationException, EntityRetrievalException {
         CertificationIdDAO ehrDao = Mockito.mock(CertificationIdDAO.class);
         Mockito.when(ehrDao.findAll()).thenReturn(getBasicCertIds());
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        listings.add(CertifiedProductDetailsDTO.builder()
-                .id(1L)
-                .year("2014")
-                .build());
-        ehrDao.create(listings, "2014");
+        List<Long> listingIds = new ArrayList<Long>();
+        listingIds.add(1L);
+        ehrDao.create(listingIds, "2014");
 
         List<CertificationIdDTO> results = ehrDao.findAll();
         assertNotNull(results);

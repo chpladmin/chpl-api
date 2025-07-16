@@ -1,9 +1,8 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

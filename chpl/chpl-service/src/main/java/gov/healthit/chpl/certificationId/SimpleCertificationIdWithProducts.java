@@ -1,8 +1,6 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
-
-import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public class SimpleCertificationIdWithProducts extends SimpleCertificationId implements Serializable {
     private static final long serialVersionUID = -2818214498196264669L;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.Date;

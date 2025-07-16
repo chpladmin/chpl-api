@@ -12,22 +12,20 @@ import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
 /**
- * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
- * @author alarned
- *
+ * Validator for CMS EHR ID generation for the year 2025
  */
-public class Validator2015 extends Validator {
+public class Validator2025 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
-    private List<CertificationCriterion> decisionSupportRequiredCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
 
-    public Validator2015(CertificationCriterionService certificationCriterionService) {
+    public Validator2025(CertificationCriterionService certificationCriterionService) {
 
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
                 certificationCriterionService.get(Criteria2015.B_1_CURES),
+                certificationCriterionService.get(Criteria2015.B_11),
                 certificationCriterionService.get(Criteria2015.C_1),
                 certificationCriterionService.get(Criteria2015.G_7),
                 certificationCriterionService.get(Criteria2015.G_9_CURES),
@@ -38,10 +36,6 @@ public class Validator2015 extends Validator {
                 certificationCriterionService.get(Criteria2015.A_3))
                 .collect(Collectors.toList());
 
-        decisionSupportRequiredCriteriaOr = Stream.of(
-                certificationCriterionService.get(Criteria2015.A_9),
-                certificationCriterionService.get(Criteria2015.B_11)).toList();
-
         dpCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.H_1),
                 certificationCriterionService.get(Criteria2015.H_2))
                 .collect(Collectors.toList());
@@ -50,10 +44,12 @@ public class Validator2015 extends Validator {
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaCpoeRequired", 1);
         this.counts.put("criteriaCpoeRequiredMet", 0);
-        this.counts.put("criteriaDsRequired", 1);
-        this.counts.put("criteriaDsRequiredMet", 0);
         this.counts.put("criteriaDpRequired", 1);
         this.counts.put("criteriaDpRequiredMet", 0);
+        //Decision support criteria (or "ds") was the a9 or b11 that was required before 2025.
+        //Starting with the 2025 calendar year cert ids, b11 is just a required criteria
+        this.counts.put("criteriaDsRequired", 0);
+        this.counts.put("criteriaDsRequiredMet", 0);
         this.counts.put("cqmsInpatientRequired", 0);
         this.counts.put("cqmsInpatientRequiredMet", 0);
         this.counts.put("cqmsAmbulatoryRequired", 0);
@@ -85,7 +81,6 @@ public class Validator2015 extends Validator {
         }
 
         boolean cpoeValid = isCPOEValid();
-        boolean dsValid = isDecisionSupportValid();
         boolean dpValid = isDPValid();
 
         this.counts.put("criteriaRequired",
@@ -99,7 +94,7 @@ public class Validator2015 extends Validator {
                 + this.counts.get("criteriaDsRequiredMet")
                 + this.counts.get("criteriaDpRequiredMet"));
 
-        return (requiredCriteriaValid && cpoeValid && dsValid && dpValid);
+        return (requiredCriteriaValid && cpoeValid && dpValid);
     }
 
     protected boolean isCPOEValid() {
@@ -111,19 +106,6 @@ public class Validator2015 extends Validator {
         }
         missingOr.add(cpoeCriteriaOr.stream()
                 .map(cpoeCrit -> Util.formatCriteriaNumber(cpoeCrit))
-                .collect(Collectors.toCollection(ArrayList::new)));
-        return false;
-    }
-
-    protected boolean isDecisionSupportValid() {
-        for (CertificationCriterion crit : decisionSupportRequiredCriteriaOr) {
-            if (criteriaMetContainsCriterion(crit)) {
-                this.counts.put("criteriaDsRequiredMet", 1);
-                return true;
-            }
-        }
-        missingOr.add(decisionSupportRequiredCriteriaOr.stream()
-                .map(dsCrit -> Util.formatCriteriaNumber(dsCrit))
                 .collect(Collectors.toCollection(ArrayList::new)));
         return false;
     }
