@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.certificationId;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
