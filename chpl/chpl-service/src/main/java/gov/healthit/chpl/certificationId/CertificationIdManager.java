@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,19 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.CertificationIdDAO;
-import gov.healthit.chpl.domain.SimpleCertificationId;
-import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -57,7 +52,7 @@ public class CertificationIdManager {
         return certificationIdDao.getByCertificationId(certificationId);
     }
 
-    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+    public List<Long> getListingIdsByCertificationId(Long id) throws EntityRetrievalException {
         return certificationIdDao.getProductIdsById(id);
     }
 
@@ -142,7 +137,7 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = false)
-    public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year) throws EntityCreationException, ActivityException {
-        return certificationIdDao.create(listings, year);
+    public CertificationIdDTO create(List<Long> listingIds, String year) throws EntityCreationException, ActivityException {
+        return certificationIdDao.create(listingIds, year);
     }
 }
