@@ -112,7 +112,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"id\":157,\"title\":\"Test1\",\"text\":\"Test2\",\"startDateTime\":\"2025-07-09T07:59:00\",\"endDateTime\":\"2026-07-09T07:59:00\",\"isPublic\":true,\"creationDate\":1752062395599,\"deleted\":false,\"lastModifiedDate\":1752062395599,\"lastModifiedUser\":null}",
+							"raw": "{\"id\":1,\"title\":\"Test1\",\"text\":\"Test2\",\"startDateTime\":\"2025-07-09T07:59:00\",\"endDateTime\":\"2026-07-09T07:59:00\",\"isPublic\":true,\"creationDate\":1752062395599,\"deleted\":false,\"lastModifiedDate\":1752062395599,\"lastModifiedUser\":null}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -120,14 +120,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/rest/announcements/157",
+							"raw": "{{url}}/rest/announcements/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"rest",
 								"announcements",
-								"157"
+								"1"
 							]
 						},
 						"description": "PUT /announcements/{announcementId} - 401 status for ACB user"
@@ -175,14 +175,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{url}}/rest/announcements/157",
+							"raw": "{{url}}/rest/announcements/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"rest",
 								"announcements",
-								"157"
+								"1"
 							]
 						},
 						"description": "DELETE /announcements/157 - 401 status for ACB user"
