@@ -50,7 +50,11 @@ public class ChangeRequestValidationService {
         if (isNewChangeRequest(context)) {
             rules.addAll(getCreateValidations(context));
         } else {
-            rules.addAll(getUpdateValidations());
+            rules.addAll(getUpdateValidations(context));
+            if (context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtPlansUrlChangeRequestTypeId)
+                    || context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtResultsUrlChangeRequestTypeId)) {
+                rules.add(new CheckDatePresentOnApprovalValidation());
+            }
         }
 
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
@@ -105,7 +109,7 @@ public class ChangeRequestValidationService {
                 new ChangeRequestCreateValidation()));
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations() {
+    private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations(ChangeRequestValidationContext context) {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new RoleAcbHasMultipleCertificationBodiesValidation(),
                 new DeveloperActiveValidation(),
