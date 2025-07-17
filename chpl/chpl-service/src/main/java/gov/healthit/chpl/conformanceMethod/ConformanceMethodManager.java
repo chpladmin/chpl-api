@@ -93,6 +93,10 @@ public class ConformanceMethodManager {
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
     public ConformanceMethod update(ConformanceMethod conformanceMethod) throws EntityRetrievalException, ValidationException {
         ConformanceMethod origConformanceMethod = conformanceMethodDao.getById(conformanceMethod.getId());
+        if (origConformanceMethod == null) {
+            ValidationException e = new ValidationException(msgUtil.getMessage("conformanceMethod.notFound"));
+            throw e;
+        }
         normalize(conformanceMethod);
         cmValidator.validateForEdit(conformanceMethod);
 
