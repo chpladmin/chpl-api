@@ -359,69 +359,6 @@
 					"response": []
 				},
 				{
-					"name": "PUT /conformance-methods - status 200 for ONC user",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"request to edit conformance-methods by ONC user should return Status code 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "API-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n        \"id\": 4,\r\n        \"name\": \"HIMSS-IIP Test Method\",\r\n        \"removalDate\": null,\r\n        \"criteria\": [\r\n            {\r\n                \"id\": 43,\r\n                \"number\": \"170.315 (f)(1)\",\r\n                \"title\": \"Transmission to Immunization Registries\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/transmission-immunization-registries\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            }\r\n        ],\r\n        \"removed\": false\r\n    }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/rest/conformance-methods",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"rest",
-								"conformance-methods"
-							]
-						},
-						"description": "PUT /conformance-methods - status 200 for ACB user"
-					},
-					"response": []
-				},
-				{
 					"name": "DELETE /conformance-methods/1 - request to delete conformance-methods which is attested to listings giving proper error message",
 					"event": [
 						{
@@ -463,14 +400,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{url}}/rest/conformance-methods/1",
+							"raw": "{{url}}/rest/conformance-methods/4",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"rest",
 								"conformance-methods",
-								"1"
+								"4"
 							]
 						},
 						"description": "DELETE /conformance-methods/1115 - should return status 200 for ONC user"
@@ -528,6 +465,135 @@
 							]
 						},
 						"description": "GET /rest/conformance-methods - status 200 for ONC user"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /conformance-methods - request to remove criteria associated with a conformance method which is used in at least one listing should give proper error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to remove criteria associated with conformance-methods which is used in at least one listing should show proper error message\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"This Conformance Method is referenced under criterion 170.315 (f)(1) by\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 4,\r\n        \"name\": \"HIMSS-IIP Test Method\",\r\n        \"removalDate\": null,\r\n        \"criteria\": [\r\n            {\r\n                \"id\": 25,\r\n                \"number\": \"170.315 (c)(1)\",\r\n                \"title\": \"Clinical Quality Measures - Record and Export\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/clinical-quality-measures-cqms-record-and-export\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            }\r\n        ],\r\n        \"removed\": false\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "PUT /conformance-methods - request to remove criteria associated with a conformance method which is used in at least one listing should give proper error"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /conformance-methods - user can successfully Edit a Conformance Method to update the name and add more associated criteria",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"user can successfully Edit a Conformance Method to update the name and add more associated criteria\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.text()).to.include(\"HIMSS-IIP Test Method-Edit\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"170.315 (c)(1)\");    \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 4,\r\n        \"name\": \"HIMSS-IIP Test Method-Edit\",\r\n        \"removalDate\": null,\r\n        \"criteria\": [\r\n            {\r\n                \"id\": 25,\r\n                \"number\": \"170.315 (c)(1)\",\r\n                \"title\": \"Clinical Quality Measures - Record and Export\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/clinical-quality-measures-cqms-record-and-export\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            },\r\n            {\r\n                \"id\": 43,\r\n                \"number\": \"170.315 (f)(1)\",\r\n                \"title\": \"Transmission to Immunization Registries\",\r\n                \"certificationEditionId\": 3,\r\n                \"certificationEdition\": \"2015\",\r\n                \"startDay\": \"2015-10-16\",\r\n                \"endDay\": null,\r\n                \"description\": null,\r\n                \"rule\": {\r\n                    \"id\": 3,\r\n                    \"name\": \"2015\"\r\n                },\r\n                \"companionGuideLink\": \"https://www.healthit.gov/test-method/transmission-immunization-registries\",\r\n                \"editable\": true,\r\n                \"removed\": false,\r\n                \"status\": \"ACTIVE\"\r\n            }\r\n        ],\r\n        \"removed\": false\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/conformance-methods",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"conformance-methods"
+							]
+						},
+						"description": "PUT /conformance-methods - user can successfully Edit a Conformance Method to update the name and add more associated criteria"
 					},
 					"response": []
 				}
