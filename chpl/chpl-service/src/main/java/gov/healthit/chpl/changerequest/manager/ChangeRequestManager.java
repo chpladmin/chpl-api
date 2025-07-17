@@ -231,11 +231,17 @@ public class ChangeRequestManager {
             throw validationException;
         }
 
-        // Update the details, if the user is of role developer
         if (resourcePermissionsFactory.get().isUserRoleDeveloperAdmin()
                 && cr.getDetails() != null
                 && ChangeRequestStatusService.doesCurrentStatusExist(cr)
                 && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
+            // Update the details, if the user is of role developer
+            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+        } else if ((cr.getChangeRequestType().isRwtPlans() || cr.getChangeRequestType().isRwtResults())
+                && cr.getDetails() != null
+                && ChangeRequestStatusService.doesCurrentStatusExist(cr)
+                && cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
+            //Update the details if the change request is for RWT and it's being accepted
             crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 

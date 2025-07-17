@@ -1,5 +1,7 @@
 package gov.healthit.chpl.changerequest.entity;
 
+import java.time.LocalDate;
+
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -41,6 +43,9 @@ public class ChangeRequestListingUrlEntity extends EntityAudit {
 
     @Column(name = "url", nullable = false)
     private String url;
+
+    @Column(name = "check_date", nullable = true)
+    private LocalDate checkDate;
 
     @Column(name = "listing_id", nullable = false)
     private Long listingId;
