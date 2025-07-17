@@ -139,8 +139,8 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
                         ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
-                        ((ChangeRequestListingUrl) cr.getDetails()).getCheckDate(),
-                        getApprovalBody(cr)))
+                        getApprovalBody(cr),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getCheckDate()))
                 .footer(PublicFooter.class)
                 .build();
     }
