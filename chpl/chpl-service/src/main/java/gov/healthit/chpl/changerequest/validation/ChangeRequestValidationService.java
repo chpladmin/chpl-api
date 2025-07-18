@@ -53,7 +53,7 @@ public class ChangeRequestValidationService {
             rules.addAll(getUpdateValidations(context));
             if (context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtPlansUrlChangeRequestTypeId)
                     || context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtResultsUrlChangeRequestTypeId)) {
-                rules.add(new CheckDatePresentOnApprovalValidation());
+                rules.add(new CheckDateValidation());
             }
         }
 
