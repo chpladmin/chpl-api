@@ -398,6 +398,16 @@ const announcementsControllerTests = {
   },
 };
 
+const reportDataCriteriaUpToDateControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-criteria-up-to-date.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-criteria-up-to-date-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -437,6 +447,7 @@ const jobs = [
   cb => newman.run(surveillanceControllerTests,cb),
   cb => newman.run(searchQuestionableActivityControllerTests,cb),
   cb => newman.run(announcementsControllerTests,cb),
+  cb => newman.run(reportDataCriteriaUpToDateControllerTests,cb),
   ];
 
 const responseCallback = (err) => {
