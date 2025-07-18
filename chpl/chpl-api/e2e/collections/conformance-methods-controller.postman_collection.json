@@ -598,14 +598,14 @@
 					"response": []
 				},
 				{
-					"name": "DELETE /conformance-methods/{conformanceMethodsId} - status 404 and error - delete invalid conformance-methods",
+					"name": "DELETE /conformance-methods/{conformanceMethodsId} - status 400 and error - delete invalid conformance-methods",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"request to delete invalid conformance-methods should give proper error message\", function () {\r",
-									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.have.status(400);\r",
 									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method was not found.\");\r",
 									"});"
 								],
@@ -649,19 +649,19 @@
 								"1234"
 							]
 						},
-						"description": "DELETE /conformance-methods/{conformanceMethodsId} - status 404 and error - delete invalid conformance-methods"
+						"description": "DELETE /conformance-methods/{conformanceMethodsId} - status 400 and error - delete invalid conformance-methods"
 					},
 					"response": []
 				},
 				{
-					"name": "PUT /conformance-methods - status 404 and error - Edit invalid conformance-methods",
+					"name": "PUT /conformance-methods - status 400 and error - Edit invalid conformance-methods",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"request to Edit invalid conformance-methods should give proper error message\", function () {\r",
-									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.have.status(400);\r",
 									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method was not found.\");\r",
 									"});"
 								],
@@ -713,7 +713,7 @@
 								"conformance-methods"
 							]
 						},
-						"description": "PUT /conformance-methods - status 404 and error - Edit invalid conformance-methods"
+						"description": "PUT /conformance-methods - status 400 and error - Edit invalid conformance-methods"
 					},
 					"response": []
 				}
