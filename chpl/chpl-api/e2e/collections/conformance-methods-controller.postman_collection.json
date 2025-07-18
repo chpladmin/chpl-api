@@ -606,7 +606,7 @@
 								"exec": [
 									"pm.test(\"request to delete invalid conformance-methods should give proper error message\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
-									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method doesn't exist\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method was not found.\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -662,7 +662,7 @@
 								"exec": [
 									"pm.test(\"request to Edit invalid conformance-methods should give proper error message\", function () {\r",
 									"    pm.response.to.have.status(404);\r",
-									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method doesn't exist\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"The Conformance Method was not found.\");\r",
 									"});"
 								],
 								"type": "text/javascript",
