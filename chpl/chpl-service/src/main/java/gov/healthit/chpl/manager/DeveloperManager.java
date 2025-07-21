@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.SearchRequestNormalizer;
@@ -35,6 +35,7 @@ import gov.healthit.chpl.developer.search.SearchRequestValidator;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.Product;
@@ -78,6 +79,7 @@ public class DeveloperManager extends SecuredManager {
     public static final String NEW_DEVELOPER_CODE = "XXXX";
 
     private DeveloperDAO developerDao;
+    private DeveloperStatusDAO devStatusDao;
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationBodyManager acbManager;
@@ -91,20 +93,21 @@ public class DeveloperManager extends SecuredManager {
     private SearchRequestNormalizer developerSearchRequestNormalizer;
     private CognitoUserManager cognitoUserManager;
     private SchedulerManager schedulerManager;
-    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
+    public DeveloperManager(DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao,
+            ProductManager productManager,
+            ProductVersionManager versionManager,
             CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
             @Qualifier("developerSearchRequestValidator") SearchRequestValidator developerSearchRequestValidator,
             CognitoUserManager cognitoUserManager,
-            SchedulerManager schedulerManager,
-            FF4j ff4j) {
+            SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
+        this.devStatusDao = devStatusDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.acbManager = acbManager;
@@ -118,13 +121,17 @@ public class DeveloperManager extends SecuredManager {
         this.developerSearchRequestNormalizer = new SearchRequestNormalizer();
         this.cognitoUserManager = cognitoUserManager;
         this.schedulerManager = schedulerManager;
-        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_DEVELOPERS)
     public List<Developer> getAll() {
         return developerDao.findAll();
+    }
+
+    @Transactional
+    public List<DeveloperStatus> getAllStatuses() {
+        return devStatusDao.findAll();
     }
 
     @Transactional(readOnly = true)

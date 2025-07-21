@@ -348,6 +348,56 @@ const subscriptionsControllerTests = {
   },
 };
 
+const meauresControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/measures-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/measures-controller-tests.xml',
+    },
+  },
+};
+
+const targetedUsersControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/targeted-users-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/targeted-users-controller-tests.xml',
+    },
+  },
+};
+
+const surveillanceControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/surveillance-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/surveillance-controller-tests.xml',
+    },
+  },
+};
+
+const searchQuestionableActivityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-questionable-activity-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-questionable-activity-controller-tests.xml',
+    },
+  },
+};
+
+const announcementsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/announcements-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/announcements-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -382,6 +432,11 @@ const jobs = [
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),
   cb => newman.run(subscriptionsControllerTests,cb),
+  cb => newman.run(meauresControllerTests,cb),
+  cb => newman.run(targetedUsersControllerTests,cb),
+  cb => newman.run(surveillanceControllerTests,cb),
+  cb => newman.run(searchQuestionableActivityControllerTests,cb),
+  cb => newman.run(announcementsControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

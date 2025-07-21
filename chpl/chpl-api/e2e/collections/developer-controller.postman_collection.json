@@ -1,9 +1,7 @@
 {
 	"info": {
-		"_postman_id": "1861693f-895a-4a6d-b8d7-bfef747790de",
 		"name": "developer-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "131372"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -1206,6 +1204,70 @@
 							]
 						},
 						"description": "Developer users should get 401 status and error for POST /developers/message-preview end point"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /developers/messages - 401 status for ACB users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACB users get 401 status and error for POST /developers/messages end point\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"subject\":\"TestSubject\",\"body\":\"TestBody\",\"query\":{\"activeListingsOptions\":\"has_any_active\",\"activeListingsOptionsOperator\":\"or\",\"searchTerm\":\"Accelerated Care Plus\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/messages",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"messages"
+							]
+						},
+						"description": "POST /developers/messages - 401 status for ACB users"
 					},
 					"response": []
 				}

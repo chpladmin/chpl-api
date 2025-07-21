@@ -18,13 +18,17 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.cqm.CqmCriterionService;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
-import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
@@ -37,7 +41,11 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class SearchRequestValidator {
-    private DimensionalDataManager dimensionalDataManager;
+    private CertificationStatusDAO certStatusDao;
+    private CertificationEditionDAO editionDao;
+    private CqmCriterionService cqmCriterionService;
+    private CertificationBodyDAO acbDao;
+    private PracticeTypeDAO practiceTypeDao;
     private CertificationCriteriaManager certificationCriteriaManager;
     private SvapDAO svapDao;
     private ErrorMessageUtil msgUtil;
@@ -45,10 +53,18 @@ public class SearchRequestValidator {
     private Set<String> allowedDerivedCertificationEditions;
 
     @Autowired
-    public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+    public SearchRequestValidator(CertificationStatusDAO certStatusDao,
+            CertificationEditionDAO editionDao,
+            CqmCriterionService cqmCriterionService,
+            CertificationBodyDAO acbDao,
+            PracticeTypeDAO practiceTypeDao,
             CertificationCriteriaManager certificationCriteriaManager,
             SvapDAO svapDao, ErrorMessageUtil msgUtil) {
-        this.dimensionalDataManager = dimensionalDataManager;
+        this.certStatusDao = certStatusDao;
+        this.editionDao = editionDao;
+        this.cqmCriterionService = cqmCriterionService;
+        this.acbDao = acbDao;
+        this.practiceTypeDao = practiceTypeDao;
         this.certificationCriteriaManager = certificationCriteriaManager;
         this.svapDao = svapDao;
         this.msgUtil = msgUtil;
@@ -117,10 +133,12 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allCertificationStatuses = dimensionalDataManager.getCertificationStatuses();
+        List<CertificationStatus> allCertificationStatuses = certStatusDao.findAll();
         Set<String> allCertificationStatusNames;
         if (!CollectionUtils.isEmpty(allCertificationStatuses)) {
-            allCertificationStatusNames = allCertificationStatuses.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+            allCertificationStatusNames = allCertificationStatuses.stream()
+                    .map(cs -> cs.getName())
+                    .collect(Collectors.toSet());
         } else {
             allCertificationStatusNames = Collections.emptySet();
         }
@@ -147,10 +165,10 @@ public class SearchRequestValidator {
         }
 
         Set<String> allYears = new LinkedHashSet<String>();
-        Set<KeyValueModel> allCertificationEditions = dimensionalDataManager.getEditionNames(false);
+        List<CertificationEdition> allCertificationEditions = editionDao.findAll();
         if (!CollectionUtils.isEmpty(allCertificationEditions)) {
             allYears.addAll(allCertificationEditions.stream()
-                    .map(keyValueModel -> keyValueModel.getName().toUpperCase())
+                    .map(edition -> edition.getName().toUpperCase())
                     .collect(Collectors.toList()));
         }
         return certificationEditions.stream()
@@ -224,15 +242,9 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<DescriptiveModel> allCqms = dimensionalDataManager.getCQMCriterionNumbers(false);
-        Set<String> allCqmNumbers;
-        if (!CollectionUtils.isEmpty(allCqms)) {
-            allCqmNumbers = allCqms.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
-        } else {
-            allCqmNumbers = Collections.emptySet();
-        }
+        List<String> allCqmNumbers = cqmCriterionService.getAllCqmCriterionNumbers(false);
         return cqmNumbers.stream()
-                .filter(cqm -> !isInSet(cqm, allCqmNumbers))
+                .filter(cqm -> CollectionUtils.isEmpty(allCqmNumbers) || !allCqmNumbers.contains(cqm))
                 .map(cqm -> msgUtil.getMessage("search.cqms.invalid", cqm))
                 .collect(Collectors.toSet());
     }
@@ -263,9 +275,9 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<CertificationBody> allAcbs = dimensionalDataManager.getAllAcbs();
+        List<CertificationBody> allAcbs = acbDao.findAll();
         return acbs.stream()
-                .filter(acb -> !isInAcbSet(acb, allAcbs))
+                .filter(acb -> !isInAcbList(acb, allAcbs))
                 .map(acb -> msgUtil.getMessage("search.certificationBodies.invalid", acb))
                 .collect(Collectors.toSet());
     }
@@ -275,7 +287,7 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<KeyValueModel> allPracticeTypes = dimensionalDataManager.getPracticeTypeNames();
+        List<PracticeType> allPracticeTypes = practiceTypeDao.findAll();
         Set<String> allPracticeTypeNames;
         if (!CollectionUtils.isEmpty(allPracticeTypes)) {
             allPracticeTypeNames = allPracticeTypes.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
@@ -491,11 +503,11 @@ public class SearchRequestValidator {
         return Collections.emptySet();
     }
 
-    private boolean isInAcbSet(String value, Set<CertificationBody> setToSearch) {
-        if (setToSearch == null) {
+    private boolean isInAcbList(String value, List<CertificationBody> listToSearch) {
+        if (listToSearch == null) {
             return false;
         }
-        return setToSearch.stream()
+        return listToSearch.stream()
             .filter(item -> item.getName().equalsIgnoreCase(value))
             .count() > 0;
     }

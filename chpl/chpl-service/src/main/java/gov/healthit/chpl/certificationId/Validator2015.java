@@ -6,9 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
-
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -26,11 +23,7 @@ public class Validator2015 extends Validator {
     private List<CertificationCriterion> decisionSupportRequiredCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
 
-    public Validator2015(CertificationCriterionService certificationCriterionService,
-            FF4j ff4j) {
-
-        CertificationCriterion a9 = certificationCriterionService.get(Criteria2015.A_9);
-        CertificationCriterion b11 = certificationCriterionService.get(Criteria2015.B_11);
+    public Validator2015(CertificationCriterionService certificationCriterionService) {
 
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
@@ -45,12 +38,9 @@ public class Validator2015 extends Validator {
                 certificationCriterionService.get(Criteria2015.A_3))
                 .collect(Collectors.toList());
 
-        if (ff4j.check(FeatureList.CMS_A9_GRACE_PERIOD_END)) {
-            requiredCriteria.add(3, b11); //adding at index 3 so the criteria appear in order to the user
-            decisionSupportRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
-        } else {
-            decisionSupportRequiredCriteriaOr = Stream.of(a9, b11).toList();
-        }
+        decisionSupportRequiredCriteriaOr = Stream.of(
+                certificationCriterionService.get(Criteria2015.A_9),
+                certificationCriterionService.get(Criteria2015.B_11)).toList();
 
         dpCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.H_1),
                 certificationCriterionService.get(Criteria2015.H_2))
@@ -126,10 +116,6 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isDecisionSupportValid() {
-    	if (decisionSupportRequiredCriteriaOr.isEmpty()) {
-            this.counts.put("criteriaDsRequiredMet", 1);
-            return true;
-    	}
         for (CertificationCriterion crit : decisionSupportRequiredCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaDsRequiredMet", 1);

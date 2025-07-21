@@ -12,10 +12,11 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -30,13 +31,15 @@ public class SearchRequestValidatorTest {
     private static final String MISSING_ATTESTATIONS_OPERATOR = "Multiple attestations filters were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_ATTESTATIONS_OPTIONS = "No attestations search option matches '%s'. Values must be one of %s.";
 
-    private DimensionalDataManager dimensionalDataManager;
+    private CertificationBodyDAO acbDao;
+    private DeveloperStatusDAO devStatusDao;
     private ErrorMessageUtil msgUtil;
     private SearchRequestValidator validator;
 
     @Before
     public void setup() {
-        dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        acbDao = Mockito.mock(CertificationBodyDAO.class);
+        devStatusDao = Mockito.mock(DeveloperStatusDAO.class);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.statuses.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
@@ -60,7 +63,7 @@ public class SearchRequestValidatorTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.attestationsSearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ATTESTATIONS_OPTIONS, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
+        validator = new SearchRequestValidator(acbDao, devStatusDao, msgUtil);
     }
 
     @Test
@@ -68,8 +71,7 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getDeveloperStatuses())
-            .thenReturn(null);
+        Mockito.when(devStatusDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -86,8 +88,16 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getDeveloperStatuses())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Suspended"), new KeyValueModel(2L, "Withdrawn")).collect(Collectors.toSet()));
+        Mockito.when(devStatusDao.findAll())
+            .thenReturn(Stream.of(DeveloperStatus.builder()
+                    .id(1L)
+                    .name("Suspended")
+                    .build(),
+                    DeveloperStatus.builder()
+                    .id(2L)
+                    .name("Withdrawn")
+                    .build())
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -104,8 +114,12 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getDeveloperStatuses())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "Active")).collect(Collectors.toSet()));
+        Mockito.when(devStatusDao.findAll())
+        .thenReturn(Stream.of(DeveloperStatus.builder()
+                .id(1L)
+                .name("Active")
+                .build())
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -119,8 +133,12 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getDeveloperStatuses())
-            .thenReturn(Stream.of(new KeyValueModel(1L, "actIVE")).collect(Collectors.toSet()));
+        Mockito.when(devStatusDao.findAll())
+        .thenReturn(Stream.of(DeveloperStatus.builder()
+                .id(1L)
+                .name("actIVE")
+                .build())
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -134,8 +152,7 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForActiveListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
-            .thenReturn(null);
+        Mockito.when(acbDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -152,10 +169,10 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForActiveListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
             .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                     CertificationBody.builder().id(2L).name("SLI").build())
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -172,10 +189,10 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForActiveListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
         .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                 CertificationBody.builder().id(2L).name("ICSA").build())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -189,8 +206,7 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForAllListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
-            .thenReturn(null);
+        Mockito.when(acbDao.findAll()).thenReturn(null);
 
         try {
             validator.validate(request);
@@ -207,10 +223,10 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForAllListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
             .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                     CertificationBody.builder().id(2L).name("SLI").build())
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -227,10 +243,10 @@ public class SearchRequestValidatorTest {
         DeveloperSearchRequest request = DeveloperSearchRequest.builder()
             .acbsForAllListings(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getAllAcbs())
+        Mockito.when(acbDao.findAll())
         .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                 CertificationBody.builder().id(2L).name("ICSA").build())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);

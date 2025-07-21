@@ -17,20 +17,13 @@ import gov.healthit.chpl.codeset.CertificationResultCodeSetService;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
@@ -41,9 +34,14 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.sed.CertificationResultTestTask;
 import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testdata.CertificationResultTestData;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
+import gov.healthit.chpl.teststandard.TestStandard;
+import gov.healthit.chpl.teststandard.TestStandardDAO;
 import gov.healthit.chpl.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.util.CertifiedProductUtil;
 import lombok.extern.log4j.Log4j2;
@@ -494,7 +492,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
         Long editionId = listing.getEdition() != null ? listing.getEdition().getId() : null;
-        List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
+        List<CertificationResultTestStandard> testStandardsToAdd = new ArrayList<CertificationResultTestStandard>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test standards to add
@@ -517,10 +515,7 @@ public class CertificationResultManager extends SecuredManager {
             if (existingTestStandards == null || existingTestStandards.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestStandard updatedItem : updatedTestStandards) {
-                    CertificationResultTestStandardDTO toAdd = new CertificationResultTestStandardDTO();
-                    toAdd.setCertificationResultId(certResult.getId());
-                    toAdd.setTestStandardId(updatedItem.getTestStandardId());
-                    testStandardsToAdd.add(toAdd);
+                    testStandardsToAdd.add(updatedItem);
                 }
             } else if (existingTestStandards.size() > 0) {
                 // existing listing has some, compare to the update to see if
@@ -532,10 +527,7 @@ public class CertificationResultManager extends SecuredManager {
                     }
 
                     if (!inExistingListing) {
-                        CertificationResultTestStandardDTO toAdd = new CertificationResultTestStandardDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setTestStandardId(updatedItem.getTestStandardId());
-                        testStandardsToAdd.add(toAdd);
+                        testStandardsToAdd.add(updatedItem);
                     }
                 }
             }
@@ -562,8 +554,8 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         numChanges = testStandardsToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestStandardDTO toAdd : testStandardsToAdd) {
-            certResultDAO.addTestStandardMapping(toAdd);
+        for (CertificationResultTestStandard toAdd : testStandardsToAdd) {
+            certResultDAO.addTestStandardMapping(certResult.getId(), toAdd);
         }
 
         for (Long idToRemove : idsToRemove) {
@@ -656,7 +648,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestProcedure> existingTestProcedures,
             List<CertificationResultTestProcedure> updatedTestProcedures) throws EntityCreationException {
         int numChanges = 0;
-        List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
+        List<CertificationResultTestProcedure> testProceduresToAdd = new ArrayList<CertificationResultTestProcedure>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test procedures to add
@@ -664,11 +656,7 @@ public class CertificationResultManager extends SecuredManager {
             if (existingTestProcedures == null || existingTestProcedures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
-                    CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
-                    toAdd.setCertificationResultId(certResult.getId());
-                    toAdd.setVersion(updatedItem.getTestProcedureVersion());
-                    toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
-                    testProceduresToAdd.add(toAdd);
+                    testProceduresToAdd.add(updatedItem);
                 }
             } else if (existingTestProcedures.size() > 0) {
                 // existing listing has some, compare to the update to see if
@@ -680,11 +668,7 @@ public class CertificationResultManager extends SecuredManager {
                     }
 
                     if (!inExistingListing) {
-                        CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setVersion(updatedItem.getTestProcedureVersion());
-                        toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
-                        testProceduresToAdd.add(toAdd);
+                        testProceduresToAdd.add(updatedItem);
                     }
                 }
             }
@@ -711,8 +695,8 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         numChanges = testProceduresToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestProcedureDTO toAdd : testProceduresToAdd) {
-            certResultDAO.addTestProcedureMapping(toAdd);
+        for (CertificationResultTestProcedure toAdd : testProceduresToAdd) {
+            certResultDAO.addTestProcedureMapping(certResult.getId(), toAdd);
         }
 
         for (Long idToRemove : idsToRemove) {
@@ -778,7 +762,7 @@ public class CertificationResultManager extends SecuredManager {
         return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
     }
 
-    public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestTask> getTestTasksForCertificationResult(Long certificationResultId) {
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
     }
 

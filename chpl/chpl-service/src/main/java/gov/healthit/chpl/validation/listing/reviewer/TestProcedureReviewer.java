@@ -6,12 +6,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
+import gov.healthit.chpl.testprocedure.TestProcedure;
+import gov.healthit.chpl.testprocedure.TestProcedureDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -59,7 +59,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
 
     private void checkIfTestProcedureIsAllowedById(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-        Optional<TestProcedureDTO> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
+        Optional<TestProcedure> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
                 .filter(tp -> tp.getId().equals(testProcedure.getTestProcedure().getId()))
                 .findAny();
         if (!allowedTestProcedure.isPresent()) {
@@ -74,7 +74,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
 
     private void checkIfTestProcedureIsAllowedByName(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-        Optional<TestProcedureDTO> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
+        Optional<TestProcedure> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
                 .filter(tp -> tp.getName().equalsIgnoreCase(testProcedure.getTestProcedure().getName()))
                 .findAny();
         if (!allowedTestProcedure.isPresent()) {
