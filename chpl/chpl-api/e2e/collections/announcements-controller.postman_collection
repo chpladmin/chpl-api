@@ -1,0 +1,231 @@
+{
+	"info": {
+		"name": "announcements",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "POST /announcements - 401 status for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to add new Announcement by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"title\":\"TestAnnouncement1\",\"text\":\"\",\"startDateTime\":\"2025-07-09T07:47\",\"endDateTime\":\"2027-08-01T07:48\",\"isPublic\":true}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/announcements",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"announcements"
+							]
+						},
+						"description": "POST /announcements - 401 status for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /announcements/{announcementId} - 401 status for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to edit Announcement by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":157,\"title\":\"Test1\",\"text\":\"Test2\",\"startDateTime\":\"2025-07-09T07:59:00\",\"endDateTime\":\"2026-07-09T07:59:00\",\"isPublic\":true,\"creationDate\":1752062395599,\"deleted\":false,\"lastModifiedDate\":1752062395599,\"lastModifiedUser\":null}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/announcements/157",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"announcements",
+								"157"
+							]
+						},
+						"description": "PUT /announcements/{announcementId} - 401 status for ACB user"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /announcements/157 - 401 status for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"request to delete Announcement by ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/announcements/157",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"announcements",
+								"157"
+							]
+						},
+						"description": "DELETE /announcements/157 - 401 status for ACB user"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
