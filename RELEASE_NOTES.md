@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 51.4.0
+_21 July 2025_
+
+### Features
+* Update CMS ID creation syntax on annual basis
+* Deprecate GET /data/search-options
+* Deprecate GET /data/svaps
+* Deprecate GET /data/change-request-* endpoints
+* Deprecate GET /data/complaint-types, /data/complainant-types
+* Deprecate GET /data/ endpoints related to surveillance
+* Deprecate GET /data/developer_statuses for /developers/statuses
+* Deprecate GET /data/measures and /data/measure-types
+* Deprecate GET /data/targeted_users in favor of /targeted-users
+* Deprecate GET /data/test_standards in favor of GET /test-standards
+* Deprecate GET /data age_ranges, education_types endpoints
+* Deprecate GET /data/test_procedures in favor of /test-procedures
+
+---
+
 ## Version 51.3.0
 _23 June 2025_
 
