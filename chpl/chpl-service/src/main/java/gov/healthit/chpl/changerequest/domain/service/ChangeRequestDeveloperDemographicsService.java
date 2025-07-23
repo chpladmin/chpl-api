@@ -33,7 +33,9 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
 
@@ -44,6 +46,12 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Value("${changeRequest.developerDemographics.submission.subject}")
+    private String submissionEmailSubject;
+
+    @Value("${changeRequest.developerDemographics.submission.body}")
+    private String submissionEmailBody;
 
     @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
@@ -96,6 +104,13 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
             Long newCrId = crDeveloperDemographicsDAO.create(changeRequestId, (ChangeRequestDeveloperDemographics) changeRequestDetails);
+            try {
+                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
+                sendSubmittedEmail(changeRequestWithDetails);
+            } catch (EmailNotSentException ex) {
+                LOGGER.error("Email about Developer Demographics was not sent for change request " + changeRequestId, ex);
+            }
+
             return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -161,6 +176,17 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         } catch (ValidationException | ActivityException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String>toList()))
+                .subject(submissionEmailSubject)
+                .htmlMessage(submissionEmailBody)
+                .sendEmail();
     }
 
     @Override

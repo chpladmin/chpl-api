@@ -55,6 +55,7 @@ public abstract class ChangeRequestDetailsService<T> {
     public abstract List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr);
 
     protected abstract ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
+    protected abstract void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException;

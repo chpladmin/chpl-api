@@ -39,12 +39,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListingUrlService {
+    private ChangeRequestDAO crDAO;
+    private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertificationCriterionService certificationCriterionService;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.submission.subject}")
+    private String submissionEmailSubject;
+
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.submission.body}")
+    private String submissionEmailBody;
 
     @Value("${changeRequest.listingUrl.serviceBaseUrlList.approval.subject}")
     private String approvalEmailSubject;
@@ -81,12 +89,38 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, developerCertificationBodyMapDAO);
+        this.crDAO = crDAO;
+        this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certificationCriterionService = certificationCriterionService;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+    }
+
+    @Override
+    public Long create(Long changeRequestId, Object changeRequestDetails) {
+        try {
+            ChangeRequestListingUrl details = (ChangeRequestListingUrl) changeRequestDetails;
+            // If CR details match the values from the existing listing, just return
+            if (getAffectedUrl(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
+                return null;
+            }
+
+            Long newCrId = crListingUrlDAO.create(changeRequestId, details);
+
+            try {
+                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
+                sendSubmittedEmail(changeRequestWithDetails);
+            } catch (EmailNotSentException ex) {
+                LOGGER.error("Email about Service Base URL List Change Request was not sent for change request " + changeRequestId, ex);
+            }
+
+            return newCrId;
+        } catch (EntityRetrievalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -111,6 +145,29 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
         } catch (MissingReasonException | InvalidArgumentsException | IOException | CertifiedProductUpdateException | ValidationException | ActivityException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String>toList()))
+                .subject(submissionEmailSubject)
+                .htmlMessage(createSubmissionHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createSubmissionHtmlMessage(ChangeRequest cr) {
+        ChangeRequestListingUrl details = (ChangeRequestListingUrl) cr.getDetails();
+
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Service Base URL List Change Request Submitted")
+                .paragraph("", String.format(submissionEmailBody,
+                        details.getUrl(),
+                        getChplProductNumber(cr)))
+                .footer(PublicFooter.class)
+                .build();
     }
 
     @Override

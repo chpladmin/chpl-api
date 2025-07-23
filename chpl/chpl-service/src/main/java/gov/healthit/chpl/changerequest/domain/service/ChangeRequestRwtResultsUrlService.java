@@ -39,12 +39,19 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlService {
+    private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.submission.subject}")
+    private String submissionEmailSubject;
+
+    @Value("${changeRequest.listingUrl.rwtResultsUrl.submission.body}")
+    private String submissionEmailBody;
 
     @Value("${changeRequest.listingUrl.rwtResultsUrl.approval.subject}")
     private String approvalEmailSubject;
@@ -81,6 +88,7 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, developerCertificationBodyMapDAO);
+        this.crDAO = crDAO;
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
@@ -93,6 +101,14 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
     public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
             Long newCrId = crListingUrlDAO.create(changeRequestId, (ChangeRequestListingUrl) changeRequestDetails);
+
+            try {
+                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
+                sendSubmittedEmail(changeRequestWithDetails);
+            } catch (EmailNotSentException ex) {
+                LOGGER.error("Email about RWT Results URL Change Request was not sent for change request " + changeRequestId, ex);
+            }
+
             return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -122,6 +138,29 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
     }
 
     @Override
+    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String>toList()))
+                .subject(submissionEmailSubject)
+                .htmlMessage(createSubmissionHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createSubmissionHtmlMessage(ChangeRequest cr) {
+        ChangeRequestListingUrl details = (ChangeRequestListingUrl) cr.getDetails();
+
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Real World Testing Results URL Change Request Submitted")
+                .paragraph("", String.format(submissionEmailBody,
+                        details.getUrl(),
+                        getChplProductNumber(cr)))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
                 .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
@@ -139,8 +178,8 @@ public class ChangeRequestRwtResultsUrlService extends ChangeRequestListingUrlSe
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
                         ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
-                        ((ChangeRequestListingUrl) cr.getDetails()).getCheckDate(),
-                        getApprovalBody(cr)))
+                        getApprovalBody(cr),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getCheckDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT))))
                 .footer(PublicFooter.class)
                 .build();
     }

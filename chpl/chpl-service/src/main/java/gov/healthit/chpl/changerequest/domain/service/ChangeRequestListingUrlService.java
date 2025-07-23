@@ -43,22 +43,6 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
     }
 
     @Override
-    public Long create(Long changeRequestId, Object changeRequestDetails) {
-        try {
-            ChangeRequestListingUrl details = (ChangeRequestListingUrl) changeRequestDetails;
-            // If CR details match the values from the existing listing, just return
-            if (getAffectedUrl(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
-                return null;
-            }
-
-            Long newCrId = crListingUrlDAO.create(changeRequestId, details);
-            return newCrId;
-        } catch (EntityRetrievalException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the request details changed

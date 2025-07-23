@@ -110,7 +110,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             //now get with details to send an appropriate email
             ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
             try {
-                attestationEmails.getSubmittedEmail().send(changeRequestWithDetails);
+                sendSubmittedEmail(changeRequestWithDetails);
             } catch (EmailNotSentException e) {
                 LOGGER.error(e);
             }
@@ -184,6 +184,11 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         attestationEmails.getUpdatedEmail().send(cr);
+    }
+
+    @Override
+    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        attestationEmails.getSubmittedEmail().send(cr);
     }
 
     @Override
