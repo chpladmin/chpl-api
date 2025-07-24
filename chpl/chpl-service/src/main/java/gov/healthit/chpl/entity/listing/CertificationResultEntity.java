@@ -2,6 +2,9 @@ package gov.healthit.chpl.entity.listing;
 
 import java.util.List;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,10 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +48,7 @@ public class CertificationResultEntity extends EntityAudit {
     @Column(name = "certified_product_id", nullable = false)
     private Long certifiedProductId;
 
+    @Deprecated
     @Column(name = "gap")
     private Boolean gap;
 
