@@ -2,14 +2,13 @@ package gov.healthit.chpl.report.questionableurl;
 
 import java.util.Date;
 
-import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class QuestionableUrlDetailReport {
-    private UrlType urlType;
+    private String urlType;
     private String url;
     private Date lastChecked;
     private Integer responseCode;

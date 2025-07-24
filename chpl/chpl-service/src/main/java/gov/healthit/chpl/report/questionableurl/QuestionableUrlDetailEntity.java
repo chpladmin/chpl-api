@@ -60,7 +60,7 @@ public class QuestionableUrlDetailEntity {
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .url(url)
-                .urlType(UrlType.findByName(urlType))
+                .urlType(UrlType.findByName(urlType).getName())
                 .build();
     }
 }
