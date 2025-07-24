@@ -55,6 +55,7 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
 
             if (!((ChangeRequestListingUrl) cr.getDetails()).equals((crFromDb.getDetails()))) {
                 crListingUrlDAO.update((ChangeRequestListingUrl) cr.getDetails());
+                sendUpdatedDetailsEmail(cr);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

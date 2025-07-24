@@ -182,7 +182,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 cr.getDeveloper().getId(), attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId()).getId());
     }
 
-    private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+    @Override
+    protected void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         attestationEmails.getUpdatedEmail().send(cr);
     }
 

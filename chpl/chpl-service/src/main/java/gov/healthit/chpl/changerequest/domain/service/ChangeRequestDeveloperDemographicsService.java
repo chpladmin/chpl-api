@@ -71,6 +71,12 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
+    @Value("${changeRequest.developerDemographics.updatedDetails.subject}")
+    private String updatedDetailsEmailSubject;
+
+    @Value("${changeRequest.developerDemographics.updatedDetails.body}")
+    private String updatedDetailsEmailBody;
+
     @Value("${changeRequest.developerDemographics.cancelled.subject}")
     private String cancelledEmailSubject;
 
@@ -131,6 +137,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
             if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
                 crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails());
+                sendUpdatedDetailsEmail(cr);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -185,8 +192,19 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(submissionEmailSubject)
-                .htmlMessage(submissionEmailBody)
+                .htmlMessage(createSubmissionHtmlMessage(cr))
                 .sendEmail();
+    }
+
+    private String createSubmissionHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Details Submitted")
+                .paragraph("", String.format(updatedDetailsEmailBody,
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
+                        getApprovalBody(cr)))
+                .footer(PublicFooter.class)
+                .build();
     }
 
     @Override
@@ -230,6 +248,28 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
+    protected void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+            .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                    .map(user -> user.getEmail())
+                    .collect(Collectors.<String>toList()))
+            .subject(updatedDetailsEmailSubject)
+            .htmlMessage(createUpdatedDetailsHtmlMessage(cr))
+            .sendEmail();
+    }
+
+    private String createUpdatedDetailsHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Details Updated")
+                .paragraph("", String.format(updatedDetailsEmailBody,
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
+                        getApprovalBody(cr)))
                 .footer(PublicFooter.class)
                 .build();
     }

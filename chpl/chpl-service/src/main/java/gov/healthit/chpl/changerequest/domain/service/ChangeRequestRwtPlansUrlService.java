@@ -71,6 +71,12 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
     @Value("${changeRequest.listingUrl.rwtPlansUrl.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.updatedDetails.subject}")
+    private String updatedDetailsEmailSubject;
+
+    @Value("${changeRequest.listingUrl.rwtPlansUrl.updatedDetails.body}")
+    private String updatedDetailsEmailBody;
+
     @Value("${changeRequest.listingUrl.rwtPlansUrl.cancelled.subject}")
     private String cancelledEmailSubject;
 
@@ -173,7 +179,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createApprovalHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Approved")
+                .heading("Real World Testing Plans URL Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -197,12 +203,34 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Pending Developer Action")
+                .heading("Real World Testing Plans URL Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
-                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(), getApprovalBody(cr),
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
+                        getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
+    protected void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+            .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                    .map(user -> user.getEmail())
+                    .collect(Collectors.<String>toList()))
+            .subject(updatedDetailsEmailSubject)
+            .htmlMessage(createUpdatedDetailsHtmlMessage(cr))
+            .sendEmail();
+    }
+
+    private String createUpdatedDetailsHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Real World Testing Plans URL Change Request Details Updated")
+                .paragraph("", String.format(updatedDetailsEmailBody,
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
+                        getChplProductNumber(cr)))
                 .footer(PublicFooter.class)
                 .build();
     }
@@ -220,7 +248,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Rejected")
+                .heading("Real World Testing Plans URL Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         getChplProductNumber(cr),
@@ -243,7 +271,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
 
     private String createCancelledHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
-                .heading("RWT Plans URL Change Request Cancelled")
+                .heading("Real World Testing Plans URL Change Request Cancelled")
                 .paragraph("", String.format(cancelledEmailBody,
                         cr.getDeveloper().getName(),
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),

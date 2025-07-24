@@ -72,6 +72,12 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
     @Value("${changeRequest.listingUrl.serviceBaseUrlList.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.updatedDetails.subject}")
+    private String updatedDetailsEmailSubject;
+
+    @Value("${changeRequest.listingUrl.serviceBaseUrlList.updatedDetails.body}")
+    private String updatedDetailsEmailBody;
+
     @Value("${changeRequest.listingUrl.serviceBaseUrlList.cancelled.subject}")
     private String cancelledEmailSubject;
 
@@ -212,6 +218,27 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
                         getChplProductNumber(cr),
                         ((ChangeRequestListingUrl) cr.getDetails()).getUrl(), getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
+    protected void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+            .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                    .map(user -> user.getEmail())
+                    .collect(Collectors.<String>toList()))
+            .subject(updatedDetailsEmailSubject)
+            .htmlMessage(createUpdatedDetailsHtmlMessage(cr))
+            .sendEmail();
+    }
+
+    private String createUpdatedDetailsHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Service Base URL List Change Request Details Updated")
+                .paragraph("", String.format(updatedDetailsEmailBody,
+                        ((ChangeRequestListingUrl) cr.getDetails()).getUrl(),
+                        getChplProductNumber(cr)))
                 .footer(PublicFooter.class)
                 .build();
     }

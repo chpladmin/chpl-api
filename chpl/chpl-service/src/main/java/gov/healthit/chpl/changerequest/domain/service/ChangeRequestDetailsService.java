@@ -58,6 +58,7 @@ public abstract class ChangeRequestDetailsService<T> {
     protected abstract void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
+    protected abstract void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException;
 
