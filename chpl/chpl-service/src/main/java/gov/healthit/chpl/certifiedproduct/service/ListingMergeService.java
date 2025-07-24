@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,8 +152,8 @@ public class ListingMergeService {
 
         CertifiedProductQmsStandard updatedQmsStandard = updatedQmsStandards.stream()
             .filter(updatedQms -> Objects.equals(updatedQms.getQmsStandardId(), currQmsStandard.getQmsStandardId())
-                    && StringUtils.equalsIgnoreCase(updatedQms.getQmsModification(), currQmsStandard.getQmsModification())
-                    && StringUtils.equalsIgnoreCase(updatedQms.getApplicableCriteria(), currQmsStandard.getApplicableCriteria()))
+                    && Strings.CI.equals(updatedQms.getQmsModification(), currQmsStandard.getQmsModification())
+                    && Strings.CI.equals(updatedQms.getApplicableCriteria(), currQmsStandard.getApplicableCriteria()))
             .findAny()
             .orElse(null);
         if (updatedQmsStandard != null) {
@@ -273,7 +273,7 @@ public class ListingMergeService {
         }
 
         TestTask matchedCurrTestTask = currTestTasks.stream()
-                .filter(currTestTask -> StringUtils.equalsIgnoreCase(currTestTask.getFriendlyId(), updatedTestTask.getFriendlyId()))
+                .filter(currTestTask -> Strings.CI.equals(currTestTask.getFriendlyId(), updatedTestTask.getFriendlyId()))
                 .findAny()
                 .orElse(null);
             if (matchedCurrTestTask != null) {
@@ -287,7 +287,7 @@ public class ListingMergeService {
         }
 
         TestParticipant matchedCurrTestParticipant = currTestParticipants.stream()
-                .filter(currTestParticipant -> StringUtils.equalsIgnoreCase(currTestParticipant.getFriendlyId(), updatedTestParticipant.getFriendlyId()))
+                .filter(currTestParticipant -> Strings.CI.equals(currTestParticipant.getFriendlyId(), updatedTestParticipant.getFriendlyId()))
                 .findAny()
                 .orElse(null);
             if (matchedCurrTestParticipant != null) {
@@ -517,7 +517,7 @@ public class ListingMergeService {
         }
 
         CQMResultDetails matchedCurrCqmResult = currListing.getCqmResults().stream()
-            .filter(cqmResult -> StringUtils.equals(cqmResult.getCmsId(), updatedCqmResult.getCmsId()))
+            .filter(cqmResult -> Strings.CI.equals(cqmResult.getCmsId(), updatedCqmResult.getCmsId()))
             .findAny()
             .orElse(null);
         if (matchedCurrCqmResult != null) {

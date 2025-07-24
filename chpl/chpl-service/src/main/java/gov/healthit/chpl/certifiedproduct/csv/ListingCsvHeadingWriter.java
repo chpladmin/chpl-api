@@ -163,9 +163,6 @@ public class ListingCsvHeadingWriter {
             if (criterionWithAttributes.getAttributes().isG2Success()) {
                 criterionHeadings.add(LegacyHeading.MACRA_MEASURE_G2.getHeading());
             }
-            if (criterionWithAttributes.getAttributes().isGap()) {
-                criterionHeadings.add(Heading.GAP.getHeading());
-            }
             if (criterionWithAttributes.getAttributes().isOptionalStandard()) {
                 criterionHeadings.add(Heading.OPTIONAL_STANDARD.getHeading());
             }
