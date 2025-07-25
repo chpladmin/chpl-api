@@ -1,0 +1,105 @@
+{
+	"info": {
+		"name": "report-data/questionable-urls",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /report-data/questionable-urls - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/questionable-urls should return 200 status and valid response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"urlType\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/questionable-urls",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"questionable-urls"
+					]
+				},
+				"description": "GET /report-data/questionable-urls - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/questionable-urls/details - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/questionable-urls/details should return 200 status and valid response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"urlType\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"url\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"lastChecked\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"responseCode\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"responseMessage\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"relatedItem\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/questionable-urls/details",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"questionable-urls",
+						"details"
+					]
+				},
+				"description": "GET /report-data/questionable-urls/details - 200 status and valid response"
+			},
+			"response": []
+		}
+	]
+}
