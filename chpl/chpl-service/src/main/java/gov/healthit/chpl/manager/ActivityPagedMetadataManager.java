@@ -126,6 +126,15 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CONFORMANCE_METHOD_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getConformanceMethodActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.CONFORMANCE_METHOD, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_FUNCTIONALITY_TESTED_METADATA)")
     @Transactional
     public ActivityMetadataPage getFunctionalityTestedActivityMetadata(Long startMillis, Long endMillis,

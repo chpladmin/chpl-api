@@ -25,17 +25,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ConformanceMethodNormalizer {
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
+    private ConformanceMethodDAO conformanceMethodDao;
 
     @Autowired
     public ConformanceMethodNormalizer(ConformanceMethodDAO conformanceMethodDao) {
-        try {
-            this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Could not initialize conformance method criteria map for flexible upload.", ex);
-        }
+        this.conformanceMethodDao = conformanceMethodDao;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        try {
+            this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Could not initialize conformance method criteria map.", ex);
+        }
+
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()

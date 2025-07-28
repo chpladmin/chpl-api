@@ -18,6 +18,7 @@ import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ConformanceMethodDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
@@ -77,6 +78,7 @@ public class Permissions {
     public static final String FUNCTIONALITY_TESTED = "FUNCTIONALITY_TESTED";
     public static final String STANDARD = "STANDARD";
     public static final String CODE_SET = "CODE_SET";
+    public static final String CONFORMANCE_METHOD = "CONFORMANCE_METHOD";
     public static final String API_KEY = "API_KEY";
     public static final String URL_CHECKER = "URL_CHECKER";
 
@@ -115,6 +117,7 @@ public class Permissions {
             FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
             StandardDomainPermissions standardDomainPermissions,
             CodeSetDomainPermissions codeSetPermissions,
+            ConformanceMethodDomainPermissions conformanceMethodDomainPermissions,
             ApiKeyDomainPermissions apiKeyPermissions,
             UrlCheckerDomainPermissions urlCheckerDomainPermissions) {
 
@@ -129,6 +132,7 @@ public class Permissions {
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
         domainPermissions.put(CODE_SET, codeSetPermissions);
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
+        domainPermissions.put(CONFORMANCE_METHOD, conformanceMethodDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(DEVELOPER, developerDomainPermissions);
         domainPermissions.put(FUNCTIONALITY_TESTED, functionalityTestedDomainPermissions);
