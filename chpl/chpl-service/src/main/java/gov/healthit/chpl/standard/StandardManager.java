@@ -65,7 +65,6 @@ public class StandardManager {
         return certificationCriterionAttributeDAO.getCriteriaForStandards();
     }
 
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
             + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).UPDATE)")
     @Transactional
