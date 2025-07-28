@@ -9,6 +9,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 @Component
 public class ActivityMetadataBuilderFactory {
     private ActivityMetadataBuilder defaultBuilder;
+    private ConformanceMethodActivityMetadataBuilder conformanceMethodBuilder;
     private FunctionalityTestedActivityMetadataBuilder funcTestedBuilder;
     private StandardActivityMetadataBuilder standardBuilder;
     private SvapActivityMetadataBuilder svapBuilder;
@@ -27,6 +28,7 @@ public class ActivityMetadataBuilderFactory {
     @Autowired
     public ActivityMetadataBuilderFactory (
             @Qualifier("activityMetadataBuilder") ActivityMetadataBuilder defaultBuilder,
+            @Qualifier("conformanceMethodActivityMetadataBuilder") ConformanceMethodActivityMetadataBuilder conformanceMethodBuilder,
             @Qualifier("functionalityTestedActivityMetadataBuilder") FunctionalityTestedActivityMetadataBuilder funcTestedBuilder,
             @Qualifier("standardActivityMetadataBuilder") StandardActivityMetadataBuilder standardBuilder,
             @Qualifier("svapActivityMetadataBuilder") SvapActivityMetadataBuilder svapBuilder,
@@ -42,6 +44,7 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("changeRequestActivityMetadataBuilder") ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder,
             @Qualifier("apiKeyActivityMetadataBuilder") ApiKeyActivityMetadataBuilder apiKeyBuilder) {
         this.defaultBuilder = defaultBuilder;
+        this.conformanceMethodBuilder = conformanceMethodBuilder;
         this.funcTestedBuilder = funcTestedBuilder;
         this.standardBuilder = standardBuilder;
         this.svapBuilder = svapBuilder;
@@ -91,6 +94,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case CHANGE_REQUEST:
             builder = changeRequestActivityMetadataBuilder;
+            break;
+        case CONFORMANCE_METHOD:
+            builder = conformanceMethodBuilder;
             break;
         case FUNCTIONALITY_TESTED:
             builder = funcTestedBuilder;

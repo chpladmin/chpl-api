@@ -1,9 +1,16 @@
 package gov.healthit.chpl.conformanceMethod.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLJoinTableRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,12 +22,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.WhereJoinTable;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +57,7 @@ public class ConformanceMethodEntity extends EntityAudit {
     @JoinTable(name = "conformance_method_criteria_map",
         joinColumns = {@JoinColumn(name = "conformance_method_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
-    @WhereJoinTable(clause = "deleted <> true")
+    @SQLJoinTableRestriction("deleted <> true")
     private List<CertificationCriterionEntity> criteria;
 
     public ConformanceMethod toDomain() {
@@ -67,14 +68,15 @@ public class ConformanceMethodEntity extends EntityAudit {
                 .build();
     }
 
-    public ConformanceMethod toDomainWithCriteria() {
+    public ConformanceMethod toDomainWithCriteria(CertificationCriterionComparator criterionComparator) {
         return ConformanceMethod.builder()
                 .id(this.getId())
                 .name(this.getName())
                 .removalDate(this.getRemovalDate())
-                .criteria(this.getCriteria().stream()
+                .criteria(this.getCriteria() != null ? this.getCriteria().stream()
                         .map(crit -> crit.toDomain())
-                        .collect(Collectors.toList()))
+                        .sorted(criterionComparator)
+                        .collect(Collectors.toCollection(ArrayList::new)) : null)
                 .build();
     }
 }
