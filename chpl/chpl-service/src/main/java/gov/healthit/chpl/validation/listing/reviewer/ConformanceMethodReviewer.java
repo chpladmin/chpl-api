@@ -43,36 +43,38 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private static final String CM_F3_CANNOT_HAVE_GAP = "ONC Test Procedure";
 
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
+    private ConformanceMethodDAO conformanceMethodDao;
     private CertificationResultDAO certResultDao;
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
     private CertificationCriterion f3;
 
     @Autowired
-    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao, CertificationResultDAO certResultDao,
+    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao,
+            CertificationResultDAO certResultDao,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(msgUtil, resourcePermissionsFactory);
+        this.conformanceMethodDao = conformanceMethodDao;
         this.msgUtil = msgUtil;
         this.certResultDao = certResultDao;
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         f3 = criteriaService.get(Criteria2015.F_3);
+    }
 
+    @Override
+    public void review(CertifiedProductSearchDetails listing) {
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Could not initialize conformance method criteria map.", ex);
         }
-    }
 
-    @Override
-    public void review(CertifiedProductSearchDetails listing) {
-        Map<String, List<CertificationCriterion>> defaultedConformanceMethods =
-                new LinkedHashMap<String, List<CertificationCriterion>>();
+        Map<String, List<CertificationCriterion>> defaultedConformanceMethods = new LinkedHashMap<String, List<CertificationCriterion>>();
 
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))

@@ -378,6 +378,16 @@ const surveillanceControllerTests = {
   },
 };
 
+const conformanceMethodsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/conformance-methods-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/conformance-methods-controller-tests.xml',
+    },
+  },
+};     
+      
 const searchQuestionableActivityControllerTests = {
   ...commonOptions,
   collection: collection_path + '/search-questionable-activity-controller.postman_collection.json',
@@ -435,6 +445,7 @@ const jobs = [
   cb => newman.run(meauresControllerTests,cb),
   cb => newman.run(targetedUsersControllerTests,cb),
   cb => newman.run(surveillanceControllerTests,cb),
+  cb => newman.run(conformanceMethodsControllerTests,cb),
   cb => newman.run(searchQuestionableActivityControllerTests,cb),
   cb => newman.run(announcementsControllerTests,cb),
   ];
