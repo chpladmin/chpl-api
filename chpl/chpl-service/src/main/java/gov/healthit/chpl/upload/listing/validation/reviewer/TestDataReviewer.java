@@ -91,21 +91,11 @@ public class TestDataReviewer {
         CertificationCriterion g1 = criteriaSevice.get(Criteria2015.G_1);
         CertificationCriterion g2 = criteriaSevice.get(Criteria2015.G_2);
 
-        if (!isGapEligibileAndHasGap(certResult)
-                && (certResult.getCriterion().getId().equals(g1.getId()) || certResult.getCriterion().getId().equals(g2.getId()))
+        if ((certResult.getCriterion().getId().equals(g1.getId()) || certResult.getCriterion().getId().equals(g2.getId()))
                 && (certResult.getTestDataUsed() == null || certResult.getTestDataUsed().size() == 0)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testDataRequired",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
-    }
-
-    private boolean isGapEligibileAndHasGap(CertificationResult certResult) {
-        boolean result = false;
-        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
-                && certResult.getGap() != null && certResult.getGap()) {
-            result = true;
-        }
-        return result;
     }
 
     private void reviewTestDataFields(CertifiedProductSearchDetails listing,

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +39,7 @@ import lombok.extern.log4j.Log4j2;
 @Component("conformanceMethodReviewer")
 @Log4j2
 public class ConformanceMethodReviewer extends PermissionBasedReviewer {
-    private static final String CM_MUST_NOT_HAVE_OTHER_DATA = "Attestation";
-    private static final String CM_F3_MUST_HAVE_GAP = "Attestation";
-    private static final String CM_F3_CANNOT_HAVE_GAP = "ONC Test Procedure";
+    private static final String CM_ATTESTATION = "Attestation";
 
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
     private ConformanceMethodDAO conformanceMethodDao;
@@ -310,20 +309,20 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
         List<ConformanceMethod> conformanceMethodsForCriterion = getConformanceMethodsForCriterion(certResult.getCriterion());
         return conformanceMethodsForCriterion != null && conformanceMethodsForCriterion.size() == 1
-                && conformanceMethodsForCriterion.get(0).getName().equals(CM_MUST_NOT_HAVE_OTHER_DATA);
+                && conformanceMethodsForCriterion.get(0).getName().equals(CM_ATTESTATION);
     }
 
     private boolean isMissingVersionDataWhenItIsRequired(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
+                && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
                 && StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 
     private boolean hasVersionDataWhenItIsNotAllowed(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
+                && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 
@@ -374,27 +373,15 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         removeF3TestDataAndTestToolsIfNotApplicable(listing, certResult, conformanceMethod);
     }
 
+    //TODO: I'll just allow F3 to have either conformance method, as though there was never a GAP restriction
     private void reviewF3ConformanceMethodForGapRequirement(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isFalse(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    conformanceMethod.getConformanceMethod().getName(),
-                    "false"));
-        } else if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_CANNOT_HAVE_GAP)) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    conformanceMethod.getConformanceMethod().getName(),
-                    "true"));
-        }
     }
 
     private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
+        if (conformanceMethod.getConformanceMethod() != null
+                && Strings.CS.equals(conformanceMethod.getConformanceMethod().getName(), CM_ATTESTATION)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
                 certResult.getTestToolsUsed().clear();
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
