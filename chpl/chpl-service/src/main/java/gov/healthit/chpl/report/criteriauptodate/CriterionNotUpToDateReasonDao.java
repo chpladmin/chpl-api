@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
+package gov.healthit.chpl.report.criteriauptodate;
 
 import java.util.List;
 import java.util.stream.Collectors;
