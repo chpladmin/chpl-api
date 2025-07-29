@@ -25,6 +25,7 @@ public abstract class ChangeRequestCsvPresenter implements AutoCloseable {
     protected static final String CR_CREATED_DATE_HEADING = "Change Request Open Date";
     protected static final String CR_LAST_UPDATED_DATE_HEADING = "Change Request Latest Change Date";
     protected static final String CR_ACBS_HEADING = "Relevant ONC-ACBs";
+    protected static final String CR_URL_CHANGE_HEADING = "Updated URL";
     protected static final String CR_QUESTION1_RESPONSE_HEADING = "Information Blocking Response";
     protected static final String CR_QUESTION1_OPTIONAL_RESPONSE_HEADING = "Information Blocking Optional Response";
     protected static final String CR_QUESTION2_RESPONSE_HEADING = "Assurances Response";

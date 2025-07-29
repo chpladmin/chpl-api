@@ -46,6 +46,7 @@ import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvP
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableAttestationPresenter;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableDemographicsPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableListingUrlPresenter;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -55,7 +56,7 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
     public static final String SEARCH_REQUEST = "searchRequest";
     public static final String USER_KEY = "user";
 
-    private File tempDirectory, tempAttestationFile, tempDemographicFile;
+    private File tempDirectory, tempAttestationFile, tempDemographicFile, tempSbulFile, tempRwtPlansFile, tempRwtResultsFile;
 
     @Autowired
     private ChangeRequestDAO changeRequestDao;
@@ -89,6 +90,15 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
 
     @Value("${changeRequests.report.demographic.filename}")
     private String changeRequestsReportDemographicFilename;
+
+    @Value("${changeRequests.report.sbul.filename}")
+    private String changeRequestsReportSbulFilename;
+
+    @Value("${changeRequests.report.rwtPlans.filename}")
+    private String changeRequestsReportRwtPlansFilename;
+
+    @Value("${changeRequests.report.rwtResults.filename}")
+    private String changeRequestsReportRwtResultsFilename;
 
     @Value("${changeRequests.report.subject}")
     private String changeRequestsReportMessageSubject;
@@ -131,7 +141,8 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
 
         LOGGER.info("Found " + searchResults.size() + " change requests matching the search parameters for the job.");
         try (ChangeRequestCsvPresenter attestationPresenter = new DownloadableAttestationPresenter(LOGGER);
-                ChangeRequestCsvPresenter demographicPresenter = new DownloadableDemographicsPresenter(LOGGER)) {
+                ChangeRequestCsvPresenter demographicPresenter = new DownloadableDemographicsPresenter(LOGGER);
+                ChangeRequestCsvPresenter listingUrlPresenter = new DownloadableListingUrlPresenter(LOGGER)) {
             initializeTempFiles();
             attestationPresenter.open(tempAttestationFile);
             demographicPresenter.open(tempDemographicFile);
@@ -208,6 +219,13 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
         attachments.add(tempAttestationFile);
         if (ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
             attachments.add(tempDemographicFile);
+        }
+        if (ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)) {
+            attachments.add(tempSbulFile);
+        }
+        if (ff4j.check(FeatureList.RWT_CHANGE_REQUEST)) {
+            attachments.add(tempRwtPlansFile);
+            attachments.add(tempRwtResultsFile);
         }
         return attachments;
     }
@@ -329,6 +347,15 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
 
         Path demographicFilePath = Files.createTempFile(tempDir, changeRequestsReportDemographicFilename, ".csv");
         tempDemographicFile = demographicFilePath.toFile();
+
+        Path sbulFilePath = Files.createTempFile(tempDir, changeRequestsReportSbulFilename, ".csv");
+        tempSbulFile = sbulFilePath.toFile();
+
+        Path rwtPlansFilePath = Files.createTempFile(tempDir, changeRequestsReportRwtPlansFilename, ".csv");
+        tempRwtPlansFile = rwtPlansFilePath.toFile();
+
+        Path rwtResultsFilePath = Files.createTempFile(tempDir, changeRequestsReportRwtResultsFilename, ".csv");
+        tempRwtResultsFile = rwtResultsFilePath.toFile();
     }
 
 }
