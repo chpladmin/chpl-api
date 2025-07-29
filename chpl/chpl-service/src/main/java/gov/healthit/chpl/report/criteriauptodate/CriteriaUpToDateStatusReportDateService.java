@@ -1,8 +1,9 @@
-package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
+package gov.healthit.chpl.report.criteriauptodate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,15 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
-public class ReportDateService {
-    private static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 7;
+@Log4j2
+public class CriteriaUpToDateStatusReportDateService {
+    public static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 14;
 
     private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
     private SummaryStatisticsDAO summaryStatisticsDao;
 
     @Autowired
-    public ReportDateService(UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
+    public CriteriaUpToDateStatusReportDateService(UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
             SummaryStatisticsDAO summaryStatisticsDao) {
         this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
         this.summaryStatisticsDao = summaryStatisticsDao;
@@ -41,9 +42,23 @@ public class ReportDateService {
             }
         }
 
-        LOGGER.warn("No dates with both Update Criteria Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of today.");
+        LOGGER.warn("No dates with both Criteria Update Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of today.");
         // we don't really ever expect to get to this point - there must be a date with both reports having data
         return preferredDate;
+    }
+
+    public List<LocalDate> calculateAllMonthsOfReportDatesBasedOnAvailableData(int numberOfMonths) {
+        List<LocalDate> allReportDates = new ArrayList<LocalDate>();
+        LocalDate preferredReportDay = LocalDate.now();
+        for (int i = numberOfMonths; i >= 1; --i) {
+            LocalDate actualReportDay = findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(preferredReportDay);
+            allReportDates.add(actualReportDay);
+            preferredReportDay = actualReportDay.minusMonths(1);
+        }
+        allReportDates = allReportDates.stream()
+            .sorted()
+            .collect(Collectors.toList());
+        return allReportDates;
     }
 
     private List<Integer> getDayOffsetList() {
