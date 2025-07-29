@@ -46,7 +46,9 @@ import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvP
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableAttestationPresenter;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableDemographicsPresenter;
-import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableListingUrlPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableRwtPlansPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableRwtResultsPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableSbulPresenter;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -142,10 +144,15 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
         LOGGER.info("Found " + searchResults.size() + " change requests matching the search parameters for the job.");
         try (ChangeRequestCsvPresenter attestationPresenter = new DownloadableAttestationPresenter(LOGGER);
                 ChangeRequestCsvPresenter demographicPresenter = new DownloadableDemographicsPresenter(LOGGER);
-                ChangeRequestCsvPresenter listingUrlPresenter = new DownloadableListingUrlPresenter(LOGGER)) {
+                ChangeRequestCsvPresenter sbulPresenter = new DownloadableSbulPresenter(LOGGER);
+                ChangeRequestCsvPresenter rwtPlansPresenter = new DownloadableRwtPlansPresenter(LOGGER);
+                ChangeRequestCsvPresenter rwtResultsPresenter = new DownloadableRwtResultsPresenter(LOGGER)) {
             initializeTempFiles();
             attestationPresenter.open(tempAttestationFile);
             demographicPresenter.open(tempDemographicFile);
+            sbulPresenter.open(tempSbulFile);
+            rwtPlansPresenter.open(tempRwtPlansFile);
+            rwtResultsPresenter.open(tempRwtResultsFile);
 
             Integer threadCount = 1;
             try {
@@ -155,7 +162,7 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
             }
             crPresentationService = new ChangeRequestDetailsPresentationService(changeRequestManager, threadCount, LOGGER);
             crPresentationService.present(searchResults,
-                    Stream.of(attestationPresenter, demographicPresenter).toList());
+                    Stream.of(attestationPresenter, demographicPresenter, sbulPresenter, rwtPlansPresenter, rwtResultsPresenter).toList());
 
         } catch (Exception e) {
             LOGGER.catching(e);
