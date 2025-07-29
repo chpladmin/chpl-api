@@ -199,7 +199,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private String createSubmissionHtmlMessage(ChangeRequest cr) {
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Details Submitted")
-                .paragraph("", String.format(updatedDetailsEmailBody,
+                .paragraph("", String.format(submissionEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails())))
                 .footer(PublicFooter.class)
@@ -267,8 +267,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                 .heading("Developer Demographics Change Request Details Updated")
                 .paragraph("", String.format(updatedDetailsEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
-                        getApprovalBody(cr)))
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails())))
                 .footer(PublicFooter.class)
                 .build();
     }
