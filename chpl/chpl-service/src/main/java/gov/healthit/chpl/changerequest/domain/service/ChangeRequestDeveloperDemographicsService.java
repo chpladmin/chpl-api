@@ -201,8 +201,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                 .heading("Developer Demographics Change Request Details Submitted")
                 .paragraph("", String.format(updatedDetailsEmailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
-                        getApprovalBody(cr)))
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails())))
                 .footer(PublicFooter.class)
                 .build();
     }
