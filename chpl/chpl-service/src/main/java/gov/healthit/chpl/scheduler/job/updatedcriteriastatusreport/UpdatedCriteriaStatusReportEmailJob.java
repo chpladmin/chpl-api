@@ -20,6 +20,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired
-    private ReportDateService reportDateService;
+    private CriteriaUpToDateStatusReportDateService reportDateService;
 
     @Autowired
     private UpdatedCriteriaStatusReportCsvCreator updatedCriteriaStatusReportCsvCreator;
