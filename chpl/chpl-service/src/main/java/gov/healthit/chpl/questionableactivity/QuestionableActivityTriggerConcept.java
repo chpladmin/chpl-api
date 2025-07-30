@@ -10,7 +10,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     G1_SUCCESS_EDITED("Measure Successfully Tested for 170.314 (g)(1) Edited"),
     G2_SUCCESS_EDITED("Measure Successfully Tested for 170.314 (g)(2) Edited"),
     MEASURE_REMOVED("G1/G2 Removed"),
-    GAP_EDITED("GAP Status Edited"),
     SURVEILLANCE_REMOVED("Surveillance Removed"),
     CERTIFICATION_DATE_EDITED("Certification Date Edited"),
     CERTIFICATION_STATUS_EDITED_CURRENT("Current Certification Status Edited"),
@@ -46,7 +45,8 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     EDITION_2011_EDITED("2011 Listing Edited"),
     EDITION_2014_EDITED("2014 Listing Edited"),
     CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited"),
-    CURES_UPDATE_REMOVED("Cures Update Designation Removed");
+    CURES_UPDATE_REMOVED("Cures Update Designation Removed"),
+    GAP_EDITED("GAP Status Edited");
 
     private final String name;
 
