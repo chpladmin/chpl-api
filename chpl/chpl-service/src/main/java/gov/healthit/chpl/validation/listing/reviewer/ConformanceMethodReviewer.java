@@ -104,7 +104,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             certResult.getConformanceMethods().stream()
                     .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
             if (certResult.getCriterion().getId().equals(f3.getId())) {
-                reviewF3ConformanceMethodsForGapRequirement(listing, certResult);
+                reviewF3ConformanceMethods(listing, certResult);
             }
         }
     }
@@ -360,7 +360,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 .findAny().isPresent();
     }
 
-    private void reviewF3ConformanceMethodsForGapRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewF3ConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
                     .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
