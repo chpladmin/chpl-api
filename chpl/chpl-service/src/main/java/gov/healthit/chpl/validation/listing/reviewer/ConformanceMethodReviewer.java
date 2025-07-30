@@ -369,13 +369,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewF3(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        reviewF3ConformanceMethodForGapRequirement(listing, certResult, conformanceMethod);
         removeF3TestDataAndTestToolsIfNotApplicable(listing, certResult, conformanceMethod);
-    }
-
-    //TODO: I'll just allow F3 to have either conformance method, as though there was never a GAP restriction
-    private void reviewF3ConformanceMethodForGapRequirement(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
     }
 
     private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,

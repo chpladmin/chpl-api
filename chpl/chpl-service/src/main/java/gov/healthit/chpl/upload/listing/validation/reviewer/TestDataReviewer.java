@@ -47,7 +47,7 @@ public class TestDataReviewer {
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestData(listing, certResult);
         removeTestDataWithoutIds(listing, certResult);
-        reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
+        reviewTestDataRequiredForG1AndG2(listing, certResult);
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
                     .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
@@ -87,7 +87,7 @@ public class TestDataReviewer {
         }
     }
 
-    private void reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewTestDataRequiredForG1AndG2(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         CertificationCriterion g1 = criteriaSevice.get(Criteria2015.G_1);
         CertificationCriterion g2 = criteriaSevice.get(Criteria2015.G_2);
 
