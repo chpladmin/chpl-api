@@ -61,6 +61,11 @@ public class ChangeRequestValidationService {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(sbulChangeRequestTypeId)) {
+            rules.addAll(getSbulValidations());
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtPlansUrlChangeRequestTypeId)
+                || context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtResultsUrlChangeRequestTypeId)) {
+            rules.addAll(getRwtValidations());
         }
 
         return rules;
@@ -83,6 +88,16 @@ public class ChangeRequestValidationService {
                 new DemographicsValidation(),
                 new ContactValidation(),
                 new WebsiteValidation()));
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> getSbulValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new SbulChangeRequestValidation()));
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> getRwtValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new RwtChangeRequestValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {

@@ -4,6 +4,7 @@ import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -12,6 +13,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +34,8 @@ public class ChangeRequestValidationContext {
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
+    private CertifiedProductDetailsManager cpdManager;
+    private CertificationCriterionService criteriaService;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ValidationUtils validationUtils;
     private ChangeRequestStatusIds changeRequestStatusIds;
@@ -43,6 +47,8 @@ public class ChangeRequestValidationContext {
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService,
+            CertifiedProductDetailsManager cpdManager,
+            CertificationCriterionService criteriaService,
             ResourcePermissionsFactory resourcePermissionsFactory,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
@@ -63,6 +69,8 @@ public class ChangeRequestValidationContext {
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
+        this.cpdManager = cpdManager;
+        this.criteriaService = criteriaService;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);

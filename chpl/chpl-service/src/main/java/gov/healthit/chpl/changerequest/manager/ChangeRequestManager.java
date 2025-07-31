@@ -22,6 +22,7 @@ import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -58,6 +59,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -95,6 +97,8 @@ public class ChangeRequestManager {
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
+    private CertifiedProductDetailsManager cpdManager;
+    private CertificationCriterionService criteriaService;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
@@ -121,6 +125,8 @@ public class ChangeRequestManager {
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService,
+            CertifiedProductDetailsManager cpdManager,
+            CertificationCriterionService criteriaService,
             ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
@@ -140,6 +146,8 @@ public class ChangeRequestManager {
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
+        this.cpdManager = cpdManager;
+        this.criteriaService = criteriaService;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
@@ -348,6 +356,8 @@ public class ChangeRequestManager {
                 attestationResponseValidationService,
                 attestationPeriodService,
                 listingSearchService,
+                cpdManager,
+                criteriaService,
                 resourcePermissionsFactory,
                 validationUtils,
                 developerDAO,

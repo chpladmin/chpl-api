@@ -109,11 +109,6 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
     public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
             ChangeRequestListingUrl details = (ChangeRequestListingUrl) changeRequestDetails;
-            // If CR details match the values from the existing listing, just return
-            if (getAffectedUrl(certifiedProductDetailsManager.getCertifiedProductDetails(details.getListing().getId())).equals(details.getUrl())) {
-                return null;
-            }
-
             Long newCrId = crListingUrlDAO.create(changeRequestId, details);
 
             try {

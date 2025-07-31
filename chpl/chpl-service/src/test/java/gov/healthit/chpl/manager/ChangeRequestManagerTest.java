@@ -69,7 +69,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, activityManager, null, null, null, null,
-                resourcePermissionsFactory, null, null, null, ff4j);
+                null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -92,7 +92,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, activityManager, null, null,
-                null, null, resourcePermissionsFactory, null, null, null, ff4j);
+                null, null, null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -142,6 +142,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
+                null,
                 resourcePermissionsFactory,
                 null,
                 null,
@@ -184,6 +186,8 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 activityManager,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -240,6 +244,8 @@ public class ChangeRequestManagerTest {
                 crDetailsFactory,
                 null,
                 activityManager,
+                null,
+                null,
                 null,
                 null,
                 null,
