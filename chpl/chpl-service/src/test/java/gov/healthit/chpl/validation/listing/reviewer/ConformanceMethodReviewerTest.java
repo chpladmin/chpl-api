@@ -134,7 +134,7 @@ public class ConformanceMethodReviewerTest {
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
                             .number("170.315 (c)(2)")
-                            .id(10L)
+                            .id(20L)
                             .build())
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(5L)
@@ -482,7 +482,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -515,7 +515,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -550,7 +550,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -586,7 +586,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -605,7 +605,7 @@ public class ConformanceMethodReviewerTest {
 
     @Test
     public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsNull_hasErrorsNoWarnings() {
-        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(20L)))
             .thenReturn(null);
 
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
@@ -625,7 +625,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -666,7 +666,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -713,7 +713,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -734,7 +734,7 @@ public class ConformanceMethodReviewerTest {
 
     @Test
     public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsSameConformanceMethod_noErrorsNoWarnings() {
-        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(20L)))
             .thenReturn(Stream.of(CertificationResultConformanceMethod.builder()
                     .conformanceMethod(ConformanceMethod.builder()
                             .id(5L)
@@ -761,7 +761,7 @@ public class ConformanceMethodReviewerTest {
                         .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (c)(2)")
-                                .id(10L)
+                                .id(20L)
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -837,12 +837,13 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
-    public void review_conformanceMethodF3HasAttestationCm_hasError() {
+    public void review_conformanceMethodF3HasAttestationCm_hasWarning() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
                         .id(1L)
                         .name("Attestation")
                         .build())
+                .conformanceMethodVersion("1")
                 .build();
 
         List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
@@ -858,9 +859,9 @@ public class ConformanceMethodReviewerTest {
                 .build();
         conformanceMethodReviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, "Attestation", "170.315 (f)(3)", "ONC Test Procedure")));
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, "Attestation", "170.315 (f)(3)", "ONC Test Procedure")));
     }
 
     @Test

@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -46,7 +44,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private CertificationResultDAO certResultDao;
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
-    private CertificationCriterion f3;
 
     @Autowired
     public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao,
@@ -62,7 +59,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
-        f3 = criteriaService.get(Criteria2015.F_3);
     }
 
     @Override
@@ -103,9 +99,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                     .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
             certResult.getConformanceMethods().stream()
                     .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
-            if (certResult.getCriterion().getId().equals(f3.getId())) {
-                reviewF3ConformanceMethods(listing, certResult);
-            }
         }
     }
 
@@ -358,37 +351,5 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         return conformanceMethodsForParentCertResult.stream()
                 .filter(parentCmForCertResult -> parentCmForCertResult.getConformanceMethod().getId().equals(conformanceMethod.getId()))
                 .findAny().isPresent();
-    }
-
-    private void reviewF3ConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-            certResult.getConformanceMethods().stream()
-                    .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
-        }
-    }
-
-    private void reviewF3(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        removeF3TestDataAndTestToolsIfNotApplicable(listing, certResult, conformanceMethod);
-    }
-
-    private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (conformanceMethod.getConformanceMethod() != null
-                && Strings.CS.equals(conformanceMethod.getConformanceMethod().getName(), CM_ATTESTATION)) {
-            if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-                certResult.getTestToolsUsed().clear();
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        conformanceMethod.getConformanceMethod().getName()));
-            }
-
-            if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-                certResult.getTestDataUsed().clear();
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestData",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        conformanceMethod.getConformanceMethod().getName()));
-            }
-        }
     }
 }
