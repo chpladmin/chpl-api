@@ -11,6 +11,7 @@ import gov.healthit.chpl.report.attestation.AttestationReportService;
 import gov.healthit.chpl.report.criteriaattribute.CriteriaAttributeReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -52,6 +53,7 @@ public class ReportDataManager {
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
+    private CriteriaUpToDateReportService criteriaUpToDateReportService;
     private ListingAttributeReportService listingAttributeReportService;
     private QuestionableUrlReportService questionableUrlReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
@@ -69,6 +71,7 @@ public class ReportDataManager {
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
+            CriteriaUpToDateReportService criteriaUpToDateReportService,
             ListingAttributeReportService listingAttributeReportService,
             QuestionableUrlReportService questionableUrlReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
@@ -86,6 +89,7 @@ public class ReportDataManager {
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
+        this.criteriaUpToDateReportService = criteriaUpToDateReportService;
         this.listingAttributeReportService = listingAttributeReportService;
         this.questionableUrlReportService = questionableUrlReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
@@ -277,6 +281,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public QuestionableUrlReportService getQuestionableUrlService() {
         return questionableUrlReportService;
+    }
+
+    @Synchronized("lock")
+    public CriteriaUpToDateReportService getCriteriaAttributeUpToDateService() {
+        return criteriaUpToDateReportService;
     }
 
     @Synchronized("lock")
