@@ -124,8 +124,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
-        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
-                .thenAnswer(i -> i.getArgument(0));
+        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class))).thenReturn(true);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
@@ -230,8 +229,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
-        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
-                .thenAnswer(i -> i.getArgument(0));
+        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class))).thenReturn(true);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
