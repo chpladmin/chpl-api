@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,10 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.manager.ActivityManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -23,17 +26,20 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
     private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private ActivityManager activityManager;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     @Autowired
     public ChangeRequestListingUrlService(ChangeRequestDAO crDAO,
             ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
+            ActivityManager activityManager,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         super();
         this.crDAO = crDAO;
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.activityManager = activityManager;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
     }
 
@@ -43,7 +49,7 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
     }
 
     @Override
-    public void update(ChangeRequest cr) throws InvalidArgumentsException {
+    public boolean update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the request details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -53,13 +59,24 @@ public abstract class ChangeRequestListingUrlService extends ChangeRequestDetail
             crListingUrl.setId(((ChangeRequestListingUrl) crFromDb.getDetails()).getId());
             cr.setDetails(crListingUrl);
 
-            if (!((ChangeRequestListingUrl) cr.getDetails()).equals((crFromDb.getDetails()))) {
+            if (haveDetailsChanged((ChangeRequestListingUrl) cr.getDetails(), (ChangeRequestListingUrl) crFromDb.getDetails())) {
                 crListingUrlDAO.update((ChangeRequestListingUrl) cr.getDetails());
+                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
+                        "Change request details updated",
+                        crFromDb, cr);
                 sendUpdatedDetailsEmail(cr);
+                return true;
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return false;
+    }
+
+    private boolean haveDetailsChanged(ChangeRequestListingUrl orig, ChangeRequestListingUrl updated) {
+        return !Objects.equals(orig.getCheckDate(), updated.getCheckDate())
+                || !Objects.equals(orig.getListing().getId(), updated.getListing().getId())
+                || !Objects.equals(orig.getUrl(), updated.getUrl());
     }
 
     @Override

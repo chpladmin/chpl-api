@@ -28,6 +28,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -43,6 +44,7 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
@@ -88,12 +90,13 @@ public class ChangeRequestRwtPlansUrlService extends ChangeRequestListingUrlServ
             ChangeRequestListingUrlDAO crListingUrlDAO,
             CertifiedProductManager certifiedProductManager,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
+            ActivityManager activityManager,
             CertificationCriterionService certificationCriterionService,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
             ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
-        super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, developerCertificationBodyMapDAO);
+        super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, activityManager, developerCertificationBodyMapDAO);
         this.crDAO = crDAO;
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;

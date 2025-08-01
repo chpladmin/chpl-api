@@ -239,29 +239,30 @@ public class ChangeRequestManager {
             throw validationException;
         }
 
+        boolean hasDetailsUpdate = false, hasStatusUpdate = false;
         if (resourcePermissionsFactory.get().isUserRoleDeveloperAdmin()
                 && cr.getDetails() != null
                 && ChangeRequestStatusService.doesCurrentStatusExist(cr)
                 && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
             // Update the details, if the user is of role developer
-            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+            hasDetailsUpdate = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         } else if ((cr.getChangeRequestType().isRwtPlans() || cr.getChangeRequestType().isRwtResults())
                 && cr.getDetails() != null
                 && ChangeRequestStatusService.doesCurrentStatusExist(cr)
                 && cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
             //Update the details if the change request is for RWT and it's being accepted
-            crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
+            hasDetailsUpdate = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 
         // Update the status
         if (ChangeRequestStatusService.doesCurrentStatusExist(cr)) {
-            crStatusService.updateChangeRequestStatus(cr);
+            hasStatusUpdate = crStatusService.updateChangeRequestStatus(cr);
         }
 
         ChangeRequest updatedCr = getChangeRequest(cr.getId());
-        activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
-                "Change request details updated",
-                crFromDb, updatedCr);
+        if (!hasDetailsUpdate && !hasStatusUpdate) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
+        }
         return updatedCr;
     }
 

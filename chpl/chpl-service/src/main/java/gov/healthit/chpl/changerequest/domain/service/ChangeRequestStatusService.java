@@ -70,8 +70,7 @@ public class ChangeRequestStatusService {
         return crStatusDAO.create(changeRequestId, crStatus);
     }
 
-    public ChangeRequest updateChangeRequestStatus(ChangeRequest crFromCaller)
-            throws EntityRetrievalException, EmailNotSentException {
+    public boolean updateChangeRequestStatus(ChangeRequest crFromCaller) throws EntityRetrievalException, EmailNotSentException {
         ChangeRequest crFromDb = crDAO.get(crFromCaller.getId());
 
         // Check for nulls - a Java 8 way to check a chain of objects for null
@@ -112,9 +111,9 @@ public class ChangeRequestStatusService {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            return updatedCrFromDB;
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 

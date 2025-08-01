@@ -18,6 +18,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -28,6 +29,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -42,6 +44,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private ChangeRequestDAO crDAO;
     private ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO;
     private DeveloperManager developerManager;
+    private ActivityManager activityManager;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -87,6 +90,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO,
             ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
             DeveloperManager developerManager,
+            ActivityManager activityManager,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
             ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
@@ -95,6 +99,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         this.crDAO = crDAO;
         this.crDeveloperDemographicsDAO = crDeveloperDemographicsDAO;
         this.developerManager = developerManager;
+        this.activityManager = activityManager;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
@@ -124,7 +129,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
-    public void update(ChangeRequest cr) throws InvalidArgumentsException {
+    public boolean update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -137,11 +142,16 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
             if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
                 crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails());
+                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
+                        "Change request details updated",
+                        crFromDb, cr);
                 sendUpdatedDetailsEmail(cr);
+                return true;
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 
     @Override

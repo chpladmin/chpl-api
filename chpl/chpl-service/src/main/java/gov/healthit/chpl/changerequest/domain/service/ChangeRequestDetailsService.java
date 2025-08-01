@@ -50,7 +50,7 @@ public abstract class ChangeRequestDetailsService<T> {
 
     public abstract Long create(Long changeRequestId, Object changeRequestDetails);
 
-    public abstract void update(ChangeRequest cr) throws InvalidArgumentsException;
+    public abstract boolean update(ChangeRequest cr) throws InvalidArgumentsException;
 
     public abstract List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr);
 
