@@ -54,7 +54,7 @@ public class StandardController {
 
     @Operation(summary = "Create a Standard.",
             description = "Provides functionality to add a new Standard and the Criteria associated with it. "
-                    + "Security Restrictions: User must have role chpl-admin",
+                    + "Security Restrictions: User must have role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -67,7 +67,7 @@ public class StandardController {
 
     @Operation(summary = "Update a Standard.",
             description = "Provides functionality to update a Standard and the Criteria associated with it. "
-                    + "Security Restrictions: User must have role chpl-admin",
+                    + "Security Restrictions: User must have role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -80,7 +80,7 @@ public class StandardController {
 
     @Operation(summary = "Delete a Standard.",
             description = "Provides functionality to delete an existing Standard and the Criteria associated with it. "
-                    + "Security Restrictions: User must have role chpl-admin",
+                    + "Security Restrictions: User must have role chpl-admin or chpl-onc",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

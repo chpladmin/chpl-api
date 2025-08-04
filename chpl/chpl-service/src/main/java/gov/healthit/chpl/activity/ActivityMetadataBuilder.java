@@ -105,6 +105,7 @@ public class ActivityMetadataBuilder {
         case CORRECTIVE_ACTION_PLAN:
         case PENDING_SURVEILLANCE:
         case API_KEY:
+        case CONFORMANCE_METHOD:
         case FUNCTIONALITY_TESTED:
         case STANDARD:
         case SVAP:

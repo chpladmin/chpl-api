@@ -3,9 +3,7 @@ package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
 
 @Component
 public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsheetBase {
@@ -24,14 +23,14 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
     private String template;
     private CertificationCriteriaManager criteriaManager;
     private CertificationCriterionComparator certificationCriterionComparator;
-    private ReportDateService reportDateService;
+    private CriteriaUpToDateStatusReportDateService reportDateService;
     private Environment env;
 
     public UpdatedCriteriaStatusReportWorkbook(@Value("${updatedCriteriaStatusReportTemplate}") String template,
             UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet,
             CertificationCriteriaManager criteriaManager,
             CertificationCriterionComparator certificationCriterionComparator,
-            ReportDateService reportDateService,
+            CriteriaUpToDateStatusReportDateService reportDateService,
             Environment env) {
         this.template = template;
         this.updatedCriteriaStatusReportSheet = updatedCriteriaStatusReportSheet;
@@ -44,7 +43,7 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
     public File generateSpreadsheet() throws IOException {
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
-        List<LocalDate> allReportDates = calculateAllMonthsOfReportDatesBasedOnAvailableData();
+        List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(TOTAL_NUMBER_OF_MONTHS);
 
         criteriaManager.getActiveToday().stream()
                 .sorted(certificationCriterionComparator)
@@ -59,19 +58,5 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
 
     private String getFilename() {
         return env.getProperty("updatedCriteriaStatusReport.fileName").toString();
-    }
-
-    private List<LocalDate> calculateAllMonthsOfReportDatesBasedOnAvailableData() {
-        List<LocalDate> allReportDates = new ArrayList<LocalDate>();
-        LocalDate preferredReportDay = LocalDate.now();
-        for (int i = TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
-            LocalDate actualReportDay = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(preferredReportDay);
-            allReportDates.add(actualReportDay);
-            preferredReportDay = actualReportDay.minusMonths(1);
-        }
-        allReportDates = allReportDates.stream()
-            .sorted()
-            .collect(Collectors.toList());
-        return allReportDates;
     }
 }

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
+package gov.healthit.chpl.report.criteriauptodate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
