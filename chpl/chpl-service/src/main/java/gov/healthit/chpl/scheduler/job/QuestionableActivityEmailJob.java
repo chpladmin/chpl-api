@@ -460,7 +460,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
                 + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser() != null ? activity.getUser().getEmail() : "");
 
         if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName())) {
