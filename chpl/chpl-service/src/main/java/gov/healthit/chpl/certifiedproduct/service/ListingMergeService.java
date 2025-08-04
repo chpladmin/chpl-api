@@ -301,6 +301,9 @@ public class ListingMergeService {
             .findAny().orElse(null);
         if (matchedCurrCertResult != null) {
             updatedCertResult.setId(matchedCurrCertResult.getId());
+
+            //we don't want to allow gap to be changed, so set it to whatever it currently is
+            updatedCertResult.setGap(matchedCurrCertResult.getGap());
             if (!CollectionUtils.isEmpty(updatedCertResult.getAdditionalSoftware())) {
                 updatedCertResult.getAdditionalSoftware().stream()
                     .forEach(crAs -> setIdForAdditionalSoftwareMapping(crAs, matchedCurrCertResult.getAdditionalSoftware()));
