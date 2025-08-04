@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 51.5.0
+_4 August 2025_
+
+### Features
+* Add CRUD operations for Conformance Methods
+* Add up-to-date bar chart with all criteria to report
+* Implement report-data/criteria-up-to-date/listings endpoint
+* Add report-data endpoint to get monthly criteria up-to-date data
+* Add endpoint for criteria up-to-date Power BI report
+
+---
+
 ## Version 51.4.0
 _21 July 2025_
 

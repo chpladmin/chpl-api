@@ -11,6 +11,7 @@ import gov.healthit.chpl.report.attestation.AttestationReportService;
 import gov.healthit.chpl.report.criteriaattribute.CriteriaAttributeReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -51,6 +52,7 @@ public class ReportDataManager {
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
+    private CriteriaUpToDateReportService criteriaUpToDateReportService;
     private ListingAttributeReportService listingAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
@@ -67,6 +69,7 @@ public class ReportDataManager {
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
+            CriteriaUpToDateReportService criteriaUpToDateReportService,
             ListingAttributeReportService listingAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
@@ -83,6 +86,7 @@ public class ReportDataManager {
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
+        this.criteriaUpToDateReportService = criteriaUpToDateReportService;
         this.listingAttributeReportService = listingAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
@@ -268,6 +272,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
         return criteriaAttributeReportService;
+    }
+
+    @Synchronized("lock")
+    public CriteriaUpToDateReportService getCriteriaAttributeUpToDateService() {
+        return criteriaUpToDateReportService;
     }
 
     @Synchronized("lock")

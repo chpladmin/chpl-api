@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
+import gov.healthit.chpl.report.criteriauptodate.CriterionNotUpToDateReasonEnum;
+import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReport;
+import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReportDao;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,12 +28,12 @@ import lombok.extern.log4j.Log4j2;
 public class UpdatedCriteriaStatusReportCsvCreator {
 
     private UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao;
-    private ReportDateService reportDateService;
+    private CriteriaUpToDateStatusReportDateService reportDateService;
     private Environment env;
 
     @Autowired
     public UpdatedCriteriaStatusReportCsvCreator(UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao,
-            ReportDateService reportDateService,
+            CriteriaUpToDateStatusReportDateService reportDateService,
             Environment env) {
         this.updatedCriterionStatusReportDao = updatedCriterionStatusReportDao;
         this.reportDateService = reportDateService;
