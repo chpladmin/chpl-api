@@ -428,8 +428,8 @@ public class CertificationCriterionService {
         public static final String G_33 = "criterion.170_315_g_33";
         public static final String H_1 = "criterion.170_315_h_1";
         public static final String H_2 = "criterion.170_315_h_2";
-        public static final String J_20 = "criterion.170_315_h_20";
-        public static final String J_21 = "criterion.170_315_h_21";
+        public static final String J_20 = "criterion.170_315_j_20";
+        public static final String J_21 = "criterion.170_315_j_21";
     }
 
     public static class Criteria2014 {
