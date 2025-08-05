@@ -138,7 +138,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.B_2_CURES)).thenReturn(b2Cures);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_3_OLD)).thenReturn(b3);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_3_CURES)).thenReturn(b3Cures);
-        Mockito.when(certificationCriterionService.get(Criteria2015.B_4)).thenReturn(b4);
+        Mockito.when(certificationCriterionService.get(Criteria2015.B_4_OLD)).thenReturn(b4);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_6)).thenReturn(b6);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_7_OLD)).thenReturn(b7);
         Mockito.when(certificationCriterionService.get(Criteria2015.B_7_CURES)).thenReturn(b7Cures);

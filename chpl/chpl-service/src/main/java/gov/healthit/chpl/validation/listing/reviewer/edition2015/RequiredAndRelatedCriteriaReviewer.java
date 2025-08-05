@@ -331,7 +331,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 criterionService.get(Criteria2015.B_1_CURES),
                 criterionService.get(Criteria2015.B_2_OLD),
                 criterionService.get(Criteria2015.B_2_CURES),
-                criterionService.get(Criteria2015.B_4),
+                criterionService.get(Criteria2015.B_4_OLD),
                 criterionService.get(Criteria2015.B_6),
                 criterionService.get(Criteria2015.B_9_OLD),
                 criterionService.get(Criteria2015.B_9_CURES),
