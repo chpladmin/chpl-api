@@ -155,8 +155,8 @@ public class CheckInReportDataCollector {
         checkInReport.setAssurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
         checkInReport.setCommunicationsResponse(getAttestationResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
         checkInReport.setCommunicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
-        checkInReport.setRwtResponse(getAttestationResponse(form, AttestationFormMetaData.getRwtConditionId()));
-        checkInReport.setRwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getRwtConditionId()));
+        checkInReport.setRwtResponse(getAttestationResponse(form, AttestationFormMetaData.getRwtConditionId(attestationPeriodId)));
+        checkInReport.setRwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getRwtConditionId(attestationPeriodId)));
         checkInReport.setApiResponse(getAttestationResponse(form, AttestationFormMetaData.getApiConditionId()));
         checkInReport.setApiNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getApiConditionId()));
         return checkInReport;
@@ -173,7 +173,7 @@ public class CheckInReportDataCollector {
 
     private CheckInReport addValidation(CheckInReport checkInReport, Form form, AttestationPeriod period, List<ListingSearchResult> allActiveListingsForDeveloper) {
         checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, period));
-        checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form));
+        checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form, period));
         checkInReport.setApiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form));
         return checkInReport;
     }
