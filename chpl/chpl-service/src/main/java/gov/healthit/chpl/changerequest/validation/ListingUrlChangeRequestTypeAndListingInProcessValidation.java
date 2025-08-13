@@ -10,7 +10,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-public class SbulChangeRequestTypeAndListingInProcessValidation extends ValidationRule<ChangeRequestValidationContext> {
+public class ListingUrlChangeRequestTypeAndListingInProcessValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {

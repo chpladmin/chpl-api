@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -24,11 +23,11 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         this.changeRequestConverter = changeRequestConverter;
     }
 
-    public ChangeRequestStatus create(ChangeRequest cr, ChangeRequestStatus crStatus)
+    public Long create(Long changeRequestId, ChangeRequestStatus crStatus)
             throws EntityRetrievalException {
-        ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
+        ChangeRequestStatusEntity entity = getNewEntity(changeRequestId, crStatus);
         create(entity);
-        return changeRequestConverter.convert(getEntityById(entity.getId()));
+        return entity.getId();
     }
 
     private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {
@@ -51,10 +50,10 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ChangeRequestStatusEntity getNewEntity(ChangeRequest cr, ChangeRequestStatus crStatus) {
+    private ChangeRequestStatusEntity getNewEntity(Long changeRequestId, ChangeRequestStatus crStatus) {
         ChangeRequestStatusEntity entity = new ChangeRequestStatusEntity();
 
-        entity.setChangeRequestId(cr.getId());
+        entity.setChangeRequestId(changeRequestId);
         entity.setChangeRequestStatusType(
                 getSession().load(ChangeRequestStatusTypeEntity.class, crStatus.getChangeRequestStatusType().getId()));
         if (crStatus.getCertificationBody() != null && crStatus.getCertificationBody().getId() != null) {
