@@ -127,7 +127,7 @@ public class ChangeRequestController {
             produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequestUpdateRequest updateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
         return changeRequestManager.updateChangeRequest(updateRequest);
     }
 }

@@ -18,16 +18,22 @@ public class ChangeRequestValidationService {
     private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
     private Long sbulChangeRequestTypeId;
+    private Long rwtPlansUrlChangeRequestTypeId;
+    private Long rwtResultsUrlChangeRequestTypeId;
 
     @Autowired
     public ChangeRequestValidationService(
             @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId,
-            @Value("${changerequest.serviceBaseUrlList}") Long sbulChangeRequestTypeId) {
+            @Value("${changerequest.serviceBaseUrlList}") Long sbulChangeRequestTypeId,
+            @Value("${changerequest.rwtPlansUrl}") Long rwtPlansUrlChangeRequestTypeId,
+            @Value("${changerequest.rwtResultsUrl}") Long rwtResultsUrlChangeRequestTypeId) {
 
         this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
         this.sbulChangeRequestTypeId = sbulChangeRequestTypeId;
+        this.rwtPlansUrlChangeRequestTypeId = rwtPlansUrlChangeRequestTypeId;
+        this.rwtResultsUrlChangeRequestTypeId = rwtResultsUrlChangeRequestTypeId;
     }
 
     public List<String> getErrorMessages(ChangeRequestValidationContext context) {
@@ -44,13 +50,22 @@ public class ChangeRequestValidationService {
         if (isNewChangeRequest(context)) {
             rules.addAll(getCreateValidations(context));
         } else {
-            rules.addAll(getUpdateValidations());
+            rules.addAll(getUpdateValidations(context));
+            if (context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtPlansUrlChangeRequestTypeId)
+                    || context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtResultsUrlChangeRequestTypeId)) {
+                rules.add(new CheckDateValidation());
+            }
         }
 
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(sbulChangeRequestTypeId)) {
+            rules.addAll(getSbulValidations());
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtPlansUrlChangeRequestTypeId)
+                || context.getNewChangeRequest().getChangeRequestType().getId().equals(rwtResultsUrlChangeRequestTypeId)) {
+            rules.addAll(getRwtValidations());
         }
 
         return rules;
@@ -73,6 +88,16 @@ public class ChangeRequestValidationService {
                 new DemographicsValidation(),
                 new ContactValidation(),
                 new WebsiteValidation()));
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> getSbulValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new SbulChangeRequestValidation()));
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> getRwtValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new RwtChangeRequestValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
@@ -99,7 +124,7 @@ public class ChangeRequestValidationService {
                 new ChangeRequestCreateValidation()));
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations() {
+    private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations(ChangeRequestValidationContext context) {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new RoleAcbHasMultipleCertificationBodiesValidation(),
                 new DeveloperActiveValidation(),
@@ -124,8 +149,10 @@ public class ChangeRequestValidationService {
     }
 
     private ValidationRule<ChangeRequestValidationContext> getChangeRequestUniquenessValidator(ChangeRequestType changeRequestType) {
-        if (changeRequestType.getId().equals(sbulChangeRequestTypeId)) {
-            return new SbulChangeRequestTypeAndListingInProcessValidation();
+        if (changeRequestType.getId().equals(sbulChangeRequestTypeId)
+                || changeRequestType.getId().equals(rwtPlansUrlChangeRequestTypeId)
+                || changeRequestType.getId().equals(rwtResultsUrlChangeRequestTypeId)){
+            return new ListingUrlChangeRequestTypeAndListingInProcessValidation();
         } else {
             return new ChangeRequestTypeInProcessValidation();
         }

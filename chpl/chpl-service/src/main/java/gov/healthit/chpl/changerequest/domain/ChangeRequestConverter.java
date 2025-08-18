@@ -146,6 +146,10 @@ public final class ChangeRequestConverter {
     }
 
     public ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
         ChangeRequestDeveloperDemographics crDev = new ChangeRequestDeveloperDemographics();
         crDev.setId(entity.getId());
         crDev.setSelfDeveloper(entity.getSelfDeveloper());
@@ -176,14 +180,15 @@ public final class ChangeRequestConverter {
     }
 
     public ChangeRequestListingUrl convert(ChangeRequestListingUrlEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
         try {
             ChangeRequestListingUrl crListingUrl = new ChangeRequestListingUrl();
             crListingUrl.setId(entity.getId());
-            crListingUrl.setChangeRequestListingUrlType(ChangeRequestListingUrlType.builder()
-                    .id(entity.getChangeRequestListingUrlType().getId())
-                    .name(entity.getChangeRequestListingUrlType().getName())
-                    .build());
             crListingUrl.setUrl(entity.getUrl());
+            crListingUrl.setCheckDate(entity.getCheckDate());
             crListingUrl.setListing(certifiedProductDetailsManager.getCertifiedProductDetails(entity.getListingId()));
             return crListingUrl;
         } catch (Exception e) {
