@@ -8,65 +8,84 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
-public class ChangeRequestSelfDeveloperValidationTest {
-
+public class RwtChangeRequestValidationTest {
     @Test
-    public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
+    public void validateValidRwtChangeRequest_returnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        ChangeRequestValidationContext context = getValidationContext(true, resourcePermissionsFactory);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        RwtChangeRequestValidation rwtValidator = new RwtChangeRequestValidation();
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = rwtValidator.isValid(context);
         assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
+        assertEquals(0, rwtValidator.getMessages().size());
     }
 
     @Test
-    public void validateSelfDeveloper_ValidDataFalse_ReturnsTrue() throws EntityRetrievalException {
+    public void validateRwtChangeRequestWithNullDetails_returnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        context.getNewChangeRequest().setDetails(null);
+        RwtChangeRequestValidation rwtValidator = new RwtChangeRequestValidation();
 
-        ChangeRequestValidationContext context = getValidationContext(false, resourcePermissionsFactory);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
-
-        boolean result = crSelfDevValidator.isValid(context);
-        assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
-    }
-
-    @Test
-    public void validateSelfDeveloper_MissingData_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissionsFactory);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
-
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = rwtValidator.isValid(context);
         assertFalse(result);
-        assertEquals(1, crSelfDevValidator.getMessages().size());
+        assertEquals(1, rwtValidator.getMessages().size());
     }
 
-    private ChangeRequest getChangeRequestSelfDeveloper(Boolean selfDeveloper) {
+    @Test
+    public void validateRwtChangeRequestWithNullUrl_returnsFalse() throws EntityRetrievalException {
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestListingUrl details = (ChangeRequestListingUrl) context.getNewChangeRequest().getDetails();
+        details.setUrl(null);
+        RwtChangeRequestValidation rwtValidator = new RwtChangeRequestValidation();
+
+        boolean result = rwtValidator.isValid(context);
+        assertFalse(result);
+        assertEquals(1, rwtValidator.getMessages().size());
+    }
+
+    @Test
+    public void validateRwtChangeRequestWithNullListing_returnsFalse() throws EntityRetrievalException {
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestListingUrl details = (ChangeRequestListingUrl) context.getNewChangeRequest().getDetails();
+        details.setListing(null);
+        RwtChangeRequestValidation rwtValidator = new RwtChangeRequestValidation();
+
+        boolean result = rwtValidator.isValid(context);
+        assertFalse(result);
+        assertEquals(1, rwtValidator.getMessages().size());
+    }
+
+    private ChangeRequest getChangeRequest(String rwt) {
         return ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
@@ -75,8 +94,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         .name("Dev 1")
                         .build())
                 .changeRequestType(ChangeRequestType.builder()
-                        .id(2L)
-                        .name("Developer Details Request")
+                        .id(3L)
+                        .name("Service Base URL List Change Request")
                         .build())
                 .currentStatus(ChangeRequestStatus.builder()
                         .id(Long.valueOf(8L))
@@ -91,19 +110,27 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetails(selfDeveloper))
+                .details(buildChangeRequestDetails(rwt))
                 .build();
     }
 
-    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(Boolean selfDeveloper) {
-        return ChangeRequestDeveloperDemographics.builder()
-                .selfDeveloper(selfDeveloper)
+    private ChangeRequestListingUrl buildChangeRequestDetails(String rwt) {
+        return ChangeRequestListingUrl.builder()
+                .listing(getListingWithRwt(rwt))
+                .url(rwt)
                 .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(Boolean  selfDeveloperValue, ResourcePermissionsFactory resourcePermissionsFactory) {
+    private CertifiedProductSearchDetails getListingWithRwt(String rwt) {
+        return CertifiedProductSearchDetails.builder()
+            .id(1L)
+            .rwtPlansUrl(rwt)
+            .build();
+    }
+
+    private ChangeRequestValidationContext getValidationContext(String rwt, ResourcePermissionsFactory resourcePermissionsFactory) {
         return new ChangeRequestValidationContext(null,
-                        getChangeRequestSelfDeveloper(selfDeveloperValue),
+                        getChangeRequest(rwt),
                         null,
                         null,
                         null,
@@ -124,4 +151,5 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         null,
                         null);
     }
+
 }
