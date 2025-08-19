@@ -23,25 +23,25 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
-    public ChangeRequestAttestationSubmission create(ChangeRequest cr, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
-        ChangeRequestAttestationSubmissionEntity parent = ChangeRequestAttestationSubmissionEntity.builder()
-                .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
+    public Long create(Long changeRequestId, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+        ChangeRequestAttestationSubmissionEntity entity = ChangeRequestAttestationSubmissionEntity.builder()
+                .changeRequest(getSession().load(ChangeRequestEntity.class, changeRequestId))
                 .attestationPeriod(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
                 .signature(changeRequestAttestationSubmission.getSignature())
                 .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
                 .deleted(false)
                 .build();
 
-        create(parent);
-        return getByChangeRequestId(cr.getId());
+        create(entity);
+        return entity.getId();
     }
 
-    public void addResponsesToChangeRequestAttestationSubmission(ChangeRequestAttestationSubmission changeRequestAttestationSubmission, List<FormItem> formItems) {
+    public void addResponsesToChangeRequestAttestationSubmission(Long changeRequestAttestationSubmissionId, List<FormItem> formItems) {
         for (FormItem fi : formItems) {
             if (!CollectionUtils.isEmpty(fi.getSubmittedResponses())) {
                 for (AllowedResponse resp : fi.getSubmittedResponses()) {
                     ChangeRequestAttestationSubmissionResponseEntity entity = ChangeRequestAttestationSubmissionResponseEntity.builder()
-                            .changeRequestAttestationSubmissionId(changeRequestAttestationSubmission.getId())
+                            .changeRequestAttestationSubmissionId(changeRequestAttestationSubmissionId)
                             .formItem(FormItemEntity.builder()
                                     .id(fi.getId())
                                     .build())
@@ -121,7 +121,11 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
     }
 
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return getEntityByChangeRequestId(changeRequestId).toDomain();
+        ChangeRequestAttestationSubmissionEntity entity = getEntityByChangeRequestId(changeRequestId);
+        if (entity == null) {
+            return null;
+        }
+        return entity.toDomain();
     }
 
     public Long getIdOfMostRecentAttestationChangeRequest(Long developerId, Long attestationPeriodId) {
@@ -149,7 +153,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
         return result.get(0).getChangeRequest().getId();
     }
-
 
     public List<ChangeRequestAttestationSubmissionResponseEntity> getChangeRequestAttestationSubmissionResponseEntities(Long changeRequestAttestationSubmissionId) {
         String hql = "SELECT DISTINCT crasre "
@@ -215,14 +218,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                 .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Change request attestation submission not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate change request attestation submission in database.");
-        }
 
         if (result.size() == 0) {
             return null;

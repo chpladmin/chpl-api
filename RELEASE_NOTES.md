@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 51.5.1
+_18 August 2025_
+
+### Flagged Features
+* Add validation for SBUL and RWT change requests
+* Create RWT Plans, Results URL change request types
+
+---
+
 ## Version 51.5.0
 _4 August 2025_
 
