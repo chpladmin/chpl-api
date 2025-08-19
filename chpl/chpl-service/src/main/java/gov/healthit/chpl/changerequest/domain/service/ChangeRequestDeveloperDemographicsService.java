@@ -35,7 +35,9 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
 
@@ -47,6 +49,12 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Value("${changeRequest.developerDemographics.submission.subject}")
+    private String submissionEmailSubject;
+
+    @Value("${changeRequest.developerDemographics.submission.body}")
+    private String submissionEmailBody;
 
     @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
@@ -65,6 +73,12 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
     @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
+
+    @Value("${changeRequest.developerDemographics.updatedDetails.subject}")
+    private String updatedDetailsEmailSubject;
+
+    @Value("${changeRequest.developerDemographics.updatedDetails.body}")
+    private String updatedDetailsEmailBody;
 
     @Value("${changeRequest.developerDemographics.cancelled.subject}")
     private String cancelledEmailSubject;
@@ -98,17 +112,24 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
-    public ChangeRequest create(ChangeRequest cr) {
+    public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
-            crDeveloperDemographicsDAO.create(cr, (ChangeRequestDeveloperDemographics) cr.getDetails());
-            return crDAO.get(cr.getId());
+            Long newCrId = crDeveloperDemographicsDAO.create(changeRequestId, (ChangeRequestDeveloperDemographics) changeRequestDetails);
+            try {
+                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
+                sendSubmittedEmail(changeRequestWithDetails);
+            } catch (EmailNotSentException ex) {
+                LOGGER.error("Email about Developer Demographics was not sent for change request " + changeRequestId, ex);
+            }
+
+            return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
+    public boolean update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
@@ -120,18 +141,17 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
             if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
-                cr.setDetails(crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails()));
-
+                crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails());
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
                         crFromDb, cr);
-            } else {
-                return null;
+                sendUpdatedDetailsEmail(cr);
+                return true;
             }
-            return cr;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 
     @Override
@@ -176,6 +196,27 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
+    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String>toList()))
+                .subject(submissionEmailSubject)
+                .htmlMessage(createSubmissionHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createSubmissionHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Details Submitted")
+                .paragraph("", String.format(submissionEmailBody,
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails())))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
                 .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
@@ -216,6 +257,27 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
+                .footer(PublicFooter.class)
+                .build();
+    }
+
+    @Override
+    protected void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+            .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
+                    .map(user -> user.getEmail())
+                    .collect(Collectors.<String>toList()))
+            .subject(updatedDetailsEmailSubject)
+            .htmlMessage(createUpdatedDetailsHtmlMessage(cr))
+            .sendEmail();
+    }
+
+    private String createUpdatedDetailsHtmlMessage(ChangeRequest cr) {
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Details Updated")
+                .paragraph("", String.format(updatedDetailsEmailBody,
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails())))
                 .footer(PublicFooter.class)
                 .build();
     }

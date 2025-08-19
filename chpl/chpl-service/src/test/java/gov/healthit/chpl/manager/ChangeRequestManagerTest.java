@@ -29,6 +29,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ChangeRequestManagerTest {
     private FF4j ff4j;
+    private ActivityManager activityManager;
     private ErrorMessageUtil errorMessageUtil;
 
 
@@ -47,7 +49,8 @@ public class ChangeRequestManagerTest {
     public void before() throws EntityRetrievalException {
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
-        .thenReturn(true);
+            .thenReturn(true);
+        activityManager = Mockito.mock(ActivityManager.class);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
@@ -65,8 +68,8 @@ public class ChangeRequestManagerTest {
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                resourcePermissionsFactory, null, null, null, ff4j, null);
+                null, null, null, null, null, null, null, null, null, activityManager, null, null, null, null,
+                null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -88,8 +91,8 @@ public class ChangeRequestManagerTest {
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, resourcePermissionsFactory, null, null, null, ff4j, null);
+                null, null, null, null, null, null, null, null, null, activityManager, null, null,
+                null, null, null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -101,7 +104,7 @@ public class ChangeRequestManagerTest {
     @Test
     public void updateChangeRequest_ValidCr_ReturnsUpdatedCr()
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -118,12 +121,10 @@ public class ChangeRequestManagerTest {
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
-        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
-                .thenAnswer(i -> i.getArgument(0));
+        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class))).thenReturn(true);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
@@ -135,6 +136,8 @@ public class ChangeRequestManagerTest {
                 crValidationService,
                 crDetailsFactory,
                 null,
+                activityManager,
+                null,
                 null,
                 null,
                 null,
@@ -144,8 +147,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j,
-                null);
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -160,7 +162,7 @@ public class ChangeRequestManagerTest {
 
     @Test(expected = ValidationException.class)
     public void updateChangeRequest_ValidationErrors_ThrowsException()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -182,6 +184,8 @@ public class ChangeRequestManagerTest {
                 crValidationService,
                 null,
                 null,
+                activityManager,
+                null,
                 null,
                 null,
                 null,
@@ -191,8 +195,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j,
-                null);
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -205,7 +208,7 @@ public class ChangeRequestManagerTest {
 
     @Test
     public void updateChangeRequest_UserIsNotDeveloper_CrDetailsAreNotUpdate()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
+            throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -223,12 +226,10 @@ public class ChangeRequestManagerTest {
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
         Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
 
         ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
-        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
-                .thenAnswer(i -> i.getArgument(0));
+        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class))).thenReturn(true);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null,
@@ -240,6 +241,8 @@ public class ChangeRequestManagerTest {
                 crValidationService,
                 crDetailsFactory,
                 null,
+                activityManager,
+                null,
                 null,
                 null,
                 null,
@@ -249,8 +252,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                ff4j,
-                null);
+                ff4j);
 
         // Run
         changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
@@ -261,66 +263,6 @@ public class ChangeRequestManagerTest {
         // Check
         Mockito.verify(detailsService, Mockito.times(0)).update(ArgumentMatchers.any());
         Mockito.verify(crStatusService, Mockito.times(1)).updateChangeRequestStatus(ArgumentMatchers.any());
-    }
-
-    @Test(expected = InvalidArgumentsException.class)
-    public void updateChangeRequest_CrCurrentStatusIsNull_InvalidArgumentsException()
-            throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
-        // Setup
-        ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
-
-        ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
-
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
-        ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
-        // Return what was passed in...
-        Mockito.when(detailsService.update(ArgumentMatchers.any(ChangeRequest.class))).thenAnswer(i -> i.getArgument(0));
-        Mockito.when(crDetailsFactory.get(ArgumentMatchers.anyLong())).thenReturn(detailsService);
-
-        ChangeRequestStatusService crStatusService = Mockito.mock(ChangeRequestStatusService.class);
-        Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
-                .thenAnswer(i -> i.getArgument(0));
-
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null,
-                changeRequestDAO,
-                null,
-                null,
-                null,
-                null,
-                null,
-                crStatusService,
-                crValidationService,
-                crDetailsFactory,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                resourcePermissionsFactory,
-                errorMessageUtil,
-                null,
-                null,
-                ff4j,
-                null);
-
-        // Run
-        ChangeRequest cr = getBasicChangeRequest();
-        cr.setCurrentStatus(null);
-        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
-                .changeRequest(cr)
-                .acknowledgeWarnings(true)
-                .build());
-        // Check
     }
 
     private ChangeRequest getBasicChangeRequest() {

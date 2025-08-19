@@ -5,13 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrlType;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestListingUrlEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestListingUrlTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -24,35 +21,29 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
         this.changeRequestConverter = changeRequestConverter;
     }
 
-    public ChangeRequestListingUrlType getChangeRequestListingUrlType(String name) throws EntityRetrievalException {
-        return getChangeRequestListingUrlTypeEntity(name).toDomain();
-    }
-
-    public ChangeRequestListingUrl create(ChangeRequest cr, ChangeRequestListingUrl crListingUrl)
-            throws EntityRetrievalException {
-        ChangeRequestListingUrlEntity entity = getNewEntity(cr, crListingUrl);
+    public Long create(Long changeRequestId, ChangeRequestListingUrl crListingUrl) throws EntityRetrievalException {
+        ChangeRequestListingUrlEntity entity = getNewEntity(changeRequestId, crListingUrl);
         create(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
+        return entity.getId();
     }
 
     public ChangeRequestListingUrl getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
-
-    public ChangeRequestListingUrl update(ChangeRequestListingUrl crListingUpdate) throws EntityRetrievalException {
+    public void update(ChangeRequestListingUrl crListingUpdate) throws EntityRetrievalException {
         ChangeRequestListingUrlEntity entity = getEntity(crListingUpdate.getId());
         entity.setUrl(crListingUpdate.getUrl());
         entity.setListingId(crListingUpdate.getListing().getId());
+        entity.setCheckDate(crListingUpdate.getCheckDate());
         update(entity);
-        return changeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-    private ChangeRequestListingUrlEntity getNewEntity(ChangeRequest cr, ChangeRequestListingUrl crListingUpdate) {
+    private ChangeRequestListingUrlEntity getNewEntity(Long changeRequestId, ChangeRequestListingUrl crListingUpdate) {
         ChangeRequestListingUrlEntity entity = new ChangeRequestListingUrlEntity();
-        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, cr.getId()));
-        entity.setChangeRequestListingUrlType(getSession().get(ChangeRequestListingUrlTypeEntity.class, crListingUpdate.getChangeRequestListingUrlType().getId()));
+        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, changeRequestId));
         entity.setUrl(crListingUpdate.getUrl());
+        entity.setCheckDate(crListingUpdate.getCheckDate());
         entity.setListingId(crListingUpdate.getListing().getId());
         return entity;
     }
@@ -60,7 +51,6 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
     private ChangeRequestListingUrlEntity getEntity(Long changeRequestListingUrlId) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestListingUrlEntity crListingUrl "
                 + "JOIN FETCH crListingUrl.changeRequest "
-                + "JOIN FETCH crListingUrl.changeRequestListingUrlType "
                 + "WHERE (NOT crListingUrl.deleted = true) "
                 + "AND (crListingUrl.id = :crListingUrlId) ";
 
@@ -87,7 +77,6 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestListingUrlEntity crListingUrl "
                 + "JOIN FETCH crListingUrl.changeRequest "
-                + "JOIN FETCH crListingUrl.changeRequestListingUrlType "
                 + "WHERE (NOT crListingUrl.deleted = true) "
                 + "AND (crListingUrl.changeRequest.id = :changeRequestId) ";
 
@@ -96,43 +85,9 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
 
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Change request listing url not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate change request listing url in database.");
-        }
-
         if (result.size() == 0) {
             return null;
         }
         return result.get(0);
     }
-
-    private ChangeRequestListingUrlTypeEntity getChangeRequestListingUrlTypeEntity(String name)
-            throws EntityRetrievalException {
-        String hql = "FROM ChangeRequestListingUrlTypeEntity crlut "
-                + "WHERE (NOT deleted = true) "
-                + "AND (name = :name) ";
-
-        List<ChangeRequestListingUrlTypeEntity> result = entityManager
-                .createQuery(hql, ChangeRequestListingUrlTypeEntity.class)
-                .setParameter("name", name)
-                .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Change request listing url not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate change request listing url in database.");
-        }
-
-        if (result.size() == 0) {
-            return null;
-        }
-        return result.get(0);
-    }
-
 }
