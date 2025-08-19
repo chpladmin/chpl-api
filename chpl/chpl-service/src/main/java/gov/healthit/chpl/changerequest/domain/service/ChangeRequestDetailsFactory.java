@@ -9,6 +9,8 @@ public class ChangeRequestDetailsFactory {
     private ChangeRequestDeveloperDemographicsService crDeveloperDemographicsService;
     private ChangeRequestAttestationService crAttestattionService;
     private ChangeRequestServiceBaseUrlListService crServiceBaseUrlListService;
+    private ChangeRequestRwtPlansUrlService crRwtPlansUrlService;
+    private ChangeRequestRwtResultsUrlService crRwtResultsUrlService;
 
     @Value("${changerequest.developerDemographics}")
     private Long developerDemographicsChangeRequestType;
@@ -19,12 +21,23 @@ public class ChangeRequestDetailsFactory {
     @Value("${changerequest.serviceBaseUrlList}")
     private Long serviceBaseUrlListChangeRequestType;
 
+    @Value("${changerequest.rwtPlansUrl}")
+    private Long rwtPlansUrlChangeRequestType;
+
+    @Value("${changerequest.rwtResultsUrl}")
+    private Long rwtResultsUrlChangeRequestType;
+
     @Autowired
     public ChangeRequestDetailsFactory(ChangeRequestDeveloperDemographicsService crDevDemographicsService,
-            ChangeRequestAttestationService crAttestationService, ChangeRequestServiceBaseUrlListService crServiceBaseUrlListService) {
+            ChangeRequestAttestationService crAttestationService,
+            ChangeRequestServiceBaseUrlListService crServiceBaseUrlListService,
+            ChangeRequestRwtPlansUrlService crRwtPlansUrlService,
+            ChangeRequestRwtResultsUrlService crRwtResultsUrlService) {
         this.crDeveloperDemographicsService = crDevDemographicsService;
         this.crAttestattionService = crAttestationService;
         this.crServiceBaseUrlListService = crServiceBaseUrlListService;
+        this.crRwtPlansUrlService = crRwtPlansUrlService;
+        this.crRwtResultsUrlService = crRwtResultsUrlService;
     }
 
     public ChangeRequestDetailsService<?> get(Long changeRequestType) {
@@ -36,6 +49,10 @@ public class ChangeRequestDetailsFactory {
             crDetailsService = crAttestattionService;
         } else if (changeRequestType.equals(serviceBaseUrlListChangeRequestType)) {
             crDetailsService = crServiceBaseUrlListService;
+        } else if (changeRequestType.equals(rwtPlansUrlChangeRequestType)) {
+            crDetailsService = crRwtPlansUrlService;
+        } else if (changeRequestType.equals(rwtResultsUrlChangeRequestType)) {
+            crDetailsService = crRwtResultsUrlService;
         }
         return crDetailsService;
     }
