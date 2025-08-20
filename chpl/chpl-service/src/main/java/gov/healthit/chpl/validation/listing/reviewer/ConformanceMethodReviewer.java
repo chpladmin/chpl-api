@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -37,13 +38,16 @@ import lombok.extern.log4j.Log4j2;
 @Component("conformanceMethodReviewer")
 @Log4j2
 public class ConformanceMethodReviewer extends PermissionBasedReviewer {
-    private static final String CM_ATTESTATION = "Attestation";
-
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
     private ConformanceMethodDAO conformanceMethodDao;
     private CertificationResultDAO certResultDao;
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
+
+    private ConformanceMethod attestationConformanceMethod;
+    private ConformanceMethod gapConformanceMethod;
+    private List<ConformanceMethod> cmsWithVersionNotRequired;
+    private List<ConformanceMethod> cmsWithVersionNotAllowed;
 
     @Autowired
     public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao,
@@ -51,7 +55,9 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
-            ResourcePermissionsFactory resourcePermissionsFactory) {
+            ResourcePermissionsFactory resourcePermissionsFactory,
+            @Value("${conformancemethod.attestation}") Long attestationCmId,
+            @Value("${conformancemethod.gap}") Long gapCmId) {
         super(msgUtil, resourcePermissionsFactory);
         this.conformanceMethodDao = conformanceMethodDao;
         this.msgUtil = msgUtil;
@@ -59,6 +65,10 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.attestationConformanceMethod = conformanceMethodDao.getById(attestationCmId);
+        this.gapConformanceMethod = conformanceMethodDao.getById(gapCmId);
+        this.cmsWithVersionNotRequired = Stream.of(attestationConformanceMethod, gapConformanceMethod).toList();
+        this.cmsWithVersionNotAllowed = Stream.of(attestationConformanceMethod).toList();
     }
 
     @Override
@@ -302,20 +312,26 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
         List<ConformanceMethod> conformanceMethodsForCriterion = getConformanceMethodsForCriterion(certResult.getCriterion());
         return conformanceMethodsForCriterion != null && conformanceMethodsForCriterion.size() == 1
-                && conformanceMethodsForCriterion.get(0).getName().equals(CM_ATTESTATION);
+                && conformanceMethodsForCriterion.get(0).getName().equals(attestationConformanceMethod.getName());
     }
 
     private boolean isMissingVersionDataWhenItIsRequired(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
+                && cmsWithVersionNotRequired.stream().map(cm -> cm.getName())
+                    .filter(name -> name.equals(conformanceMethod.getConformanceMethod().getName()))
+                    .findAny()
+                    .isEmpty()
                 && StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 
     private boolean hasVersionDataWhenItIsNotAllowed(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
+                && cmsWithVersionNotAllowed.stream().map(cm -> cm.getName())
+                    .filter(name -> name.equals(conformanceMethod.getConformanceMethod().getName()))
+                    .findAny()
+                    .isPresent()
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 

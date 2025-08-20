@@ -58,24 +58,39 @@ public class ConformanceMethodReviewerTest {
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private CertificationEdition edition2015;
 
+    private ConformanceMethod attestationConformanceMethod;
+    private ConformanceMethod gapConformanceMethod;
+
     @Before
     public void before() throws EntityRetrievalException {
         edition2015 = CertificationEdition.builder()
                 .id(3L)
                 .name("2015")
                 .build();
+        attestationConformanceMethod = ConformanceMethod.builder()
+                .id(1L)
+                .name("Attestation")
+                .removalDate(null)
+                .build();
+        gapConformanceMethod = ConformanceMethod.builder()
+                .id(25L)
+                .name("Gap Conformance Method")
+                .removalDate(null)
+                .build();
+
         ConformanceMethodDAO conformanceMethodDao = Mockito.mock(ConformanceMethodDAO.class);
+        Mockito.when(conformanceMethodDao.getById(ArgumentMatchers.eq(1L)))
+            .thenReturn(attestationConformanceMethod);
+        Mockito.when(conformanceMethodDao.getById(ArgumentMatchers.eq(25L)))
+            .thenReturn(gapConformanceMethod);
+
         Mockito.when(conformanceMethodDao.getAllConformanceMethodCriteriaMap())
             .thenReturn(Stream.of(ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
                             .number("170.315 (a)(1)")
                             .id(1L)
                             .build())
-                        .conformanceMethod(ConformanceMethod.builder()
-                            .id(1L)
-                            .name("Attestation")
-                            .removalDate(null)
-                            .build())
+                        .conformanceMethod(attestationConformanceMethod)
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
@@ -101,22 +116,14 @@ public class ConformanceMethodReviewerTest {
                             .number("170.315 (a)(2)")
                             .id(2L)
                             .build())
-                        .conformanceMethod(ConformanceMethod.builder()
-                            .id(1L)
-                            .name("Attestation")
-                            .removalDate(null)
-                            .build())
+                        .conformanceMethod(attestationConformanceMethod)
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
                             .number("170.315 (a)(4)")
                             .id(4L)
                             .build())
-                        .conformanceMethod(ConformanceMethod.builder()
-                            .id(1L)
-                            .name("Attestation")
-                            .removalDate(null)
-                            .build())
+                        .conformanceMethod(attestationConformanceMethod)
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
@@ -125,11 +132,7 @@ public class ConformanceMethodReviewerTest {
                             .startDay(LocalDate.parse("2023-01-01"))
                             .endDay(LocalDate.parse("2023-01-02"))
                             .build())
-                        .conformanceMethod(ConformanceMethod.builder()
-                            .id(1L)
-                            .name("Attestation")
-                            .removalDate(null)
-                            .build())
+                        .conformanceMethod(attestationConformanceMethod)
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
@@ -186,7 +189,7 @@ public class ConformanceMethodReviewerTest {
         certResultDao = Mockito.mock(CertificationResultDAO.class);
         conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, certResultDao,
                 msgUtil, new ValidationUtils(), certResultRules, criterionService,
-                resourcePermissionsFactory);
+                resourcePermissionsFactory, attestationConformanceMethod.getId(), gapConformanceMethod.getId());
     }
 
     @Test
@@ -403,10 +406,7 @@ public class ConformanceMethodReviewerTest {
     @Test
     public void review_conformanceMethodMayNotHaveVersionButCanHaveOtherConformanceMethods_hasError() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
-                .conformanceMethod(ConformanceMethod.builder()
-                        .id(1L)
-                        .name("Attestation")
-                        .build())
+                .conformanceMethod(attestationConformanceMethod)
                 .conformanceMethodVersion("bad version")
                 .build();
 
@@ -434,10 +434,7 @@ public class ConformanceMethodReviewerTest {
     @Test
     public void review_conformanceMethodMayNotHaveVersionAndCannotHaveOtherConformanceMethods_hasWarningAndVersionRemoved() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
-                .conformanceMethod(ConformanceMethod.builder()
-                        .id(1L)
-                        .name("Attestation")
-                        .build())
+                .conformanceMethod(attestationConformanceMethod)
                 .conformanceMethodVersion("bad version")
                 .build();
 
@@ -839,10 +836,7 @@ public class ConformanceMethodReviewerTest {
     @Test
     public void review_conformanceMethodF3HasAttestationCm_hasWarning() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
-                .conformanceMethod(ConformanceMethod.builder()
-                        .id(1L)
-                        .name("Attestation")
-                        .build())
+                .conformanceMethod(attestationConformanceMethod)
                 .conformanceMethodVersion("1")
                 .build();
 
