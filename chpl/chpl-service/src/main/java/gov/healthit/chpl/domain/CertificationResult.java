@@ -242,7 +242,7 @@ public class CertificationResult implements Serializable {
         this();
         this.setId(certResult.getId());
         this.setSuccess(certResult.getSuccess());
-        this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+        this.setGap(certResult.getGap());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
         this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
@@ -266,8 +266,6 @@ public class CertificationResult implements Serializable {
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.GAP)) {
             this.setGap(null);
-        } else if (certResult.getGap() == null) {
-            this.setGap(Boolean.FALSE);
         } else {
             this.setGap(certResult.getGap());
         }
