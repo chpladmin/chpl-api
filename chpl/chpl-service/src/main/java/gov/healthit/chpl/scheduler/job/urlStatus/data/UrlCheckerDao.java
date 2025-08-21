@@ -112,11 +112,6 @@ public class UrlCheckerDao extends BaseDAOImpl {
             urlsOfType = getMandatoryDisclosureUrls();
             logger.info("Got " + urlsOfType.size() + " Mandatory Disclosure URLs in the system.");
             break;
-        case TEST_RESULTS_SUMMARY:
-            logger.info("Getting all Test Results Summary URLs in the system...");
-            urlsOfType = getTestResultsSummaryUrls();
-            logger.info("Got " + urlsOfType.size() + " Test Results Summary URLs in the system.");
-            break;
         case FULL_USABILITY_REPORT:
             logger.info("Getting all Full Usability Report URLs in the system...");
             urlsOfType = getFullUsabilityReportUrls();
@@ -262,26 +257,6 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 .map(website -> UrlResult.builder()
                         .url(website)
                         .urlType(UrlType.MANDATORY_DISCLOSURE)
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private List<UrlResult> getTestResultsSummaryUrls() {
-        @SuppressWarnings("unchecked")
-        List<String> testResultsWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT reportFileLocation "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE reportFileLocation IS NOT NULL "
-                        + "AND reportFileLocation != '' "
-                        + "AND certificationStatusName IN (:activeStatuses) "
-                        + "AND deleted = false")
-                .setParameter("activeStatuses", activeStatuses)
-                .getResultList();
-        return testResultsWebsites.stream()
-                .filter(website -> !StringUtils.isEmpty(website))
-                .map(website -> UrlResult.builder()
-                        .url(website)
-                        .urlType(UrlType.TEST_RESULTS_SUMMARY)
                         .build())
                 .collect(Collectors.toList());
     }

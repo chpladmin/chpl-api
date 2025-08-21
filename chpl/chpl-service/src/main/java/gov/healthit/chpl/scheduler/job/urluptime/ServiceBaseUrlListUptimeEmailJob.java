@@ -51,6 +51,7 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Service Base Url List Uptime Email job *********");
+        serviceBaseUrlListUptimeCalculator.setLogger(LOGGER);
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {

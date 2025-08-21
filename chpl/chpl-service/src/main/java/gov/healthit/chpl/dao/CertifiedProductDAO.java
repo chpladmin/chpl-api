@@ -615,9 +615,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         case FULL_USABILITY_REPORT:
             queryStr += " AND cp.sedReportFileLocation = :url ";
             break;
-        case TEST_RESULTS_SUMMARY:
-            queryStr += " AND cp.reportFileLocation = :url ";
-            break;
         case REAL_WORLD_TESTING_PLANS:
             queryStr += " AND cp.rwtPlansUrl = :url ";
             break;

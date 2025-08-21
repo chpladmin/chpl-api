@@ -6,7 +6,6 @@ public enum UrlType {
     ACB("ONC-ACB"),
     DEVELOPER("Developer"),
     MANDATORY_DISCLOSURE("Mandatory Disclosure"),
-    TEST_RESULTS_SUMMARY("Test Results Summary"),
     FULL_USABILITY_REPORT("Full Usability Report"),
     API_DOCUMENTATION("API Documentation"),
     EXPORT_DOCUMENTATION("Export Documentation"),
