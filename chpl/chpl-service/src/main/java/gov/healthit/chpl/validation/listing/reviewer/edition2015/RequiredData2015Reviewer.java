@@ -2,7 +2,6 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,12 +45,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
 
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getSuccess() != null && cert.getSuccess()) {
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
-                        && cert.getGap() != null && cert.getGap()) {
-                    gapEligibleAndTrue = true;
-                }
-
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)
                         && cert.getAttestationAnswer() == null) {
                     addBusinessCriterionError(listing, cert,
@@ -88,10 +81,7 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                // require at least one test procedure where gap does not exist
-                // or is false, and criteria cannot have Conformance Methods
-                if (!gapEligibleAndTrue
-                        && (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.TEST_PROCEDURE)
+                if ((certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.TEST_PROCEDURE)
                                 && !certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD))
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     addBusinessCriterionError(listing, cert, "listing.criteria.missingTestProcedure",
@@ -142,8 +132,7 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                     }
                 }
 
-                if (!gapEligibleAndTrue
-                        && (cert.getCriterion().getNumber().equals(G1_CRITERIA_NUMBER) || cert.getCriterion().getNumber().equals(G2_CRITERIA_NUMBER))
+                if ((cert.getCriterion().getNumber().equals(G1_CRITERIA_NUMBER) || cert.getCriterion().getNumber().equals(G2_CRITERIA_NUMBER))
                         && (cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
                     listing.addBusinessErrorMessage("Test Data is required for certification "
                             + Util.formatCriteriaNumber(cert.getCriterion()) + ".");
@@ -167,15 +156,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
         }
         if (listing.getVersion() == null || StringUtils.isEmpty(listing.getVersion().getVersion())) {
             listing.addBusinessErrorMessage("A product version is required.");
-        }
-
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (BooleanUtils.isTrue(cert.getSuccess())
-                    && certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
-                    && cert.getGap() == null) {
-                addBusinessCriterionError(listing, cert, "listing.criteria.missingGap",
-                        Util.formatCriteriaNumber(cert.getCriterion()));
-            }
         }
     }
 }

@@ -135,6 +135,10 @@ public class ListingUploadValidator {
         this.duplicateDataReviewer = duplicateDataReviewer;
     }
 
+    public void reviewCsvHeadings(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
+        csvHeaderReviewer.review(uploadedMetadata, listing);
+    }
+
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
         csvHeaderReviewer.review(uploadedMetadata, listing);
         review(listing);

@@ -18,7 +18,6 @@ import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredTestToo
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG2SuccessActivity;
-import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedGapActivity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.extern.log4j.Log4j2;
@@ -47,7 +46,6 @@ public class CertificationResultQuestionableActivityService {
             ActivityDTO activity, String activityReason) {
         processCertificationResultActivity(UpdatedG1SuccessActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(UpdatedG2SuccessActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
-        processCertificationResultActivity(UpdatedGapActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ReplacedSvapAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);

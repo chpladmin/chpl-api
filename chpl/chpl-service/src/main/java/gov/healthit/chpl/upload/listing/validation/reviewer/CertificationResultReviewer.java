@@ -13,7 +13,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 @Component
@@ -22,7 +21,6 @@ public class CertificationResultReviewer {
     private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
     private AdditionalSoftwareReviewer additionalSoftwareReviewer;
-    private GapAllowedReviewer gapAllowedReviewer;
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
@@ -45,7 +43,6 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
             @Qualifier("listingUploadAdditionalSoftwareReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
-            @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
@@ -63,7 +60,6 @@ public class CertificationResultReviewer {
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
         this.additionalSoftwareReviewer = additionalSoftwareReviewer;
-        this.gapAllowedReviewer = gapAllowedReviewer;
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
@@ -103,7 +99,6 @@ public class CertificationResultReviewer {
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
         additionalSoftwareReviewer.review(listing);
-        gapAllowedReviewer.review(listing);
         conformanceMethodReviewer.review(listing);
         codeSetReviewer.review(listing);
         testToolReviewer.review(listing);
@@ -132,9 +127,6 @@ public class CertificationResultReviewer {
     }
 
     private void removeCertResultFieldsNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
-            certResult.setGap(null);
-        }
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             certResult.setAttestationAnswer(null);
         }
@@ -156,7 +148,6 @@ public class CertificationResultReviewer {
     }
 
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        reviewGap(listing, certResult);
         reviewAdditionalSoftwareString(listing, certResult);
         reviewAttestationAnswer(listing, certResult);
         reviewApiDocumentation(listing, certResult);
@@ -164,26 +155,6 @@ public class CertificationResultReviewer {
         reviewUseCases(listing, certResult);
         reviewServiceBaseUrlList(listing, certResult);
         reviewRiskManagementSummaryInformation(listing, certResult);
-    }
-
-    private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
-                && certResult.getGap() == null) {
-            if (!ObjectUtils.isEmpty(certResult.getGapStr())) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidGap",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        certResult.getGapStr()));
-            } else {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingGap",
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
-            }
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
-            if (certResult.getGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
-                listing.addWarningMessage(
-                        msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
-            }
-            certResult.setGap(null);
-        }
     }
 
     private void reviewAdditionalSoftwareString(CertifiedProductSearchDetails listing, CertificationResult certResult) {
