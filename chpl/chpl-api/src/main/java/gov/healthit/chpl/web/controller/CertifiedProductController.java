@@ -566,6 +566,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{certifiedProductId}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
@@ -600,6 +601,7 @@ public class CertifiedProductController {
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{chplProductNumber}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -638,6 +640,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{chplProductNumber}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {

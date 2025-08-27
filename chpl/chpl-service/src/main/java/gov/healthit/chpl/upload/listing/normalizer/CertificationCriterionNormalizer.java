@@ -114,11 +114,6 @@ public class CertificationCriterionNormalizer {
         }
 
         if (BooleanUtils.isFalse(certResult.getSuccess())
-                && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.GAP)) {
-            certResult.setGap(null);
-        }
-
-        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.OPTIONAL_STANDARD)) {
             certResult.setOptionalStandards(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.OPTIONAL_STANDARD)

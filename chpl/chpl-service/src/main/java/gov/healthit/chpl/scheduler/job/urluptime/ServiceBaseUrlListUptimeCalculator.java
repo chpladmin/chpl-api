@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 @Component
 public class ServiceBaseUrlListUptimeCalculator {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
+    private Logger logger;
 
     private List<CertificationBody> activeAcbs;
 
@@ -31,6 +31,10 @@ public class ServiceBaseUrlListUptimeCalculator {
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
 
         activeAcbs = certificationBodyManager.getAllActive();
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
     @Transactional(readOnly =  true)
@@ -51,7 +55,7 @@ public class ServiceBaseUrlListUptimeCalculator {
     }
 
     private ServiceBaseUrlListUptimeReport summarize(UrlUptimeMonitor urlUptimeMonitor, List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
-        LOGGER.info("Summarizing data for {}", urlUptimeMonitor.getUrl());
+        logger.info("Summarizing data for {}", urlUptimeMonitor.getUrl());
 
         List<UrlUptimeMonitorTest> allTestsForPastWeek = getEligibleTestsForPastWeek(urlUptimeMonitorTests);
         List<UrlUptimeMonitorTest> allTestsForCurrentMonth = getEligibleTestsForCurrentMonth(urlUptimeMonitorTests);

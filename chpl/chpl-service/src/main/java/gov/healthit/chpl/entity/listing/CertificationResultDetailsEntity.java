@@ -2,16 +2,6 @@ package gov.healthit.chpl.entity.listing;
 
 import java.util.Set;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
@@ -24,6 +14,15 @@ import gov.healthit.chpl.testdata.CertificationResultTestDataEntity;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.teststandard.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
@@ -61,6 +60,7 @@ public class CertificationResultDetailsEntity {
     @Column(name = "title")
     private String title;
 
+    @Deprecated
     @Column(name = "gap")
     private Boolean gap;
 

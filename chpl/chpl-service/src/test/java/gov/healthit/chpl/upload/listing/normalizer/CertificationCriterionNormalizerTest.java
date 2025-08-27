@@ -60,7 +60,6 @@ public class CertificationCriterionNormalizerTest {
             assertNull(certResult.getConformanceMethods());
             assertNull(certResult.getDocumentationUrl());
             assertNull(certResult.getExportDocumentation());
-            assertNull(certResult.getGap());
             assertNull(certResult.getG1Success());
             assertNull(certResult.getG2Success());
             assertNull(certResult.getOptionalStandards());
@@ -348,37 +347,6 @@ public class CertificationCriterionNormalizerTest {
             } else {
                 assertFalse(certResult.getSuccess());
                 assertNull(certResult.getG2Success());
-            }
-        }
-    }
-
-    @Test
-    public void normalize_a1AttestedAndGapAllowed_a2AddedAndA1GapNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
-                ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .build();
-        listing.setCertificationResults(Stream.of(CertificationResult.builder()
-                        .id(100L)
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .title("a1")
-                                .build())
-                        .gap(null)
-                        .build()).collect(Collectors.toList()));
-        normalizer.normalize(listing);
-        assertNotNull(listing.getCertificationResults());
-        assertEquals(1, listing.getCertificationResults().size());
-        for (CertificationResult certResult : listing.getCertificationResults()) {
-            if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.getSuccess());
-                assertNull(certResult.getGap());
-            } else {
-                assertFalse(certResult.getSuccess());
-                assertNull(certResult.getGap());
             }
         }
     }

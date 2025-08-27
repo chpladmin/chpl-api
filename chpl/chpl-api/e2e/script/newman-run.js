@@ -408,6 +408,16 @@ const announcementsControllerTests = {
   },
 };
 
+const questionableUrlsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-questionable-urls-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-questionable-urls-controller-tests.xml',
+    },
+  },
+};      
+      
 const reportDataCriteriaUpToDateControllerTests = {
   ...commonOptions,
   collection: collection_path + '/report-data-criteria-up-to-date.postman_collection.json',
@@ -458,6 +468,7 @@ const jobs = [
   cb => newman.run(conformanceMethodsControllerTests,cb),
   cb => newman.run(searchQuestionableActivityControllerTests,cb),
   cb => newman.run(announcementsControllerTests,cb),
+  cb => newman.run(questionableUrlsControllerTests,cb),
   cb => newman.run(reportDataCriteriaUpToDateControllerTests,cb),
   ];
 
