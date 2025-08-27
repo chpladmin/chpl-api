@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,6 +61,7 @@ public class CertificationCriterionAttributeEntity extends EntityAudit {
     @Column(name = "functionality_tested")
     private Boolean functionalityTested;
 
+    @Deprecated
     @Column(name = "gap")
     private Boolean gap;
 

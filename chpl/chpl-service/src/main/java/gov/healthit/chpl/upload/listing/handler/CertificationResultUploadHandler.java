@@ -54,8 +54,8 @@ public class CertificationResultUploadHandler {
                 .criterion(criterionHandler.handle(certHeadingRecord))
                 .successStr(parseSuccessStr(certHeadingRecord, certResultRecords))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
-                .gap(parseGap(certHeadingRecord, certResultRecords))
-                .gapStr(parseGapStr(certHeadingRecord, certResultRecords))
+                .gap(null)
+                .gapStr(null)
                 .hasAdditionalSoftware(parseHasAdditionalSoftware(certHeadingRecord, certResultRecords))
                 .hasAdditionalSoftwareStr(parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
@@ -94,19 +94,6 @@ public class CertificationResultUploadHandler {
 
     private String parseSuccessStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         return uploadUtil.parseSingleRowFieldAtIndex(0, certHeadingRecord, certResultRecords);
-    }
-
-    private Boolean parseGap(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        Boolean result = null;
-        try {
-            result = uploadUtil.parseSingleRowFieldAsBoolean(Heading.GAP, certHeadingRecord, certResultRecords);
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    private String parseGapStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.GAP, certHeadingRecord, certResultRecords);
     }
 
     private Boolean parseHasAdditionalSoftware(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {

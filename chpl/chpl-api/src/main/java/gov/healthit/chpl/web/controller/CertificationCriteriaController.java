@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,6 +39,7 @@ public class CertificationCriteriaController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/certification-criteria", httpMethod = "GET", responseClass = CertificationCriterionWithAttributes.class)
     public @ResponseBody List<CertificationCriterionWithAttributes> getAll(
             @RequestParam(name = "certificationEdition", defaultValue = "", required = false)
             String certificationEdition,
