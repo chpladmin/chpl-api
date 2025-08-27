@@ -87,9 +87,7 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_nullTestToolsNoGapCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
+    public void review_nullTestTools_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -101,7 +99,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .build())
                 .build();
@@ -116,8 +113,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_nullTestToolsRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -130,7 +125,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .build())
                 .build();
@@ -142,9 +136,7 @@ public class TestToolReviewerTest {
     }
 
     @Test
-    public void review_emptyTestToolsNoGapCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
+    public void review_emptyTestTools_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -156,7 +148,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .build())
                 .build();
@@ -170,8 +161,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_emptyTestToolsRemovedCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -184,58 +173,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
-                        .success(true)
-                        .build())
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_nullTestToolsWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
-            .thenReturn(true);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .startDay(LocalDate.parse("2023-01-01"))
-                                .certificationEdition("2015")
-                                .build())
-                        .gap(true)
-                        .success(true)
-                        .build())
-                .build();
-        listing.getCertificationResults().get(0).setTestToolsUsed(null);
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_emptyTestToolsWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
-            .thenReturn(true);
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .startDay(LocalDate.parse("2023-01-01"))
-                                .certificationEdition("2015")
-                                .build())
-                        .gap(true)
                         .success(true)
                         .build())
                 .build();
@@ -247,8 +184,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_criteriaDoesNotSupportTestTools_hasWarningAndTestToolsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(false);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -267,7 +202,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(true)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -284,8 +218,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_removedCriteriaDoesNotSupportTestTools_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(false);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -305,7 +237,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(true)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -318,8 +249,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_removesTestToolsWithoutId_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -347,7 +276,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -363,8 +291,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_ignoresTestToolsWithoutIdForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -389,7 +315,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -403,8 +328,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameNoId_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -434,7 +357,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -450,8 +372,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameNoIdForRemovedCriteria_notRemovedAndNoWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -478,7 +398,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -492,8 +411,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameWithId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -525,7 +442,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -541,8 +457,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameWithIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -570,7 +484,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -584,8 +497,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolMissingVersion_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -616,7 +527,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -632,8 +542,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolMissingVersionForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -660,7 +568,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -674,8 +581,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolWithoutListingIcsForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -706,7 +611,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -720,8 +624,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolWithIcs_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -752,7 +654,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -769,8 +670,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolDatesEarlierThanDecertifiedListingDates_listingHasIcs_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -801,7 +700,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -815,8 +713,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolDatesEarlierThanDecertifiedListingDates_listingWithoutIcs_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -844,7 +740,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -859,8 +754,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolDatesEarlierThanActiveListingDates_listingHasIcs_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -890,7 +783,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -904,8 +796,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolDatesEarlierThanActiveListingDates_listingWithoutIcs_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -932,7 +822,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -947,8 +836,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolDatesLaterThanDecertifiedListingDates_listingHasIcs_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
@@ -972,7 +859,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(false)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -987,8 +873,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolsNotApplicableForCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -1011,7 +895,6 @@ public class TestToolReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(true)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())
@@ -1027,8 +910,6 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolsNotApplicableForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
-            .thenReturn(true);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -1048,7 +929,6 @@ public class TestToolReviewerTest {
                                 .endDay(LocalDate.parse("2023-01-02"))
                                 .certificationEdition("2015")
                                 .build())
-                        .gap(true)
                         .success(true)
                         .testToolsUsed(testTools)
                         .build())

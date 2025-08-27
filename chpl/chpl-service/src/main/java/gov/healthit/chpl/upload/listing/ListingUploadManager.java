@@ -223,6 +223,8 @@ public class ListingUploadManager {
         listingNormalizer.normalize(listing, List.of(
                 baselineStandardAsOfTodayNormalizer)); // add the most current baseline standards we've agreed to always add for users
         LOGGER.debug("Normalized listing upload");
+        LOGGER.debug("Reviewing CSV headings");
+        listingUploadValidator.reviewCsvHeadings(listingUpload, listing);
         return listing;
     }
 

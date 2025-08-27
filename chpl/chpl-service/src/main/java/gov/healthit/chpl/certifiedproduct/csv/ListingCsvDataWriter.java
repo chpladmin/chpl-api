@@ -482,7 +482,6 @@ public class ListingCsvDataWriter {
             currCol = addFunctionalitiesTested(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addG1Success(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addG2Success(csvDataMatrix, certResult, criterionWithAttributes, currCol);
-            currCol = addGap(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addOptionalStandards(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addPrivacySecurityFramework(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addRiskManagementSummaryInformation(csvDataMatrix, certResult, criterionWithAttributes, currCol);
@@ -610,15 +609,6 @@ public class ListingCsvDataWriter {
             CertificationCriterionWithAttributes criterionWithAttributes, int currCol) {
         if (criterionWithAttributes.getAttributes().isG2Success()) {
             csvDataMatrix[0][currCol++] = BooleanUtils.isTrue(certResult.getG2Success()) ? "1" : "0";
-        }
-        return currCol;
-    }
-
-    private int addGap(String[][] csvDataMatrix, CertificationResult certResult,
-            CertificationCriterionWithAttributes criterionWithAttributes, int currCol) {
-        if (criterionWithAttributes.getAttributes().isGap()) {
-            csvDataMatrix[0][currCol++] = BooleanUtils.isTrue(certResult.getGap()) ? "1"
-                    : (certResult.getSuccess() ? "0" : "");
         }
         return currCol;
     }

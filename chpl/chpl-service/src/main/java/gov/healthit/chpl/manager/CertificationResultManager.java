@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -96,11 +97,10 @@ public class CertificationResultManager extends SecuredManager {
         } else {
             boolean hasChanged = false;
             if (!Objects.equals(orig.getSuccess(), updated.getSuccess())
-                    || !StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
-                    || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
+                    || !Strings.CS.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
+                    || !Strings.CS.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
                     || !Objects.equals(orig.getG1Success(), updated.getG1Success())
                     || !Objects.equals(orig.getG2Success(), updated.getG2Success())
-                    || !Objects.equals(orig.getGap(), updated.getGap())
                     || !Objects.equals(orig.getSed(), updated.getSed())
                     || !Objects.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
                     || !Objects.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
@@ -184,7 +184,6 @@ public class CertificationResultManager extends SecuredManager {
         if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
             toUpdate.setApiDocumentation(updatedCertResult.getApiDocumentation());
             toUpdate.setPrivacySecurityFramework(updatedCertResult.getPrivacySecurityFramework());
-            toUpdate.setGap(updatedCertResult.getGap());
             toUpdate.setSed(updatedCertResult.getSed());
             toUpdate.setAttestationAnswer(updatedCertResult.getAttestationAnswer());
             toUpdate.setDocumentationUrl(updatedCertResult.getDocumentationUrl());
