@@ -51,7 +51,6 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
@@ -224,10 +223,6 @@ public class Edition2015ListingValidator extends Validator {
     private RealWorldTestingReviewer realWorldTestingReviewer;
 
     @Autowired
-    @Qualifier("gapAllowedReviewer")
-    private GapAllowedReviewer gapAllowedReviewer;
-
-    @Autowired
     @Qualifier("measureValidityReviewer")
     private MeasureValidityReviewer measureReviewer;
 
@@ -307,7 +302,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(cqmResultReviewer);
         reviewers.add(duplicateDataReviewer);
-        reviewers.add(gapAllowedReviewer);
         reviewers.add(measureReviewer);
         reviewers.add(accessibilityStandardReviewer);
         reviewers.add(qmsStandardReviewer);

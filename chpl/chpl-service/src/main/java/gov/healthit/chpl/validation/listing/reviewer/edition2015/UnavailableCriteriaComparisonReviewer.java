@@ -105,12 +105,6 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,
             CertificationResult existingCert, CertificationResult updatedCert) {
-        if (isGapChanged(existingCert, updatedCert)) {
-            updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            "Gap"));
-        }
         if (isG1SuccessChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
@@ -195,13 +189,6 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
                             "SED"));
         }
-    }
-
-    private boolean isGapChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.GAP)) {
-            return !Objects.equals(existingCert.getGap(), updatedCert.getGap());
-        }
-        return false;
     }
 
     private boolean isG1SuccessChanged(CertificationResult existingCert, CertificationResult updatedCert) {

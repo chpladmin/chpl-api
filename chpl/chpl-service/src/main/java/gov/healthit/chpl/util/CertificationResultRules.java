@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component("certificationResultRules")
 public class CertificationResultRules {
+    @Deprecated
     public static final String GAP = "gap";
     public static final String PRIVACY_SECURITY = "privacySecurity";
     public static final String CONFORMANCE_METHOD = "conformanceMethod";

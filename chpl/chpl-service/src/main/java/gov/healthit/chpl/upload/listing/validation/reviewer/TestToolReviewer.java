@@ -56,10 +56,19 @@ public class TestToolReviewer implements Reviewer {
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveTestToolData(listing, certResult);
         removeTestToolsWithoutIds(listing, certResult);
-        reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
+        reviewTestToolsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             certResult.getTestToolsUsed().stream()
                     .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
+        }
+    }
+
+    private void reviewTestToolsRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)
+                && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+            listing.addDataErrorMessage(msgUtil.getMessage(
+                    "listing.criteria.missingTestTool",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -92,25 +101,6 @@ public class TestToolReviewer implements Reviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestTool().getValue()));
             }
         }
-    }
-
-    private void reviewTestToolsRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!isGapEligibileAndHasGap(certResult)
-                && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)
-                && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-            listing.addDataErrorMessage(msgUtil.getMessage(
-                    "listing.criteria.missingTestTool",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        }
-    }
-
-    private boolean isGapEligibileAndHasGap(CertificationResult certResult) {
-        boolean result = false;
-        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
-                && certResult.getGap() != null && certResult.getGap()) {
-            result = true;
-        }
-        return result;
     }
 
     private void reviewTestToolFields(CertifiedProductSearchDetails listing,

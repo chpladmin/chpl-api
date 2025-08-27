@@ -44,11 +44,6 @@ public class UnattestedCriteriaWithDataReviewer {
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getGap() != null && certResult.getGap()) {
-            listing.addWarningMessage(
-                    msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            Util.formatCriteriaNumber(certResult.getCriterion()), "GAP"));
-        }
         if (certResult.getSed() != null && certResult.getSed()) {
             listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",

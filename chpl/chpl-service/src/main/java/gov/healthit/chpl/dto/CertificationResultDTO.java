@@ -23,6 +23,8 @@ public class CertificationResultDTO implements Serializable {
     private Long certifiedProductId;
     private Date creationDate;
     private Boolean deleted;
+
+    @Deprecated
     private Boolean gap;
     private Boolean sed;
     private Boolean successful;

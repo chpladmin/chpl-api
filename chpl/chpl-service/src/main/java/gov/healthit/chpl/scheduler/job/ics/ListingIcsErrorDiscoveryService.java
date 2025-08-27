@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.scheduler.job.ics.reviewer.GapWithoutIcsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IcsErrorsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IcsWithoutParentsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IncorrectIcsIncrementReviewer;
@@ -22,12 +21,10 @@ public class ListingIcsErrorDiscoveryService {
     @Autowired
     public ListingIcsErrorDiscoveryService(IcsWithoutParentsReviewer icsWithParentsReviewer,
             IncorrectIcsIncrementReviewer incorrectIcsIncrementReviewer,
-            GapWithoutIcsReviewer gapWithoutIcsReviewer,
             MissingIcsSurveillanceReviewer missingIcsSurveillanceReviewer) {
         icsErrorsReviewers = new ArrayList<IcsErrorsReviewer>();
         icsErrorsReviewers.add(icsWithParentsReviewer);
         icsErrorsReviewers.add(incorrectIcsIncrementReviewer);
-        icsErrorsReviewers.add(gapWithoutIcsReviewer);
         icsErrorsReviewers.add(missingIcsSurveillanceReviewer);
     }
 

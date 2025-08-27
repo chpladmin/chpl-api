@@ -132,7 +132,6 @@ public class ListingUploadHeadingUtil {
         MEASURE_REQUIRED_TEST("Measure Required Test"),
         MEASURE_TYPE("Measure Type"),
         MEASURE_ASSOCIATED_CRITERIA("Measure Associated Criteria"),
-        GAP("GAP"),
         PRIVACY_AND_SECURITY("Privacy and Security Framework"),
         FUNCTIONALITIES_TESTED("Functionality Tested"),
         OPTIONAL_STANDARD("Standard Tested Against", "Optional Standard"),
