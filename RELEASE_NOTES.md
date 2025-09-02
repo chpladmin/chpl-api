@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 51.6.0
+_2 September 2025_
+
+### Features
+* Remove gap checks from listing validation
+* Deprecate "gap" field of certification results
+* Create endpoints for questionable URL reporting
+
+---
+
 ## Version 51.5.1
 _18 August 2025_
 
