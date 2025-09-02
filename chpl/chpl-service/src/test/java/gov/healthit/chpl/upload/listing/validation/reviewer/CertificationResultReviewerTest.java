@@ -18,7 +18,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 public class CertificationResultReviewerTest {
@@ -38,7 +37,6 @@ public class CertificationResultReviewerTest {
                 Mockito.mock(CriteriaReviewer.class),
                 Mockito.mock(PrivacyAndSecurityFrameworkReviewer.class),
                 Mockito.mock(AdditionalSoftwareReviewer.class),
-                Mockito.mock(GapAllowedReviewer.class),
                 Mockito.mock(TestToolReviewer.class),
                 Mockito.mock(TestDataReviewer.class),
                 Mockito.mock(ConformanceMethodReviewer.class),

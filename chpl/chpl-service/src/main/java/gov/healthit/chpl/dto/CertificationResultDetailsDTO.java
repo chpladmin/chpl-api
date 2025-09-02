@@ -33,6 +33,8 @@ public class CertificationResultDetailsDTO implements Serializable {
     private Boolean success;
     private String number;
     private String title;
+
+    @Deprecated
     private Boolean gap;
     private Boolean sed;
     private Boolean g1Success;

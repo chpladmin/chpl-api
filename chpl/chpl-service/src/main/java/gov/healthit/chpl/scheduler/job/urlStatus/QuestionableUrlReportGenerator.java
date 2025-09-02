@@ -115,7 +115,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     break;
                 case FULL_USABILITY_REPORT:
                 case MANDATORY_DISCLOSURE:
-                case TEST_RESULTS_SUMMARY:
                 case REAL_WORLD_TESTING_PLANS:
                 case REAL_WORLD_TESTING_RESULTS:
                 case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
@@ -307,7 +306,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
             int brokenDeveloperUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DEVELOPER);
             int brokenMandatoryDisclosureUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.MANDATORY_DISCLOSURE);
-            int brokenTestResultsSummaryUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.TEST_RESULTS_SUMMARY);
             int brokenFullUsabilityReportUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.FULL_USABILITY_REPORT);
             int brokenApiDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.API_DOCUMENTATION);
             int brokenExportDocumentationUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.EXPORT_DOCUMENTATION);
@@ -327,7 +325,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             brokenUrlSummaryHtml += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.MANDATORY_DISCLOSURE.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
-            brokenUrlSummaryHtml += "<li>" + UrlType.TEST_RESULTS_SUMMARY.getName() + ": " + brokenTestResultsSummaryUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
