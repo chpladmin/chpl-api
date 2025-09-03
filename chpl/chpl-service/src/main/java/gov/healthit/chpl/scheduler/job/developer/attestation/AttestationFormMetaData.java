@@ -6,7 +6,8 @@ public class AttestationFormMetaData {
     private static final Long ASSURANCES_CONDITION_ORIG = 2L;
     private static final Long COMMUNICATIONS_CONDITION = 3L;
     private static final Long API_CONDITION = 4L;
-    private static final Long RWT_CONDITION = 5L;
+    private static final Long RWT_CONDITION_ORIG = 5L;
+    private static final Long RWT_CONDITION = 8L;
 
     private static final Long NOT_APPLICABLE_RESPONSE_ID = 3L;
     private static final Long NON_COMPLIANT_RESPONSE_ID = 2L;
@@ -37,8 +38,13 @@ public class AttestationFormMetaData {
         return API_CONDITION;
     }
 
-    public static Long getRwtConditionId() {
-        return RWT_CONDITION;
+    public static Long getRwtConditionId(Long attestationPeriodId) {
+        // OCD-4134 will address this in a better manner
+        if (attestationPeriodId <= 8L) {
+            return RWT_CONDITION_ORIG;
+        } else {
+            return RWT_CONDITION;
+        }
     }
 
     public static Long getNotApplicableResponseId() {

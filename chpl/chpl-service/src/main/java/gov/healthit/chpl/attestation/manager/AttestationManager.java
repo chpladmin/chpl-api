@@ -132,13 +132,13 @@ public class AttestationManager {
 
         String rwtResponseCompliantMessage = attestationResponseValidationService.getRwtResponseCompliantMessage(activeListingsForDeveloper);
         AllowedResponse rwtAllowedResponseCompliant = getAllowedResponse(
-                form, AttestationFormMetaData.getRwtConditionId(),
+                form, AttestationFormMetaData.getRwtConditionId(periodId),
                 AttestationFormMetaData.getCompliantResponseId());
         rwtAllowedResponseCompliant.setMessage(rwtResponseCompliantMessage);
 
         String rwtResponseNotApplicableMessage = attestationResponseValidationService.getRwtResponseNotApplicableMessage(activeListingsForDeveloper);
         AllowedResponse rwtAllowedResponseNotApplicable = getAllowedResponse(
-                form, AttestationFormMetaData.getRwtConditionId(),
+                form, AttestationFormMetaData.getRwtConditionId(periodId),
                 AttestationFormMetaData.getNotApplicableResponseId());
         rwtAllowedResponseNotApplicable.setMessage(rwtResponseNotApplicableMessage);
     }
