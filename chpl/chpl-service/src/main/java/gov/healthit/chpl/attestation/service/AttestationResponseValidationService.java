@@ -128,17 +128,19 @@ public class AttestationResponseValidationService {
         return null;
     }
 
-    public Boolean isRwtApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+    public Boolean isRwtApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
+            Long attestationPeriodId) {
         return listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(),
+                        AttestationFormMetaData.getRwtConditionId(attestationPeriodId),
                         AttestationFormMetaData.getNotApplicableResponseId());
     }
 
-    public Boolean isRwtNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+    public Boolean isRwtNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
+                Long attestationPeriodId) {
         return !listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(),
+                        AttestationFormMetaData.getRwtConditionId(attestationPeriodId),
                         AttestationFormMetaData.getCompliantResponseId());
     }
 
