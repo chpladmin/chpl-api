@@ -25,10 +25,12 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Deprecated
 @Tag(name = "files", description = "Upload and retrieval of the ApiDocumentation file.")
 @RestController
 @RequestMapping("/files")
@@ -42,6 +44,9 @@ public class CHPLFileController {
         this.chplFileManager = chplFileManager;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/files/api_documentation", httpMethod = "POST",
+        message = "This feature will be removed.", removalDate = "2026-03-01")
     @Operation(summary = "Upload an API Documentation file",
             description = "Uploads a new current API Documentation file. "
                     + "Security Restrictions: Users with either role chpl-admin or chpl-onc",
@@ -73,6 +78,8 @@ public class CHPLFileController {
         return new ResponseEntity<CHPLFileDTO>(fileDTO, HttpStatus.OK);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/files/api_documentation", message = "This feature will be removed.", removalDate = "2026-03-01")
     @Operation(summary = "Retrieve an API Documentation file",
             description = "Retrieves the current API Documentation file.",
             security = {
@@ -93,6 +100,8 @@ public class CHPLFileController {
                 .body(fileDTO.getFileData());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/files/api_documentation/details", message = "This feature will be removed.", removalDate = "2026-03-01")
     @Operation(summary = "Retrieve details about an API Documentation file",
             description = "Retrieves the details about the current API Documentation file.",
             security = {
