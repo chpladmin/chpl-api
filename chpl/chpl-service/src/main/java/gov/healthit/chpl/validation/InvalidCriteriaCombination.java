@@ -25,6 +25,8 @@ public class InvalidCriteriaCombination {
             @Value("${criterion.170_315_b_2_cures}") Integer criteriaB2RevisedId,
             @Value("${criterion.170_315_b_3_old}") Integer criteriaB3Id,
             @Value("${criterion.170_315_b_3_cures}") Integer criteriaB3RevisedId,
+            @Value("${criterion.170_315_b_4_old}") Integer criteriaB4Id,
+            @Value("${criterion.170_315_b_4_hti4}") Integer criteriaB4RevisedId,
             @Value("${criterion.170_315_b_6}") Integer criteriaB6Id,
             @Value("${criterion.170_315_b_7_old}") Integer criteriaB7Id,
             @Value("${criterion.170_315_b_7_cures}") Integer criteriaB7RevisedId,
@@ -56,6 +58,7 @@ public class InvalidCriteriaCombination {
         final Pair<Integer, Integer> b1Pair = Pair.of(criteriaB1Id, criteriaB1RevisedId);
         final Pair<Integer, Integer> b2Pair = Pair.of(criteriaB2Id, criteriaB2RevisedId);
         final Pair<Integer, Integer> b3Pair = Pair.of(criteriaB3Id, criteriaB3RevisedId);
+        final Pair<Integer, Integer> b4Pair = Pair.of(criteriaB4Id, criteriaB4RevisedId);
         final Pair<Integer, Integer> b6Pair = Pair.of(criteriaB6Id, criteriaB10Id);
         final Pair<Integer, Integer> b7Pair = Pair.of(criteriaB7Id, criteriaB7RevisedId);
         final Pair<Integer, Integer> b8Pair = Pair.of(criteriaB8Id, criteriaB8RevisedId);
@@ -70,7 +73,7 @@ public class InvalidCriteriaCombination {
         final Pair<Integer, Integer> d3Pair = Pair.of(criteriaD3Id, criteriaD3RevisedId);
         final Pair<Integer, Integer> d10Pair = Pair.of(criteriaD10Id, criteriaD10RevisedId);
         oldAndNewcriteriaIdPairs = new LinkedHashSet<Pair<Integer, Integer>>(
-                Arrays.asList(a9Pair, b1Pair, b2Pair, b3Pair, b6Pair, b7Pair, b8Pair, b9Pair,
+                Arrays.asList(a9Pair, b1Pair, b2Pair, b3Pair, b4Pair, b6Pair, b7Pair, b8Pair, b9Pair,
                         c3Pair, e1Pair, f5Pair, g6Pair, g8Pair, g9Pair, d2Pair, d3Pair, d10Pair));
     }
 }
