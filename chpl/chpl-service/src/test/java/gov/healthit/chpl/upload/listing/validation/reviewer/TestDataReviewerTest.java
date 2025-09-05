@@ -29,6 +29,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestDataReviewerTest {
+    private static final String DEFAULT_TEST_DATA = "ONC Test Method";
+
     private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s. It has been removed.";
     private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for the criterion %s and has been removed from the listing.";
     private static final String TEST_DATA_REQUIRED = "Test data is required for certification %s.";
@@ -134,7 +136,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -168,7 +170,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -582,7 +584,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
