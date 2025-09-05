@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.attestation.service.ListingApplicabilityService;
 import gov.healthit.chpl.form.Form;
@@ -31,9 +30,8 @@ public class CheckInReportValidation {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
-            AttestationPeriod period) {
-        String warning = NullSafeEvaluator.eval(() -> getRealWordTestingWarningMessage(allActiveListingsForDeveloper, attestationForm, period.getId()), "");
+    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        String warning = NullSafeEvaluator.eval(() -> getRealWordTestingWarningMessage(allActiveListingsForDeveloper, attestationForm), "");
         if (listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)) {
             return YES + (warning != "" ? " - " : "") + warning;
         } else {
@@ -41,8 +39,8 @@ public class CheckInReportValidation {
         }
     }
 
-    public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, AttestationPeriod period) {
-        String warning = NullSafeEvaluator.eval(() -> getAssurancesWarningMessage(allActiveListingsForDeveloper, attestationForm, period.getId()), "");
+    public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        String warning = NullSafeEvaluator.eval(() -> getAssurancesWarningMessage(allActiveListingsForDeveloper, attestationForm), "");
         if (listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper)) {
             return YES + (warning != "" ? " - " : "") + warning;
         } else {
@@ -68,19 +66,18 @@ public class CheckInReportValidation {
         }
     }
 
-    private String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
-        if (attestationValidation.isAssurancesApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
-                || attestationValidation.isAssurancesNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
+    private String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        if (attestationValidation.isAssurancesApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
+                || attestationValidation.isAssurancesNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
             return errorMessageUtil.getMessage("attestation.checkInReport.assurancesResponseNotConsistent");
         } else {
             return null;
         }
     }
 
-    private String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
-            Long attestationPeriodId) {
-        if (attestationValidation.isRwtApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
-                || attestationValidation.isRwtNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
+    private String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        if (attestationValidation.isRwtApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
+                || attestationValidation.isRwtNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
             return errorMessageUtil.getMessage("attestation.checkInReport.rwtResponseNotConsistent");
         } else {
             return null;

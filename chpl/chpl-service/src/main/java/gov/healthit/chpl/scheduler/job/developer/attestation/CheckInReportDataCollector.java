@@ -98,14 +98,14 @@ public class CheckInReportDataCollector {
         if (checkInAttestation.getChangeRequest() != null) {
             form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
             checkInReport = addChangeRequestInformation(checkInReport, checkInAttestation.getChangeRequest());
-            checkInReport = addResponses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
-            checkInReport = addValidation(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod(), allActiveListingsForDeveloper);
+            checkInReport = addResponses(checkInReport, form);
+            checkInReport = addValidation(checkInReport, form, allActiveListingsForDeveloper);
         }
         if (checkInAttestation.getAttestationSubmission() != null) {
             form = checkInAttestation.getAttestationSubmission().getForm();
             checkInReport = addPublishedAttestationInformation(checkInReport, developer, checkInAttestation.getAttestationSubmission());
-            checkInReport = addResponses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
-            checkInReport = addValidation(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod(), allActiveListingsForDeveloper);
+            checkInReport = addResponses(checkInReport, form);
+            checkInReport = addValidation(checkInReport, form, allActiveListingsForDeveloper);
         }
         checkInReport = addComplianceInformation(checkInReport, developer, allActiveListingsForDeveloper);
 
@@ -148,17 +148,17 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport addResponses(CheckInReport checkInReport, Form form, Long attestationPeriodId) {
-        checkInReport.setInformationBlockingResponse(getAttestationResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
-        checkInReport.setInformationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
-        checkInReport.setAssurancesResponse(getAttestationResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
-        checkInReport.setAssurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
-        checkInReport.setCommunicationsResponse(getAttestationResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
-        checkInReport.setCommunicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
-        checkInReport.setRwtResponse(getAttestationResponse(form, AttestationFormMetaData.getRwtConditionId(attestationPeriodId)));
-        checkInReport.setRwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getRwtConditionId(attestationPeriodId)));
-        checkInReport.setApiResponse(getAttestationResponse(form, AttestationFormMetaData.getApiConditionId()));
-        checkInReport.setApiNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getApiConditionId()));
+    private CheckInReport addResponses(CheckInReport checkInReport, Form form) {
+        checkInReport.setInformationBlockingResponse(getAttestationResponse(form, form.getInformationBlockingQuestionId()));
+        checkInReport.setInformationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, form.getInformationBlockingQuestionId()));
+        checkInReport.setAssurancesResponse(getAttestationResponse(form, form.getAssurancesQuestionId()));
+        checkInReport.setAssurancesNoncompliantResponse(getAttestationOptionalResponse(form, form.getAssurancesQuestionId()));
+        checkInReport.setCommunicationsResponse(getAttestationResponse(form, form.getCommunicationQuestionId()));
+        checkInReport.setCommunicationsNoncompliantResponse(getAttestationOptionalResponse(form, form.getCommunicationQuestionId()));
+        checkInReport.setRwtResponse(getAttestationResponse(form, form.getRwtQuestionId()));
+        checkInReport.setRwtNoncompliantResponse(getAttestationOptionalResponse(form, form.getRwtQuestionId()));
+        checkInReport.setApiResponse(getAttestationResponse(form, form.getApiQuestionId()));
+        checkInReport.setApiNoncompliantResponse(getAttestationOptionalResponse(form, form.getApiQuestionId()));
         return checkInReport;
     }
 
@@ -171,9 +171,9 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport addValidation(CheckInReport checkInReport, Form form, AttestationPeriod period, List<ListingSearchResult> allActiveListingsForDeveloper) {
-        checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, period));
-        checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form, period));
+    private CheckInReport addValidation(CheckInReport checkInReport, Form form, List<ListingSearchResult> allActiveListingsForDeveloper) {
+        checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form));
+        checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form));
         checkInReport.setApiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form));
         return checkInReport;
     }
