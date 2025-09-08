@@ -3,6 +3,8 @@ package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -20,6 +22,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
@@ -51,10 +54,13 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
+    private List<Long> acbIds;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        setAcbIds(context);
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -83,6 +89,12 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is complete.*****");
     }
 
+    private void setAcbIds(JobExecutionContext context) {
+        acbIds = Arrays.asList(context.getMergedJobDataMap().getString(JOB_DATA_KEY_ACB).split(SchedulerManager.DATA_DELIMITER)).stream()
+                .map(acb -> Long.parseLong(acb))
+                .collect(Collectors.toList());
+    }
+
     private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
@@ -91,7 +103,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
-                        updatedCriteriaStatusReportCsvCreator.createCsvFile(),
+                        updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
                         updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(),
                         criteriaUpToDateChartWorkbookCreator.generateSpreadsheet()
                         ))
