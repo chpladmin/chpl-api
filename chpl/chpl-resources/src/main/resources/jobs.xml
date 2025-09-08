@@ -800,7 +800,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>chpl-admin;chpl-onc;chpl-acb</value>
+                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
