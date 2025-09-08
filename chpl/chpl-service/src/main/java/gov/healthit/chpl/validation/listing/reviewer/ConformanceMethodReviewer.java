@@ -27,7 +27,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -38,41 +37,39 @@ import lombok.extern.log4j.Log4j2;
 @Component("conformanceMethodReviewer")
 @Log4j2
 public class ConformanceMethodReviewer extends PermissionBasedReviewer {
-    private static final String CM_MUST_NOT_HAVE_OTHER_DATA = "Attestation";
-    private static final String CM_F3_MUST_HAVE_GAP = "Attestation";
-    private static final String CM_F3_CANNOT_HAVE_GAP = "ONC Test Procedure";
+    private static final String CM_ATTESTATION = "Attestation";
 
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
+    private ConformanceMethodDAO conformanceMethodDao;
     private CertificationResultDAO certResultDao;
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
-    private CertificationCriterion f3;
 
     @Autowired
-    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao, CertificationResultDAO certResultDao,
+    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao,
+            CertificationResultDAO certResultDao,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(msgUtil, resourcePermissionsFactory);
+        this.conformanceMethodDao = conformanceMethodDao;
         this.msgUtil = msgUtil;
         this.certResultDao = certResultDao;
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
-        f3 = criteriaService.get(Criteria2015.F_3);
+    }
 
+    @Override
+    public void review(CertifiedProductSearchDetails listing) {
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Could not initialize conformance method criteria map.", ex);
         }
-    }
 
-    @Override
-    public void review(CertifiedProductSearchDetails listing) {
-        Map<String, List<CertificationCriterion>> defaultedConformanceMethods =
-                new LinkedHashMap<String, List<CertificationCriterion>>();
+        Map<String, List<CertificationCriterion>> defaultedConformanceMethods = new LinkedHashMap<String, List<CertificationCriterion>>();
 
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -102,9 +99,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                     .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
             certResult.getConformanceMethods().stream()
                     .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
-            if (certResult.getCriterion().getId().equals(f3.getId())) {
-                reviewF3ConformanceMethodsForGapRequirement(listing, certResult);
-            }
         }
     }
 
@@ -308,20 +302,20 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
         List<ConformanceMethod> conformanceMethodsForCriterion = getConformanceMethodsForCriterion(certResult.getCriterion());
         return conformanceMethodsForCriterion != null && conformanceMethodsForCriterion.size() == 1
-                && conformanceMethodsForCriterion.get(0).getName().equals(CM_MUST_NOT_HAVE_OTHER_DATA);
+                && conformanceMethodsForCriterion.get(0).getName().equals(CM_ATTESTATION);
     }
 
     private boolean isMissingVersionDataWhenItIsRequired(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
+                && !conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
                 && StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 
     private boolean hasVersionDataWhenItIsNotAllowed(CertificationResultConformanceMethod conformanceMethod) {
         return conformanceMethod.getConformanceMethod() != null
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
-                && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
+                && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_ATTESTATION)
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
     }
 
@@ -357,55 +351,5 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         return conformanceMethodsForParentCertResult.stream()
                 .filter(parentCmForCertResult -> parentCmForCertResult.getConformanceMethod().getId().equals(conformanceMethod.getId()))
                 .findAny().isPresent();
-    }
-
-    private void reviewF3ConformanceMethodsForGapRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-            certResult.getConformanceMethods().stream()
-                    .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
-        }
-    }
-
-    private void reviewF3(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        reviewF3ConformanceMethodForGapRequirement(listing, certResult, conformanceMethod);
-        removeF3TestDataAndTestToolsIfNotApplicable(listing, certResult, conformanceMethod);
-    }
-
-    private void reviewF3ConformanceMethodForGapRequirement(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isFalse(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    conformanceMethod.getConformanceMethod().getName(),
-                    "false"));
-        } else if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_CANNOT_HAVE_GAP)) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    conformanceMethod.getConformanceMethod().getName(),
-                    "true"));
-        }
-    }
-
-    private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
-                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
-            if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-                certResult.getTestToolsUsed().clear();
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        conformanceMethod.getConformanceMethod().getName()));
-            }
-
-            if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-                certResult.getTestDataUsed().clear();
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestData",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        conformanceMethod.getConformanceMethod().getName()));
-            }
-        }
     }
 }

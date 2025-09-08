@@ -53,6 +53,8 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         checkFCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkG6RequiredDependencies(listing, attestedCriteria);
         checkG7G9G10RequiredDependencies(listing, attestedCriteria);
+        checkG31J20RequiredDependencies(listing, attestedCriteria);
+        checkG33J21RequiredDependencies(listing, attestedCriteria);
         checkHCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkH1PlusB1Criteria(listing, attestedCriteria);
     }
@@ -331,7 +333,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 criterionService.get(Criteria2015.B_1_CURES),
                 criterionService.get(Criteria2015.B_2_OLD),
                 criterionService.get(Criteria2015.B_2_CURES),
-                criterionService.get(Criteria2015.B_4),
+                criterionService.get(Criteria2015.B_4_OLD),
                 criterionService.get(Criteria2015.B_6),
                 criterionService.get(Criteria2015.B_9_OLD),
                 criterionService.get(Criteria2015.B_9_CURES),
@@ -397,6 +399,36 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", g7G9G10, d2D10));
             }
+        }
+    }
+
+    private void checkG31J20RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        CertificationCriterion g31 = criterionService.get(Criteria2015.G_31);
+        CertificationCriterion j20 = criterionService.get(Criteria2015.J_20);
+
+        boolean attestsG31 = isInList(g31, attestedCriteria);
+        boolean attestsJ20 = isInList(j20, attestedCriteria);
+
+        if (attestsG31 && !attestsJ20) {
+            listing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
+                            Util.formatCriteriaNumber(g31),
+                            Util.formatCriteriaNumber(j20)));
+        }
+    }
+
+    private void checkG33J21RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        CertificationCriterion g33 = criterionService.get(Criteria2015.G_33);
+        CertificationCriterion j21 = criterionService.get(Criteria2015.J_21);
+
+        boolean attestsG33 = isInList(g33, attestedCriteria);
+        boolean attestsJ21 = isInList(j21, attestedCriteria);
+
+        if (attestsG33 && !attestsJ21) {
+            listing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
+                            Util.formatCriteriaNumber(g33),
+                            Util.formatCriteriaNumber(j21)));
         }
     }
 

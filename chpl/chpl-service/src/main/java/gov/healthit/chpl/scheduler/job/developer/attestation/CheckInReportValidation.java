@@ -31,8 +31,9 @@ public class CheckInReportValidation {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        String warning = NullSafeEvaluator.eval(() -> getRealWordTestingWarningMessage(allActiveListingsForDeveloper, attestationForm), "");
+    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
+            AttestationPeriod period) {
+        String warning = NullSafeEvaluator.eval(() -> getRealWordTestingWarningMessage(allActiveListingsForDeveloper, attestationForm, period.getId()), "");
         if (listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)) {
             return YES + (warning != "" ? " - " : "") + warning;
         } else {
@@ -76,9 +77,10 @@ public class CheckInReportValidation {
         }
     }
 
-    private String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        if (attestationValidation.isRwtApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
-                || attestationValidation.isRwtNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
+    private String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
+            Long attestationPeriodId) {
+        if (attestationValidation.isRwtApplicableAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
+                || attestationValidation.isRwtNotApplicableAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
             return errorMessageUtil.getMessage("attestation.checkInReport.rwtResponseNotConsistent");
         } else {
             return null;

@@ -1,5 +1,55 @@
 # Release Notes
 
+## Version 51.6.0
+_2 September 2025_
+
+### Features
+* Remove gap checks from listing validation
+* Deprecate "gap" field of certification results
+* Create endpoints for questionable URL reporting
+
+---
+
+## Version 51.5.1
+_18 August 2025_
+
+### Flagged Features
+* Add validation for SBUL and RWT change requests
+* Create RWT Plans, Results URL change request types
+
+---
+
+## Version 51.5.0
+_4 August 2025_
+
+### Features
+* Add CRUD operations for Conformance Methods
+* Add up-to-date bar chart with all criteria to report
+* Implement report-data/criteria-up-to-date/listings endpoint
+* Add report-data endpoint to get monthly criteria up-to-date data
+* Add endpoint for criteria up-to-date Power BI report
+
+---
+
+## Version 51.4.0
+_21 July 2025_
+
+### Features
+* Update CMS ID creation syntax on annual basis
+* Deprecate GET /data/search-options
+* Deprecate GET /data/svaps
+* Deprecate GET /data/change-request-* endpoints
+* Deprecate GET /data/complaint-types, /data/complainant-types
+* Deprecate GET /data/ endpoints related to surveillance
+* Deprecate GET /data/developer_statuses for /developers/statuses
+* Deprecate GET /data/measures and /data/measure-types
+* Deprecate GET /data/targeted_users in favor of /targeted-users
+* Deprecate GET /data/test_standards in favor of GET /test-standards
+* Deprecate GET /data age_ranges, education_types endpoints
+* Deprecate GET /data/test_procedures in favor of /test-procedures
+
+---
+
 ## Version 51.3.0
 _23 June 2025_
 

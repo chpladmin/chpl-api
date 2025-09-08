@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.codeset.CertificationResultCodeSetComparator;
@@ -59,10 +60,13 @@ public class CertificationResult implements Serializable {
     @JsonIgnore
     private String successStr;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-09-01")
     @Schema(description = "This variable indicates if the certification criteria was gap certified. "
             + "It is a binary variable that takes true or false value.")
     private Boolean gap;
 
+    @Deprecated
     @JsonIgnore
     private String gapStr;
 
@@ -238,7 +242,7 @@ public class CertificationResult implements Serializable {
         this();
         this.setId(certResult.getId());
         this.setSuccess(certResult.getSuccess());
-        this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+        this.setGap(certResult.getGap());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
         this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
@@ -262,8 +266,6 @@ public class CertificationResult implements Serializable {
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.GAP)) {
             this.setGap(null);
-        } else if (certResult.getGap() == null) {
-            this.setGap(Boolean.FALSE);
         } else {
             this.setGap(certResult.getGap());
         }

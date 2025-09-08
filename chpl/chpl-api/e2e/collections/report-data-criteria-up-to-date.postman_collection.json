@@ -1,0 +1,153 @@
+{
+	"info": {
+		"name": "report-data/criteria-up-to-date",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /report-data/criteria-up-to-date - valid response and status 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-up-to-date request should show valid response and status 200\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"accurateAsOfDate\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"criterion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"activeListingsAttestingToCriterionCount\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"activeListingsUpToDateOnCriterionCount\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-up-to-date",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-up-to-date"
+					]
+				},
+				"description": "GET /report-data/criteria-up-to-date - valid response and status 200"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-up-to-date/monthly - valid response and status 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-up-to-date/monthly request should show valid response and status 200\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"accurateAsOfDate\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"criterion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"activeListingsAttestingToCriterionCount\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"activeListingsUpToDateOnCriterionCount\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-up-to-date/monthly",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-up-to-date",
+						"monthly"
+					]
+				},
+				"description": "GET /report-data/criteria-up-to-date/monthly - valid response and status 200"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-up-to-date/listings - valid response and status 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-up-to-date/listings request should show valid response and status 200\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"criterion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"certifiedProductId\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-up-to-date/listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-up-to-date",
+						"listings"
+					]
+				},
+				"description": "GET /report-data/criteria-up-to-date/listings - valid response and status 200"
+			},
+			"response": []
+		}
+	]
+}

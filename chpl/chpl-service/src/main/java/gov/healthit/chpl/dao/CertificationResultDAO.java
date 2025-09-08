@@ -77,7 +77,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity.setCertifiedProductId(listingId);
             boolean isCertified = BooleanUtils.isTrue(certificationResult.getSuccess());
             entity.setSuccess(certificationResult.getSuccess());
-            entity.setGap(isCertified ? certificationResult.getGap() : null);
+            entity.setGap(null);
             entity.setSed(isCertified ? certificationResult.getSed() : null);
             entity.setG1Success(certificationResult.getG1Success());
             entity.setG2Success(certificationResult.getG2Success());
@@ -103,7 +103,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultEntity entity = getEntityById(toUpdate.getId());
         entity.setCertificationCriterionId(toUpdate.getCertificationCriterionId());
         entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
-        entity.setGap(toUpdate.getGap());
         entity.setSed(toUpdate.getSed());
         entity.setG1Success(toUpdate.getG1Success());
         entity.setG2Success(toUpdate.getG2Success());
