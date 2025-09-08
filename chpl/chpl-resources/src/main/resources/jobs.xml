@@ -9,11 +9,7 @@
         <!-- BEGIN REMOVE after PROD push -->
         <!--  Remove after OCD-4704 is deployed to production -->
         <delete-job>
-            <name>updatedListingStatusReportCreatorJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Updated Listing Status Report</name>
+            <name>Updated Criteria Status Report</name>
             <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -804,7 +800,11 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>chpl-admin;chpl-onc</value>
+                    <value>chpl-admin;chpl-onc;chpl-acb</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
                 </entry>
             </job-data-map>
         </job>
@@ -862,7 +862,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>rwtPopulateMissingDataCreatorJob</name>
             <group>systemJobs</group>
