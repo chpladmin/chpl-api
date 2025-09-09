@@ -57,7 +57,8 @@ public class CriteriaUpToDateReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/monthly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {        List<CertificationBody> allAcbs = acbManager.getAll();
+    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
+        List<CertificationBody> allAcbs = acbManager.getAll();
         List<Long> acbIds = allAcbs.stream()
                 .map(acb -> acb.getId())
                 .collect(Collectors.toList());
