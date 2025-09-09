@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,9 +7,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.testdata.CertificationResultTestData;
-import gov.healthit.chpl.testdata.TestData;
-import gov.healthit.chpl.testdata.TestDataDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -19,20 +14,16 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("requiredData2015Reviewer")
 public class RequiredData2015Reviewer extends PermissionBasedReviewer {
-    private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
-    private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
 
     private CertificationResultRules certRules;
-    private TestDataDAO testDataDao;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
-            TestDataDAO testDataDao,
+    public RequiredData2015Reviewer(CertificationResultRules certRules,
+            ErrorMessageUtil msgUtil,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(msgUtil, resourcePermissionsFactory);
         this.certRules = certRules;
-        this.testDataDao = testDataDao;
     }
 
     @Override
@@ -86,56 +77,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     addBusinessCriterionError(listing, cert, "listing.criteria.missingTestProcedure",
                             Util.formatCriteriaNumber(cert.getCriterion()));
-                }
-
-                if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.TEST_DATA)
-                        && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
-                    for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
-                        if (crTestData.getTestData() == null
-                                || (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
-                                        && StringUtils.isEmpty(crTestData.getTestData().getName()))) {
-                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.missingTestDataNameReplaced",
-                                    Util.formatCriteriaNumber(cert.getCriterion()), TestData.DEFAULT_TEST_DATA));
-                            TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    TestData.DEFAULT_TEST_DATA);
-                            crTestData.setTestData(foundTestData);
-                        } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
-                                && !StringUtils.isEmpty(crTestData.getTestData().getName())) {
-                            TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                    crTestData.getTestData().getName());
-                            if (foundTestData == null || foundTestData.getId() == null) {
-                                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.badTestDataName",
-                                                crTestData.getTestData().getName(), Util.formatCriteriaNumber(cert.getCriterion()),
-                                                TestData.DEFAULT_TEST_DATA));
-                                foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
-                                        TestData.DEFAULT_TEST_DATA);
-                                crTestData.getTestData().setId(foundTestData.getId());
-                            } else {
-                                crTestData.getTestData().setId(foundTestData.getId());
-                            }
-                        } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() != null) {
-                            List<TestData> criterionTestData = testDataDao.getByCriterionId(cert.getCriterion().getId());
-                            boolean hasMatchingTestDatum = criterionTestData.stream()
-                                    .filter(testDatum -> testDatum.getId().equals(crTestData.getTestData().getId()))
-                                    .findAny().isPresent();
-                            if (!hasMatchingTestDatum) {
-                                String testDataName = crTestData.getTestData().getName();
-                                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidTestDataId", crTestData.getTestData().getId(), Util.formatCriteriaNumber(cert.getCriterion())));
-                            }
-                        }
-
-                        if (crTestData.getTestData() != null && !StringUtils.isEmpty(crTestData.getTestData().getName())
-                                && StringUtils.isEmpty(crTestData.getVersion())) {
-                            addDataCriterionError(listing, cert,
-                                    "listing.criteria.missingTestDataVersion", Util.formatCriteriaNumber(cert.getCriterion()));
-                        }
-                    }
-                }
-
-                if ((cert.getCriterion().getNumber().equals(G1_CRITERIA_NUMBER) || cert.getCriterion().getNumber().equals(G2_CRITERIA_NUMBER))
-                        && (cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
-                    listing.addBusinessErrorMessage("Test Data is required for certification "
-                            + Util.formatCriteriaNumber(cert.getCriterion()) + ".");
                 }
             }
         }

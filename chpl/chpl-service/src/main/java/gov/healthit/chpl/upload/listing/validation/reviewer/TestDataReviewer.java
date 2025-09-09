@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -17,25 +18,32 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("listingUploadTestDataReviewer")
-public class TestDataReviewer {
+public class TestDataReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
-    private CertificationCriterionService criteriaSevice;
     private ErrorMessageUtil msgUtil;
+    private Long gapConformanceMethodId;
+    private CertificationCriterion g1, g2;
 
     @Autowired
     public TestDataReviewer(CertificationResultRules certResultRules,
             ValidationUtils validationUtils,
             CertificationCriterionService criteriaSevice,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil,
+            @Value("${conformancemethod.gap}") Long gapConformanceMethodId) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
-        this.criteriaSevice = criteriaSevice;
         this.msgUtil = msgUtil;
+
+        this.gapConformanceMethodId = gapConformanceMethodId;
+        g1 = criteriaSevice.get(Criteria2015.G_1);
+        g2 = criteriaSevice.get(Criteria2015.G_2);
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -88,14 +96,28 @@ public class TestDataReviewer {
     }
 
     private void reviewTestDataRequiredForG1AndG2(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        CertificationCriterion g1 = criteriaSevice.get(Criteria2015.G_1);
-        CertificationCriterion g2 = criteriaSevice.get(Criteria2015.G_2);
-
-        if ((certResult.getCriterion().getId().equals(g1.getId()) || certResult.getCriterion().getId().equals(g2.getId()))
-                && (certResult.getTestDataUsed() == null || certResult.getTestDataUsed().size() == 0)) {
+        if (isCriteriaG1OrG2(certResult)
+                && !hasGapConformanceMethod(certResult)
+                && CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testDataRequired",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private boolean isCriteriaG1OrG2(CertificationResult certResult) {
+        return certResult.getCriterion().getId().equals(g1.getId())
+                || certResult.getCriterion().getId().equals(g2.getId());
+    }
+
+    private boolean hasGapConformanceMethod(CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            return false;
+        }
+
+        return certResult.getConformanceMethods().stream()
+                .filter(cm -> cm.getConformanceMethod().getId().equals(gapConformanceMethodId))
+                .findAny()
+                .isPresent();
     }
 
     private void reviewTestDataFields(CertifiedProductSearchDetails listing,
