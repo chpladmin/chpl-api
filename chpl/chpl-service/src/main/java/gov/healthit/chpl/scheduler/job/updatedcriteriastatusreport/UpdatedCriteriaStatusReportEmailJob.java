@@ -17,6 +17,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -25,6 +27,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
@@ -53,6 +56,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private CertificationBodyDAO acbDao;
 
     private List<Long> acbIds;
 
@@ -104,8 +110,8 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(),
-                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet()
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
+                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
                         ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
@@ -120,8 +126,15 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     }
 
     private String getHtmlEmailBody() throws ValidationException {
+        List<CertificationBody> allAcbs = acbDao.findAll();
+        List<String> acbNames = allAcbs.stream()
+                .filter(acb -> acbIds.contains(acb.getId()))
+                .map(acb -> acb.getName())
+                .sorted()
+                .collect(Collectors.toList());
         return String.format(env.getProperty("updatedCriteriaStatusReport.body"),
-                getReportDate().toString());
+                getReportDate().toString(),
+                Util.joinListGrammatically(acbNames, "and"));
     }
 
     private LocalDate getReportDate() {

@@ -71,8 +71,8 @@ public class CriteriaUpToDateWorksheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
-    public void populateWithDataOnDate(LocalDate reportDataDate, Workbook workbook) throws IOException {
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate);
+    public void populateWithDataOnDate(LocalDate reportDataDate, List<Long> acbIds, Workbook workbook) throws IOException {
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbIds);
         populateDataSheet(reports, workbook);
         updateChartTitles(workbook, reportDataDate);
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
