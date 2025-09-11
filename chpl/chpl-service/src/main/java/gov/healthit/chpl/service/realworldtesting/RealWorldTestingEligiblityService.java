@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 
@@ -16,17 +17,19 @@ import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 // This class *should* only be instantiated by RealWorldTestingServiceFactory, so that the memoization is threadsafe.
 // To get an instance of this class use RealWorldTestingServiceFactory.getInstance().
@@ -35,30 +38,21 @@ public class RealWorldTestingEligiblityService {
     private LocalDate rwtProgramStartDate;
     private Integer rwtProgramFirstEligibilityYear;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
-    private CertificationStatusEventsService certStatusService;
     private ListingActivityUtil listingActivityUtil;
     private CertifiedProductDAO certifiedProductDAO;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
-    private List<CertificationStatusType> withdrawnStatuses;
 
     public RealWorldTestingEligiblityService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
-            CertificationStatusEventsService certStatusService, ListingActivityUtil listingActivityUtil,
+            ListingActivityUtil listingActivityUtil,
             CertifiedProductDAO certifiedProductDAO, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
         this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
-        this.certStatusService = certStatusService;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
-
-        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
-                CertificationStatusType.WithdrawnByAcb,
-                CertificationStatusType.WithdrawnByDeveloperUnderReview,
-                CertificationStatusType.Retired,
-                CertificationStatusType.TerminatedByOnc);
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
@@ -68,9 +62,10 @@ public class RealWorldTestingEligiblityService {
             return memo.get(listingId);
         }
 
-        Integer rwtEligYearBasedOnIcs = getRwtEligibilityYearBasedOnIcs(listingId, logger);
-        if (rwtEligYearBasedOnIcs != null) {
-            RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.ICS, rwtEligYearBasedOnIcs);
+        RealWorldTestingEligibilityIcs rwtEligBasedOnIcs = getRwtEligibilityBasedOnIcs(listingId, logger);
+        if (rwtEligBasedOnIcs != null) {
+            RealWorldTestingEligibility eligibility
+                = getRwtEligibility(rwtEligBasedOnIcs.getListing(), RealWorldTestingEligiblityReason.ICS, rwtEligBasedOnIcs.getEligibilityYear());
             addCalculatedResultsToMemo(listingId, eligibility);
             return eligibility;
         } else {
@@ -79,7 +74,7 @@ public class RealWorldTestingEligiblityService {
                 return rwtElig.get();
             }
         }
-        RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.NOT_ELIGIBLE, null);
+        RealWorldTestingEligibility eligibility = getRwtEligibility(null, RealWorldTestingEligiblityReason.NOT_ELIGIBLE, null);
         addCalculatedResultsToMemo(listingId, eligibility);
         return eligibility;
     }
@@ -98,12 +93,12 @@ public class RealWorldTestingEligiblityService {
 
     private Optional<RealWorldTestingEligibility> getRwtEligBasedOnStandardRequirements(Long listingId) {
         //Initially try to determine the eligibility based on the beginning of the program
-        LocalDate currentRwtEligStartDate = rwtProgramStartDate;
-        Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
+        LocalDate currentRwtEligStartDate = rwtProgramStartDate; //9/1/2021
+        Integer currentRwtEligYear = rwtProgramFirstEligibilityYear; //2022
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
             Optional<CertifiedProductSearchDetails> listing = getListingAsOfDateOrOriginalState(listingId, currentRwtEligStartDate);
             if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
-                RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
+                RealWorldTestingEligibility eligibility = getRwtEligibility(listing, RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
                 addCalculatedResultsToMemo(listingId, eligibility);
                 return Optional.of(eligibility);
             }
@@ -114,6 +109,22 @@ public class RealWorldTestingEligiblityService {
         return Optional.empty();
     }
 
+    private RealWorldTestingEligibility getRwtEligibility(Optional<CertifiedProductSearchDetails> listing,
+            RealWorldTestingEligiblityReason reason,
+            Integer currentRwtEligYear) {
+        List<CertificationCriterion> attestedCriteria = new ArrayList<CertificationCriterion>();
+        if (listing != null && listing.isPresent()) {
+            attestedCriteria = listing.get().getCertificationResults().stream()
+                    .map(certResult -> certResult.getCriterion())
+                    .collect(Collectors.toList());
+        }
+        return RealWorldTestingEligibility.builder()
+            .reason(reason)
+            .eligibilityYear(currentRwtEligYear)
+            .attestedCriteria(attestedCriteria)
+        .build();
+    }
+
     private Optional<CertifiedProductSearchDetails> getListingAsOfDateOrOriginalState(Long listingId, LocalDate asOfDate) {
         Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, asOfDate);
         if (listing.isEmpty()) {
@@ -122,7 +133,7 @@ public class RealWorldTestingEligiblityService {
         return listing;
     }
 
-    private Integer getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
+    private RealWorldTestingEligibilityIcs getRwtEligibilityBasedOnIcs(Long listingId, Logger logger) {
         try {
             Optional<CertifiedProductSearchDetails> listing = getListingInOriginalState(listingId);
             if (listing.isPresent()) {
@@ -151,7 +162,14 @@ public class RealWorldTestingEligiblityService {
                     if (parentEligibilityYears.size() > 0) {
                         Optional<Integer> minEligibilityYear = parentEligibilityYears.stream()
                                 .min(Integer::compare);
-                        return minEligibilityYear.isPresent() ? minEligibilityYear.get() : null;
+
+                        if (minEligibilityYear.isPresent()) {
+                            return RealWorldTestingEligibilityIcs.builder()
+                                    .eligibilityYear(minEligibilityYear.get())
+                                    .listing(listing)
+                                    .build();
+                        }
+                        return null;
                     }
                 }
             }
@@ -219,5 +237,14 @@ public class RealWorldTestingEligiblityService {
         Calendar calendar = Calendar.getInstance();
         calendar.set(localDate.getYear(), localDate.getMonthValue() - 1, localDate.getDayOfMonth(), 0, 0, 0);
         return calendar.getTime();
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    private static final class RealWorldTestingEligibilityIcs {
+        private Integer eligibilityYear;
+        private Optional<CertifiedProductSearchDetails> listing;
     }
 }
