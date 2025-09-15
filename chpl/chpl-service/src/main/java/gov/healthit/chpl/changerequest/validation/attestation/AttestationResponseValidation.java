@@ -36,9 +36,9 @@ public class AttestationResponseValidation extends ValidationRule<ChangeRequestV
                 getMessages().add(getErrorMessage("attestation.acb.assurancesNotApplicableNotConsistent"));
             }
 
-            if (context.getAttestationResponseValidationService().isRwtApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form)) {
+            if (context.getAttestationResponseValidationService().isRwtApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form, attestationPeriodId)) {
                 getMessages().add(getErrorMessage("attestation.acb.rwtApplicableNotConsistent"));
-            } else if (context.getAttestationResponseValidationService().isRwtNotApplicableAndResponseIsCompliant(activeListingsForDeveloper, form)) {
+            } else if (context.getAttestationResponseValidationService().isRwtNotApplicableAndResponseIsCompliant(activeListingsForDeveloper, form, attestationPeriodId)) {
                 getMessages().add(getErrorMessage("attestation.acb.rwtNotApplicableNotConsistent"));
             }
         }

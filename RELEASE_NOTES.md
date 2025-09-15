@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 51.7.0
+_15 September 2025_
+
+### Features
+* Include only active certificates in the SED Download File
+* Add HTI-4 criteria as RWT Eligible for 2026
+* Update validation for new "gap" conformance method
+* Deprecate the files/api_documentation endpoints
+* Support changed RWT attestation question text
+* Add properties to lookup HTI-4 criteria
+
+---
+
 ## Version 51.6.0
 _2 September 2025_
 

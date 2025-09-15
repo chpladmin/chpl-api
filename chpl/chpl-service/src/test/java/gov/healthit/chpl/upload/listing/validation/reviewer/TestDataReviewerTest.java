@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -25,6 +29,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestDataReviewerTest {
+    private static final String DEFAULT_TEST_DATA = "ONC Test Method";
+
     private static final String TEST_DATA_NOT_APPLICABLE = "Test data is not applicable for the criterion %s. It has been removed.";
     private static final String TEST_DATA_NAME_INVALID = "Test data '%s' is invalid for the criterion %s and has been removed from the listing.";
     private static final String TEST_DATA_REQUIRED = "Test data is required for certification %s.";
@@ -34,6 +40,7 @@ public class TestDataReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil msgUtil;
+    private Long gapConformanceMethodId;
     private TestDataReviewer reviewer;
 
     @Before
@@ -41,6 +48,7 @@ public class TestDataReviewerTest {
     public void setup() {
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
+        gapConformanceMethodId = 1L;
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.G_1)))
@@ -72,7 +80,7 @@ public class TestDataReviewerTest {
             .thenAnswer(i -> String.format(MISSING_TEST_DATA_VERSION, i.getArgument(1), ""));
         reviewer = new TestDataReviewer(certResultRules,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
-                criteriaService, msgUtil);
+                criteriaService, msgUtil, gapConformanceMethodId);
     }
 
     @Test
@@ -128,7 +136,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -162,7 +170,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());
@@ -517,6 +525,58 @@ public class TestDataReviewerTest {
     }
 
     @Test
+    public void review_testDataMissingOnG1WithGapConformanceMethod_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(100L)
+                                .number("170.315 (g)(1)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
+                                .build())
+                        .success(true)
+                        .conformanceMethods(Stream.of(CertificationResultConformanceMethod.builder()
+                                .conformanceMethod(ConformanceMethod.builder()
+                                        .id(gapConformanceMethodId)
+                                        .build())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_testDataMissingOnG2WithGapConformanceMethod_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+            .thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(101L)
+                                .number("170.315 (g)(2)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
+                                .build())
+                        .success(true)
+                        .conformanceMethods(Stream.of(CertificationResultConformanceMethod.builder()
+                                .conformanceMethod(ConformanceMethod.builder()
+                                        .id(gapConformanceMethodId)
+                                        .build())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_validTestData_noErrors() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
@@ -524,7 +584,7 @@ public class TestDataReviewerTest {
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
                         .id(1L)
-                        .name(TestData.DEFAULT_TEST_DATA)
+                        .name(DEFAULT_TEST_DATA)
                         .build())
                 .version("1")
                 .build());

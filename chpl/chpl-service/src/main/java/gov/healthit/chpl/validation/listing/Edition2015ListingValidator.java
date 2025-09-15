@@ -20,6 +20,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFr
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SvapReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.TestDataReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -134,6 +135,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("listingUploadTestToolReviewer")
     private TestToolReviewer ttReviewer;
+
+    @Autowired
+    @Qualifier("listingUploadTestDataReviewer")
+    private TestDataReviewer testDataReviewer;
 
     @Autowired
     @Qualifier("inheritanceReviewer")
@@ -295,6 +300,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(tpReviewer);
         reviewers.add(inheritanceReviewer);
         reviewers.add(ttReviewer);
+        reviewers.add(testDataReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
         reviewers.add(functionalityTestedAllowedByCriteriaReviewer);
