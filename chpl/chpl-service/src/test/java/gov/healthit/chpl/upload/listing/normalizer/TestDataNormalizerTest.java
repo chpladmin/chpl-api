@@ -22,6 +22,7 @@ import gov.healthit.chpl.testdata.TestData;
 import gov.healthit.chpl.testdata.TestDataDAO;
 
 public class TestDataNormalizerTest {
+    private static final String DEFAULT_TEST_DATA = "ONC Test Method";
 
     private TestDataDAO testDataDao;
     private TestDataNormalizer normalizer;
@@ -30,10 +31,10 @@ public class TestDataNormalizerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         testDataDao = Mockito.mock(TestDataDAO.class);
-        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(TestData.DEFAULT_TEST_DATA)))
+        Mockito.when(testDataDao.getByCriterionAndValue(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(DEFAULT_TEST_DATA)))
             .thenReturn(TestData.builder()
                     .id(5L)
-                    .name(TestData.DEFAULT_TEST_DATA)
+                    .name(DEFAULT_TEST_DATA)
                     .build());
         normalizer = new TestDataNormalizer(testDataDao);
     }
@@ -179,7 +180,7 @@ public class TestDataNormalizerTest {
         List<TestData> foundTestData = new ArrayList<TestData>();
         foundTestData.add(TestData.builder()
                 .id(5L)
-                .name(TestData.DEFAULT_TEST_DATA)
+                .name(DEFAULT_TEST_DATA)
                 .build());
         Mockito.when(testDataDao.getByCriterionId(ArgumentMatchers.eq(1L))).thenReturn(foundTestData);
 

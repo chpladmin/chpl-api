@@ -35,6 +35,7 @@ import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -139,6 +140,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
                 SearchRequest.builder()
                 .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
                 .certificationCriteriaOperator(SearchSetOperator.AND)
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .build(), LOGGER);
         LOGGER.info(relevantListings.size() + " listing attest to " + Util.formatCriteriaNumber(g3));
 

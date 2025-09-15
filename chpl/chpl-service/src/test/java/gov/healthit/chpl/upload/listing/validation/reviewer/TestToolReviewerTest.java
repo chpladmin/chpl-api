@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -16,6 +17,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -45,6 +48,7 @@ public class TestToolReviewerTest {
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
     private TestToolDAO testToolDAO;
+    private Long gapConformanceMethodId;
     private TestToolReviewer reviewer;
 
     @Before
@@ -54,6 +58,7 @@ public class TestToolReviewerTest {
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         testToolDAO = Mockito.mock(TestToolDAO.class);
+        gapConformanceMethodId = 1L;
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolsNotApplicable"),
                 ArgumentMatchers.anyString()))
@@ -83,7 +88,7 @@ public class TestToolReviewerTest {
 
         reviewer = new TestToolReviewer(certResultRules,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
-                chplProductNumberUtil, msgUtil, testToolDAO);
+                chplProductNumberUtil, msgUtil, testToolDAO, gapConformanceMethodId);
     }
 
     @Test
@@ -126,6 +131,34 @@ public class TestToolReviewerTest {
                                 .certificationEdition("2015")
                                 .build())
                         .success(true)
+                        .build())
+                .build();
+        listing.getCertificationResults().get(0).setTestToolsUsed(null);
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_nullTestToolsAndGapConformanceMethod_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
+                                .build())
+                        .success(true)
+                        .conformanceMethods(Stream.of(CertificationResultConformanceMethod.builder()
+                                .conformanceMethod(ConformanceMethod.builder()
+                                        .id(gapConformanceMethodId)
+                                        .build())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .build();
         listing.getCertificationResults().get(0).setTestToolsUsed(null);

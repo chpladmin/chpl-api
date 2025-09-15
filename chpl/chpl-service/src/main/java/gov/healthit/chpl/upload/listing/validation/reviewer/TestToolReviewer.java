@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -31,17 +32,21 @@ public class TestToolReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private TestToolDAO testToolDao;
+    private Long gapConformanceMethodId;
 
     @Autowired
     public TestToolReviewer(CertificationResultRules certResultRules,
             ValidationUtils validationUtils,
             ChplProductNumberUtil chplProductNumberUtil,
-            ErrorMessageUtil msgUtil, TestToolDAO testToolDAO) throws EntityRetrievalException {
+            ErrorMessageUtil msgUtil,
+            TestToolDAO testToolDAO,
+            @Value("${conformancemethod.gap}") Long gapConformanceMethodId) throws EntityRetrievalException {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
         this.testToolDao = testToolDAO;
+        this.gapConformanceMethodId = gapConformanceMethodId;
     }
 
     @Override
@@ -65,11 +70,23 @@ public class TestToolReviewer implements Reviewer {
 
     private void reviewTestToolsRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)
-                && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+                && CollectionUtils.isEmpty(certResult.getTestToolsUsed())
+                && !hasGapConformanceMethod(certResult)) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestTool",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private boolean hasGapConformanceMethod(CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            return false;
+        }
+
+        return certResult.getConformanceMethods().stream()
+                .filter(cm -> cm.getConformanceMethod().getId().equals(gapConformanceMethodId))
+                .findAny()
+                .isPresent();
     }
 
     private void reviewCriteriaCanHaveTestToolData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
