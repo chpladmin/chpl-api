@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -53,17 +52,19 @@ public class AttestationResponseValidationService {
     }
 
     public Boolean isApiApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        Long apiQuestionId = attestationForm.getApiQuestionId();
         return listingApplicabilityService.isApiApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getApiConditionId(),
-                        AttestationFormMetaData.getNotApplicableResponseId());
+                        apiQuestionId,
+                        attestationForm.getNotApplicableResponseId(apiQuestionId));
     }
 
     public Boolean isApiNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        Long apiQuestionId = attestationForm.getApiQuestionId();
         return !listingApplicabilityService.isApiApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getApiConditionId(),
-                        AttestationFormMetaData.getCompliantResponseId());
+                        apiQuestionId,
+                        attestationForm.getCompliantResponseId(apiQuestionId));
     }
 
     public String getAssurancesResponseNotApplicableMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
@@ -90,18 +91,18 @@ public class AttestationResponseValidationService {
         return null;
     }
 
-    public Boolean isAssurancesApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
+    public Boolean isAssurancesApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(attestationPeriodId));
+                        attestationForm.getAssurancesQuestionId(),
+                        attestationForm.getAssurancesCompliantNotApplicableResponseId());
     }
 
-    public Boolean isAssurancesNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
+    public Boolean isAssurancesNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return !listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(attestationPeriodId));
+                        attestationForm.getAssurancesQuestionId(),
+                        attestationForm.getAssurancesCompliantIsApplicableResponseId());
     }
 
     public String getRwtResponseNotApplicableMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
@@ -128,27 +129,27 @@ public class AttestationResponseValidationService {
         return null;
     }
 
-    public Boolean isRwtApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
-            Long attestationPeriodId) {
+    public Boolean isRwtApplicableAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        Long rwtQuestionId = attestationForm.getRwtQuestionId();
         return listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getNotApplicableResponseId());
+                        rwtQuestionId,
+                        attestationForm.getNotApplicableResponseId(rwtQuestionId));
     }
 
-    public Boolean isRwtNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm,
-                Long attestationPeriodId) {
+    public Boolean isRwtNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        Long apiQuestionId = attestationForm.getApiQuestionId();
         return !listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getCompliantResponseId());
+                        apiQuestionId,
+                        attestationForm.getCompliantResponseId(apiQuestionId));
     }
 
-    public Boolean doesFormResponseEqualResponse(Form attestationForm, Long conditionIdToCheck, Long expectedResult) {
+    public Boolean doesFormResponseEqualResponse(Form attestationForm, Long conditionIdToCheck, Long responseId) {
         return attestationForm.extractFlatFormItems().stream()
                 .filter(fi -> fi.getQuestion().getId().equals(conditionIdToCheck)
                         && fi.getSubmittedResponses().stream()
-                                .filter(sr -> sr.getId().equals(expectedResult))
+                                .filter(sr -> sr.getId().equals(responseId))
                                 .findAny().isPresent())
                 .findAny()
                 .isPresent();
