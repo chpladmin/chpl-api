@@ -28,17 +28,15 @@ public class AttestationResponseValidation extends ValidationRule<ChangeRequestV
                 getMessages().add(getErrorMessage("attestation.acb.apiNotApplicableNotConsistent"));
             }
 
-            if (context.getAttestationResponseValidationService().isAssurancesApplicableAndResponseIsNotApplicable(
-                    activeListingsForDeveloper, form, attestationPeriodId)) {
+            if (context.getAttestationResponseValidationService().isAssurancesApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form)) {
                 getMessages().add(getErrorMessage("attestation.acb.assurancesApplicableNotConsistent"));
-            } else if (context.getAttestationResponseValidationService().isAssurancesNotApplicableAndResponseIsCompliant(
-                    activeListingsForDeveloper, form, attestationPeriodId)) {
+            } else if (context.getAttestationResponseValidationService().isAssurancesNotApplicableAndResponseIsCompliant(activeListingsForDeveloper, form)) {
                 getMessages().add(getErrorMessage("attestation.acb.assurancesNotApplicableNotConsistent"));
             }
 
-            if (context.getAttestationResponseValidationService().isRwtApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form, attestationPeriodId)) {
+            if (context.getAttestationResponseValidationService().isRwtApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form)) {
                 getMessages().add(getErrorMessage("attestation.acb.rwtApplicableNotConsistent"));
-            } else if (context.getAttestationResponseValidationService().isRwtNotApplicableAndResponseIsCompliant(activeListingsForDeveloper, form, attestationPeriodId)) {
+            } else if (context.getAttestationResponseValidationService().isRwtNotApplicableAndResponseIsCompliant(activeListingsForDeveloper, form)) {
                 getMessages().add(getErrorMessage("attestation.acb.rwtNotApplicableNotConsistent"));
             }
         }
