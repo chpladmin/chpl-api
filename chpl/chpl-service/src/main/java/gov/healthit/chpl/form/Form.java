@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +23,23 @@ import lombok.Singular;
 @NoArgsConstructor
 public class Form implements Serializable {
     private static final long serialVersionUID = 2148616530869605769L;
+    private static final String INFO_BLOCKING_HEADING = "Information Blocking";
+    private static final String ASSURANCES_HEADING = "Assurances";
+    private static final String COMMUNICATIONS_HEADING = "Communications";
+    private static final String RWT_HEADING = "Real World Testing";
+    private static final String API_HEADING = "Application Programming Interfaces";
+
+    private static final String COMPLIANT_RESPONSE = "Compliant";
+    private static final String NOT_APPLICABLE_RESPONSE = "Not Applicable";
+    private static final List<String> ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSES = Stream.of(
+            "Compliant with the requirements of 45 CFR 170.402; certifies to the criterion at 45 CFR 170.315(b)(10) and provides all of its customers of certified health IT with health IT certified to the certification criterion in 45 CFR 170.315(b)(10).",
+            "Compliant with the requirements of 45 CFR 170.402; 45 CFR 170.402(a)(4) is applicable because we are a developer of a Certified Health IT Module that is part of a health IT product which electronically stores EHI and therefore must certify to the certification criterion in § 170.315(b)(10)."
+    ).toList();
+
+    private static final List<String> ASSURANCES_COMPLIANT_NOT_APPLICABLE_RESPONSES = Stream.of(
+            "Compliant with the requirements of 45 CFR 170.402; does not certify to the criterion at 45 CFR 170.315(b)(10) or does not provide all of its customers of certified health IT with health IT certified to the certification criterion in 45 CFR 170.315(b)(10).",
+            "Compliant with the requirements of 45 CFR 170.402; 45 CFR 170.402(a)(4) is not applicable because we are not a developer of a Certified Health IT Module that is part of a health IT product which electronically stores EHI."
+    ).toList();
 
     private Long id;
     private String description;
@@ -103,5 +124,91 @@ public class Form implements Serializable {
             return "";
         }
         return optionalResponse;
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getInformationBlockingQuestionId() {
+        return getQuestionIdFromHeading(INFO_BLOCKING_HEADING);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getAssurancesQuestionId() {
+        return getQuestionIdFromHeading(ASSURANCES_HEADING);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getCommunicationQuestionId() {
+        return getQuestionIdFromHeading(COMMUNICATIONS_HEADING);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getRwtQuestionId() {
+        return getQuestionIdFromHeading(RWT_HEADING);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getApiQuestionId() {
+        return getQuestionIdFromHeading(API_HEADING);
+    }
+
+    private Long getQuestionIdFromHeading(String headingText) {
+        return getSectionHeadings().stream()
+                .filter(heading -> heading.getName().equals(headingText))
+                .flatMap(heading -> heading.getFormItems().stream())
+                .filter(formItem -> formItem.getRequired())
+                .map(formItem -> formItem.getQuestion().getId())
+                .findAny()
+                .orElse(null);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getNotApplicableResponseId(Long questionId) {
+        return getAllowedResponseIdFromQuestion(questionId, NOT_APPLICABLE_RESPONSE);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getCompliantResponseId(Long questionId) {
+        return getAllowedResponseIdFromQuestion(questionId, COMPLIANT_RESPONSE);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getAssurancesCompliantIsApplicableResponseId() {
+        Long questionId = getAssurancesQuestionId();
+        return getAllowedResponseIdFromQuestion(questionId, ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSES);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Long getAssurancesCompliantNotApplicableResponseId() {
+        Long questionId = getAssurancesQuestionId();
+        return getAllowedResponseIdFromQuestion(questionId, ASSURANCES_COMPLIANT_NOT_APPLICABLE_RESPONSES);
+    }
+
+    private Long getAllowedResponseIdFromQuestion(Long questionId, String responseText) {
+        return extractFormItems().stream()
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId))
+                .flatMap(formItem -> formItem.getQuestion().getAllowedResponses().stream())
+                .filter(allowedResponse -> allowedResponse.getResponse().equals(responseText))
+                .map(allowedResponse -> allowedResponse.getId())
+                .findAny()
+                .orElse(null);
+    }
+
+    private Long getAllowedResponseIdFromQuestion(Long questionId, List<String> possibleResponses) {
+        return extractFormItems().stream()
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId))
+                .flatMap(formItem -> formItem.getQuestion().getAllowedResponses().stream())
+                .filter(allowedResponse -> possibleResponses.contains(allowedResponse.getResponse()))
+                .map(allowedResponse -> allowedResponse.getId())
+                .findAny()
+                .orElse(null);
     }
 }
