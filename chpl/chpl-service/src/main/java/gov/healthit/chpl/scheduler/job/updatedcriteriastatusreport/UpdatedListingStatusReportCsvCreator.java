@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -17,22 +18,22 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
-import gov.healthit.chpl.report.criteriauptodate.CriterionNotUpToDateReasonEnum;
 import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReport;
 import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReportDao;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.report.criteriauptodate.UpdatedListingStatusReport;
 import lombok.extern.log4j.Log4j2;
 
+//This report rolls up to a listing level the count of all updates needed
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
-public class UpdatedCriteriaStatusReportCsvCreator {
+public class UpdatedListingStatusReportCsvCreator {
 
     private UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao;
     private CriteriaUpToDateStatusReportDateService reportDateService;
     private Environment env;
 
     @Autowired
-    public UpdatedCriteriaStatusReportCsvCreator(UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao,
+    public UpdatedListingStatusReportCsvCreator(UpdatedCriterionStatusReportDao updatedCriterionStatusReportDao,
             CriteriaUpToDateStatusReportDateService reportDateService,
             Environment env) {
         this.updatedCriterionStatusReportDao = updatedCriterionStatusReportDao;
@@ -54,13 +55,16 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
             csvFilePrinter.printRecord(getHeaderRow());
 
-            List<UpdatedCriterionStatusReport> reports = getReportData().stream()
+            List<UpdatedCriterionStatusReport> criteriaReports = getReportData().stream()
                     .filter(data -> acbIds.contains(data.getCertificationBodyId()))
                     .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(reports)) {
+            if (!CollectionUtils.isEmpty(criteriaReports)) {
+                LOGGER.info("Grouping all required criteria updates by listing...");
+                List<UpdatedListingStatusReport> listingReport = groupCriteriaUpdatesByListing(criteriaReports);
+                LOGGER.info("Completed grouping all required criteria updates by listing.");
                 LOGGER.info("Generating the CSV");
-                reports.stream()
-                    .sorted(Comparator.comparing(UpdatedCriterionStatusReport::getChplProductNumber))
+                listingReport.stream()
+                    .sorted(Comparator.comparing(UpdatedListingStatusReport::getChplProductNumber))
                     .forEach(report -> printRow(csvFilePrinter, report));
                 LOGGER.info("Completed generating the CSV");
             }
@@ -81,13 +85,34 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private List<UpdatedCriterionStatusReport> getReportData() {
-        LOGGER.info("Getting report data for the criteria details CSV file");
+        LOGGER.info("Getting report data for the listing CSV file");
         List<UpdatedCriterionStatusReport> reportData = updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
                 reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now()));
         reportData = reportData.stream()
                 .filter(dataRecord -> !dataRecord.getCertificationCriterion().isRemoved())
                 .collect(Collectors.toList());
         return reportData;
+    }
+
+    private List<UpdatedListingStatusReport> groupCriteriaUpdatesByListing(List<UpdatedCriterionStatusReport> criteriaReports) {
+        Map<Long, List<UpdatedCriterionStatusReport>> criteriaReportsGroupedByListing = criteriaReports.stream()
+            .collect(Collectors.groupingBy(UpdatedCriterionStatusReport::getCertifiedProductId));
+        return criteriaReportsGroupedByListing.keySet().stream()
+                .map(listingId -> UpdatedListingStatusReport.builder()
+                        .certificationBody(criteriaReportsGroupedByListing.get(listingId).get(0).getCertificationBody())
+                        .certificationBodyId(criteriaReportsGroupedByListing.get(listingId).get(0).getCertificationBodyId())
+                        .certificationStatus(criteriaReportsGroupedByListing.get(listingId).get(0).getCertificationStatus())
+                        .certificationStatusId(criteriaReportsGroupedByListing.get(listingId).get(0).getCertificationStatusId())
+                        .certifiedProductId(criteriaReportsGroupedByListing.get(listingId).get(0).getCertifiedProductId())
+                        .chplProductNumber(criteriaReportsGroupedByListing.get(listingId).get(0).getChplProductNumber())
+                        .developer(criteriaReportsGroupedByListing.get(listingId).get(0).getDeveloper())
+                        .developerId(criteriaReportsGroupedByListing.get(listingId).get(0).getDeveloperId())
+                        .product(criteriaReportsGroupedByListing.get(listingId).get(0).getProduct())
+                        .reportDay(criteriaReportsGroupedByListing.get(listingId).get(0).getReportDay())
+                        .version(criteriaReportsGroupedByListing.get(listingId).get(0).getVersion())
+                        .totalUpdatesRequired(criteriaReportsGroupedByListing.get(listingId).size())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private List<String> getHeaderRow() {
@@ -99,15 +124,10 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 "Developer",
                 "ONC-ACB",
                 "Certification Status",
-                "Certification Criterion",
-                "Update Required By",
-                "Standard",
-                "Functionality Tested",
-                "Code Set",
-                "Reason Update is Required");
+                "# Updates Required");
     }
 
-    private List<String> getRow(UpdatedCriterionStatusReport report) {
+    private List<String> getRow(UpdatedListingStatusReport report) {
         return Arrays.asList(
                 report.getCertifiedProductId().toString(),
                 report.getChplProductNumber(),
@@ -116,39 +136,10 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 report.getDeveloper(),
                 report.getCertificationBody(),
                 report.getCertificationStatus(),
-                Util.formatCriteriaNumber(report.getCertificationCriterion()),
-                getUpdateRequiredBy(report),
-                report.getStandard() != null ? report.getStandard().getValue() : "",
-                report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
-                report.getCodeSet() != null ? report.getCodeSet().getName() : "",
-                report.getCriterionNotUpToDateReason().getName());
+                report.getTotalUpdatesRequired() == null ? "0" : report.getTotalUpdatesRequired() + "");
     }
 
-    private String getUpdateRequiredBy(UpdatedCriterionStatusReport report) {
-        if (report.getStandard() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_STANDARD_NOT_ATTESTED.getName())) {
-            return report.getStandard().getRequiredDay().toString();
-        } else if (report.getFunctionalityTested() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_FUNCTIONALITY_TESTED_NOT_ATTESTED.getName())) {
-            return report.getFunctionalityTested().getRequiredDay().toString();
-        } else if (report.getCodeSet() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.REQUIRED_CODE_SET_NOT_ATTESTED.getName())) {
-            return report.getCodeSet().getRequiredDay().toString();
-        } else if (report.getStandard() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.STANDARD_ATTESTED.getName())) {
-            return report.getStandard().getEndDay().toString();
-        } else if (report.getFunctionalityTested() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.FUNCTIONALITY_TESTED_ATTESTED.getName())) {
-            return report.getFunctionalityTested().getEndDay().toString();
-        } else if (report.getCodeSet() != null
-                && report.getCriterionNotUpToDateReason().getName().equals(CriterionNotUpToDateReasonEnum.CODE_SET_ATTESTED.getName())) {
-            // code sets don't have an end date currently so we can't make a useful "required by" date in the last case
-        }
-        LOGGER.warn("Unable to calculate update required by date for report " + report);
-        return "";
-    }
-
-    private void printRow(CSVPrinter csvFilePrinter, UpdatedCriterionStatusReport report) {
+    private void printRow(CSVPrinter csvFilePrinter, UpdatedListingStatusReport report) {
         try {
             csvFilePrinter.printRecord(getRow(report));
         } catch (IOException e) {
@@ -157,6 +148,6 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private String getFilename() {
-        return env.getProperty("updatedCriteriaStatusReport.details.fileName") + LocalDate.now().toString();
+        return env.getProperty("updatedCriteriaStatusReport.aggregatedByListing.fileName") + LocalDate.now().toString();
     }
 }
