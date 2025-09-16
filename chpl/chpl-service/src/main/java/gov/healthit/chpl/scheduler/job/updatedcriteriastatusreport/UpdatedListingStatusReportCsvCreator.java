@@ -148,6 +148,6 @@ public class UpdatedListingStatusReportCsvCreator {
     }
 
     private String getFilename() {
-        return env.getProperty("updatedCriteriaStatusReport.aggregatedByListing.fileName") + LocalDate.now().toString();
+        return env.getProperty("updatedCriteriaStatusReport.aggregatedByListing.fileName") + "_" + LocalDate.now().toString();
     }
 }

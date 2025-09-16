@@ -157,6 +157,6 @@ public class UpdatedCriteriaStatusReportCsvCreator {
     }
 
     private String getFilename() {
-        return env.getProperty("updatedCriteriaStatusReport.details.fileName") + LocalDate.now().toString();
+        return env.getProperty("updatedCriteriaStatusReport.details.fileName") + "_" + LocalDate.now().toString();
     }
 }
