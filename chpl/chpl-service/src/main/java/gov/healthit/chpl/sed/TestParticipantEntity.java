@@ -73,7 +73,6 @@ public class TestParticipantEntity extends EntityAudit {
     public TestParticipant toDomain() {
         return TestParticipant.builder()
                 .id(this.getId())
-                .uniqueId(this.getFriendlyId())
                 .friendlyId(this.getFriendlyId())
                 .gender(this.getGender())
                 .educationType(this.getEducation().toDomain())

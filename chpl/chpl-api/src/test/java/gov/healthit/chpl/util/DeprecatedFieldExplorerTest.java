@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 
 @SuppressWarnings("checkstyle:magicnumber")
 public class DeprecatedFieldExplorerTest {
@@ -26,6 +27,11 @@ public class DeprecatedFieldExplorerTest {
     @Before
     public void setup() {
         deprecatedFieldExplorer = new DeprecatedResponseFieldExplorer();
+    }
+    @Test
+    public void findDeprecatedFields() {
+        Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(RelevantListing.class);
+        System.out.println(deprecatedItems.size());
     }
 
     @Test

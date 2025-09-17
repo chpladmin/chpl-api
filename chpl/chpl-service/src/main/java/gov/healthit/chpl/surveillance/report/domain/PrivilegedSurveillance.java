@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,10 +31,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     @Builder.Default
     private List<SurveillanceGroundsForInitiating> surveillanceGroundsForInitiating = new ArrayList<SurveillanceGroundsForInitiating>();
     private String surveillanceGroundsForInitiatingOther;
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use surveillanceGroundsForInitiating and surveillanceGroundsForInitiatingOther.",
-        removalDate = "2025-10-01")
-    private String groundsForInitiating;
     private String surveillanceFindings;
     private Boolean k1Reviewed;
     private String nonconformityCauses;
@@ -50,9 +45,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     @Builder.Default
     private List<SurveillanceCapStatus> capStatuses = new ArrayList<SurveillanceCapStatus>();
     private String capStatusOther;
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use capStatus and capStatusOther.", removalDate = "2025-10-01")
-    private String completedCapVerification;
 
     public void copyPrivilegedFields(PrivilegedSurveillance another) {
         this.mappingId = another.getMappingId();

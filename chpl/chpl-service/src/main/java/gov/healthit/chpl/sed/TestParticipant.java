@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.activity.ActivityExclude;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,13 +28,6 @@ public class TestParticipant implements Serializable {
 
     @Schema(description = "Participant internal ID")
     private Long id;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use 'friendlyId' instead.", removalDate = "2025-03-01")
-    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
-            + "The value must be unique to this particular participant within a listing. "
-            + "This field is meaningful to administrators only.")
-    private String uniqueId;
 
     @ActivityExclude
     @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
@@ -139,17 +132,17 @@ public class TestParticipant implements Serializable {
         if (this.getId() != null && anotherParticipant.getId() != null
                 && this.getId().longValue() == anotherParticipant.getId().longValue()) {
             result = true;
-        } else if (StringUtils.equals(this.getFriendlyId(), anotherParticipant.getFriendlyId())
+        } else if (Strings.CS.equals(this.getFriendlyId(), anotherParticipant.getFriendlyId())
                 && Objects.equals(this.getAge().getId(), anotherParticipant.getAge().getId())
-                && StringUtils.equals(this.getAge().getName(), anotherParticipant.getAge().getName())
-                && StringUtils.equals(this.getAssistiveTechnologyNeeds(),
+                && Strings.CS.equals(this.getAge().getName(), anotherParticipant.getAge().getName())
+                && Strings.CS.equals(this.getAssistiveTechnologyNeeds(),
                         anotherParticipant.getAssistiveTechnologyNeeds())
                 && Objects.equals(this.getComputerExperienceMonths(),
                         anotherParticipant.getComputerExperienceMonths())
                 && Objects.equals(this.getEducationType().getId(), anotherParticipant.getEducationType().getId())
-                && StringUtils.equals(this.getEducationType().getName(), anotherParticipant.getEducationType().getName())
-                && StringUtils.equals(this.getGender(), anotherParticipant.getGender())
-                && StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation())
+                && Strings.CS.equals(this.getEducationType().getName(), anotherParticipant.getEducationType().getName())
+                && Strings.CS.equals(this.getGender(), anotherParticipant.getGender())
+                && Strings.CS.equals(this.getOccupation(), anotherParticipant.getOccupation())
                 && Objects.equals(this.getProductExperienceMonths(),
                         anotherParticipant.getProductExperienceMonths())
                 && Objects.equals(this.getProfessionalExperienceMonths(),
