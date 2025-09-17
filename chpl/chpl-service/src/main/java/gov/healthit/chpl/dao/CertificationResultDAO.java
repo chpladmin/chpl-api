@@ -77,7 +77,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity.setCertifiedProductId(listingId);
             boolean isCertified = BooleanUtils.isTrue(certificationResult.getSuccess());
             entity.setSuccess(certificationResult.getSuccess());
-            entity.setGap(null);
             entity.setSed(isCertified ? certificationResult.getSed() : null);
             entity.setG1Success(certificationResult.getG1Success());
             entity.setG2Success(certificationResult.getG2Success());

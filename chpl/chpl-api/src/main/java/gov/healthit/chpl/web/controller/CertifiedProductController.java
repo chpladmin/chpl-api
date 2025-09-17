@@ -566,7 +566,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{certifiedProductId}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
