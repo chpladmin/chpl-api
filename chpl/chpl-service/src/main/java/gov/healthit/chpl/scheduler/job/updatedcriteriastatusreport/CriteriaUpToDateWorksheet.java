@@ -30,17 +30,16 @@ public class CriteriaUpToDateWorksheet {
     private static final Integer A_15_ROW_IDX = 3;
     private static final Integer B_1_ROW_IDX = 4;
     private static final Integer B_2_ROW_IDX = 5;
-    private static final Integer B_3_ROW_IDX = 6;
-    private static final Integer B_9_ROW_IDX = 7;
-    private static final Integer C_4_ROW_IDX = 8;
-    private static final Integer E_1_ROW_IDX = 9;
-    private static final Integer F_1_ROW_IDX = 10;
-    private static final Integer F_3_ROW_IDX = 11;
-    private static final Integer F_4_ROW_IDX = 12;
-    private static final Integer F_5_ROW_IDX = 13;
-    private static final Integer G_6_ROW_IDX = 14;
-    private static final Integer G_9_ROW_IDX = 15;
-    private static final Integer G_10_ROW_IDX = 16;
+    private static final Integer B_9_ROW_IDX = 6;
+    private static final Integer C_4_ROW_IDX = 7;
+    private static final Integer E_1_ROW_IDX = 8;
+    private static final Integer F_1_ROW_IDX = 9;
+    private static final Integer F_3_ROW_IDX = 10;
+    private static final Integer F_4_ROW_IDX = 11;
+    private static final Integer F_5_ROW_IDX = 12;
+    private static final Integer G_6_ROW_IDX = 13;
+    private static final Integer G_9_ROW_IDX = 14;
+    private static final Integer G_10_ROW_IDX = 15;
 
     private static final String DATA_WORKSHEET_NAME = "Data";
     private static final String CHART_WORKSHEET_NAME = "Criteria Up-To-Date Chart";
@@ -60,7 +59,6 @@ public class CriteriaUpToDateWorksheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.A_15, A_15_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_1_CURES, B_1_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_2_CURES, B_2_ROW_IDX));
-        criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_3_CURES, B_3_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.B_9_CURES, B_9_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.C_4, C_4_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.E_1_CURES, E_1_ROW_IDX));
@@ -73,8 +71,8 @@ public class CriteriaUpToDateWorksheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
-    public void populateWithDataOnDate(LocalDate reportDataDate, Workbook workbook) throws IOException {
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate);
+    public void populateWithDataOnDate(LocalDate reportDataDate, List<Long> acbIds, Workbook workbook) throws IOException {
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbIds);
         populateDataSheet(reports, workbook);
         updateChartTitles(workbook, reportDataDate);
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
