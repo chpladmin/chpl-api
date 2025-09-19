@@ -1,5 +1,10 @@
 package gov.healthit.chpl.report;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Transient;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +15,13 @@ public class ReportMetadata {
     private String environment;
     private String title;
     private String reportKey;
-    private String reportGroup;
     private String url;
     private String height;
     private String displayOrder;
+
+    @Transient
+    @JsonIgnore
+    //this field will be used to filter reports based on the role of the current user
+    //but does not need to be included in the API responses
+    private List<String> roleNames;
 }

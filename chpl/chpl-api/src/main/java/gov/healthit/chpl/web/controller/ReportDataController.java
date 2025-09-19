@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyS
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -57,6 +59,35 @@ public class ReportDataController {
         this.developerSearchService = developerSearchService;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/report-data/report-metadata/group/{reportGroup}", httpMethod = "GET",
+            message = "This endpoint will be removed. Please GET from /report-data/report-metadata",
+            removalDate = "2026-04-01")
+    @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
+            description = "Retrieves the report metadata for a group of Power BI reports.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
+        return new ArrayList<ReportMetadata>();
+    }
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/report-data/report-metadata/{reportKey}", httpMethod = "GET",
+            message = "This endpoint will be removed.", removalDate = "2026-04-01")
+    @Operation(summary = "Retrieves the individual report metadata for a Power BI report.",
+            description = "Retrieves the individual report metadata for a Power BI report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
+        return ReportMetadata.builder().build();
+    }
+
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
             description = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
             security = {
@@ -66,28 +97,6 @@ public class ReportDataController {
     @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
-    }
-
-    @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
-            description = "Retrieves the report metadata for a group of Power BI reports.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
-        return reportDataManager.getReportMetadataByReportGroup(reportGroup);
-    }
-
-    @Operation(summary = "Retrieves the individual report metadata for a Power BI report.",
-            description = "Retrieves the individual report metadata for a Power BI report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
-        return reportDataManager.getReportMetadata(reportKey);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",
