@@ -57,9 +57,6 @@ public class ReportMetadataEntity extends EntityAudit {
     @Column(name = "height")
     private String height;
 
-    @Column(name = "display_order")
-    private String displayOrder;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reportMetadataId")
     @Basic(optional = false)
     @Column(name = "report_metadata_id", nullable = false)
@@ -74,7 +71,6 @@ public class ReportMetadataEntity extends EntityAudit {
                 .reportKey(reportKey)
                 .url(url)
                 .height(height)
-                .displayOrder(displayOrder)
                 .roleNames(!CollectionUtils.isEmpty(roleMaps) ? getRoleNames(roleMaps) : null)
                 .build();
     }

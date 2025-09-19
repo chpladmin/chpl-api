@@ -17,7 +17,6 @@ public class ReportMetadata {
     private String reportKey;
     private String url;
     private String height;
-    private String displayOrder;
 
     @Transient
     @JsonIgnore

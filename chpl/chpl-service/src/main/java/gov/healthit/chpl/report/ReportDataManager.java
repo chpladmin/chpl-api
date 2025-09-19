@@ -1,6 +1,5 @@
 package gov.healthit.chpl.report;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,9 +101,7 @@ public class ReportDataManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REPORTS, "
             + "T(gov.healthit.chpl.permissions.domains.ReportDomainPermissions).GET_REPORT_METADATA, filterObject)")
     public List<ReportMetadata> getReportMetadata() {
-        return reportMetadataDao.getReportMetadata().stream()
-                .sorted(Comparator.comparing(ReportMetadata::getDisplayOrder))
-                .toList();
+        return reportMetadataDao.getReportMetadata();
     }
 
     @Synchronized("lock")
