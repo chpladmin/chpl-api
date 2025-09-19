@@ -46,29 +46,29 @@ public class CriteriaUpToDateReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
+    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(List<Long> acbIds) {
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(ONE_YEAR_IN_MONTHS);
         LOGGER.info("Generating criteria up-to-date counts for the past year using report dates: "
                 + Util.joinListGrammatically(allReportDates.stream().map(reportDate -> reportDate.toString()).collect(Collectors.toList())));
 
         return allReportDates.stream()
-            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate).stream())
+            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate, acbIds).stream())
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate) {
+    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate, List<Long> acbIds) {
         List<CertificationCriterion> activeCriteria = criteriaManager.getActiveToday();
         StatisticsSnapshot statisticsSnapshot = getSummaryStatisticsSnapshotForDate(reportDate);
         List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
 
         return activeCriteria.stream()
-            .map(criterion -> buildCriteriaUpToDateReport(criterion, statisticsSnapshot, criteriaStatusReports, reportDate))
+            .map(criterion -> buildCriteriaUpToDateReport(criterion, acbIds, statisticsSnapshot, criteriaStatusReports, reportDate))
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports() {
+    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(List<Long> acbIds) {
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(
                 LocalDate.now());
 
@@ -77,7 +77,7 @@ public class CriteriaUpToDateReportService {
         List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
 
         return activeCriteria.stream()
-            .map(criterion -> buildCriteriaUpToDateReport(criterion, statisticsSnapshot, criteriaStatusReports, reportDate))
+            .map(criterion -> buildCriteriaUpToDateReport(criterion, acbIds, statisticsSnapshot, criteriaStatusReports, reportDate))
             .collect(Collectors.toList());
     }
 
@@ -98,10 +98,13 @@ public class CriteriaUpToDateReportService {
         return results.stream().collect(Collectors.toList());
     }
 
-    private CriteriaUpToDateReport buildCriteriaUpToDateReport(CertificationCriterion criterion, StatisticsSnapshot statisticsSnapshot,
-            List<UpdatedCriterionStatusReport> criteriaStatusReports, LocalDate reportDate) {
-        long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(statisticsSnapshot, criterion);
-        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion, reportDate);
+    private CriteriaUpToDateReport buildCriteriaUpToDateReport(CertificationCriterion criterion,
+            List<Long> acbIds,
+            StatisticsSnapshot statisticsSnapshot,
+            List<UpdatedCriterionStatusReport> criteriaStatusReports,
+            LocalDate reportDate) {
+        long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(statisticsSnapshot, criterion, acbIds);
+        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion, acbIds, reportDate);
 
         return CriteriaUpToDateReport.builder()
                 .accurateAsOfDate(reportDate)
@@ -115,7 +118,8 @@ public class CriteriaUpToDateReportService {
         return summaryStatisticsDao.getSummaryStatistics(reportDate);
     }
 
-    private long calculateActiveListingsWithCriterionCount(StatisticsSnapshot statisticsSnapshot, CertificationCriterion criterion) {
+    private long calculateActiveListingsWithCriterionCount(StatisticsSnapshot statisticsSnapshot, CertificationCriterion criterion,
+            List<Long> acbIds) {
         if (statisticsSnapshot == null
                 || CollectionUtils.isEmpty(statisticsSnapshot.getAttestedCriterionStatistics())) {
             LOGGER.info("No attested criterion statistics were found in the statistics snapshot for date " + statisticsSnapshot.getSnapshotDate());
@@ -128,6 +132,7 @@ public class CriteriaUpToDateReportService {
 
         long countOfListingsInActiveStatusWithCriteria = statisticsSnapshot.getAttestedCriterionStatistics().stream()
             .filter(stat -> stat.getCertificationCriterionId().equals(criterion.getId())
+                    && acbIds.contains(stat.getAcbId())
                     && activeStatusIds.contains(stat.getListingStatusId()))
             .map(stat -> stat.getListingIds().size())
             .collect(Collectors.summingInt(Integer::intValue));
@@ -135,17 +140,20 @@ public class CriteriaUpToDateReportService {
     }
 
     private long calculateListingsRequiringUpdatesCount(List<UpdatedCriterionStatusReport> reports, CertificationCriterion criterion,
-            LocalDate reportDate) {
-        List<UpdatedCriterionStatusReport> reportsForCriterion = reports.stream()
-            .filter(report -> report.getCertificationCriterion().getId().equals(criterion.getId()))
+            List<Long> acbIds, LocalDate reportDate) {
+        List<UpdatedCriterionStatusReport> reportsForCriterionAndAcb = reports.stream()
+            .filter(report -> report.getCertificationCriterion().getId().equals(criterion.getId())
+                    && acbIds.contains(report.getCertificationBodyId()))
             .collect(Collectors.toList());
 
-        if (CollectionUtils.isEmpty(reportsForCriterion)) {
-            LOGGER.info("No updated criteria status reports were found for " + Util.formatCriteriaNumber(criterion) + " from date " + reportDate);
+        if (CollectionUtils.isEmpty(reportsForCriterionAndAcb)) {
+            LOGGER.info("No updated criteria status reports were found for "
+        + Util.formatCriteriaNumber(criterion) + " and ACB(s) " + acbIds
+        + " from date " + reportDate);
             return 0;
         }
 
-        return StreamEx.of(reportsForCriterion)
+        return StreamEx.of(reportsForCriterionAndAcb)
                 .distinct(UpdatedCriterionStatusReport::getCertifiedProductId)
                 .count();
     }
