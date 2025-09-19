@@ -1,10 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,7 +13,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -32,7 +29,6 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyS
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -57,35 +53,6 @@ public class ReportDataController {
         this.reportDataManager = reportDataManager;
         this.statisticsManager = statisticsManager;
         this.developerSearchService = developerSearchService;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/report-data/report-metadata/group/{reportGroup}", httpMethod = "GET",
-            message = "This endpoint will be removed. Please GET from /report-data/report-metadata",
-            removalDate = "2026-04-01")
-    @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
-            description = "Retrieves the report metadata for a group of Power BI reports.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
-        return new ArrayList<ReportMetadata>();
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/report-data/report-metadata/{reportKey}", httpMethod = "GET",
-            message = "This endpoint will be removed.", removalDate = "2026-04-01")
-    @Operation(summary = "Retrieves the individual report metadata for a Power BI report.",
-            description = "Retrieves the individual report metadata for a Power BI report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
-        return ReportMetadata.builder().build();
     }
 
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
