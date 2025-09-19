@@ -40,14 +40,14 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
         this.env = env;
     }
 
-    public File generateSpreadsheet() throws IOException {
+    public File generateSpreadsheet(List<Long> acbIds) throws IOException {
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(TOTAL_NUMBER_OF_MONTHS);
 
         criteriaManager.getActiveToday().stream()
                 .sorted(certificationCriterionComparator)
-                .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteriaOnDates(crit, allReportDates, workbook));
+                .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteriaOnDates(crit, acbIds, allReportDates, workbook));
 
         //Remove the template sheet
         workbook.removeSheetAt(0);
