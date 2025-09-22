@@ -55,6 +55,11 @@ public class Standard implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endDay;
 
+    @Schema(description = "A date value representing the date by which the presence of the Standard will result in an error.")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate extensionEndDay;
+
     @Schema(description = "A date value representing the date by which the Standard is required for selected criteria.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
