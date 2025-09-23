@@ -17,6 +17,7 @@ import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupReviewer;
 import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -146,9 +147,17 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
                             .toList();
 
                     if (!isStandardInList(std, standardsExistingInCertResult)) {
-                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
-                                Util.formatCriteriaNumber(certResult.getCriterion()),
-                                std.getRegulatoryTextCitation()));
+                        if (std.getExtensionEndDay() != null
+                                && getStandardsCheckDate(listing).isBefore(std.getExtensionEndDay())) {
+                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    std.getRegulatoryTextCitation(),
+                                    DateUtil.format(std.getExtensionEndDay())));
+                        } else {
+                            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    std.getRegulatoryTextCitation()));
+                        }
                     }
                 });
 
