@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,8 +20,7 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("listingUploadFunctionalityTestedReviewer")
-public class FunctionalityTestedReviewer implements Reviewer {
+public abstract class FunctionalityTestedReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private FunctionalityTestedDAO functionalityTestedDao;
@@ -38,6 +36,8 @@ public class FunctionalityTestedReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    public abstract LocalDate getFunctionalityTestedCheckDate(CertifiedProductSearchDetails listing);
+
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -50,6 +50,7 @@ public class FunctionalityTestedReviewer implements Reviewer {
         reviewCriteriaCanHaveFunctionalitiesTested(listing, certResult);
         removeFunctionalitiesTestedWithoutIds(listing, certResult);
         removeFunctionalitiesTestedMismatchedToCriteria(listing, certResult);
+        reviewRequiredFunctionalitiesTestedPresent(listing, certResult);
         if (certResult.getFunctionalitiesTested() != null && certResult.getFunctionalitiesTested().size() > 0) {
             certResult.getFunctionalitiesTested().stream()
                     .forEach(functionalityTested -> reviewFunctionalityTestedFields(listing, certResult, functionalityTested));
@@ -124,6 +125,43 @@ public class FunctionalityTestedReviewer implements Reviewer {
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
         return Util.joinListGrammatically(criteriaNumbers);
+    }
+
+    private void reviewRequiredFunctionalitiesTestedPresent(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<FunctionalityTested> functionalitiesTestedForCriterion
+            = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps().get(certResult.getCriterion().getId());
+
+        if (!CollectionUtils.isEmpty(functionalitiesTestedForCriterion)) {
+            List<FunctionalityTested> requiredFunctionalitiesTestedForCriterion = functionalitiesTestedForCriterion.stream()
+                    .filter(ft -> ft.getRequiredDay() != null
+                        && (ft.getRequiredDay().isEqual(LocalDate.now()) || ft.getRequiredDay().isBefore(LocalDate.now())))
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(requiredFunctionalitiesTestedForCriterion)) {
+                requiredFunctionalitiesTestedForCriterion.stream()
+                    .filter(reqFt -> !doesCertResultContainFunctionalityTested(certResult, reqFt))
+                    .forEach(missingReqFt -> {
+                        if (missingReqFt.getExtensionEndDay() != null
+                                && getFunctionalityTestedCheckDate(listing).isBefore(missingReqFt.getExtensionEndDay())) {
+                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedRequiredDuringExtensionPeriod",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    missingReqFt.getRegulatoryTextCitation(),
+                                    missingReqFt.getExtensionEndDay().toString()));
+                        } else {
+                            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedRequired",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    missingReqFt.getRegulatoryTextCitation()));
+                        }
+                    });
+            }
+        }
+    }
+
+    private boolean doesCertResultContainFunctionalityTested(CertificationResult certResult, FunctionalityTested ft) {
+        return certResult.getFunctionalitiesTested().stream()
+                .filter(crFt -> crFt.getFunctionalityTested() != null
+                        && crFt.getFunctionalityTested().getId() != null
+                        && crFt.getFunctionalityTested().getId().equals(ft.getId()))
+                .findAny().isPresent();
     }
 
     private void reviewFunctionalityTestedFields(CertifiedProductSearchDetails listing,

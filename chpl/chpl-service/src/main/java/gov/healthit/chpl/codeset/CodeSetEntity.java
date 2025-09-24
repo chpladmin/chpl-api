@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,10 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +45,10 @@ public class CodeSetEntity extends EntityAudit {
     @Column(name = "required_day")
     private LocalDate requiredDay;
 
+    @Basic(optional = true)
+    @Column(name = "extension_end_day")
+    private LocalDate extensionEndDay;
+
     @Basic(optional = false)
     @Column(name = "start_day")
     private LocalDate startDay;
@@ -61,6 +64,7 @@ public class CodeSetEntity extends EntityAudit {
                 .id(id)
                 .requiredDay(requiredDay)
                 .startDay(startDay)
+                .extensionEndDay(extensionEndDay)
                 .build();
     }
 
@@ -69,6 +73,7 @@ public class CodeSetEntity extends EntityAudit {
                 .id(id)
                 .requiredDay(requiredDay)
                 .startDay(startDay)
+                .extensionEndDay(extensionEndDay)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
                         .collect(Collectors.toList()) : null)

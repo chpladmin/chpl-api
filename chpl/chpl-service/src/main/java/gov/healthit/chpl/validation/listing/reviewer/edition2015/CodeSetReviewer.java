@@ -105,10 +105,19 @@ public abstract class CodeSetReviewer implements Reviewer {
             if (!CollectionUtils.isEmpty(requiredCodeSetsForCriterion)) {
                 requiredCodeSetsForCriterion.stream()
                     .filter(reqCodeSet -> !doesCertResultContainCodeSet(certResult, reqCodeSet))
-                    .forEach(missingReqCodeSet -> listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.codeSetRequired",
-                                    missingReqCodeSet.getName(),
+                    .forEach(missingReqCodeSet -> {
+                        if (missingReqCodeSet.getExtensionEndDay() != null
+                                && getCodeSetCheckDate(listing).isBefore(missingReqCodeSet.getExtensionEndDay())) {
+                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.codeSetRequiredDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
-                                    missingReqCodeSet.getRequiredDay().toString())));
+                                    missingReqCodeSet.getName(),
+                                    missingReqCodeSet.getExtensionEndDay().toString()));
+                        } else {
+                            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.codeSetRequired",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                                    missingReqCodeSet.getName()));
+                        }
+                    });
             }
         }
     }

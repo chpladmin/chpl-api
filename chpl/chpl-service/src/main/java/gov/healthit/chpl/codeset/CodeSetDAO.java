@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -60,6 +59,7 @@ public class CodeSetDAO extends BaseDAOImpl  {
         CodeSetEntity entity = CodeSetEntity.builder()
                 .requiredDay(codeSet.getRequiredDay())
                 .startDay(codeSet.getStartDay())
+                .extensionEndDay(codeSet.getExtensionEndDay())
                 .build();
 
         create(entity);
@@ -71,6 +71,7 @@ public class CodeSetDAO extends BaseDAOImpl  {
         CodeSetEntity entity = getEntityById(codeSet.getId());
         entity.setRequiredDay(codeSet.getRequiredDay());
         entity.setStartDay(codeSet.getStartDay());
+        entity.setExtensionEndDay(codeSet.getExtensionEndDay());
         update(entity);
     }
 
@@ -79,8 +80,6 @@ public class CodeSetDAO extends BaseDAOImpl  {
         CodeSetEntity entity = getEntityById(codeSet.getId());
         entity.setDeleted(true);
         update(entity);
-
-
     }
 
     public List<CertifiedProductDetailsDTO> getCertifiedProductsByCodeSetAndCriteria(CodeSet codeSet, CertificationCriterion criterion)
