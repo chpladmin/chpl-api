@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligibility;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
@@ -42,11 +44,13 @@ public class RealWorldTestingReportService {
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private List<CertificationStatusType> withdrawnStatuses;
+    private CertificationCriterion g7, g9, g10;
 
     @Autowired
     public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO,
             ErrorMessageUtil errorMsg, Environment env,
             CertificationStatusEventsService certificationStatusEventsService,
+            CertificationCriterionService criteriaService,
             CertificationCriterionService certificationCriterionService,
             RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory,
             ResourcePermissionsFactory resourcePermissionsFactory) {
@@ -63,6 +67,9 @@ public class RealWorldTestingReportService {
                 CertificationStatusType.WithdrawnByDeveloperUnderReview,
                 CertificationStatusType.Retired,
                 CertificationStatusType.TerminatedByOnc);
+        g7 = criteriaService.get(Criteria2015.G_7);
+        g9 = criteriaService.get(Criteria2015.G_9_CURES);
+        g10 = criteriaService.get(Criteria2015.G_10);
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
@@ -139,6 +146,9 @@ public class RealWorldTestingReportService {
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
+                .attestsG7(attestsCriteria(rwtElig, g7))
+                .attestsG9(attestsCriteria(rwtElig, g9))
+                .attestsG10(attestsCriteria(rwtElig, g10))
                 .build();
 
         if (rwtElig.getEligibilityYear() != null) {
@@ -148,7 +158,14 @@ public class RealWorldTestingReportService {
         }
     }
 
-    private List<String> getDeveloperUsers(Developer developer) {
+    private boolean attestsCriteria(RealWorldTestingEligibility eligibility, CertificationCriterion criterion) {
+        return eligibility.getAttestedCriteria().stream()
+                .filter(crit -> crit.getId().equals(criterion.getId()))
+                .findAny()
+                .isPresent();
+    }
+
+     private List<String> getDeveloperUsers(Developer developer) {
         List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(developer);
         if (CollectionUtils.isEmpty(usersOnDeveloper)) {
             return new ArrayList<String>();
