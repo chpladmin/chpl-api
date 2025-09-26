@@ -147,7 +147,8 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
                             .toList();
 
                     if (!isStandardInList(std, standardsExistingInCertResult)) {
-                        if (std.getExtensionEndDay() != null
+                        if (allowsExtension()
+                                && std.getExtensionEndDay() != null
                                 && getStandardsCheckDate(listing).isBefore(std.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),

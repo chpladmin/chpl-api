@@ -28,6 +28,8 @@ public abstract class StandardGroupReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    public abstract boolean allowsExtension();
+
     public void reviewStandardExistsForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult, LocalDate validAsOfDate) {
         standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDate).entrySet().stream()
                 .filter(standardGroup -> standardGroup.getValue().size() >= 2)
@@ -38,7 +40,9 @@ public abstract class StandardGroupReviewer implements Reviewer {
                         //the same extension end day. It is possible to set different values for these
                         //things using the UI or API but it is not a realistic scenario at this time.
                         LocalDate extensionEndDay = standardGroup.getValue().get(0).getExtensionEndDay();
-                        if (extensionEndDay != null && validAsOfDate.isBefore(extensionEndDay)) {
+                        if (allowsExtension()
+                                && extensionEndDay != null
+                                && validAsOfDate.isBefore(extensionEndDay)) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelectedDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", ")),

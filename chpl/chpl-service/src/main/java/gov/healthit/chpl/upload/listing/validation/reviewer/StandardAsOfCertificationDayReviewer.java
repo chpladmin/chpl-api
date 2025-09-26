@@ -30,4 +30,7 @@ public class StandardAsOfCertificationDayReviewer extends StandardReviewer {
         return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
     }
 
+    public boolean allowsExtension() {
+        return false;
+    }
 }
