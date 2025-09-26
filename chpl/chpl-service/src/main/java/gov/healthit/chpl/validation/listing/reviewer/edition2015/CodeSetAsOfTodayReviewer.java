@@ -25,4 +25,8 @@ public class CodeSetAsOfTodayReviewer extends CodeSetReviewer {
     public LocalDate getCodeSetCheckDate(CertifiedProductSearchDetails listing) {
         return LocalDate.now();
     }
+
+    public boolean allowsExtension() {
+        return true;
+    }
 }

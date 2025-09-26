@@ -24,4 +24,8 @@ public class FunctionalityTestedAsOfCertificationDayReviewer extends Functionali
     public LocalDate getFunctionalityTestedCheckDate(CertifiedProductSearchDetails listing) {
         return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
     }
+
+    public boolean allowsExtension() {
+        return false;
+    }
 }

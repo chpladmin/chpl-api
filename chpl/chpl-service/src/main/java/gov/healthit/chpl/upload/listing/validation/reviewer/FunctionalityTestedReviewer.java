@@ -37,6 +37,7 @@ public abstract class FunctionalityTestedReviewer implements Reviewer {
     }
 
     public abstract LocalDate getFunctionalityTestedCheckDate(CertifiedProductSearchDetails listing);
+    public abstract boolean allowsExtension();
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
@@ -140,7 +141,8 @@ public abstract class FunctionalityTestedReviewer implements Reviewer {
                 requiredFunctionalitiesTestedForCriterion.stream()
                     .filter(reqFt -> !doesCertResultContainFunctionalityTested(certResult, reqFt))
                     .forEach(missingReqFt -> {
-                        if (missingReqFt.getExtensionEndDay() != null
+                        if (allowsExtension()
+                                && missingReqFt.getExtensionEndDay() != null
                                 && getFunctionalityTestedCheckDate(listing).isBefore(missingReqFt.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedRequiredDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),

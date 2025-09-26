@@ -38,6 +38,7 @@ public abstract class CodeSetReviewer implements Reviewer {
     }
 
     public abstract LocalDate getCodeSetCheckDate(CertifiedProductSearchDetails listing);
+    public abstract boolean allowsExtension();
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -106,7 +107,8 @@ public abstract class CodeSetReviewer implements Reviewer {
                 requiredCodeSetsForCriterion.stream()
                     .filter(reqCodeSet -> !doesCertResultContainCodeSet(certResult, reqCodeSet))
                     .forEach(missingReqCodeSet -> {
-                        if (missingReqCodeSet.getExtensionEndDay() != null
+                        if (allowsExtension()
+                                && missingReqCodeSet.getExtensionEndDay() != null
                                 && getCodeSetCheckDate(listing).isBefore(missingReqCodeSet.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.codeSetRequiredDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),

@@ -25,4 +25,8 @@ public class FunctionalityTestedAsOfTodayReviewer extends FunctionalityTestedRev
     public LocalDate getFunctionalityTestedCheckDate(CertifiedProductSearchDetails listing) {
         return LocalDate.now();
     }
+
+    public boolean allowsExtension() {
+        return true;
+    }
 }
