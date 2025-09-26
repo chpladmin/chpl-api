@@ -12,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
 import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -25,11 +28,14 @@ public class CodeSetManager {
 
     private CodeSetDAO codeSetDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+    private ActivityManager activityManager;
 
     @Autowired
-    public CodeSetManager(CodeSetDAO codeSetDAO, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO) {
+    public CodeSetManager(CodeSetDAO codeSetDAO, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ActivityManager activityManager) {
         this.codeSetDAO = codeSetDAO;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.activityManager = activityManager;
     }
 
     @Transactional
@@ -52,7 +58,17 @@ public class CodeSetManager {
         codeSetDAO.update(codeSet);
         addNewCriteriaForExistingCodeSet(codeSet, origCodeSet);
         deleteCriteriaRemovedFromCodeSet(codeSet, origCodeSet);
-        return codeSetDAO.getById(codeSet.getId());
+
+        CodeSet updatedCodeSet = codeSetDAO.getById(codeSet.getId());
+        try {
+            activityManager.addActivity(ActivityConcept.CODE_SET, origCodeSet.getId(),
+                    origCodeSet.getName() + " was updated.",
+                    origCodeSet, updatedCodeSet);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about updating code set " + origCodeSet.getName(), ex);
+        }
+
+        return updatedCodeSet;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
@@ -64,7 +80,16 @@ public class CodeSetManager {
             codeSet.getCriteria().stream()
                     .forEach(crit -> codeSetDAO.addCodeSetCriteriaMap(newCodeSet, crit));
         }
-        return codeSetDAO.getById(newCodeSet.getId());
+        CodeSet createdCodeSet = codeSetDAO.getById(newCodeSet.getId());
+
+        try {
+            activityManager.addActivity(ActivityConcept.CODE_SET, createdCodeSet.getId(),
+                    createdCodeSet.getName() + " was created.",
+                    null, createdCodeSet);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about creating code set " + createdCodeSet.getName(), ex);
+        }
+        return createdCodeSet;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
@@ -75,6 +100,13 @@ public class CodeSetManager {
         codeSet.getCriteria().forEach(crit -> codeSetDAO.removeCodeSetCriteriaMap(codeSet, crit));
         codeSetDAO.remove(codeSet);
 
+        try {
+            activityManager.addActivity(ActivityConcept.CODE_SET, codeSet.getId(),
+                    codeSet.getName() + " was deleted.",
+                    codeSet, null);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about deleting code set " + codeSet.getName(), ex);
+        }
     }
 
     private void addNewCriteriaForExistingCodeSet(CodeSet codeSet, CodeSet originalCodeSet) {

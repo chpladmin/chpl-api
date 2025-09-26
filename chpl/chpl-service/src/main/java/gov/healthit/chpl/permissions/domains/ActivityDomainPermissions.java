@@ -13,6 +13,7 @@ import gov.healthit.chpl.permissions.domains.activity.GetAnnualReportActivityMet
 import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetCodeSetMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetConformanceMethodMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetFunctionalityTestedMetadataActionPermissions;
@@ -41,6 +42,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_API_KEY_MANAGEMENT_METADATA = "GET_API_KEY_MANAGEMENT_METADATA";
     public static final String GET_CONFORMANCE_METHOD_METADATA = "GET_CONFORMANCE_METHOD_METADATA";
     public static final String GET_FUNCTIONALITY_TESTED_METADATA = "GET_FUNCTIONALITY_TESTED_METADATA";
+    public static final String GET_CODE_SET_METADATA = "GET_CODE_SET_METADATA";
     public static final String GET_STANDARD_METADATA = "GET_STANDARD_METADATA";
     public static final String GET_SVAP_METADATA = "GET_SVAP_METADATA";
     public static final String SEARCH = "SEARCH";
@@ -64,6 +66,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("getConformanceMethodActivityMetadataActionPermissions") GetConformanceMethodMetadataActionPermissions getConformanceMethodMetadataActionPermissions,
             @Qualifier("getFunctionalityTestedActivityMetadataActionPermissions") GetFunctionalityTestedMetadataActionPermissions getFunctionalityTestedMetadataActionPermissions,
             @Qualifier("getStandardActivityMetadataActionPermissions") GetStandardMetadataActionPermissions getStandardMetadataActionPermissions,
+            @Qualifier("getCodeSetActivityMetadataActionPermissions") GetCodeSetMetadataActionPermissions getCodeSetMetadataActionPermissions,
             @Qualifier("getSvapActivityMetadataActionPermissions") GetSvapMetadataActionPermissions getSvapMetadataActionPermissions,
             @Qualifier("searchActivityActionPermissions") SearchActivityActionPermissions searchActivityActionPermissions){
 
@@ -82,6 +85,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_API_KEY_MANAGEMENT_METADATA, getApiKeyManagementMetadataActionPermissions);
         getActionPermissions().put(GET_CONFORMANCE_METHOD_METADATA, getConformanceMethodMetadataActionPermissions);
         getActionPermissions().put(GET_FUNCTIONALITY_TESTED_METADATA, getFunctionalityTestedMetadataActionPermissions);
+        getActionPermissions().put(GET_CODE_SET_METADATA, getCodeSetMetadataActionPermissions);
         getActionPermissions().put(GET_STANDARD_METADATA, getStandardMetadataActionPermissions);
         getActionPermissions().put(GET_SVAP_METADATA, getSvapMetadataActionPermissions);
         getActionPermissions().put(SEARCH, searchActivityActionPermissions);
