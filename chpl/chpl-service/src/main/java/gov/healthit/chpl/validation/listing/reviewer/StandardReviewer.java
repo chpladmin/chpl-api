@@ -59,7 +59,7 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
         reviewRequiredBaselineStandardsExist(listing, certResult);
-        reviewStandardExistForEachGroup(listing, certResult, getStandardsCheckDate(listing));
+        reviewStandardExistsForEachGroup(listing, certResult, getStandardsCheckDate(listing));
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
