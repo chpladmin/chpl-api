@@ -29,7 +29,6 @@ public class CertificationResultUploadHandler {
     private AdditionalSoftwareUploadHandler additionalSoftwareHandler;
     private ConformanceMethodUploadHandler conformanceMethodHandler;
     private TestToolUploadHandler testToolHandler;
-    private TestDataUploadHandler testDataHandler;
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
@@ -37,13 +36,11 @@ public class CertificationResultUploadHandler {
             AdditionalSoftwareUploadHandler additionalSoftwareHandler,
             ConformanceMethodUploadHandler conformanceMethodHandler,
             TestToolUploadHandler testToolHandler,
-            TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.criterionHandler = criterionHandler;
         this.additionalSoftwareHandler = additionalSoftwareHandler;
         this.conformanceMethodHandler = conformanceMethodHandler;
         this.testToolHandler = testToolHandler;
-        this.testDataHandler = testDataHandler;
         this.uploadUtil = uploadUtil;
     }
 
@@ -62,7 +59,6 @@ public class CertificationResultUploadHandler {
                 .functionalitiesTested(parseFunctionalitiesTested(certHeadingRecord, certResultRecords))
                 .optionalStandards(parseOptionalStandards(certHeadingRecord, certResultRecords))
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
-                .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
                 .conformanceMethods(conformanceMethodHandler.handle(certHeadingRecord, certResultRecords))
                 .testToolsUsed(testToolHandler.handle(certHeadingRecord, certResultRecords))
                 .exportDocumentation(parseExportDocumentation(certHeadingRecord, certResultRecords))
