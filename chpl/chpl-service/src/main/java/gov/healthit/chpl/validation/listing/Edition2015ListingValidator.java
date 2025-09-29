@@ -60,6 +60,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRela
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SvapComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestDataComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -174,6 +175,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("svapComparisonReviewer")
     private SvapComparisonReviewer svapComparisonReviewer;
+
+    @Autowired
+    @Qualifier("testDataComparisonReviewer")
+    private TestDataComparisonReviewer testDataComparisonReviewer;
 
     @Autowired
     @Qualifier("oldCriteriaWithoutIcsReviewer")
@@ -322,6 +327,7 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
         comparisonReviewers.add(svapComparisonReviewer);
+        comparisonReviewers.add(testDataComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaTestTaskComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
