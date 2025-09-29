@@ -227,7 +227,6 @@ public class ListingConfirmationManager {
         if (BooleanUtils.isTrue(certResult.getSuccess())) {
             saveAdditionalSoftware(certResult);
             saveOptionalStandards(certResult);
-            saveTestData(certResult);
             saveTestProcedures(certResult);
             saveFunctionalitiesTested(certResult);
             saveStandards(certResult);
@@ -249,13 +248,6 @@ public class ListingConfirmationManager {
         if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
             certResult.getOptionalStandards().stream()
                 .forEach(rethrowConsumer(optionalStandard -> certResultDao.createOptionalStandardMapping(certResult.getId(), optionalStandard)));
-        }
-    }
-
-    private void saveTestData(CertificationResult certResult) throws EntityCreationException {
-        if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-            certResult.getTestDataUsed().stream()
-                .forEach(rethrowConsumer(testData -> certResultDao.createTestDataMapping(certResult.getId(), testData)));
         }
     }
 

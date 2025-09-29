@@ -782,93 +782,18 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *******************************************************/
 
     public List<CertificationResultTestData> getTestDataForCertificationResult(Long certificationResultId) {
-
         List<CertificationResultTestDataEntity> entities = getTestDataForCertification(certificationResultId);
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public Long createTestDataMapping(Long certResultId, CertificationResultTestData testData)
-            throws EntityCreationException {
-        try {
-            CertificationResultTestDataEntity entity = new CertificationResultTestDataEntity();
-            entity.setCertificationResultId(certResultId);
-            entity.setTestDataId(testData.getTestData().getId());
-            entity.setAlterationDescription(testData.getAlteration());
-            entity.setTestDataVersion(testData.getVersion());
-            create(entity);
-            return entity.getId();
-        } catch (Exception ex) {
-            throw new EntityCreationException(ex);
-        }
-    }
-
-    public void addTestDataMapping(Long certResultId, CertificationResultTestData crtd)
-            throws EntityCreationException {
-        CertificationResultTestDataEntity mapping = new CertificationResultTestDataEntity();
-        mapping = new CertificationResultTestDataEntity();
-        mapping.setCertificationResultId(certResultId);
-        mapping.setTestDataId(crtd.getTestData().getId());
-        mapping.setTestDataVersion(crtd.getVersion());
-        mapping.setAlterationDescription(crtd.getAlteration());
-        try {
-            entityManager.persist(mapping);
-            entityManager.flush();
-        } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestData", crtd.getVersion());
-            LOGGER.error(msg, ex);
-            throw new EntityCreationException(msg);
-        }
-    }
-
-    public void deleteTestDataMapping(Long mappingId) {
-        CertificationResultTestDataEntity toDelete = getCertificationResultTestDataById(mappingId);
-        if (toDelete != null) {
-            toDelete.setDeleted(true);
-            entityManager.persist(toDelete);
-            entityManager.flush();
-        }
-    }
-
-    public void updateTestDataMapping(CertificationResultTestData crtd) throws EntityRetrievalException {
-        CertificationResultTestDataEntity toUpdate = getCertificationResultTestDataById(crtd.getId());
-        if (toUpdate == null) {
-            throw new EntityRetrievalException("Could not find test data mapping with id " + crtd.getId());
-        }
-        toUpdate.setTestDataId(crtd.getTestData().getId());
-        toUpdate.setAlterationDescription(crtd.getAlteration());
-        toUpdate.setTestDataVersion(crtd.getVersion());
-        try {
-            entityManager.persist(toUpdate);
-            entityManager.flush();
-        } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestData", crtd.getVersion());
-            LOGGER.error(msg, ex);
-            throw new EntityRetrievalException(msg);
-        }
-    }
-
-    private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {
-        CertificationResultTestDataEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "SELECT td " + "FROM CertificationResultTestDataEntity td " + "LEFT JOIN FETCH td.testData "
-                        + "WHERE (NOT td.deleted = true) " + "AND (td.id = :entityid) ",
-                CertificationResultTestDataEntity.class);
-        query.setParameter("entityid", id);
-        List<CertificationResultTestDataEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
     private List<CertificationResultTestDataEntity> getTestDataForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT td " + "FROM CertificationResultTestDataEntity td " + "LEFT JOIN FETCH td.testData "
-                        + "WHERE (NOT td.deleted = true) " + "AND (td.certificationResultId = :certificationResultId) ",
+        Query query = entityManager.createQuery("SELECT td "
+                        + "FROM CertificationResultTestDataEntity td "
+                        + "LEFT JOIN FETCH td.testData "
+                        + "WHERE (NOT td.deleted = true) "
+                        + "AND (td.certificationResultId = :certificationResultId) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 

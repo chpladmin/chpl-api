@@ -122,7 +122,6 @@ public class CertificationResultManager extends SecuredManager {
         numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
         numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
         numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
-        numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
         numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
         numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
         numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), updated.getStandards());
@@ -559,86 +558,6 @@ public class CertificationResultManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteTestStandardMapping(idToRemove);
-        }
-        return numChanges;
-    }
-
-    private int updateTestData(CertificationResult certResult, List<CertificationResultTestData> existingTestData,
-            List<CertificationResultTestData> updatedTestData)
-            throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
-        List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>();
-        List<Long> idsToRemove = new ArrayList<Long>();
-
-        // figure out which test data to add
-        if (updatedTestData != null && updatedTestData.size() > 0) {
-            if (existingTestData == null || existingTestData.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertificationResultTestData updatedItem : updatedTestData) {
-                    testDataToAdd.add(updatedItem);
-                }
-            } else if (existingTestData.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertificationResultTestData updatedItem : updatedTestData) {
-                    boolean inExistingListing = false;
-                    for (CertificationResultTestData existingItem : existingTestData) {
-                        if (updatedItem.matches(existingItem)) {
-                            inExistingListing = true;
-                            testDataToUpdate.add(new CertificationResultTestDataPair(existingItem, updatedItem));
-                        }
-                    }
-
-                    if (!inExistingListing) {
-                        testDataToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
-
-        // figure out which test data to remove
-        if (existingTestData != null && existingTestData.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedTestData == null || updatedTestData.size() == 0) {
-                for (CertificationResultTestData existingItem : existingTestData) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedTestData.size() > 0) {
-                for (CertificationResultTestData existingItem : existingTestData) {
-                    boolean inUpdatedListing = false;
-                    for (CertificationResultTestData updatedItem : updatedTestData) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = testDataToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestData toAdd : testDataToAdd) {
-            certResultDAO.addTestDataMapping(certResult.getId(), toAdd);
-        }
-
-        for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getTestData().getId(),
-                    toUpdate.getUpdated().getTestData().getId())
-                    || !Objects.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
-                    || !Objects.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
-                hasChanged = true;
-            }
-
-            if (hasChanged) {
-                certResultDAO.updateTestDataMapping(toUpdate.getUpdated());
-                numChanges++;
-            }
-        }
-
-        for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteTestDataMapping(idToRemove);
         }
         return numChanges;
     }
