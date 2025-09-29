@@ -233,13 +233,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                     crAttestationDAO.getChangeRequestAttestationSubmissionResponseEntities(submission.getId());
 
             Form form = formService.getForm(submission.getAttestationPeriod().getForm().getId());
-            for (SectionHeading heading : form.getSectionHeadings()) {
-                heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
-            }
-
             attestationManager.populateAllowedResponseMessagesForUser(
                     AttestationPeriodForm.builder().form(form).period(submission.getAttestationPeriod()).build(),
                     developerId);
+
+            for (SectionHeading heading : form.getSectionHeadings()) {
+                heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
+            }
             return form;
         } catch (EntityRetrievalException e) {
             return null;
@@ -250,7 +250,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         for (FormItem fi : formItems) {
             fi.setSubmittedResponses(submittedResponses.stream()
                     .filter(sr -> sr.getFormItem().getId().equals(fi.getId()))
-                    .map(sr -> populateSubmittedResponse(sr))
+                    .map(sr -> populateSubmittedResponse(fi, sr))
                     .toList());
 
             fi.setChildFormItems(populateFormItemsWithSubmittedResponses(fi.getChildFormItems(), submittedResponses));
@@ -258,9 +258,18 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return formItems;
     }
 
-    private AllowedResponse populateSubmittedResponse(ChangeRequestAttestationSubmissionResponseEntity sr) {
+    private AllowedResponse populateSubmittedResponse(FormItem formItem, ChangeRequestAttestationSubmissionResponseEntity sr) {
         AllowedResponse ar = sr.getResponse().toDomain();
-        ar.setMessage(sr.getResponseMessage());
+        AllowedResponse formItemAllowedResponse = formItem.getQuestion().getAllowedResponses().stream()
+                .filter(fiAr -> fiAr.getId().equals(ar.getId()))
+                .findFirst()
+                .orElse(null);
+        if (formItemAllowedResponse == null) {
+            LOGGER.warn("No form item with allowed response ID " + ar.getId() + " was found");
+            ar.setMessage(sr.getResponseMessage());
+        } else {
+            ar.setMessage(formItemAllowedResponse.getMessage());
+        }
         return ar;
     }
 }

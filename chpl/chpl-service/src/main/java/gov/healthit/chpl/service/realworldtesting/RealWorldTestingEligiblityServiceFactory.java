@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
-import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 
 @Component
@@ -23,23 +22,21 @@ public class RealWorldTestingEligiblityServiceFactory {
     private RealWorldTestingCriteriaService realWorldTestingCriteriaService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
-    private CertificationStatusEventsService certStatusService;
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     public RealWorldTestingEligiblityServiceFactory(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
-            CertificationStatusEventsService certStatusService, CertifiedProductDAO certifiedProductDAO) {
+             CertifiedProductDAO certifiedProductDAO) {
         this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
-        this.certStatusService = certStatusService;
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
     public RealWorldTestingEligiblityService getInstance() {
        return  new RealWorldTestingEligiblityService(realWorldTestingCriteriaService, realWorldTestingEligibilityActivityExplorer,
-               certStatusService, listingActivityUtil, certifiedProductDAO, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+               listingActivityUtil, certifiedProductDAO, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
     }
 
 }

@@ -42,7 +42,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile() throws IOException {
+    public File createCsvFile(List<Long> acbIds) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -54,7 +54,9 @@ public class UpdatedCriteriaStatusReportCsvCreator {
 
             csvFilePrinter.printRecord(getHeaderRow());
 
-            List<UpdatedCriterionStatusReport> reports = getReportData();
+            List<UpdatedCriterionStatusReport> reports = getReportData().stream()
+                    .filter(data -> acbIds.contains(data.getCertificationBodyId()))
+                    .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(reports)) {
                 LOGGER.info("Generating the CSV");
                 reports.stream()

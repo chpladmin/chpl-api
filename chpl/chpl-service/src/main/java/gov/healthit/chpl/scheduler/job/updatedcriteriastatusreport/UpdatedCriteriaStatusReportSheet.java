@@ -31,7 +31,8 @@ public class UpdatedCriteriaStatusReportSheet {
         this.reportService = reportService;
     }
 
-    public void generateSheetForCriteriaOnDates(CertificationCriterion criterion, List<LocalDate> reportDates, Workbook workbook) {
+    public void generateSheetForCriteriaOnDates(CertificationCriterion criterion, List<Long> acbIds,
+            List<LocalDate> reportDates, Workbook workbook) {
         LOGGER.info("Generating worksheet for " + Util.formatCriteriaNumber(criterion));
         Sheet sheet = addWorksheetForCriteria(criterion, workbook);
 
@@ -40,7 +41,7 @@ public class UpdatedCriteriaStatusReportSheet {
 
         for (int i = UpdatedCriteriaStatusReportWorkbook.TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
             LocalDate actualReportDay = reportDates.get(i - 1);
-            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay);
+            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay, acbIds);
 
             long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(reports, criterion);
             long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(reports, criterion);

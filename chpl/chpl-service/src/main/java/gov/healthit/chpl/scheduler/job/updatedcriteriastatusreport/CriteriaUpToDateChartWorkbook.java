@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
@@ -29,12 +30,12 @@ public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBas
         this.env = env;
     }
 
-    public File generateSpreadsheet() throws IOException {
+    public File generateSpreadsheet(List<Long> acbIds) throws IOException {
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
 
-        criteriaUpToDateWorksheet.populateWithDataOnDate(reportDate, workbook);
+        criteriaUpToDateWorksheet.populateWithDataOnDate(reportDate, acbIds, workbook);
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
         return writeFileToDisk(workbook, newFile);

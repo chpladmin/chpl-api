@@ -34,6 +34,9 @@ public class RealWorldTestingReport {
     private LocalDate rwtResultsCheckDate;
     private String rwtPlansMessage;
     private String rwtResultsMessage;
+    private Boolean attestsG7;
+    private Boolean attestsG9;
+    private Boolean attestsG10;
 
     public List<String> toListOfStrings() {
         List<String> results = new ArrayList<String>();
@@ -54,6 +57,9 @@ public class RealWorldTestingReport {
         results.add(rwtResultsCheckDate == null ? null : rwtResultsCheckDate.toString());
         results.add(rwtPlansMessage);
         results.add(rwtResultsMessage);
+        results.add(BooleanUtils.isTrue(attestsG7) ? "TRUE" : "FALSE");
+        results.add(BooleanUtils.isTrue(attestsG9) ? "TRUE" : "FALSE");
+        results.add(BooleanUtils.isTrue(attestsG10) ? "TRUE" : "FALSE");
         return results;
     }
 
@@ -76,6 +82,9 @@ public class RealWorldTestingReport {
         results.add("RWT Results Submission Confirmed");
         results.add("RWT Plans Message");
         results.add("RWT Results Message");
+        results.add("170.315 (g)(7)");
+        results.add("170.315 (g)(9)");
+        results.add("170.315 (g)(10)");
         return results;
     }
 }
