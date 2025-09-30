@@ -1,6 +1,9 @@
 package gov.healthit.chpl.service.realworldtesting;
 
 import java.io.Serializable;
+import java.util.List;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +18,5 @@ public class RealWorldTestingEligibility implements Serializable {
 
     private RealWorldTestingEligiblityReason reason;
     private Integer eligibilityYear;
+    private List<CertificationCriterion> attestedCriteria;
 }
