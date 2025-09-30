@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 51.8.0
+_29 September 2025_
+
+### Features
+* Include g7, g9, g10 columns in RWT Eligibility Report
+* Give ONC-ACBs access to Updated Criteria Status Report
+* Remove b3 from criteria up-to-date worksheet
+
+### Bug Fixes
+* Show correct warnings on attestation after edit
+
+---
+
 ## Version 51.7.0
 _15 September 2025_
 
