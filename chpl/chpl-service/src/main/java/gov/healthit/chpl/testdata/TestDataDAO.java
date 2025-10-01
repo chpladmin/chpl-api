@@ -35,27 +35,6 @@ public class TestDataDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    @Deprecated
-    public List<TestDataCriteriaMap> findAllWithMappedCriteria() {
-        List<TestDataCriteriaMapEntity> entities =
-                entityManager.createQuery("SELECT tdMap "
-                        + "FROM TestDataCriteriaMapEntity tdMap "
-                        + "JOIN FETCH tdMap.testData td "
-                        + "JOIN FETCH tdMap.certificationCriterion cce "
-                        + "LEFT JOIN FETCH cce.certificationEdition "
-                        + "LEFT JOIN FETCH cce.rule "
-                        + "WHERE tdMap.deleted <> true "
-                        + "AND td.deleted <> true ",
-                        TestDataCriteriaMapEntity.class).getResultList();
-        List<TestDataCriteriaMap> maps = new ArrayList<TestDataCriteriaMap>();
-
-        for (TestDataCriteriaMapEntity entity : entities) {
-            TestDataCriteriaMap dto = new TestDataCriteriaMap(entity);
-            maps.add(dto);
-        }
-        return maps;
-    }
-
     private List<TestDataEntity> getAllEntities() {
         return entityManager.createQuery("SELECT DISTINCT td "
                 + "FROM TestDataEntity td "

@@ -96,7 +96,6 @@ public class TestTaskEntity extends EntityAudit {
         return TestTask.builder()
                 .description(this.getDescription())
                 .id(this.getId())
-                .uniqueId(this.getFriendlyId())
                 .friendlyId(this.getFriendlyId())
                 .taskErrors(this.getTaskErrors())
                 .taskErrorsStddev(this.getTaskErrorsStddev())

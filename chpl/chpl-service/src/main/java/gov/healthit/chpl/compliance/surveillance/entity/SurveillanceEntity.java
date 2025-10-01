@@ -8,12 +8,9 @@ import java.util.stream.Collectors;
 
 import org.hibernate.annotations.SQLRestriction;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -77,27 +74,22 @@ public class SurveillanceEntity extends EntityAudit {
     @SQLRestriction(value = "deleted <> 'true'")
     private Set<SurveillanceRequirementEntity> surveilledRequirements = new HashSet<SurveillanceRequirementEntity>();
 
-    public Surveillance toDomain(CertifiedProductDAO certifiedProductDAO, CertificationCriterionService certificationCriterionService) {
-        try {
-            return Surveillance.builder()
-                    .id(this.getId())
-                    .friendlyId(this.getFriendlyId())
-                    .startDay(this.getStartDate())
-                    .endDay(this.getEndDate())
-                    .randomizedSitesUsed(this.getNumRandomizedSites())
-                    .lastModifiedDate(this.getLastModifiedDate())
-                    .type(SurveillanceType.builder()
-                            .id(this.getSurveillanceType().getId())
-                            .name(this.getSurveillanceType().getName())
-                            .build())
-                    .certifiedProductId(this.getCertifiedProductId())
-                    .certifiedProduct(new CertifiedProduct(certifiedProductDAO.getDetailsById(this.getCertifiedProductId())))
-                    .requirements(this.getSurveilledRequirements().stream()
-                            .map(e -> e.toDomain(certificationCriterionService))
-                            .collect(Collectors.toCollection(LinkedHashSet::new)))
-                    .build();
-        } catch (EntityRetrievalException e) {
-            return null;
-        }
+    public Surveillance toDomain(CertificationCriterionService certificationCriterionService) {
+        return Surveillance.builder()
+                .id(this.getId())
+                .friendlyId(this.getFriendlyId())
+                .startDay(this.getStartDate())
+                .endDay(this.getEndDate())
+                .randomizedSitesUsed(this.getNumRandomizedSites())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .type(SurveillanceType.builder()
+                        .id(this.getSurveillanceType().getId())
+                        .name(this.getSurveillanceType().getName())
+                        .build())
+                .certifiedProductId(this.getCertifiedProductId())
+                .requirements(this.getSurveilledRequirements().stream()
+                        .map(e -> e.toDomain(certificationCriterionService))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
+                .build();
     }
 }
