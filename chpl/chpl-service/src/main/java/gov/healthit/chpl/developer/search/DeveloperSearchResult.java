@@ -12,7 +12,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -45,10 +44,6 @@ public class DeveloperSearchResult implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate currentStatusEndDate;
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. "
-            + "Please use currentStatusStartDate, currentStatusEndDate", removalDate = "2025-01-01")
-    private Date mostRecentStatusEvent;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;

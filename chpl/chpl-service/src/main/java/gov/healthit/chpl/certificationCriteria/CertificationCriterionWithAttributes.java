@@ -1,6 +1,5 @@
 package gov.healthit.chpl.certificationCriteria;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,10 +45,6 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
         private boolean functionalityTested;
         private boolean g1Success;
         private boolean g2Success;
-
-        @Deprecated
-        @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-09-01")
-        private boolean gap;
         private boolean optionalStandard;
         private boolean privacySecurityFramework;
         private boolean riskManagementSummaryInformation;

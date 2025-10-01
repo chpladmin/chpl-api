@@ -60,10 +60,6 @@ public class CertificationResultDetailsEntity {
     @Column(name = "title")
     private String title;
 
-    @Deprecated
-    @Column(name = "gap")
-    private Boolean gap;
-
     @Column(name = "sed")
     private Boolean sed;
 

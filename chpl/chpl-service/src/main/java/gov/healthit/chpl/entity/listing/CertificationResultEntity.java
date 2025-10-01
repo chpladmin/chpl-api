@@ -48,10 +48,6 @@ public class CertificationResultEntity extends EntityAudit {
     @Column(name = "certified_product_id", nullable = false)
     private Long certifiedProductId;
 
-    @Deprecated
-    @Column(name = "gap")
-    private Boolean gap;
-
     @Column(name = "sed")
     private Boolean sed;
 

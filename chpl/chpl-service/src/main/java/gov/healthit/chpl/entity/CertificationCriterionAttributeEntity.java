@@ -61,10 +61,6 @@ public class CertificationCriterionAttributeEntity extends EntityAudit {
     @Column(name = "functionality_tested")
     private Boolean functionalityTested;
 
-    @Deprecated
-    @Column(name = "gap")
-    private Boolean gap;
-
     @Column(name = "g1_success")
     private Boolean g1Success;
 

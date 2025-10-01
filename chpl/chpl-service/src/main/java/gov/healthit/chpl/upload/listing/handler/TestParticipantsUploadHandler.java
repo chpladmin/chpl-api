@@ -110,7 +110,6 @@ public class TestParticipantsUploadHandler {
         }
 
         return TestParticipant.builder()
-                .uniqueId(id)
                 .friendlyId(id)
                 .gender(gender)
                 .age(AgeRange.builder().name(age).build())
