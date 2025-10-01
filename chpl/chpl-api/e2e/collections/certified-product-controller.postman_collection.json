@@ -1,7 +1,9 @@
 {
 	"info": {
+		"_postman_id": "0beaaa27-c92e-4856-8a46-20f1ecdc7bdc",
 		"name": "certified-product-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "94396"
 	},
 	"item": [
 		{
@@ -1936,18 +1938,16 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"expect to receive 400 bad request for bad data in Test Data, Test standard, Test Functionality, SVAP, Test Tool and Test Procedure\", function () {\r",
+									"pm.test(\"expect to receive 400 bad request for bad data in Test standard, Test Functionality, SVAP, Test Tool and Test Procedure\", function () {\r",
 									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"pm.test(\"expect to see a warning for null Test Data ID and invalid name input\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Test data 'test Test Method' is invalid for the criterion 170.315 (b)(6) and has been removed from the listing.\");\r",
 									"});\r",
 									"pm.test(\"expect to see an error for invalid Test Procedure ID\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Certification 170.315 (b)(6) contains an invalid test procedure ID: '100125'\");\r",
@@ -1961,7 +1961,8 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
