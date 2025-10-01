@@ -54,8 +54,6 @@ public class CertificationResultUploadHandler {
                 .criterion(criterionHandler.handle(certHeadingRecord))
                 .successStr(parseSuccessStr(certHeadingRecord, certResultRecords))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
-                .gap(null)
-                .gapStr(null)
                 .hasAdditionalSoftware(parseHasAdditionalSoftware(certHeadingRecord, certResultRecords))
                 .hasAdditionalSoftwareStr(parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))

@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
-import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
@@ -44,8 +43,6 @@ import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.targeteduser.TargetedUser;
 import gov.healthit.chpl.targeteduser.TargetedUserDAO;
-import gov.healthit.chpl.testdata.TestDataCriteriaMap;
-import gov.healthit.chpl.testdata.TestDataDAO;
 import gov.healthit.chpl.teststandard.TestStandard;
 import gov.healthit.chpl.teststandard.TestStandardDAO;
 import lombok.extern.log4j.Log4j2;
@@ -60,7 +57,6 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private TestStandardDAO testStandardDao;
-    private TestDataDAO testDataDao;
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
     private SurveillanceDAO survDao;
@@ -77,7 +73,6 @@ public class DimensionalDataManager {
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao,
                                   TestStandardDAO testStandardDao,
-                                  TestDataDAO testDataDao,
                                   TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
@@ -89,7 +84,6 @@ public class DimensionalDataManager {
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
         this.testStandardDao = testStandardDao;
-        this.testDataDao = testDataDao;
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
         this.survDao = survDao;
@@ -243,22 +237,6 @@ public class DimensionalDataManager {
     @Transactional
     public Set<MeasureType> getMeasureTypes() {
         return listingMeasureDao.getMeasureTypes();
-    }
-
-    @Deprecated
-    @Transactional
-    public Set<CriteriaSpecificDescriptiveModel> getTestData() {
-        LOGGER.debug("Getting all test data from the database (not cached).");
-
-        List<TestDataCriteriaMap> testDataDtos = testDataDao.findAllWithMappedCriteria();
-        Set<CriteriaSpecificDescriptiveModel> testData = new HashSet<CriteriaSpecificDescriptiveModel>();
-
-        for (TestDataCriteriaMap dto : testDataDtos) {
-            testData.add(new CriteriaSpecificDescriptiveModel(
-                    dto.getTestDataId(), dto.getTestData().getName(), null,
-                    null, dto.getCriteria()));
-        }
-        return testData;
     }
 
     @Deprecated

@@ -33,9 +33,6 @@ public class CertificationResultDetailsDTO implements Serializable {
     private Boolean success;
     private String number;
     private String title;
-
-    @Deprecated
-    private Boolean gap;
     private Boolean sed;
     private Boolean g1Success;
     private Boolean g2Success;
@@ -68,7 +65,6 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.success = entity.getSuccess();
         this.number = entity.getNumber();
         this.title = entity.getTitle();
-        this.gap = entity.getGap();
         this.sed = entity.getSed();
         this.g1Success = entity.getG1Success();
         this.g2Success = entity.getG2Success();

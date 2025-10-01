@@ -15,7 +15,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -162,8 +161,6 @@ public class DeveloperSearchResultEntity implements Serializable {
                             .id(this.getCurrentStatusId())
                             .name(this.getCurrentStatusName())
                             .build())
-                .mostRecentStatusEvent(this.getDeveloperStatusStartDate() != null
-                    ? DateUtil.toDate(this.getDeveloperStatusStartDate()) : null)
                 .currentStatusStartDate(this.getDeveloperStatusStartDate())
                 .currentStatusEndDate(this.getDeveloperStatusEndDate())
                 .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getDeveloperStatusStartDate()))

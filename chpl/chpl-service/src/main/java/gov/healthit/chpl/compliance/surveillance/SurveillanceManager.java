@@ -26,7 +26,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -63,7 +62,6 @@ public class SurveillanceManager extends SecuredManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManager.class);
 
     private SurveillanceDAO survDao;
-    private CertifiedProductDAO cpDao;
     private CertifiedProductDetailsManager cpDetailsManager;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
@@ -82,7 +80,7 @@ public class SurveillanceManager extends SecuredManager {
 
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
-    public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
+    public SurveillanceManager(SurveillanceDAO survDao,
             @Lazy CertifiedProductDetailsManager cpDetailsManager, ActivityManager activityManager,
             SchedulerManager schedulerManager, SurveillanceReadValidator survReadValidator,
             SurveillanceCreationValidator survCreationValidator,
@@ -91,7 +89,6 @@ public class SurveillanceManager extends SecuredManager {
             ErrorMessageUtil msgUtil, CertificationCriterionService certificationCriterionService,
             @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;
-        this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
@@ -136,7 +133,7 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional(readOnly = true)
     public Surveillance getById(Long survId) throws EntityRetrievalException {
-        Surveillance result = survDao.getSurveillanceById(survId).toDomain(cpDao, certificationCriterionService);
+        Surveillance result = survDao.getSurveillanceById(survId).toDomain(certificationCriterionService);
         survReadValidator.validate(result);
         result.setRequirements(result.getRequirements().stream()
                 .sorted(reqComparator)
@@ -152,7 +149,7 @@ public class SurveillanceManager extends SecuredManager {
     @Transactional(readOnly = true)
     public List<Surveillance> getByCertifiedProduct(final Long cpId) {
         List<Surveillance> surveillances = survDao.getSurveillanceByCertifiedProductId(cpId).stream()
-                .map(survEntity -> survEntity.toDomain(cpDao, certificationCriterionService))
+                .map(survEntity -> survEntity.toDomain(certificationCriterionService))
                 .sorted(survComparator)
                 .toList();
         surveillances.forEach(surv -> survReadValidator.validate(surv));
