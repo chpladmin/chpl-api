@@ -1,9 +1,7 @@
 {
 	"info": {
-		"_postman_id": "0beaaa27-c92e-4856-8a46-20f1ecdc7bdc",
 		"name": "certified-product-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "94396"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
