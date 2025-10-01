@@ -148,7 +148,6 @@ public class CertificationCriteriaManager {
                         .functionalityTested(rules.hasCertOption(criterion.getId(), CertificationResultRules.FUNCTIONALITY_TESTED))
                         .g1Success(rules.hasCertOption(criterion.getId(), CertificationResultRules.G1_SUCCESS))
                         .g2Success(rules.hasCertOption(criterion.getId(), CertificationResultRules.G2_SUCCESS))
-                        .gap(rules.hasCertOption(criterion.getId(), CertificationResultRules.GAP))
                         .optionalStandard(rules.hasCertOption(criterion.getId(), CertificationResultRules.OPTIONAL_STANDARD))
                         .privacySecurityFramework(rules.hasCertOption(criterion.getId(), CertificationResultRules.PRIVACY_SECURITY))
                         .riskManagementSummaryInformation(rules.hasCertOption(criterion.getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION))

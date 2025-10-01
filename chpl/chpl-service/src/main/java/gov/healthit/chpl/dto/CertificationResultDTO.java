@@ -23,9 +23,6 @@ public class CertificationResultDTO implements Serializable {
     private Long certifiedProductId;
     private Date creationDate;
     private Boolean deleted;
-
-    @Deprecated
-    private Boolean gap;
     private Boolean sed;
     private Boolean successful;
     private Boolean g1Success;
@@ -67,7 +64,6 @@ public class CertificationResultDTO implements Serializable {
         this.certificationCriterionId = entity.getCertificationCriterionId();
         this.certifiedProductId = entity.getCertifiedProductId();
         this.creationDate = entity.getCreationDate();
-        this.gap = entity.getGap();
         this.sed = entity.getSed();
         this.g1Success = entity.getG1Success();
         this.g2Success = entity.getG2Success();
@@ -87,7 +83,6 @@ public class CertificationResultDTO implements Serializable {
 
     public CertificationResultDTO(CertificationResult domain) {
         this();
-        this.gap = domain.getGap();
         this.sed = domain.getSed();
         this.g1Success = domain.getG1Success();
         this.g2Success = domain.getG2Success();
