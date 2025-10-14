@@ -5,25 +5,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReport;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReportService;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class CriteriaUpToDateWorksheet {
-    private static final Integer REQUIRES_UPDATE_COL_IDX = 1;
-    private static final Integer FULLY_UP_TO_DATE_COL_IDX = 2;
+    private static final Integer REQUIRES_UPDATE_COL_IDX = 28;
+    private static final Integer FULLY_UP_TO_DATE_COL_IDX =29;
 
     private static final Integer A_5_ROW_IDX = 1;
     private static final Integer A_12_ROW_IDX = 2;
@@ -41,18 +45,20 @@ public class CriteriaUpToDateWorksheet {
     private static final Integer G_9_ROW_IDX = 14;
     private static final Integer G_10_ROW_IDX = 15;
 
-    private static final String DATA_WORKSHEET_NAME = "Data";
     private static final String CHART_WORKSHEET_NAME = "Criteria Up-To-Date Chart";
 
     private CriteriaUpToDateReportService reportService;
     private CertificationCriterionService criterionService;
+    private CertificationBodyDAO acbDao;
     private List<CriteraToRowMap> criteriaToRowMaps = new ArrayList<CriteriaUpToDateWorksheet.CriteraToRowMap>();
 
     @Autowired
     public CriteriaUpToDateWorksheet(CriteriaUpToDateReportService reportService,
-            CertificationCriterionService criterionService) {
+            CertificationCriterionService criterionService,
+            CertificationBodyDAO acbDao) {
         this.reportService = reportService;
         this.criterionService = criterionService;
+        this.acbDao = acbDao;
 
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.A_5, A_5_ROW_IDX));
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.A_12, A_12_ROW_IDX));
@@ -71,33 +77,42 @@ public class CriteriaUpToDateWorksheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
-    public void populateWithDataOnDate(LocalDate reportDataDate, List<Long> acbIds, Workbook workbook) throws IOException {
+    public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Workbook workbook) throws IOException {
         List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbIds);
-        populateDataSheet(reports, workbook);
-        updateChartTitles(workbook, reportDataDate);
-        XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+        updateChartTitles(null, reportDataDate, workbook);
+        populateData(null, reports, workbook);
     }
 
-    private void updateChartTitles(Workbook workbook, LocalDate reportDate) {
-        Sheet chartSheet = getChartSheet(workbook);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
-
-        XSSFDrawing drawing = (XSSFDrawing) chartSheet.createDrawingPatriarch();
-        for (XSSFChart chart : drawing.getCharts()) {
-            // This goes into the XML that makes up the chart to set the data in the title.  This has potential
-            // to vary from chart to chart, based on formatting.
-            chart.getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
+    public void generateSheetForAcbOnDate(Long acbId, LocalDate reportDataDate, Workbook workbook) {
+        CertificationBody acb = null;
+        try {
+            acb = acbDao.getById(acbId);
+        } catch (Exception ex) {
+            LOGGER.error("No ACB found with ID " + acbId, ex);
         }
+
+        if (acb == null) {
+            return;
+        }
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acbId).toList());
+        addWorksheetForAcb(acb, workbook);
+        updateChartTitles(acb, reportDataDate, workbook);
+        populateData(acb, reports, workbook);
     }
 
-    private void populateDataSheet(List<CriteriaUpToDateReport> reports, Workbook workbook) {
-        Sheet sheet = getDataSheet(workbook);
+    private Sheet addWorksheetForAcb(CertificationBody acb, Workbook workbook) {
+        Sheet sheet = workbook.cloneSheet(0);
+        int num = workbook.getSheetIndex(sheet);
+        workbook.setSheetName(num, getWorksheetName(acb));
+        return sheet;
+    }
 
+    private void populateData(CertificationBody acb, List<CriteriaUpToDateReport> reports, Workbook workbook) {
         criteriaToRowMaps.stream()
                 .forEach(map ->
                 writeDataForCriterionUpToDateChartStatistic(
                         getUpToDateReportByCriterion(
-                                reports, criterionService.get(map.getCriteriaKey())), sheet.getRow(map.getRowNumber())));
+                                reports, criterionService.get(map.getCriteriaKey())), getChartSheet(acb, workbook).getRow(map.getRowNumber())));
     }
 
     private void writeDataForCriterionUpToDateChartStatistic(CriteriaUpToDateReport data, Row row) {
@@ -112,12 +127,27 @@ public class CriteriaUpToDateWorksheet {
             .get();
     }
 
-    private Sheet getDataSheet(Workbook workbook) {
-        return workbook.getSheet(DATA_WORKSHEET_NAME);
+    private void updateChartTitles(CertificationBody acb, LocalDate reportDate, Workbook workbook) {
+        Sheet chartSheet = getChartSheet(acb, workbook);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+
+        XSSFDrawing drawing = (XSSFDrawing) chartSheet.createDrawingPatriarch();
+        for (XSSFChart chart : drawing.getCharts()) {
+            // This goes into the XML that makes up the chart to set the data in the title.  This has potential
+            // to vary from chart to chart, based on formatting.
+            chart.getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
+        }
     }
 
-    private Sheet getChartSheet(Workbook workbook) {
-        return workbook.getSheet(CHART_WORKSHEET_NAME);
+    private Sheet getChartSheet(CertificationBody acb, Workbook workbook) {
+        return workbook.getSheet(getWorksheetName(acb));
+    }
+
+    private String getWorksheetName(CertificationBody acb) {
+        if (acb != null) {
+            return acb.getName() + " " + CHART_WORKSHEET_NAME;
+        }
+        return CHART_WORKSHEET_NAME;
     }
 
     class CriteraToRowMap {

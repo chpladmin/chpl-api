@@ -35,7 +35,11 @@ public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBas
         Workbook workbook = getWorkbook(newFile);
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
 
-        criteriaUpToDateWorksheet.populateWithDataOnDate(reportDate, acbIds, workbook);
+        criteriaUpToDateWorksheet.populateWithDataForAllAcbsOnDate(acbIds, reportDate, workbook);
+        if (acbIds.size() > 1) {
+            acbIds.stream()
+                .forEach(acbId -> criteriaUpToDateWorksheet.generateSheetForAcbOnDate(acbId, reportDate, workbook));
+        }
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
         return writeFileToDisk(workbook, newFile);
