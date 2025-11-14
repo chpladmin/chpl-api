@@ -93,7 +93,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 }
             });
         } catch (Exception ex) {
-            LOGGER.error(ex);
+            LOGGER.error("Unexpected error creating the updated criterion statistics report.", ex);
         }
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is complete.*****");
     }
