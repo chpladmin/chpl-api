@@ -14,8 +14,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,11 +41,6 @@ public class Surveillance implements Serializable {
 
     @Transient
     private Long certifiedProductId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-08-01")
-    @Schema(description = "The listing under surveillance")
-    private CertifiedProduct certifiedProduct;
 
     @Schema(description = "Day surveillance began")
     @JsonDeserialize(using = LocalDateDeserializer.class)

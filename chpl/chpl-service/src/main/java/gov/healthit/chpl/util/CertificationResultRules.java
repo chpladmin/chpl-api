@@ -15,8 +15,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component("certificationResultRules")
 public class CertificationResultRules {
-    @Deprecated
-    public static final String GAP = "gap";
     public static final String PRIVACY_SECURITY = "privacySecurity";
     public static final String CONFORMANCE_METHOD = "conformanceMethod";
     public static final String OPTIONAL_STANDARD = "optionalStandard";
@@ -90,11 +88,6 @@ public class CertificationResultRules {
                 CertificationResultOption.builder()
                     .canHaveOption(attribute.getFunctionalityTested())
                     .optionName(FUNCTIONALITY_TESTED)
-                .build());
-            rules.get(attribute.getCriterion().getId()).add(
-                CertificationResultOption.builder()
-                    .canHaveOption(attribute.getGap())
-                    .optionName(GAP)
                 .build());
             rules.get(attribute.getCriterion().getId()).add(
                 CertificationResultOption.builder()

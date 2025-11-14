@@ -315,25 +315,6 @@ public class DimensionalDataController {
     }
 
     @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/test_data", message = "This is deprecated and will be removed. Please GET from /test-data.",
-        removalDate = "2025-10-01")
-    @Operation(summary = "Get all possible test data options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test_data", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getTestData() {
-        Set<CriteriaSpecificDescriptiveModel> data = dimensionalDataManager.getTestData();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/test_standards",
         message = "This is deprecated and will be removed.",
         removalDate = "2025-12-31")
