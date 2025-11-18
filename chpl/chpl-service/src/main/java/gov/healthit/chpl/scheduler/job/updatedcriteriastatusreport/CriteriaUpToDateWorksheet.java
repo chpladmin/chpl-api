@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +27,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class CriteriaUpToDateWorksheet {
-    private static final Integer REQUIRES_UPDATE_COL_IDX = 28;
-    private static final Integer FULLY_UP_TO_DATE_COL_IDX =29;
+    private static final Integer REQUIRES_UPDATE_COL_IDX = 27;
+    private static final Integer FULLY_UP_TO_DATE_COL_IDX = 28;
 
     private static final Integer A_5_ROW_IDX = 1;
     private static final Integer A_12_ROW_IDX = 2;
@@ -79,8 +80,8 @@ public class CriteriaUpToDateWorksheet {
 
     public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Workbook workbook) throws IOException {
         List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbIds);
-        updateChartTitles(null, reportDataDate, workbook);
-        populateData(null, reports, workbook);
+        updateChartTitle(workbook.getSheetAt(0), reportDataDate);
+        populateData(workbook.getSheetAt(0), reports);
     }
 
     public void generateSheetForAcbOnDate(Long acbId, LocalDate reportDataDate, Workbook workbook) {
@@ -94,10 +95,12 @@ public class CriteriaUpToDateWorksheet {
         if (acb == null) {
             return;
         }
+        LOGGER.info("Generating worksheet for ACB " + acb.getName());
         List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acbId).toList());
-        addWorksheetForAcb(acb, workbook);
-        updateChartTitles(acb, reportDataDate, workbook);
-        populateData(acb, reports, workbook);
+        Sheet acbWorksheet = addWorksheetForAcb(acb, workbook);
+        updateChartTitle(acbWorksheet, reportDataDate);
+        populateData(acbWorksheet, reports);
+        LOGGER.info("Completed generating worksheet for ACB " + acb.getName());
     }
 
     private Sheet addWorksheetForAcb(CertificationBody acb, Workbook workbook) {
@@ -107,12 +110,12 @@ public class CriteriaUpToDateWorksheet {
         return sheet;
     }
 
-    private void populateData(CertificationBody acb, List<CriteriaUpToDateReport> reports, Workbook workbook) {
+    private void populateData(Sheet sheet, List<CriteriaUpToDateReport> reports) {
         criteriaToRowMaps.stream()
                 .forEach(map ->
                 writeDataForCriterionUpToDateChartStatistic(
                         getUpToDateReportByCriterion(
-                                reports, criterionService.get(map.getCriteriaKey())), getChartSheet(acb, workbook).getRow(map.getRowNumber())));
+                                reports, criterionService.get(map.getCriteriaKey())), sheet.getRow(map.getRowNumber())));
     }
 
     private void writeDataForCriterionUpToDateChartStatistic(CriteriaUpToDateReport data, Row row) {
@@ -127,25 +130,22 @@ public class CriteriaUpToDateWorksheet {
             .get();
     }
 
-    private void updateChartTitles(CertificationBody acb, LocalDate reportDate, Workbook workbook) {
-        Sheet chartSheet = getChartSheet(acb, workbook);
+    private void updateChartTitle(Sheet sheet, LocalDate reportDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
-
-        XSSFDrawing drawing = (XSSFDrawing) chartSheet.createDrawingPatriarch();
-        for (XSSFChart chart : drawing.getCharts()) {
-            // This goes into the XML that makes up the chart to set the data in the title.  This has potential
-            // to vary from chart to chart, based on formatting.
-            chart.getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
+        XSSFDrawing drawing = ((XSSFSheet) sheet).getDrawingPatriarch();
+        if (drawing != null) {
+            List<XSSFChart> charts = drawing.getCharts();
+            if (charts != null && charts.size() > 0) {
+                // This goes into the XML that makes up the chart to set the data in the title.
+                // This has potential to vary from chart to chart, based on formatting.
+                charts.get(0).getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
+            }
         }
-    }
-
-    private Sheet getChartSheet(CertificationBody acb, Workbook workbook) {
-        return workbook.getSheet(getWorksheetName(acb));
     }
 
     private String getWorksheetName(CertificationBody acb) {
         if (acb != null) {
-            return acb.getName() + " " + CHART_WORKSHEET_NAME;
+            return acb.getName();
         }
         return CHART_WORKSHEET_NAME;
     }

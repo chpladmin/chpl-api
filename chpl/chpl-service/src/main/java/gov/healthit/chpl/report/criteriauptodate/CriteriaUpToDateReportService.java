@@ -150,8 +150,8 @@ public class CriteriaUpToDateReportService {
 
         if (CollectionUtils.isEmpty(reportsForCriterionAndAcb)) {
             LOGGER.info("No updated criteria status reports were found for "
-        + Util.formatCriteriaNumber(criterion) + " and ACB(s) " + acbIds
-        + " from date " + reportDate);
+                + Util.formatCriteriaNumber(criterion) + " and ACB(s) " + acbIds
+                + " from date " + reportDate);
             return 0;
         }
 

@@ -12,7 +12,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBase {
     private CriteriaUpToDateWorksheet criteriaUpToDateWorksheet;
@@ -31,10 +33,12 @@ public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBas
     }
 
     public File generateSpreadsheet(List<Long> acbIds) throws IOException {
+        LOGGER.info("Generating Criteria Up-To-Date Workbook");
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
 
+        LOGGER.info("Populating worksheet for all ACBs: " + acbIds);
         criteriaUpToDateWorksheet.populateWithDataForAllAcbsOnDate(acbIds, reportDate, workbook);
         if (acbIds.size() > 1) {
             acbIds.stream()
@@ -42,6 +46,7 @@ public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBas
         }
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+        LOGGER.info("Completed generating Criteria Up-To-Date Workbook");
         return writeFileToDisk(workbook, newFile);
     }
 

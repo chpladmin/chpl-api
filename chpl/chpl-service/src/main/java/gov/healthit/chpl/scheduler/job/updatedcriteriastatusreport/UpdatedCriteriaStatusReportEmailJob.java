@@ -112,9 +112,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
-                        updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
+                        //updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
+                        //updatedListingStatusReportCsvCreator.createCsvFile(acbIds),
+                        //updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
                         criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
                         ))
                 .sendEmail();
