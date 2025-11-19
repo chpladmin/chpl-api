@@ -42,8 +42,7 @@ public class CriteriaUpToDateStatusReportDateService {
             }
         }
 
-        LOGGER.warn("No dates with both Criteria Update Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of today.");
-        // we don't really ever expect to get to this point - there must be a date with both reports having data
+        LOGGER.warn("No dates with both Criteria Update Reports and Summary Statistics data were found within " + MAX_DAYS_TO_CHECK_FOR_DATA + " days of " + preferredDate);
         return preferredDate;
     }
 
