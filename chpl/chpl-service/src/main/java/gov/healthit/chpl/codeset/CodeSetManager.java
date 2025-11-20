@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
 import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
@@ -26,13 +27,17 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class CodeSetManager {
 
+    private CodeSetValidator codeSetValidator;
     private CodeSetDAO codeSetDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
     private ActivityManager activityManager;
 
     @Autowired
-    public CodeSetManager(CodeSetDAO codeSetDAO, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+    public CodeSetManager(CodeSetValidator codeSetValidator,
+            CodeSetDAO codeSetDAO,
+            CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
             ActivityManager activityManager) {
+        this.codeSetValidator = codeSetValidator;
         this.codeSetDAO = codeSetDAO;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
         this.activityManager = activityManager;
@@ -53,8 +58,9 @@ public class CodeSetManager {
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
-    public CodeSet update(CodeSet codeSet) throws EntityRetrievalException {
+    public CodeSet update(CodeSet codeSet) throws EntityRetrievalException, ValidationException {
         CodeSet origCodeSet = codeSetDAO.getById(codeSet.getId());
+        codeSetValidator.validateForEdit(codeSet);
         codeSetDAO.update(codeSet);
         addNewCriteriaForExistingCodeSet(codeSet, origCodeSet);
         deleteCriteriaRemovedFromCodeSet(codeSet, origCodeSet);
@@ -74,7 +80,8 @@ public class CodeSetManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
             + "T(gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions).CREATE)")
     @Transactional
-    public CodeSet create(CodeSet codeSet) throws EntityRetrievalException {
+    public CodeSet create(CodeSet codeSet) throws EntityRetrievalException, ValidationException {
+        codeSetValidator.validateForAdd(codeSet);
         CodeSet newCodeSet = codeSetDAO.add(codeSet);
         if (!CollectionUtils.isEmpty(codeSet.getCriteria())) {
             codeSet.getCriteria().stream()
