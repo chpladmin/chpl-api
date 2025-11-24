@@ -21,6 +21,7 @@ public class UpdatedCriterionStatusReport {
     private Long certificationResultId;
     private CertificationCriterion certificationCriterion;
     private Standard standard;
+    private String standardGroupName;
     private FunctionalityTested functionalityTested;
     private CodeSet codeSet;
     private CriterionNotUpToDateReason criterionNotUpToDateReason;

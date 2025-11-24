@@ -54,8 +54,8 @@ public abstract class BaselineStandardNormalizer implements CertificationResultL
     }
 
     private CertificationResult addMissingStandards(CertifiedProductSearchDetails listing, CertificationResult certResult, Set<CertificationCriterion> criteriaWithBaselineStandardsAdded) {
-        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
-                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getRequiredBaselineStandardsForCriteria(
+                certResult.getCriterion(), getStandardsCheckDate(listing));
 
         validStandardsForCriterionAndListing
                 .forEach(std -> {

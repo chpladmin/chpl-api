@@ -23,7 +23,6 @@ public class StandardService {
         this.standardDAO = standardDAO;
     }
 
-
     public void update(Standard standard) throws EntityRetrievalException {
         Standard originalStandard = standardDAO.getById(standard.getId());
 

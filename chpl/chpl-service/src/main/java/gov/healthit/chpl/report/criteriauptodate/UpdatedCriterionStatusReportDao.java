@@ -3,7 +3,6 @@ package gov.healthit.chpl.report.criteriauptodate;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -37,6 +36,7 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
                 .codeSetId(ucsr.getCodeSet() != null ? ucsr.getCodeSet().getId() : null)
                 .functionalityTestedId(ucsr.getFunctionalityTested() != null ? ucsr.getFunctionalityTested().getId() : null)
                 .standardId(ucsr.getStandard() != null ? ucsr.getStandard().getId() : null)
+                .standardGroupName(ucsr.getStandardGroupName())
                 .criterionNotUpToDateReasonId(
                         criterionNotUpToDateReasonDao.getByName(ucsr.getCriterionNotUpToDateReason().getName()).getId())
                 .build();
@@ -48,15 +48,24 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
         List<UpdatedCriterionStatusReport> standardUpdateReports = getUpdatedCriterionStandardReportEntitiesByDate(reportDate).stream()
                 .map(ent -> ent.toDomain())
                 .toList();
+        List<UpdatedCriterionStatusReport> standardGroupUpdateReports = getUpdatedCriterionStandardGroupReportEntitiesByDate(reportDate).stream()
+                .map(ent -> ent.toDomain())
+                .toList();
         List<UpdatedCriterionStatusReport> functionalityTestedUpdateReports = getUpdatedCriterionFunctionalityTestedReportEntitiesByDate(reportDate).stream()
                 .map(ent -> ent.toDomain())
                 .toList();
         List<UpdatedCriterionStatusReport> codeSetUpdateReports = getUpdatedCriterionCodeSetReportEntitiesByDate(reportDate).stream()
                 .map(ent -> ent.toDomain())
                 .toList();
-        return Stream.concat(Stream.concat(standardUpdateReports.stream(), functionalityTestedUpdateReports.stream()),
-                codeSetUpdateReports.stream())
-                .collect(Collectors.toList());
+
+        List<List<UpdatedCriterionStatusReport>> allReportLists = List.of(standardUpdateReports,
+                standardGroupUpdateReports,
+                functionalityTestedUpdateReports,
+                codeSetUpdateReports);
+
+        return allReportLists.stream()
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
     }
 
     public boolean doUpdatedCriterionStatusReportsExistOnDay(LocalDate reportDay) {
@@ -94,6 +103,21 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
                             + "LEFT OUTER JOIN FETCH stdCriterion.certificationEdition "
                             + "LEFT JOIN FETCH stdCriterion.rule "
                             + "WHERE (NOT ucsr.deleted = true) "
+                            + "AND ucsr.reportDay = :reportDate", UpdatedCriterionStatusReportEntity.class)
+                .setParameter("reportDate", reportDate)
+                .getResultList();
+    }
+
+    private List<UpdatedCriterionStatusReportEntity> getUpdatedCriterionStandardGroupReportEntitiesByDate(LocalDate reportDate) {
+        return entityManager
+                .createQuery("SELECT ucsr "
+                            + "FROM UpdatedCriterionStatusReportEntity ucsr "
+                            + "JOIN FETCH ucsr.certificationResult cr "
+                            + "JOIN FETCH cr.certificationCriterion cc "
+                            + "JOIN FETCH cc.certificationEdition edition "
+                            + "JOIN FETCH cc.rule "
+                            + "WHERE ucsr.standardGroupName IS NOT NULL "
+                            + "AND (NOT ucsr.deleted = true) "
                             + "AND ucsr.reportDay = :reportDate", UpdatedCriterionStatusReportEntity.class)
                 .setParameter("reportDate", reportDate)
                 .getResultList();

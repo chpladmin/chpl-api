@@ -136,10 +136,10 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     }
 
     private CertificationResult reviewRequiredBaselineStandardsExist(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
-                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+        List<Standard> validStandardsForCriterion = baselineStandardService.getRequiredBaselineStandardsForCriteria(
+                certResult.getCriterion(), getStandardsCheckDate(listing));
 
-        validStandardsForCriterionAndListing
+        validStandardsForCriterion
                 .forEach(std -> {
                     List<Standard> standardsExistingInCertResult = certResult.getStandards().stream()
                             .map(crs -> crs.getStandard())

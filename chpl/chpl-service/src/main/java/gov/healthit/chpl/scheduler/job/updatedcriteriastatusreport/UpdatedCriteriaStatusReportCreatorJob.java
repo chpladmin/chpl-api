@@ -22,6 +22,7 @@ import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
 import gov.healthit.chpl.attribute.CodeSetUpToDate;
 import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
+import gov.healthit.chpl.attribute.StandardGroupUpToDate;
 import gov.healthit.chpl.attribute.StandardUpToDate;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -139,14 +140,20 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
 
     private List<UpdatedCriterionStatusReport> getUpdatesRequiredForCriterion(CertifiedProductSearchDetails listing,
             CertificationResult certResult) {
-        List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(certResult, LOGGER);
+        List<StandardUpToDate> baselineStandardsUpToDate = attributeUpToDateService.getBaselineStandardsUpToDate(certResult, LOGGER);
+        List<StandardGroupUpToDate> standardGroupsUpToDate = attributeUpToDateService.getStandardGroupsUpToDate(certResult, LOGGER);
         List<FunctionalityTestedUpToDate> functionalityTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(certResult, LOGGER);
         List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(certResult, LOGGER);
 
         List<UpdatedCriterionStatusReport> updatesRequiredForCriterion = new ArrayList<UpdatedCriterionStatusReport>();
-        if (!CollectionUtils.isEmpty(standardsUpToDate)) {
-            standardsUpToDate.stream()
-                .map(stdReport -> buildReportFromStandardRequiringUpdate(listing, stdReport))
+        if (!CollectionUtils.isEmpty(baselineStandardsUpToDate)) {
+            baselineStandardsUpToDate.stream()
+                .map(stdReport -> buildReportFromBaselineStandardRequiringUpdate(listing, stdReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(standardGroupsUpToDate)) {
+            standardGroupsUpToDate.stream()
+                .map(stdGroupReport -> buildReportFromStandardGroupRequiringUpdate(listing, stdGroupReport))
                 .forEach(report -> updatesRequiredForCriterion.add(report));
         }
         if (!CollectionUtils.isEmpty(functionalityTestedUpToDate)) {
@@ -162,7 +169,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
         return updatesRequiredForCriterion;
     }
 
-    private UpdatedCriterionStatusReport buildReportFromStandardRequiringUpdate(CertifiedProductSearchDetails listing,
+    private UpdatedCriterionStatusReport buildReportFromBaselineStandardRequiringUpdate(CertifiedProductSearchDetails listing,
             StandardUpToDate standardReport) {
         return UpdatedCriterionStatusReport.builder()
             .certifiedProductId(listing.getId())
@@ -181,6 +188,29 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .codeSet(null)
             .certificationResultId(getCertificationResultId(listing, standardReport.getCriterion()))
             .criterionNotUpToDateReason(getCriterionNotUpToDateReason(standardReport))
+        .build();
+    }
+
+    private UpdatedCriterionStatusReport buildReportFromStandardGroupRequiringUpdate(CertifiedProductSearchDetails listing,
+            StandardGroupUpToDate standardGroupReport) {
+        return UpdatedCriterionStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(standardGroupReport.getCriterion())
+            .standard(null)
+            .standardGroupName(standardGroupReport.getStandardGroupName())
+            .functionalityTested(null)
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, standardGroupReport.getCriterion()))
+            .criterionNotUpToDateReason(getCriterionNotUpToDateReason(standardGroupReport))
         .build();
     }
 
