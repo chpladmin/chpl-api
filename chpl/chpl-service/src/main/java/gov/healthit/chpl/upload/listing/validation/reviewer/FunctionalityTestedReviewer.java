@@ -135,7 +135,8 @@ public abstract class FunctionalityTestedReviewer implements Reviewer {
         if (!CollectionUtils.isEmpty(functionalitiesTestedForCriterion)) {
             List<FunctionalityTested> requiredFunctionalitiesTestedForCriterion = functionalitiesTestedForCriterion.stream()
                     .filter(ft -> ft.getRequiredDay() != null
-                        && (ft.getRequiredDay().isEqual(LocalDate.now()) || ft.getRequiredDay().isBefore(LocalDate.now())))
+                        && (ft.getRequiredDay().isEqual(getFunctionalityTestedCheckDate(listing))
+                                || ft.getRequiredDay().isBefore(getFunctionalityTestedCheckDate(listing))))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(requiredFunctionalitiesTestedForCriterion)) {
                 requiredFunctionalitiesTestedForCriterion.stream()
