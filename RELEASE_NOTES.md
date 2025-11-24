@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 52.0.0
+_24 November 2025_
+
+### Breaking Changes
+* Remove 'gap' criteria attribute
+* Remove deprecated fields eligible for removal by 10/1/25
+
+### Features
+* Add attachment to show # updates required by listing in Criteria Up-To-Date Report
+
+### Bug Fixes
+* Address null error in logging when no summary stats were available
+
+---
+
 ## Version 51.8.0
 _29 September 2025_
 

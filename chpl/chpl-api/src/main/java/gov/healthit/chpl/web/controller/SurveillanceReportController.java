@@ -292,8 +292,6 @@ public class SurveillanceReportController {
         return report;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportyId}/listings",
-            responseClass = RelevantListing.class)
     @Operation(summary = "Get listings that are relevant to a specific quarterly report. "
             + "These are listings belonging to the ACB associated with the report "
             + "that had an active status at any point during the quarter",

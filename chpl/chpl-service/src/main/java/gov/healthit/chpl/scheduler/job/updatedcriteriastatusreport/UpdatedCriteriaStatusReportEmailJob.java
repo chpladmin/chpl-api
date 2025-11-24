@@ -40,6 +40,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     private UpdatedCriteriaStatusReportCsvCreator updatedCriteriaStatusReportCsvCreator;
 
     @Autowired
+    private UpdatedListingStatusReportCsvCreator updatedListingStatusReportCsvCreator;
+
+    @Autowired
     private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbookCreator;
 
     @Autowired
@@ -90,7 +93,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 }
             });
         } catch (Exception ex) {
-            LOGGER.error(ex);
+            LOGGER.error("Unexpected error creating the updated criterion statistics report.", ex);
         }
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is complete.*****");
     }
@@ -110,6 +113,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
+                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds),
                         updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
                         criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
                         ))

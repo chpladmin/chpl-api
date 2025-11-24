@@ -17,6 +17,7 @@ local.properties
 .loadpath
 target/
 chpl/chpl-api/src/main/webapp/META-INF/
+tomcat-config/
 
 # External tool builders
 .externalToolBuilders/
