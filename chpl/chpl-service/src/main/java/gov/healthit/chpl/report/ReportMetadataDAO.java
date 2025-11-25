@@ -19,16 +19,8 @@ public class ReportMetadataDAO extends BaseDAOImpl {
         this.reportEnvironment = reportEnvironment;
     }
 
-    public ReportMetadata getReportMetadata(String reportKey) {
-        ReportMetadataEntity entity = getEntity(reportEnvironment, reportKey);
-        if (entity != null) {
-            return entity.toDomain();
-        }
-        return null;
-    }
-
-    public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
-        List<ReportMetadataEntity> entities = getEntities(reportEnvironment, reportGroup);
+    public List<ReportMetadata> getReportMetadata() {
+        List<ReportMetadataEntity> entities = getEntities(reportEnvironment);
         if (entities != null) {
             return entities.stream()
                     .map(ReportMetadataEntity::toDomain)
@@ -37,32 +29,14 @@ public class ReportMetadataDAO extends BaseDAOImpl {
         return List.of();
     }
 
-    private ReportMetadataEntity getEntity(String environment, String reportKey) {
+    private List<ReportMetadataEntity> getEntities(String environment) {
         Query query = entityManager.createQuery("SELECT rm "
                 + "FROM ReportMetadataEntity rm "
+                + "LEFT JOIN FETCH rm.roleMaps "
                 + "WHERE rm.environment = :environment "
-                + "AND rm.reportKey = :reportKey "
                 + "AND rm.deleted = false ",
                 ReportMetadataEntity.class);
         query.setParameter("environment", environment);
-        query.setParameter("reportKey", reportKey);
-
-        List<ReportMetadataEntity> results = query.getResultList();
-        if (CollectionUtils.isEmpty(results)) {
-            return null;
-        }
-        return results.get(0);
-    }
-
-    private List<ReportMetadataEntity> getEntities(String environment, String reportGroup) {
-        Query query = entityManager.createQuery("SELECT rm "
-                + "FROM ReportMetadataEntity rm "
-                + "WHERE rm.environment = :environment "
-                + "AND rm.reportGroup = :reportGroup "
-                + "AND rm.deleted = false ",
-                ReportMetadataEntity.class);
-        query.setParameter("environment", environment);
-        query.setParameter("reportGroup", reportGroup);
 
         List<ReportMetadataEntity> results = query.getResultList();
         if (CollectionUtils.isEmpty(results)) {

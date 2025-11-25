@@ -329,10 +329,8 @@ public class ListingMergeService {
                 updatedCertResult.getSvaps().stream()
                     .forEach(crSvap -> setIdForSvapMapping(crSvap, matchedCurrCertResult.getSvaps()));
             }
-            if (!CollectionUtils.isEmpty(updatedCertResult.getTestDataUsed())) {
-                updatedCertResult.getTestDataUsed().stream()
-                    .forEach(crTestData -> setIdForTestDataMapping(crTestData, matchedCurrCertResult.getTestDataUsed()));
-            }
+            //copy over the existing test data - it is read-only
+            updatedCertResult.setTestDataUsed(matchedCurrCertResult.getTestDataUsed());
             if (!CollectionUtils.isEmpty(updatedCertResult.getTestProcedures())) {
                 updatedCertResult.getTestProcedures().stream()
                     .forEach(crTestProc -> setIdForTestProcedureMapping(crTestProc, matchedCurrCertResult.getTestProcedures()));
