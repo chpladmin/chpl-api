@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
@@ -56,7 +56,7 @@ public class CodeSetEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetId")
     @Basic(optional = false)
     @Column(name = "code_set_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction(value = "deleted <> 'true'")
     private Set<CodeSetCriteriaMapEntity> mappedCriteria = new HashSet<CodeSetCriteriaMapEntity>();
 
     public CodeSet toDomain() {

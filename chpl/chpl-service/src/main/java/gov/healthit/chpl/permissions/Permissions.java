@@ -30,6 +30,7 @@ import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.QmsStandardDomainPermissions;
 import gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.StandardDomainPermissions;
@@ -68,6 +69,7 @@ public class Permissions {
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
     public static final String SUBSCRIPTION = "SUBSCRIPTION";
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
+    public static final String REPORTS = "REPORTS";
     public static final String SVAP = "SVAP";
     public static final String UCD_PROCESS = "UCD_PROCESS";
     public static final String ACCESSIBILITY_STANDARD = "ACCESSIBILITY_STANDARD";
@@ -107,6 +109,7 @@ public class Permissions {
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
             SubscriptionDomainPermissions subscriptionDomainPermissions,
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
+            ReportDomainPermissions reportDomainPermissions,
             SvapDomainPermissions svapDomainPermissions,
             UcdProcessDomainPermissions ucdProcessDomainPermissions,
             AccessibilityStandardDomainPermissions accessibilityStandardDomainPermissions,
@@ -143,6 +146,7 @@ public class Permissions {
         domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
         domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
         domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
+        domainPermissions.put(REPORTS, reportDomainPermissions);
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
         domainPermissions.put(STANDARD, standardDomainPermissions);
