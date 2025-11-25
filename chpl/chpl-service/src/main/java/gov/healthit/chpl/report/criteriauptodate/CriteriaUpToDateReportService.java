@@ -120,8 +120,10 @@ public class CriteriaUpToDateReportService {
 
     private long calculateActiveListingsWithCriterionCount(StatisticsSnapshot statisticsSnapshot, CertificationCriterion criterion,
             List<Long> acbIds) {
-        if (statisticsSnapshot == null
-                || CollectionUtils.isEmpty(statisticsSnapshot.getAttestedCriterionStatistics())) {
+        if (statisticsSnapshot == null) {
+            LOGGER.info("No statistics snapshot was found");
+            return 0;
+        } else if (CollectionUtils.isEmpty(statisticsSnapshot.getAttestedCriterionStatistics())) {
             LOGGER.info("No attested criterion statistics were found in the statistics snapshot for date " + statisticsSnapshot.getSnapshotDate());
             return 0;
         }
