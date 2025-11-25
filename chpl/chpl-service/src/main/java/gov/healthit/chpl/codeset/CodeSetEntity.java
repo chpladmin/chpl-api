@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,10 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,7 +52,7 @@ public class CodeSetEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetId")
     @Basic(optional = false)
     @Column(name = "code_set_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction(value = "deleted <> 'true'")
     private Set<CodeSetCriteriaMapEntity> mappedCriteria = new HashSet<CodeSetCriteriaMapEntity>();
 
     public CodeSet toDomain() {

@@ -194,12 +194,6 @@ public class ListingCsvHeadingWriter {
             if (criterionWithAttributes.getAttributes().isSvap()) {
                 criterionHeadings.add(Heading.SVAP_REG_TEXT.getHeading());
             }
-            if (criterionWithAttributes.getAttributes().isTestData()) {
-                criterionHeadings.add(Heading.TEST_DATA.getHeading());
-                criterionHeadings.add(Heading.TEST_DATA_VERSION.getHeading());
-                criterionHeadings.add(Heading.TEST_DATA_ALTERATION.getHeading());
-                criterionHeadings.add(Heading.TEST_DATA_ALTERATION_DESC.getHeading());
-            }
             if (criterionWithAttributes.getAttributes().isTestProcedure()) {
                 criterionHeadings.add(LegacyHeading.TEST_PROCEDURE.getHeading());
                 criterionHeadings.add(LegacyHeading.TEST_PROCEDURE_VERSION.getHeading());
