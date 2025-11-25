@@ -1,9 +1,9 @@
 package gov.healthit.chpl.report;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
@@ -51,7 +51,7 @@ public class ReportDataManager {
     private ListingReportsService listingReportsService;
     private DirectReviewReportsService directReviewReportsService;
     private AttestationReportService attestationReportService;
-    private ReportMetadataDAO reportMetadataDAO;
+    private ReportMetadataDAO reportMetadataDao;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private CriteriaUpToDateReportService criteriaUpToDateReportService;
     private ListingAttributeReportService listingAttributeReportService;
@@ -69,7 +69,7 @@ public class ReportDataManager {
             ListingReportsService listingReportsService,
             DirectReviewReportsService directReviewReportsService,
             AttestationReportService attestationReportService,
-            ReportMetadataDAO reportMetadataDAO,
+            ReportMetadataDAO reportMetadataDao,
             CriteriaAttributeReportService criteriaAttributeReportService,
             CriteriaUpToDateReportService criteriaUpToDateReportService,
             ListingAttributeReportService listingAttributeReportService,
@@ -87,7 +87,7 @@ public class ReportDataManager {
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.attestationReportService = attestationReportService;
-        this.reportMetadataDAO = reportMetadataDAO;
+        this.reportMetadataDao = reportMetadataDao;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.criteriaUpToDateReportService = criteriaUpToDateReportService;
         this.listingAttributeReportService = listingAttributeReportService;
@@ -98,14 +98,10 @@ public class ReportDataManager {
         this.nonconformityReportService = nonconformityReportService;
     }
 
-    public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
-        return reportMetadataDAO.getReportMetadataByReportGroup(reportGroup).stream()
-                .sorted(Comparator.comparing(ReportMetadata::getDisplayOrder))
-                .toList();
-    }
-
-    public ReportMetadata getReportMetadata(String reportKey) {
-        return reportMetadataDAO.getReportMetadata(reportKey);
+    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REPORTS, "
+            + "T(gov.healthit.chpl.permissions.domains.ReportDomainPermissions).GET_REPORT_METADATA, filterObject)")
+    public List<ReportMetadata> getReportMetadata() {
+        return reportMetadataDao.getReportMetadata();
     }
 
     @Synchronized("lock")

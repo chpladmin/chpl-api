@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
@@ -71,7 +71,7 @@ public class SurveillanceEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceId")
     @Basic(optional = false)
     @Column(name = "surveillance_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction(value = "deleted <> 'true'")
     private Set<SurveillanceRequirementEntity> surveilledRequirements = new HashSet<SurveillanceRequirementEntity>();
 
     public Surveillance toDomain(CertificationCriterionService certificationCriterionService) {
