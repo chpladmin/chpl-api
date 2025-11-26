@@ -21,6 +21,7 @@ import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
 import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -30,16 +31,19 @@ public class CodeSetManager {
     private CodeSetValidator codeSetValidator;
     private CodeSetDAO codeSetDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+    private ErrorMessageUtil msgUtil;
     private ActivityManager activityManager;
 
     @Autowired
     public CodeSetManager(CodeSetValidator codeSetValidator,
             CodeSetDAO codeSetDAO,
             CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ErrorMessageUtil msgUtil,
             ActivityManager activityManager) {
         this.codeSetValidator = codeSetValidator;
         this.codeSetDAO = codeSetDAO;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.msgUtil = msgUtil;
         this.activityManager = activityManager;
     }
 
@@ -102,8 +106,14 @@ public class CodeSetManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
             + "T(gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions).DELETE)")
     @Transactional
-    public void delete(Long codeSetId) throws EntityRetrievalException {
+    public void delete(Long codeSetId) throws EntityRetrievalException, ValidationException {
         CodeSet codeSet = codeSetDAO.getById(codeSetId);
+        if (codeSet == null) {
+            ValidationException e = new ValidationException(msgUtil.getMessage("codeSet.notFound"));
+            throw e;
+        }
+
+        codeSetValidator.validateForDelete(codeSet);
         codeSet.getCriteria().forEach(crit -> codeSetDAO.removeCodeSetCriteriaMap(codeSet, crit));
         codeSetDAO.remove(codeSet);
 

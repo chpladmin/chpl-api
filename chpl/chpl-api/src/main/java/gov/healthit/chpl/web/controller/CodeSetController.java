@@ -88,7 +88,7 @@ public class CodeSetController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{codeSetId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public void delete(@PathVariable("codeSetId") Long codeSetId) throws EntityRetrievalException {
+    public void delete(@PathVariable("codeSetId") Long codeSetId) throws EntityRetrievalException, ValidationException {
         codeSetManager.delete(codeSetId);
     }
 

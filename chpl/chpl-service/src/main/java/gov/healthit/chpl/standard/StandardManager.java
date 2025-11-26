@@ -113,7 +113,7 @@ public class StandardManager {
     public void delete(Long standardId) throws EntityRetrievalException, ValidationException {
         Standard standard = standardDAO.getById(standardId);
         if (standard == null) {
-            ValidationException e = new ValidationException(errorMessageUtil.getMessage("testTool.notFound"));
+            ValidationException e = new ValidationException(errorMessageUtil.getMessage("standard.notFound"));
             throw e;
         }
 
