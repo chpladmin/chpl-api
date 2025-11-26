@@ -100,8 +100,8 @@ public abstract class CodeSetReviewer implements Reviewer {
         List<CodeSet> codeSetsForCriterion = mapOfCodeSets.get(certResult.getCriterion().getId());
         if (!CollectionUtils.isEmpty(codeSetsForCriterion)) {
             List<CodeSet> requiredCodeSetsForCriterion = codeSetsForCriterion.stream()
-                    .filter(codeSet -> codeSet.getRequiredDay().isEqual(LocalDate.now())
-                            || codeSet.getRequiredDay().isBefore(LocalDate.now()))
+                    .filter(codeSet -> codeSet.getRequiredDay().isEqual(getCodeSetCheckDate(listing))
+                            || codeSet.getRequiredDay().isBefore(getCodeSetCheckDate(listing)))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(requiredCodeSetsForCriterion)) {
                 requiredCodeSetsForCriterion.stream()
