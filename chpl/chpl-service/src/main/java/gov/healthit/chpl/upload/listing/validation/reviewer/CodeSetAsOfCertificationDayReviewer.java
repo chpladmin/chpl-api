@@ -28,6 +28,6 @@ public class CodeSetAsOfCertificationDayReviewer extends CodeSetReviewer {
     }
 
     public boolean allowsExtension() {
-        return true;
+        return false;
     }
 }
