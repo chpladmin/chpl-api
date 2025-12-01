@@ -3,7 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -66,28 +64,6 @@ public class ReportDataController {
     @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
-    }
-
-    @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
-            description = "Retrieves the report metadata for a group of Power BI reports.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
-        return reportDataManager.getReportMetadataByReportGroup(reportGroup);
-    }
-
-    @Operation(summary = "Retrieves the individual report metadata for a Power BI report.",
-            description = "Retrieves the individual report metadata for a Power BI report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
-        return reportDataManager.getReportMetadata(reportKey);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",

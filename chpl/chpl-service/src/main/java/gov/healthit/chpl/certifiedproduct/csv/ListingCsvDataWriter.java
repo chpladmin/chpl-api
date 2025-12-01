@@ -43,7 +43,6 @@ import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.StandardManager;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
-import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -87,7 +86,6 @@ public class ListingCsvDataWriter {
     private static final int ADDITIONAL_SOFTWARE_COL_COUNT = 5;
     private static final int UCD_PROCESS_COL_COUNT = 2;
     private static final int SED_TESTING_COL_COUNT = 2;
-    private static final int TEST_DATA_COL_COUNT = 4;
 
     private CertificationCriteriaManager criteriaManager;
     private StandardManager standardManager;
@@ -217,11 +215,6 @@ public class ListingCsvDataWriter {
                 .map(certResult -> certResult.getSvaps().size())
                 .mapToInt(size -> size)
                 .max().orElse(-1);
-        int maxTestDataRows = certResults.stream()
-                .filter(certResult -> certResult.getTestDataUsed() != null)
-                .map(certResult -> certResult.getTestDataUsed().size())
-                .mapToInt(size -> size)
-                .max().orElse(-1);
         int maxTestProcedureRows = certResults.stream()
                 .filter(certResult -> certResult.getTestProcedures() != null)
                 .map(certResult -> certResult.getTestProcedures().size())
@@ -254,7 +247,6 @@ public class ListingCsvDataWriter {
                 maxOptionalStandardsRows,
                 maxStandardsRows,
                 maxSvapsRows,
-                maxTestDataRows,
                 maxTestProcedureRows,
                 maxTestStandardsRows,
                 maxTestToolsRows,
@@ -489,7 +481,6 @@ public class ListingCsvDataWriter {
             currCol = addServiceBaseUrlList(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addStandards(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addSvaps(csvDataMatrix, certResult, criterionWithAttributes, currCol);
-            currCol = addTestData(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addTestProcedures(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addTestTools(csvDataMatrix, certResult, criterionWithAttributes, currCol);
             currCol = addUseCases(csvDataMatrix, certResult, criterionWithAttributes, currCol);
@@ -732,25 +723,6 @@ public class ListingCsvDataWriter {
                 }
             }
             currCol++;
-        }
-        return currCol;
-    }
-
-    private int addTestData(String[][] csvDataMatrix, CertificationResult certResult,
-            CertificationCriterionWithAttributes criterionWithAttributes, int currCol) {
-        if (criterionWithAttributes.getAttributes().isTestData()) {
-            if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-                for (int i = 0; i < certResult.getTestDataUsed().size(); i++) {
-                    int testDataCol = currCol;
-                    CertificationResultTestData testData = certResult.getTestDataUsed().get(i);
-                    csvDataMatrix[i][testDataCol++] = testData.getTestData().getName();
-                    csvDataMatrix[i][testDataCol++] = testData.getVersion() != null
-                            ? forceExcelToInterpretAsText(testData.getVersion()) : "";
-                    csvDataMatrix[i][testDataCol++] = !StringUtils.isEmpty(testData.getAlteration()) ? "1" : "0";
-                    csvDataMatrix[i][testDataCol++] = testData.getAlteration() != null ? testData.getAlteration() : "";
-                }
-            }
-            currCol += TEST_DATA_COL_COUNT;
         }
         return currCol;
     }
