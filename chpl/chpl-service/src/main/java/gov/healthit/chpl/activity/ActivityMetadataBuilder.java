@@ -108,6 +108,7 @@ public class ActivityMetadataBuilder {
         case CONFORMANCE_METHOD:
         case FUNCTIONALITY_TESTED:
         case STANDARD:
+        case CODE_SET:
         case SVAP:
             metadata = new ActivityMetadata();
             break;

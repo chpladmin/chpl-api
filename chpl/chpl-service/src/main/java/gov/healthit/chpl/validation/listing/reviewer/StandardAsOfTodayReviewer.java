@@ -29,4 +29,7 @@ public class StandardAsOfTodayReviewer extends StandardReviewer {
         return LocalDate.now();
     }
 
+    public boolean allowsExtension() {
+        return true;
+    }
 }

@@ -39,7 +39,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
     private static final String CODE_SETS_NOT_FOUND = "Code Set %s for Criterion %s does not exist. It has been removed.";
     private static final String CODE_SET_NOT_AVAILABLE_BY_START_DATE = "Code Set %s for Criterion %s has a Start Day of %s and is not available. It has been removed.";
     private static final String CODE_SET_NOT_VALID_FOR_CRITERION = "Code Set %s is not valid for Criterion %s. It has been removed.";
-    private static final String CODE_SET_REQUIRED_NOT_FOUND = "Code Set %s is required for Criterion %s beginning on %s but was not found.";
+    private static final String CODE_SET_REQUIRED_NOT_FOUND = "The criterion %s requires Code Set %s.";
 
     private CodeSetDAO codeSetDao;
     private CertificationResultRules certResultRules;
@@ -103,8 +103,8 @@ public class CodeSetAsOfCertificationDayReviewerTest {
             .thenAnswer(i -> String.format(CODE_SET_NOT_VALID_FOR_CRITERION, i.getArgument(1), i.getArgument(2)));
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.codeSetRequired"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(CODE_SET_REQUIRED_NOT_FOUND, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(CODE_SET_REQUIRED_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
 
         reviewer = new CodeSetAsOfCertificationDayReviewer(certResultRules,
                 codeSetDao,
@@ -420,9 +420,8 @@ public class CodeSetAsOfCertificationDayReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CODE_SET_REQUIRED_NOT_FOUND,
-                a5CodeSet.getName(),
                 Util.formatCriteriaNumber(a5),
-                a5CodeSet.getRequiredDay().toString())));
+                a5CodeSet.getName())));
     }
 
     @Test

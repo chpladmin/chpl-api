@@ -25,8 +25,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-// TODO OCD-4288 - NEED TEXT TO DESCRIBE THIS OBJECT
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Getter
@@ -60,6 +58,11 @@ public class FunctionalityTested implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate requiredDay;
+
+    @Schema(description = "A date value representing the date by which the presence of the Functionality Tested will result in an error")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate extensionEndDay;
 
     // Do not include this property if the value is "empty". It will be empty when generating listing details
     // and will be non-empty (this included) when doing CRUD operations on functionality tested

@@ -6,6 +6,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.PracticeTypeEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,13 +23,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,12 +46,6 @@ public class FunctionalityTestedEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "number")
-    private String number;
 
     @Basic(optional = false)
     @Column(name = "value")
@@ -78,6 +71,10 @@ public class FunctionalityTestedEntity extends EntityAudit {
     @Column(name = "required_day")
     private LocalDate requiredDay;
 
+    @Basic(optional = true)
+    @Column(name = "extension_end_day")
+    private LocalDate extensionEndDay;
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = true, updatable = true)
     private PracticeTypeEntity practiceType;
@@ -85,7 +82,7 @@ public class FunctionalityTestedEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "functionalityTestedId")
     @Basic(optional = false)
     @Column(name = "functionality_tested_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction(value = "deleted <> 'true'")
     private Set<FunctionalityTestedCriteriaMapEntity> mappedCriteria = new HashSet<FunctionalityTestedCriteriaMapEntity>();
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -102,6 +99,7 @@ public class FunctionalityTestedEntity extends EntityAudit {
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
+                .extensionEndDay(this.extensionEndDay)
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
                 .build();
@@ -116,6 +114,7 @@ public class FunctionalityTestedEntity extends EntityAudit {
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
+                .extensionEndDay(this.extensionEndDay)
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()

@@ -30,7 +30,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
-public class FunctionalityTestedReviewerTest {
+public class FunctionalityTestedAsOfCertificationDayReviewerTest {
     private static final String FUNCTIONALITIES_TESTED_NOT_APPLICABLE = "Functionality tested is not applicable for the criterion %s. It has been removed.";
     private static final String FUNCTIONALITIES_TESTED_NOT_FOUND_REMOVED = "Criteria %s contains an invalid Functionality Tested '%s'. It has been removed from the pending listing.";
     private static final String MISSING_FUNCTIONALITY_TESTED_NAME = "There was no Functionality Tested name found for certification criteria %s.";
@@ -68,7 +68,7 @@ public class FunctionalityTestedReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedUnavailable"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUNCTIONALITY_TESTED_UNAVAILABLE, i.getArgument(1), i.getArgument(2)));
-        reviewer = new FunctionalityTestedReviewer(certResultRules,
+        reviewer = new FunctionalityTestedAsOfCertificationDayReviewer(certResultRules,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
                 functionalityTestedDao, msgUtil);
     }

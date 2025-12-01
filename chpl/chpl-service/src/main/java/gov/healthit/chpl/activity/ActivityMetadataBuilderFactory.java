@@ -12,6 +12,7 @@ public class ActivityMetadataBuilderFactory {
     private ConformanceMethodActivityMetadataBuilder conformanceMethodBuilder;
     private FunctionalityTestedActivityMetadataBuilder funcTestedBuilder;
     private StandardActivityMetadataBuilder standardBuilder;
+    private CodeSetActivityMetadataBuilder codeSetBuilder;
     private SvapActivityMetadataBuilder svapBuilder;
     private ListingActivityMetadataBuilder listingBuilder;
     private DeveloperActivityMetadataBuilder developerBuilder;
@@ -32,6 +33,7 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("functionalityTestedActivityMetadataBuilder") FunctionalityTestedActivityMetadataBuilder funcTestedBuilder,
             @Qualifier("standardActivityMetadataBuilder") StandardActivityMetadataBuilder standardBuilder,
             @Qualifier("svapActivityMetadataBuilder") SvapActivityMetadataBuilder svapBuilder,
+            @Qualifier("codeSetActivityMetadataBuilder") CodeSetActivityMetadataBuilder codeSetBuilder,
             @Qualifier("listingActivityMetadataBuilder") ListingActivityMetadataBuilder listingBuilder,
             @Qualifier("developerActivityMetadataBuilder") DeveloperActivityMetadataBuilder developerBuilder,
             @Qualifier("productActivityMetadataBuilder") ProductActivityMetadataBuilder productBuilder,
@@ -47,6 +49,7 @@ public class ActivityMetadataBuilderFactory {
         this.conformanceMethodBuilder = conformanceMethodBuilder;
         this.funcTestedBuilder = funcTestedBuilder;
         this.standardBuilder = standardBuilder;
+        this.codeSetBuilder = codeSetBuilder;
         this.svapBuilder = svapBuilder;
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
@@ -103,6 +106,9 @@ public class ActivityMetadataBuilderFactory {
             break;
         case STANDARD:
             builder = standardBuilder;
+            break;
+        case CODE_SET:
+            builder = codeSetBuilder;
             break;
         case SVAP:
             builder = svapBuilder;

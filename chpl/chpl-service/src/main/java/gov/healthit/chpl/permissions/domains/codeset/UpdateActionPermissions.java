@@ -9,7 +9,7 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return  getResourcePermissions().isUserRoleAdmin();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
     @Override
