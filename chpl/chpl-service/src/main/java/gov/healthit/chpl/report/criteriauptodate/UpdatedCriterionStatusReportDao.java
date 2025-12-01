@@ -37,6 +37,7 @@ public class UpdatedCriterionStatusReportDao extends BaseDAOImpl {
                 .functionalityTestedId(ucsr.getFunctionalityTested() != null ? ucsr.getFunctionalityTested().getId() : null)
                 .standardId(ucsr.getStandard() != null ? ucsr.getStandard().getId() : null)
                 .standardGroupName(ucsr.getStandardGroupName())
+                .requiredDay(ucsr.getRequiredDay())
                 .criterionNotUpToDateReasonId(
                         criterionNotUpToDateReasonDao.getByName(ucsr.getCriterionNotUpToDateReason().getName()).getId())
                 .build();

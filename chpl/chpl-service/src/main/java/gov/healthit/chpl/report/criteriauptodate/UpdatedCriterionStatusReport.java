@@ -24,6 +24,7 @@ public class UpdatedCriterionStatusReport {
     private String standardGroupName;
     private FunctionalityTested functionalityTested;
     private CodeSet codeSet;
+    private LocalDate requiredDay;
     private CriterionNotUpToDateReason criterionNotUpToDateReason;
 
     private String chplProductNumber;

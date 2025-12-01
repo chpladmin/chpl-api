@@ -93,6 +93,10 @@ public class UpdatedCriterionStatusReportEntity extends EntityAudit {
     private CodeSetEntity codeSet;
 
     @Basic(optional = false)
+    @Column(name = "required_day")
+    private LocalDate requiredDay;
+
+    @Basic(optional = false)
     @Column(name = "criterion_not_up_to_date_reason_id", nullable = false)
     private Long criterionNotUpToDateReasonId;
 
@@ -139,6 +143,7 @@ public class UpdatedCriterionStatusReportEntity extends EntityAudit {
                 .standardGroupName(standardGroupName)
                 .functionalityTested(functionalityTested != null ? functionalityTested.toDomain() : null)
                 .codeSet(codeSet != null ? codeSet.toDomain() : null)
+                .requiredDay(requiredDay)
                 .criterionNotUpToDateReason(criterionNotUpToDateReason.toDomain())
                 .product(product)
                 .version(version)

@@ -19,8 +19,8 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.Util;
 
 //For the purposes of this calculation, a "baseline" standard is active (start day before now) and is not grouped.
-//Required baseline standards are those that have a required day in the past or future.
-//We care about required baseline standards that are not present on a criteria
+//Baseline standards that we want to report on are those that have a required day in the past or future.
+//We care about required baseline standards that are not present on a criteria.
 @Component
 public class BaselineStandardsUpToDateService {
 
@@ -46,7 +46,6 @@ public class BaselineStandardsUpToDateService {
                 standardUpToDateReports.addAll(upToDateReports);
             }
         }
-
         return standardUpToDateReports;
     }
 
@@ -72,6 +71,7 @@ public class BaselineStandardsUpToDateService {
                             .expiringButPresent(false)
                             .requiredButNotPresent(true)
                             .standard(std)
+                            .updateRequiredBy(std.getRequiredDay())
                             .build())
                     .forEach(stdUpToDate -> standardUpToDateReports.add(stdUpToDate));
         }
@@ -84,18 +84,18 @@ public class BaselineStandardsUpToDateService {
                 .toList();
     }
 
+    private List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
+        List<Standard> activeBaselineStandards = baselineStandardService.getActiveBaselineStandardsForCriterion(criterion, LocalDate.now());
+        logger.info("Found " + activeBaselineStandards.size() + " active baseline standards for " + Util.formatCriteriaNumber(criterion) + ": "
+                + Util.joinListGrammatically(activeBaselineStandards.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.toList()), "and"));
+        return activeBaselineStandards;
+    }
+
     private Boolean isStandardInList(Standard standardToCheck, List<Standard> standards) {
         return standards.stream()
                 .filter(std -> std.getId().equals(standardToCheck.getId()))
                 .findAny()
                 .isPresent();
-    }
-
-    private List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
-        List<Standard> activeBaselineStandards = baselineStandardService.getActiveBaselineStandardsForCriteria(criterion, LocalDate.now());
-        logger.info("Founda " + activeBaselineStandards.size() + " active baseline standards for " + Util.formatCriteriaNumber(criterion) + ": "
-                + Util.joinListGrammatically(activeBaselineStandards.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.toList()), "and"));
-        return activeBaselineStandards;
     }
 
     private boolean doesCriterionHaveAnyStandards(CertificationCriterion criterion, Logger logger) {

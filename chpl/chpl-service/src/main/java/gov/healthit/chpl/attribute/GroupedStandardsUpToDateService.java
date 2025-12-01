@@ -2,8 +2,10 @@ package gov.healthit.chpl.attribute;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,27 +71,71 @@ public class GroupedStandardsUpToDateService {
                             .expiringButPresent(false)
                             .requiredButNotPresent(true)
                             .standardGroupName(groupName)
+                            .updateRequiredBy(LocalDate.now()) //TODO fix
                             .build())
                     .forEach(groupUpToDate -> standardGroupUpToDateReports.add(groupUpToDate));
         }
         return standardGroupUpToDateReports;
     }
 
+    //standard group that has 0 standards from the group on the cert results
     private List<String> getUnattestedToRequiredStandardGroups(CertificationResult certResult, Logger logger) {
         Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(certResult.getCriterion(), logger);
         return activeGroupedStandards.keySet().stream()
                 .filter(groupName -> !isAnyStandardFromGroupOnCertResult(activeGroupedStandards.get(groupName), certResult)
+                        //TODO this just returns "true" but I'm not sure that's really how it should be..
+                        // Shouldn't we not just require one standard per group unless the required date has passed?
                         && areStandardsInGroupRequired(activeGroupedStandards.get(groupName)))
                 .collect(Collectors.toList());
     }
 
+    //standard group that has >= 1 standard from the group on the cert results
+    //if the standard(s) from the group have an end date, then we have to check again
+    private Map<String, List<Standard>> getAttestedToButExpiringRequiredStandardGroups(CertificationResult certResult, Logger logger) {
+        Map<String, List<Standard>> expiringGroupToRequiredStandardMap = new LinkedHashMap<String, List<Standard>>();
+        Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(certResult.getCriterion(), logger);
+        List<String> stdGroupNames = activeGroupedStandards.keySet().stream().collect(Collectors.toList());
+        stdGroupNames.stream()
+            .map(stdGroupName -> getExpiringStandardsInGroup(activeGroupedStandards.get(stdGroupName)))
+            .filter(expiringStdsInThisGroup -> isAnyStandardFromGroupOnCertResult(expiringStdsInThisGroup, certResult))
+            .forEach(expiringStdsInThisGroupOnCertResult -> {
+                String groupName = expiringStdsInThisGroupOnCertResult.get(0).getGroupName();
+                //TODO I'm not sure about the expiring thing... how is this going to work when there are
+                //three different sets of standards in the group with two different expiring dates... ?
+                Set<LocalDate> expiringStandardsInGroupEndDates = expiringStdsInThisGroupOnCertResult.stream()
+                        .filter(std -> std.getEndDay() != null)
+                        .map(std -> std.getEndDay())
+                        .collect(Collectors.toSet());
+                //are there other standards in the group that have a required date equal to any of the expiring standard end dates?
+                List<Standard> allStandardsInGroup = activeGroupedStandards.get(groupName);
+                List<Standard> standardsToReplace = allStandardsInGroup.stream()
+                    .filter(stdInGroup -> expiringStandardsInGroupEndDates.contains(stdInGroup.getRequiredDay()))
+                    .collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(standardsToReplace)
+                        && !isAnyStandardFromGroupOnCertResult(standardsToReplace, certResult)) {
+                    expiringGroupToRequiredStandardMap.put(groupName, standardsToReplace);
+                }
+            });
+        return expiringGroupToRequiredStandardMap;
+    }
+
+
+    private List<Standard> getExpiringStandardsInGroup(List<Standard> standards) {
+        return standards.stream()
+                .filter(std -> std.getEndDay() != null)
+                .collect(Collectors.toList());
+    }
+
     private boolean isAnyStandardFromGroupOnCertResult(List<Standard> standardsInGroup, CertificationResult certResult) {
-        //TODO
-        return false;
+        return certResult.getStandards().stream()
+            .filter(crStd -> isStandardInList(crStd.getStandard(), standardsInGroup))
+            .findAny()
+            .isPresent();
     }
 
     private boolean areStandardsInGroupRequired(List<Standard> standardsInGroup) {
-        //TODO
+        //One standard in a group is always required.
+        //TBD Should we actually be looking at the required date?
         return true;
     }
 
@@ -98,18 +144,6 @@ public class GroupedStandardsUpToDateService {
         logger.info("Found " + activeGroupedStandards.keySet().size() + " active standard group(s) for " + Util.formatCriteriaNumber(criterion) + ": "
                 + Util.joinListGrammatically(activeGroupedStandards.keySet().stream().collect(Collectors.toList()), "and"));
         return activeGroupedStandards;
-    }
-
-    private boolean doesCriterionHaveAnyStandards(CertificationCriterion criterion, Logger logger) {
-        try {
-            return standardDao.getAllStandardCriteriaMap().stream()
-                    .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
-                    .findAny()
-                    .isPresent();
-        } catch (EntityRetrievalException e) {
-            logger.error("Could not retrieve Standards for Criterion.", e);
-            return false;
-        }
     }
 
     private Boolean isStandardInList(Standard standardToCheck, List<Standard> standards) {

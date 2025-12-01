@@ -184,6 +184,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
             .certificationCriterion(standardReport.getCriterion())
             .standard(standardReport.getStandard())
+            .requiredDay(standardReport.getUpdateRequiredBy())
             .functionalityTested(null)
             .codeSet(null)
             .certificationResultId(getCertificationResultId(listing, standardReport.getCriterion()))
@@ -209,6 +210,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .standardGroupName(standardGroupReport.getStandardGroupName())
             .functionalityTested(null)
             .codeSet(null)
+            .requiredDay(standardGroupReport.getUpdateRequiredBy())
             .certificationResultId(getCertificationResultId(listing, standardGroupReport.getCriterion()))
             .criterionNotUpToDateReason(getCriterionNotUpToDateReason(standardGroupReport))
         .build();
@@ -232,6 +234,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .standard(null)
             .functionalityTested(ftReport.getFunctionalityTested())
             .codeSet(null)
+            .requiredDay(ftReport.getUpdateRequiredBy())
             .certificationResultId(getCertificationResultId(listing, ftReport.getCriterion()))
             .criterionNotUpToDateReason(getCriterionNotUpToDateReason(ftReport))
         .build();
@@ -254,6 +257,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .standard(null)
             .functionalityTested(null)
             .codeSet(codeSetReport.getCodeSet())
+            .requiredDay(codeSetReport.getUpdateRequiredBy())
             .certificationResultId(getCertificationResultId(listing, codeSetReport.getCriterion()))
             .criterionNotUpToDateReason(getCriterionNotUpToDateReason(codeSetReport))
         .build();
