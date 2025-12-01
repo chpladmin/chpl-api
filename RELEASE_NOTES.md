@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 52.1.0
+_1 December 2025_
+
+### Features
+* Enforce read-only test data on existing listings
+* Do not read/write test data from uploaded file
+* Add ability to get report metadata by user
+
+---
+
 ## Version 52.0.0
 _24 November 2025_
 
