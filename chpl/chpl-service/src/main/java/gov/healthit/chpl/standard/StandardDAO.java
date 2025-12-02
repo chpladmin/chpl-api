@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,6 +22,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -63,6 +62,7 @@ public class StandardDAO extends BaseDAOImpl {
                 .additionalInformation(standard.getAdditionalInformation())
                 .startDay(standard.getStartDay())
                 .endDay(standard.getEndDay())
+                .extensionEndDay(standard.getExtensionEndDay())
                 .requiredDay(standard.getRequiredDay())
                 .rule(standard.getRule() != null && standard.getRule().getId() != null
                         ? ruleDAO.getRuleEntityById(standard.getRule().getId())
@@ -89,6 +89,7 @@ public class StandardDAO extends BaseDAOImpl {
         entity.setRegulatoryTextCitation(standard.getRegulatoryTextCitation());
         entity.setStartDay(standard.getStartDay());
         entity.setEndDay(standard.getEndDay());
+        entity.setExtensionEndDay(standard.getExtensionEndDay());
         entity.setRequiredDay(standard.getRequiredDay());
 
         if (standard.getRule() != null) {

@@ -68,6 +68,10 @@ public class StandardEntity extends EntityAudit implements Serializable {
     private LocalDate endDay;
 
     @Basic(optional = true)
+    @Column(name = "extension_end_day")
+    private LocalDate extensionEndDay;
+
+    @Basic(optional = true)
     @Column(name = "required_day")
     private LocalDate requiredDay;
 
@@ -90,6 +94,7 @@ public class StandardEntity extends EntityAudit implements Serializable {
                 .groupName(this.groupName)
                 .startDay(this.startDay)
                 .endDay(this.endDay)
+                .extensionEndDay(this.extensionEndDay)
                 .requiredDay(this.requiredDay)
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .build();
@@ -105,6 +110,7 @@ public class StandardEntity extends EntityAudit implements Serializable {
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
+                .extensionEndDay(this.extensionEndDay)
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())

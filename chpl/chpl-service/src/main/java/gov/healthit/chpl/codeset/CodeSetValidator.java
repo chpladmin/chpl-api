@@ -1,6 +1,5 @@
 package gov.healthit.chpl.codeset;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,10 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class CodeSetValidator {
     private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
@@ -42,8 +44,14 @@ public class CodeSetValidator {
         if (CollectionUtils.isEmpty(codeSet.getCriteria())) {
             messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         } else {
-            if (isCodeSetDuplicateOnEdit(codeSet)) {
-                messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set"));
+            List<CertificationCriterion> criteriaHavingDuplicates = getCriteriaHavingCodeSetOnEdit(codeSet);
+            if (!CollectionUtils.isEmpty(criteriaHavingDuplicates)) {
+                messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate",
+                        codeSet.getName(),
+                        criteriaHavingDuplicates.size() == 1 ? "on" : "a",
+                        Util.joinListGrammatically(criteriaHavingDuplicates.stream()
+                                .map(crit -> Util.formatCriteriaNumber(crit))
+                                .collect(Collectors.toList()))));
             }
             messages.addAll(validateCriteriaRemovedFromCodeSet(codeSet));
         }
@@ -65,8 +73,14 @@ public class CodeSetValidator {
             messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         }
 
-        if (isCodeSetDuplicateOnAdd(codeSet)) {
-            messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set"));
+        List<CertificationCriterion> criteriaHavingDuplicates = getCriteriaHavingCodeSetOnAdd(codeSet);
+        if (!CollectionUtils.isEmpty(criteriaHavingDuplicates)) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate",
+                    codeSet.getName(),
+                    criteriaHavingDuplicates.size() == 1 ? "on" : "a",
+                    Util.joinListGrammatically(criteriaHavingDuplicates.stream()
+                            .map(crit -> Util.formatCriteriaNumber(crit))
+                            .collect(Collectors.toList()))));
         }
 
         if (messages.size() > 0) {
@@ -129,31 +143,60 @@ public class CodeSetValidator {
         return messages;
     }
 
-    private boolean isCodeSetDuplicateOnEdit(CodeSet codeSet) throws EntityRetrievalException {
-        LocalDate updatedRequiredDay = codeSet.getRequiredDay() != null ? codeSet.getRequiredDay() : LocalDate.MAX;
+    private List<CertificationCriterion> getCriteriaHavingCodeSetOnEdit(CodeSet codeSet) throws EntityRetrievalException {
+        String updatedCodeSetName = codeSet.getName();
+        List<CertificationCriterion> updatedCodeSetCriteria = codeSet.getCriteria();
 
-        return codeSetDAO.getAllCodeSetCriteriaMap().stream()
-                .filter(map -> {
-                        LocalDate origRequiredDay = map.getCodeSet().getRequiredDay() != null ? map.getCodeSet().getRequiredDay() : LocalDate.MAX;
+        return updatedCodeSetCriteria.stream()
+                .filter(criterion -> criterionWithCodeSetNameExists(criterion, updatedCodeSetName, codeSet.getId()))
+                .collect(Collectors.toList());
+    }
 
-                        return map.getCodeSet().getRequiredDay().equals(codeSet.getRequiredDay())
-                                && origRequiredDay.equals(updatedRequiredDay)
-                                && !map.getCodeSet().getId().equals(codeSet.getId());
-                })
+    private List<CertificationCriterion> getCriteriaHavingCodeSetOnAdd(CodeSet codeSet) throws EntityRetrievalException {
+        String updatedCodeSetName = codeSet.getName();
+        List<CertificationCriterion> updatedCodeSetCriteria = codeSet.getCriteria();
+
+        //ensure that there are no other code sets with the same name for any of the criteria in the updated code set
+        return updatedCodeSetCriteria.stream()
+            .filter(criterion -> criterionWithCodeSetNameExists(criterion, updatedCodeSetName))
+            .collect(Collectors.toList());
+    }
+
+    private boolean criterionWithCodeSetNameExists(CertificationCriterion criterion, String updatedCodeSetName) {
+        List<CodeSet> existingCodeSetsForCriterion = null;
+        try {
+            existingCodeSetsForCriterion = codeSetDAO.getAllCodeSetCriteriaMap().stream()
+                .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
+                .map(map -> map.getCodeSet())
+                .collect(Collectors.toList());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Unable to get all code set criteria maps", ex);
+            //return true so we don't accidentally allow something that we shouldn't
+            return true;
+        }
+
+        return existingCodeSetsForCriterion.stream()
+                .filter(codeSet -> codeSet.getName().equalsIgnoreCase(updatedCodeSetName))
                 .findAny()
                 .isPresent();
     }
 
-    private boolean isCodeSetDuplicateOnAdd(CodeSet codeSet) throws EntityRetrievalException {
-        LocalDate updatedRequiredDay = codeSet.getRequiredDay() != null ? codeSet.getRequiredDay() : LocalDate.MAX;
+    private boolean criterionWithCodeSetNameExists(CertificationCriterion criterion, String updatedCodeSetName, Long updatedCodeSetId) {
+        List<CodeSet> existingCodeSetsForCriterion = null;
+        try {
+            existingCodeSetsForCriterion = codeSetDAO.getAllCodeSetCriteriaMap().stream()
+                .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
+                .map(map -> map.getCodeSet())
+                .collect(Collectors.toList());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Unable to get all code set criteria maps", ex);
+            //return true so we don't accidentally allow something that we shouldn't
+            return true;
+        }
 
-        return codeSetDAO.getAllCodeSetCriteriaMap().stream()
-                .filter(map -> {
-                    LocalDate origRequiredDay = map.getCodeSet().getRequiredDay() != null ? map.getCodeSet().getRequiredDay() : LocalDate.MAX;
-
-                        return map.getCodeSet().getRequiredDay().equals(codeSet.getRequiredDay())
-                                && origRequiredDay.equals(updatedRequiredDay);
-                })
+        return existingCodeSetsForCriterion.stream()
+                .filter(codeSet -> codeSet.getName().equalsIgnoreCase(updatedCodeSetName)
+                        && !codeSet.getId().equals(updatedCodeSetId))
                 .findAny()
                 .isPresent();
     }

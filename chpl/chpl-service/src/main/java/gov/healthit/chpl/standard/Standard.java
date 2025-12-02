@@ -60,6 +60,11 @@ public class Standard implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate requiredDay;
 
+    @Schema(description = "A date value representing the date by which the presence of the Standard will result in an error.")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate extensionEndDay;
+
     // Do not include this property if the value is "empty". It will be empty when generating listing details
     // and will be non-empty (this included) when doing CRUD operations on Standards
     @JsonInclude(value = Include.NON_EMPTY)

@@ -144,6 +144,15 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CODE_SET_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getCodeSetActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.CODE_SET, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_STANDARD_METADATA)")
     @Transactional
     public ActivityMetadataPage getStandardActivityMetadata(Long startMillis, Long endMillis,
