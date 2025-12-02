@@ -45,6 +45,10 @@ public class CodeSetEntity extends EntityAudit {
     @Column(name = "required_day")
     private LocalDate requiredDay;
 
+    @Basic(optional = true)
+    @Column(name = "extension_end_day")
+    private LocalDate extensionEndDay;
+
     @Basic(optional = false)
     @Column(name = "start_day")
     private LocalDate startDay;
@@ -60,6 +64,7 @@ public class CodeSetEntity extends EntityAudit {
                 .id(id)
                 .requiredDay(requiredDay)
                 .startDay(startDay)
+                .extensionEndDay(extensionEndDay)
                 .build();
     }
 
@@ -68,6 +73,7 @@ public class CodeSetEntity extends EntityAudit {
                 .id(id)
                 .requiredDay(requiredDay)
                 .startDay(startDay)
+                .extensionEndDay(extensionEndDay)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
                         .collect(Collectors.toList()) : null)

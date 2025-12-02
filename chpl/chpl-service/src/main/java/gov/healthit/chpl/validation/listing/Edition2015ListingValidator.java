@@ -14,7 +14,6 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCo
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
-import gov.healthit.chpl.upload.listing.validation.reviewer.FunctionalityTestedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
@@ -51,6 +50,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
@@ -149,8 +149,7 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
-    @Qualifier("listingUploadFunctionalityTestedReviewer")
-    private FunctionalityTestedReviewer functionalityTestedReviewer;
+    private FunctionalityTestedAsOfTodayReviewer functionalityTestedReviewer;
 
     @Autowired
     @Qualifier("functionalityTestedAllowedByCriteriaReviewer")

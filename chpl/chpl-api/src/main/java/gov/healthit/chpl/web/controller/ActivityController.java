@@ -590,7 +590,7 @@ public class ActivityController {
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
                     + "with the most recent activity first. "
-                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
+                    + "Only accessible to users with chpl-admin, chpl-onc, or chpl-onc-acb roles.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -607,7 +607,7 @@ public class ActivityController {
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
                     + "with the most recent activity first. "
-                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
+                    + "Only accessible to users with chpl-admin, chpl-onc, or chpl-onc-acb.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -620,11 +620,28 @@ public class ActivityController {
         return pagedMetadataManager.getFunctionalityTestedActivityMetadata(start, end, pageNum, pageSize);
     }
 
+    @Operation(summary = "Get metadata about auditable records in the system for the management of Code Sets.",
+            description = "All parameters are optional and will default to the first page of activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first."
+                    + "Only accessible to users with chpl-admin, chpl-onc, or chpl-onc-acb.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/code-sets", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForCodeSets(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getCodeSetActivityMetadata(start, end, pageNum, pageSize);
+    }
+
     @Operation(summary = "Get metadata about auditable records in the system for the management of Standards.",
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
                     + "with the most recent activity first."
-                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
+                    + "Only accessible to users with chpl-admin, chpl-onc, or chpl-onc-acb.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -641,7 +658,7 @@ public class ActivityController {
             description = "All parameters are optional and will default to the first page of activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
                     + "with the most recent activity first. "
-                    + "Only accessible to users with either role chpl-admin or chpl-onc.",
+                    + "Only accessible to users with chpl-admin, chpl-onc, or chpl-onc-acb.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

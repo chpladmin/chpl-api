@@ -9,6 +9,7 @@ public enum ActivityConcept implements Serializable {
     CERTIFICATION_BODY,
     CERTIFIED_PRODUCT,
     CHANGE_REQUEST,
+    CODE_SET,
     COMPLAINT,
     CONFORMANCE_METHOD,
     CORRECTIVE_ACTION_PLAN,
