@@ -30,14 +30,15 @@ public class BaselineStandardService {
     public List<Standard> getBaselineStandardsForCriteriaAndListing(CertifiedProductSearchDetails listing, CertificationCriterion criterion,
             LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
         try {
-            List<StandardCriteriaMap> maps = standardDao.getAllStandardCriteriaMap();
+            List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
             Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
-            maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
-            return maps.stream()
-                    .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
-                            && DateUtil.datesOverlap(Pair.of(map.getStandard().getRequiredDay(), map.getStandard().getEndDay()),
-                                    Pair.of(standardCheckDateRangeStart, standardCheckDateRangeEnd)))
+            stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
+            return stdCriteriaMaps.stream()
+                    .filter(stdCriteriaMap -> !isStandardInAGroup(standardGroups, stdCriteriaMap.getStandard())
+                            && DateUtil.isDateBetweenInclusive(
+                                    Pair.of(stdCriteriaMap.getStandard().getRequiredDay(), stdCriteriaMap.getStandard().getEndDay()),
+                                    standardCheckDateRangeEnd))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
