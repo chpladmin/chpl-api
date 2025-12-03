@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +26,7 @@ public class BaselineStandardService {
         this.standardDao = standardDao;
     }
 
-    public List<Standard> getBaselineStandardsForCriteriaAndListing(CertifiedProductSearchDetails listing, CertificationCriterion criterion,
+    public List<Standard> getBaselineStandards(CertificationCriterion criterion,
             LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
         try {
             List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
