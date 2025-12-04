@@ -146,7 +146,7 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/insights", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<InsightSubmission>> getInsights(@PathVariable("developerId") Long developerId)
             throws InsightRequestFailedException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.INSIGHTS)) {
+        if (!ff4j.check(FeatureList.INSIGHTS_DISPLAY)) {
             throw new NotImplementedException("This method has not been implemented");
         }
         return new ResponseEntity<List<InsightSubmission>>(insightsService.getInsightSubmissions(developerId), HttpStatus.OK);

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.collections.impl.block.factory.Comparators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,36 +32,90 @@ public abstract class StandardGroupReviewer implements Reviewer {
 
     public abstract boolean allowsExtension();
 
-    public void reviewStandardExistsForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult, LocalDate validAsOfDate) {
-        standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDate).entrySet().stream()
+    public void reviewStandardExistsForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            LocalDate validAsOfDateRangeStart, LocalDate validAsOfDateRangeEnd) {
+        standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDateRangeStart, validAsOfDateRangeEnd).entrySet().stream()
                 .filter(standardGroup -> standardGroup.getValue().size() >= 2)
                 .forEach(standardGroup -> {
-                    if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
-                        //Assume all of the active standards within the group have the same required day,
-                        //and further assume that all grouped standards with the same required day will have
-                        //the same extension end day. It is possible to set different values for these
-                        //things using the UI or API but it is not a realistic scenario at this time.
-                        LocalDate extensionEndDay = standardGroup.getValue().get(0).getExtensionEndDay();
-                        if (allowsExtension()
-                                && extensionEndDay != null
-                                && validAsOfDate.isBefore(extensionEndDay)) {
-                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelectedDuringExtensionPeriod",
-                                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                                    standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", ")),
-                                    DateUtil.format(extensionEndDay)));
-                        } else {
-                            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
+                    List<Standard> attestedStandardsFromGroup = getAttestedStandardsFromGroup(standardGroup.getValue(), certResult);
+                    if (CollectionUtils.isEmpty(attestedStandardsFromGroup)) {
+                        // There MUST be at least one standard per group on the listing
+                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", "))));
+                    } else {
+                        // At least one standard in the group is attested.
+                        // Determine if any of the unattested standards in this group have a required date that is more recent than the attested standards from the group
+                        // If the required date has passed but not the extension end date, give a warning.
+                        // If the extension end date has also passed, give an error.
+                        List<Standard> unattestedRequiredStandardsInGroup = getUnattestedStandardsWithRequiredDateForCriterion(
+                                standardGroup.getValue(), certResult, validAsOfDateRangeEnd);
+                        if (!CollectionUtils.isEmpty(unattestedRequiredStandardsInGroup)) {
+                            //Calculate extension end day - not all of the standards will necessarily have one and they won't all necessarily be the same
+                            //but we should use the earliest non-null day for our message.
+                            LocalDate extensionEndDay = getEarliestExtensionEndDay(unattestedRequiredStandardsInGroup);
+                            if (allowsExtension()
+                                    && extensionEndDay != null
+                                    && validAsOfDateRangeEnd.isBefore(extensionEndDay)) {
+                                // Give a grammatically different message if it's multiple standards that will be required vs just one
+                                if (unattestedRequiredStandardsInGroup.size() > 1) {
+                                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelectedDuringExtensionPeriod",
+                                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                                            unattestedRequiredStandardsInGroup.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", ")),
+                                            DateUtil.format(extensionEndDay)));
+                                } else {
+                                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
+                                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                                            unattestedRequiredStandardsInGroup.get(0).getRegulatoryTextCitation(),
+                                            DateUtil.format(extensionEndDay)));
+                                }
+                            } else {
+                                // Give a grammatically different message if it's multiple standards that are required vs just one
+                                if (unattestedRequiredStandardsInGroup.size() > 1) {
+                                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
+                                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                                            unattestedRequiredStandardsInGroup.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", "))));
+                                } else {
+                                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
+                                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                                            unattestedRequiredStandardsInGroup.get(0).getRegulatoryTextCitation()));
+                                }
+                            }
                         }
                     }
                 });
     }
 
-    private boolean doesAtLeastOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
+    private List<Standard> getAttestedStandardsFromGroup(List<Standard> groupedStandards, CertificationResult certResult) {
         return groupedStandards.stream()
                 .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
-                .count() >= 1;
+                .collect(Collectors.toList());
+    }
+
+    private List<Standard> getUnattestedStandardsWithRequiredDateForCriterion(List<Standard> groupedStandards,
+            CertificationResult certResult, LocalDate requiredAsOfDate) {
+        List<Standard> attestedStandardsFromGroup = getAttestedStandardsFromGroup(groupedStandards, certResult);
+        return groupedStandards.stream()
+                .filter(stdFromGroup -> stdFromGroup.getRequiredDay() != null && stdFromGroup.getRequiredDay().isBefore(requiredAsOfDate)
+                        && stdFromGroup.getRequiredDay().isAfter(getLatestRequiredDateFromStandardList(attestedStandardsFromGroup)))
+                .filter(reqStandardFromGroup -> !isStandardInList(reqStandardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
+                .collect(Collectors.toList());
+    }
+
+    private LocalDate getEarliestExtensionEndDay(List<Standard> groupedStandards) {
+        return groupedStandards.stream()
+                .filter(std -> std.getExtensionEndDay() != null)
+                .map(std -> std.getExtensionEndDay())
+                .min(Comparators.naturalOrder())
+                .orElse(LocalDate.MAX);
+    }
+
+    private LocalDate getLatestRequiredDateFromStandardList(List<Standard> groupedStandards) {
+        return groupedStandards.stream()
+                .filter(std -> std.getRequiredDay() != null)
+                .map(std -> std.getRequiredDay())
+                .max(Comparators.naturalOrder())
+                .orElse(LocalDate.MIN);
     }
 
     private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {

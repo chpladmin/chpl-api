@@ -85,7 +85,8 @@ public class BaselineStandardsUpToDateService {
     }
 
     private List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
-        List<Standard> activeBaselineStandards = baselineStandardService.getActiveBaselineStandardsForCriterion(criterion, LocalDate.now());
+        List<Standard> activeBaselineStandards = baselineStandardService.getActiveBaselineStandardsForCriterion(
+                criterion, LocalDate.now());
         logger.info("Found " + activeBaselineStandards.size() + " active baseline standards for " + Util.formatCriteriaNumber(criterion) + ": "
                 + Util.joinListGrammatically(activeBaselineStandards.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.toList()), "and"));
         return activeBaselineStandards;

@@ -26,15 +26,18 @@ public class BaselineStandardService {
         this.standardDao = standardDao;
     }
 
-    public List<Standard> getRequiredBaselineStandardsForCriteria(CertificationCriterion criterion, LocalDate standardCheckDate) {
+    public List<Standard> getBaselineStandards(CertificationCriterion criterion,
+            LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
         try {
-            List<StandardCriteriaMap> maps = standardDao.getAllStandardCriteriaMap();
-            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDate);
+            List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
+            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
-            maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
-            return maps.stream()
-                    .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
-                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getRequiredDay(), map.getStandard().getEndDay()), standardCheckDate))
+            stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
+            return stdCriteriaMaps.stream()
+                    .filter(stdCriteriaMap -> !isStandardInAGroup(standardGroups, stdCriteriaMap.getStandard())
+                            && DateUtil.isDateBetweenInclusive(
+                                    Pair.of(stdCriteriaMap.getStandard().getRequiredDay(), stdCriteriaMap.getStandard().getEndDay()),
+                                    standardCheckDateRangeEnd))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
@@ -43,15 +46,16 @@ public class BaselineStandardService {
         }
     }
 
-    public List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion, LocalDate standardCheckDate) {
+    public List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion,
+            LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
         try {
             List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMap();
-            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDate);
+            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
             standardCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return standardCriteriaMaps.stream()
                     .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
-                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getStartDay(), map.getStandard().getEndDay()), standardCheckDate))
+                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getStartDay(), map.getStandard().getEndDay()), standardCheckDateRangeStart))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
