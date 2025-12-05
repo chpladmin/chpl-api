@@ -118,8 +118,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 report.getCertificationStatus(),
                 Util.formatCriteriaNumber(report.getCertificationCriterion()),
                 report.getRequiredDay() != null ? report.getRequiredDay().toString() : "",
-                //TODO put value back
-                report.getStandard() != null ? report.getStandard().getRegulatoryTextCitation() : "",
+                report.getStandard() != null ? report.getStandard().getValue() : "",
                 report.getStandardGroupName() != null ? report.getStandardGroupName() : "",
                 report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
                 report.getCodeSet() != null ? report.getCodeSet().getName() : "",
