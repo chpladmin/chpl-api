@@ -78,11 +78,24 @@ public class CriteriaUpToDateReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/monthly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
-        List<CertificationBody> allAcbs = acbManager.getAll();
-        List<Long> acbIds = allAcbs.stream()
-                .map(acb -> acb.getId())
-                .collect(Collectors.toList());
+    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(
+            @Parameter(description = "A comma-separated list of certification body IDs. "
+                + "The specified certification body IDs will have up-to-date data for the listings that they are responsible for "
+                + "in the returned criteria up-to-date reports. This parameter is optional and if it is not included "
+                + "then data for all ONC-ACBs will be included."
+                + "(ex: \"1\" or \"1,4\").",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "acbIds")
+    @RequestParam(value = "acbIds", required = false, defaultValue = "") String acbIdsDelimited) {
+        List<Long> acbIds = null;
+        if (StringUtils.isEmpty(acbIdsDelimited)) {
+            List<CertificationBody> allAcbs = acbManager.getAll();
+            acbIds = allAcbs.stream()
+                        .map(acb -> acb.getId())
+                    .collect(Collectors.toList());
+        } else {
+            Set<Long> acbIdSet = convertToSetWithDelimeter(acbIdsDelimited, ",");
+            acbIds = acbIdSet.stream().collect(Collectors.toList());
+        }
         return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbIds);
     }
 
