@@ -88,7 +88,7 @@ public abstract class StandardGroupReviewer implements Reviewer {
 
     private boolean groupHasSomeUnexpiredStandards(List<Standard> standards) {
         return standards.stream()
-                .filter(std -> std.getEndDay() != null && std.getEndDay().isBefore(LocalDate.now()))
+                .filter(std -> std.getEndDay() == null || std.getEndDay().isAfter(LocalDate.now()))
                 .findAny()
                 .isPresent();
     }
