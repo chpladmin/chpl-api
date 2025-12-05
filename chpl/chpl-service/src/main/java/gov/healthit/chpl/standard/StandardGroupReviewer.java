@@ -35,7 +35,7 @@ public abstract class StandardGroupReviewer implements Reviewer {
     public void reviewStandardExistsForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult,
             LocalDate validAsOfDateRangeStart, LocalDate validAsOfDateRangeEnd) {
         standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDateRangeStart, validAsOfDateRangeEnd).entrySet().stream()
-                .filter(standardGroup -> standardGroup.getValue().size() >= 2)
+                .filter(standardGroup -> standardGroup.getValue().size() >= 2 && groupHasSomeUnexpiredStandards(standardGroup.getValue()))
                 .forEach(standardGroup -> {
                     List<Standard> attestedStandardsFromGroup = getAttestedStandardsFromGroup(standardGroup.getValue(), certResult);
                     if (CollectionUtils.isEmpty(attestedStandardsFromGroup)) {
@@ -84,6 +84,13 @@ public abstract class StandardGroupReviewer implements Reviewer {
                         }
                     }
                 });
+    }
+
+    private boolean groupHasSomeUnexpiredStandards(List<Standard> standards) {
+        return standards.stream()
+                .filter(std -> std.getEndDay() == null || std.getEndDay().isAfter(LocalDate.now()))
+                .findAny()
+                .isPresent();
     }
 
     private List<Standard> getAttestedStandardsFromGroup(List<Standard> groupedStandards, CertificationResult certResult) {
