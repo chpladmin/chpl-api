@@ -2,6 +2,7 @@ package gov.healthit.chpl.attribute;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -36,12 +38,13 @@ public class GroupedStandardsUpToDateService {
         this.certificationResultRules = certificationResultRules;
     }
 
-    public List<StandardGroupUpToDate> getAttributeUpToDate(CertificationResult certResult, Logger logger) {
+    public List<StandardGroupUpToDate> getAttributeUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
         List<StandardGroupUpToDate> standardGroupUpToDateReports = new ArrayList<StandardGroupUpToDate>();
 
         Boolean isCriteriaEligible = isCriteriaEligibleForStandards(certResult.getCriterion(), logger);
         if (isCriteriaEligible) {
-            List<StandardGroupUpToDate> upToDateReportsForUnattestedStandardGroups = getUpToDateReportsForUnattestedStandardGroups(certResult, logger);
+            List<StandardGroupUpToDate> upToDateReportsForUnattestedStandardGroups = getUpToDateReportsForUnattestedStandardGroups(
+                    listing, certResult, logger);
             if (!CollectionUtils.isEmpty(upToDateReportsForUnattestedStandardGroups)) {
                 standardGroupUpToDateReports.addAll(upToDateReportsForUnattestedStandardGroups);
             }
@@ -56,14 +59,15 @@ public class GroupedStandardsUpToDateService {
                 && !CollectionUtils.isEmpty(standardsForCriterion);
     }
 
-    private List<StandardGroupUpToDate> getUpToDateReportsForUnattestedStandardGroups(CertificationResult certResult, Logger logger) {
+    private List<StandardGroupUpToDate> getUpToDateReportsForUnattestedStandardGroups(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, Logger logger) {
         logger.info("Checking unattested standard groups for " + Util.formatCriteriaNumber(certResult.getCriterion()));
-        List<String> unattestedStandardGroups = getUnattestedToRequiredStandardGroups(certResult, logger);
-        logger.info("There are " + unattestedStandardGroups.size() + " unattested standard groups for " + Util.formatCriteriaNumber(certResult.getCriterion()));
+        Map<String, List<Standard>> standardGroupsNoneAttested = getUnattestedToRequiredStandardGroups(listing, certResult, logger);
+        logger.info("There are " + standardGroupsNoneAttested.keySet().size() + " unattested standard groups for " + Util.formatCriteriaNumber(certResult.getCriterion()));
 
         List<StandardGroupUpToDate> standardGroupUpToDateReports = new ArrayList<StandardGroupUpToDate>();
-        if (CollectionUtils.isNotEmpty(unattestedStandardGroups)) {
-            unattestedStandardGroups.stream()
+        if (CollectionUtils.isNotEmpty(standardGroupsNoneAttested.keySet())) {
+            standardGroupsNoneAttested.keySet().stream()
                     .peek(groupName -> logger.info("Standard from group " + groupName + " is required but not found"))
                     .map(groupName -> StandardGroupUpToDate.builder()
                             .criterion(certResult.getCriterion())
@@ -71,7 +75,23 @@ public class GroupedStandardsUpToDateService {
                             .expiringButPresent(false)
                             .requiredButNotPresent(true)
                             .standardGroupName(groupName)
-                            .updateRequiredBy(LocalDate.now()) //TODO fix
+                            .updateRequiredBy(getMinimumStartDateFromGroup(standardGroupsNoneAttested.get(groupName)))
+                            .build())
+                    .forEach(groupUpToDate -> standardGroupUpToDateReports.add(groupUpToDate));
+        }
+
+        Map<String, List<Standard>> standardGroupsExpiringAttestedWithoutReplacement = getAttestedToButExpiringRequiredStandardGroups(listing, certResult, logger);
+        logger.info("There are " + standardGroupsExpiringAttestedWithoutReplacement.keySet().size() + " standard groups with an expiring standard attested and not replaced for " + Util.formatCriteriaNumber(certResult.getCriterion()));
+        if (CollectionUtils.isNotEmpty(standardGroupsExpiringAttestedWithoutReplacement.keySet())) {
+            standardGroupsExpiringAttestedWithoutReplacement.keySet().stream()
+                    .peek(groupName -> logger.info("Standard from group " + groupName + " is expiring and replacement was not found"))
+                    .map(groupName -> StandardGroupUpToDate.builder()
+                            .criterion(certResult.getCriterion())
+                            .eligibleForAttribute(true)
+                            .expiringButPresent(false)
+                            .requiredButNotPresent(true)
+                            .standardGroupName(groupName)
+                            .updateRequiredBy(getMinimumRequiredDateFromGroup(standardGroupsExpiringAttestedWithoutReplacement.get(groupName)))
                             .build())
                     .forEach(groupUpToDate -> standardGroupUpToDateReports.add(groupUpToDate));
         }
@@ -79,34 +99,54 @@ public class GroupedStandardsUpToDateService {
     }
 
     //standard group that has 0 standards from the group on the cert results
-    private List<String> getUnattestedToRequiredStandardGroups(CertificationResult certResult, Logger logger) {
-        Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(certResult.getCriterion(), logger);
-        return activeGroupedStandards.keySet().stream()
-                .filter(groupName -> !isAnyStandardFromGroupOnCertResult(activeGroupedStandards.get(groupName), certResult)
-                        //TODO this just returns "true" but I'm not sure that's really how it should be..
-                        // Shouldn't we not just require one standard per group unless the required date has passed?
-                        && areStandardsInGroupRequired(activeGroupedStandards.get(groupName)))
+    private Map<String, List<Standard>> getUnattestedToRequiredStandardGroups(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
+        Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(listing, certResult.getCriterion(), logger);
+        List<Standard> standardGroupsNoneAttested = activeGroupedStandards.entrySet().stream()
+                .filter(standardGroup -> CollectionUtils.isEmpty(getAttestedStandardsFromGroup(standardGroup.getValue(), certResult)))
+                .flatMap(standardGroup -> standardGroup.getValue().stream())
+                .collect(Collectors.toList());
+        return standardGroupsNoneAttested.stream()
+                .collect(Collectors.groupingBy(Standard::getGroupName));
+    }
+
+    private List<Standard> getAttestedStandardsFromGroup(List<Standard> groupedStandards, CertificationResult certResult) {
+        return groupedStandards.stream()
+                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
                 .collect(Collectors.toList());
     }
 
+    private LocalDate getMinimumStartDateFromGroup(List<Standard> standards) {
+        return standards.stream()
+                .map(std -> std.getStartDay())
+                .filter(startDay -> startDay != null)
+                .min(Comparator.naturalOrder())
+                .orElse(LocalDate.now());
+    }
+
+    private LocalDate getMinimumRequiredDateFromGroup(List<Standard> standards) {
+        return standards.stream()
+                .map(std -> std.getRequiredDay())
+                .filter(reqDay -> reqDay != null)
+                .min(Comparator.naturalOrder())
+                .orElse(LocalDate.now());
+    }
+
     //standard group that has >= 1 standard from the group on the cert results
-    //if the standard(s) from the group have an end date, then we have to check again
-    private Map<String, List<Standard>> getAttestedToButExpiringRequiredStandardGroups(CertificationResult certResult, Logger logger) {
+    //if the standard(s) from the group have an end date, then we have to check to see if there is a newer one
+    private Map<String, List<Standard>> getAttestedToButExpiringRequiredStandardGroups(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
         Map<String, List<Standard>> expiringGroupToRequiredStandardMap = new LinkedHashMap<String, List<Standard>>();
-        Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(certResult.getCriterion(), logger);
+        Map<String, List<Standard>> activeGroupedStandards = getActiveStandardGroupsForCriterion(listing, certResult.getCriterion(), logger);
         List<String> stdGroupNames = activeGroupedStandards.keySet().stream().collect(Collectors.toList());
         stdGroupNames.stream()
             .map(stdGroupName -> getExpiringStandardsInGroup(activeGroupedStandards.get(stdGroupName)))
             .filter(expiringStdsInThisGroup -> isAnyStandardFromGroupOnCertResult(expiringStdsInThisGroup, certResult))
             .forEach(expiringStdsInThisGroupOnCertResult -> {
                 String groupName = expiringStdsInThisGroupOnCertResult.get(0).getGroupName();
-                //TODO I'm not sure about the expiring thing... how is this going to work when there are
-                //three different sets of standards in the group with two different expiring dates... ?
                 Set<LocalDate> expiringStandardsInGroupEndDates = expiringStdsInThisGroupOnCertResult.stream()
                         .filter(std -> std.getEndDay() != null)
                         .map(std -> std.getEndDay())
                         .collect(Collectors.toSet());
-                //are there other standards in the group that have a required date equal to any of the expiring standard end dates?
+                //are there other standards in the group that have a required date equal to or after any of the expiring standard end dates?
                 List<Standard> allStandardsInGroup = activeGroupedStandards.get(groupName);
                 List<Standard> standardsToReplace = allStandardsInGroup.stream()
                     .filter(stdInGroup -> expiringStandardsInGroupEndDates.contains(stdInGroup.getRequiredDay()))
@@ -133,14 +173,9 @@ public class GroupedStandardsUpToDateService {
             .isPresent();
     }
 
-    private boolean areStandardsInGroupRequired(List<Standard> standardsInGroup) {
-        //One standard in a group is always required.
-        //TBD Should we actually be looking at the required date?
-        return true;
-    }
-
-    private  Map<String, List<Standard>> getActiveStandardGroupsForCriterion(CertificationCriterion criterion, Logger logger) {
-        Map<String, List<Standard>> activeGroupedStandards = groupedStandardService.getGroupedStandardsForCriteria(criterion, LocalDate.now());
+    private  Map<String, List<Standard>> getActiveStandardGroupsForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion, Logger logger) {
+        Map<String, List<Standard>> activeGroupedStandards = groupedStandardService.getGroupedStandardsForCriteria(criterion,
+                listing.getCertificationDay(), LocalDate.now());
         logger.info("Found " + activeGroupedStandards.keySet().size() + " active standard group(s) for " + Util.formatCriteriaNumber(criterion) + ": "
                 + Util.joinListGrammatically(activeGroupedStandards.keySet().stream().collect(Collectors.toList()), "and"));
         return activeGroupedStandards;

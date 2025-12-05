@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -25,25 +26,25 @@ public class AttributeUpToDateService {
 
     @Autowired
     public AttributeUpToDateService(BaselineStandardService baselineStandardService,
-            StandardGroupService groupedStandardService,
+            StandardGroupService standardGroupService,
             StandardDAO standardDao,
             FunctionalityTestedDAO functionalityTestedDao,
             CodeSetDAO codeSetDao,
             CertificationResultRules certificationResultRules) {
         baselineStandardsUpToDateService = new BaselineStandardsUpToDateService(baselineStandardService, standardDao, certificationResultRules);
-        groupedStandardsUpToDateService = new GroupedStandardsUpToDateService(groupedStandardService, standardDao, certificationResultRules);
+        groupedStandardsUpToDateService = new GroupedStandardsUpToDateService(standardGroupService, standardDao, certificationResultRules);
         functionalitiesTestedUpToDateService = new FunctionalitiesTestedUpToDateService(functionalityTestedDao, certificationResultRules);
         codeSetsUpToDateService = new CodeSetsUpToDateService(codeSetDao, certificationResultRules);
     }
 
-    public List<StandardUpToDate> getBaselineStandardsUpToDate(CertificationResult certResult, Logger logger) {
+    public List<StandardUpToDate> getBaselineStandardsUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
         logger.info("Checking whether all baseline standards are up-to-date for criterion {}", Util.formatCriteriaNumber(certResult.getCriterion()));
-        return baselineStandardsUpToDateService.getAttributeUpToDate(certResult, logger);
+        return baselineStandardsUpToDateService.getAttributeUpToDate(listing, certResult, logger);
     }
 
-    public List<StandardGroupUpToDate> getStandardGroupsUpToDate(CertificationResult certResult, Logger logger) {
+    public List<StandardGroupUpToDate> getStandardGroupsUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
         logger.info("Checking whether all grouped standards are up-to-date for criterion {}", Util.formatCriteriaNumber(certResult.getCriterion()));
-        return groupedStandardsUpToDateService.getAttributeUpToDate(certResult, logger);
+        return groupedStandardsUpToDateService.getAttributeUpToDate(listing, certResult, logger);
     }
 
     public List<FunctionalityTestedUpToDate> getFunctionalitiesTestedUpToDate(CertificationResult certResult, Logger logger) {

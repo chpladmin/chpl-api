@@ -101,6 +101,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 "Certification Criterion",
                 "Update Required By",
                 "Standard",
+                "Standard Group",
                 "Functionality Tested",
                 "Code Set",
                 "Reason Update is Required");
@@ -119,6 +120,7 @@ public class UpdatedCriteriaStatusReportCsvCreator {
                 report.getRequiredDay() != null ? report.getRequiredDay().toString() : "",
                 //TODO put value back
                 report.getStandard() != null ? report.getStandard().getRegulatoryTextCitation() : "",
+                report.getStandardGroupName() != null ? report.getStandardGroupName() : "",
                 report.getFunctionalityTested() != null ? report.getFunctionalityTested().getValue() : "",
                 report.getCodeSet() != null ? report.getCodeSet().getName() : "",
                 report.getCriterionNotUpToDateReason().getName());

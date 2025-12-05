@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.Standard;
@@ -36,12 +37,12 @@ public class BaselineStandardsUpToDateService {
         this.certificationResultRules = certificationResultRules;
     }
 
-    public List<StandardUpToDate> getAttributeUpToDate(CertificationResult certResult, Logger logger) {
+    public List<StandardUpToDate> getAttributeUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult, Logger logger) {
         List<StandardUpToDate> standardUpToDateReports = new ArrayList<StandardUpToDate>();
 
         Boolean isCriteriaEligible = isCriteriaEligibleForStandards(certResult.getCriterion(), logger);
         if (isCriteriaEligible) {
-            List<StandardUpToDate> upToDateReports = getUpToDateReportsForUnattestedActiveBaselineStandards(certResult, logger);
+            List<StandardUpToDate> upToDateReports = getUpToDateReportsForUnattestedActiveBaselineStandards(listing, certResult, logger);
             if (!CollectionUtils.isEmpty(upToDateReports)) {
                 standardUpToDateReports.addAll(upToDateReports);
             }
@@ -54,9 +55,10 @@ public class BaselineStandardsUpToDateService {
                 && doesCriterionHaveAnyStandards(criterion, logger);
     }
 
-    private List<StandardUpToDate> getUpToDateReportsForUnattestedActiveBaselineStandards(CertificationResult certResult, Logger logger) {
+    private List<StandardUpToDate> getUpToDateReportsForUnattestedActiveBaselineStandards(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, Logger logger) {
         logger.info("Checking unattested baseline standards for " + Util.formatCriteriaNumber(certResult.getCriterion()));
-        List<Standard> unattestedActiveBaselineStandards = getUnattestedActiveBaselineStandards(certResult, logger);
+        List<Standard> unattestedActiveBaselineStandards = getUnattestedActiveBaselineStandards(listing, certResult, logger);
         logger.info("There are " + unattestedActiveBaselineStandards.size() + " unattested baseline standards for " + Util.formatCriteriaNumber(certResult.getCriterion()));
 
         List<StandardUpToDate> standardUpToDateReports = new ArrayList<StandardUpToDate>();
@@ -78,15 +80,17 @@ public class BaselineStandardsUpToDateService {
         return standardUpToDateReports;
     }
 
-    private List<Standard> getUnattestedActiveBaselineStandards(CertificationResult certResult, Logger logger) {
-        return getActiveBaselineStandardsForCriterion(certResult.getCriterion(), logger).stream()
+    private List<Standard> getUnattestedActiveBaselineStandards(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, Logger logger) {
+        return getActiveBaselineStandardsForCriterion(listing, certResult.getCriterion(), logger).stream()
                 .filter(std -> !isStandardInList(std, certResult.getStandards().stream().map(crs -> crs.getStandard()).toList()))
                 .toList();
     }
 
-    private List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
+    private List<Standard> getActiveBaselineStandardsForCriterion(CertifiedProductSearchDetails listing,
+            CertificationCriterion criterion, Logger logger) {
         List<Standard> activeBaselineStandards = baselineStandardService.getActiveBaselineStandardsForCriterion(
-                criterion, LocalDate.now());
+                criterion, listing.getCertificationDay(), LocalDate.now());
         logger.info("Found " + activeBaselineStandards.size() + " active baseline standards for " + Util.formatCriteriaNumber(criterion) + ": "
                 + Util.joinListGrammatically(activeBaselineStandards.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.toList()), "and"));
         return activeBaselineStandards;
