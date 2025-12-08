@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 52.2.0
+_8 December 2025_
+
+### Features
+* Add endpoint to get code set activity
+* Add validation to confirm presence of required functionality tested
+* Add extensionEndDay field to Standard, Functionalty Tested, and Code Set CRUD operations
+
+### Flagged Features
+* Split "Insights" flag in two
+
+### Bug Fixes
+* Correctly display % updated in criteria up-to-date report if a criteria is not attested
+
+---
+
 ## Version 52.1.0
 _1 December 2025_
 
