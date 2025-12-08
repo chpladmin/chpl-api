@@ -59,17 +59,14 @@ public class CriteriaUpToDateReportController {
                     + "(ex: \"1\" or \"1,4\").",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "acbIds")
             @RequestParam(value = "acbIds", required = false, defaultValue = "") String acbIdsDelimited) {
-        List<Long> acbIds = null;
-        if (StringUtils.isEmpty(acbIdsDelimited)) {
-            List<CertificationBody> allAcbs = acbManager.getAll();
-            acbIds = allAcbs.stream()
-                        .map(acb -> acb.getId())
+        List<CertificationBody> acbs = acbManager.getAllActive();
+        if (!StringUtils.isEmpty(acbIdsDelimited)) {
+            Set<Long> acbIdsFromParams = convertToSetWithDelimeter(acbIdsDelimited, ",");
+            acbs = acbs.stream()
+                    .filter(acb -> acbIdsFromParams.contains(acb.getId()))
                     .collect(Collectors.toList());
-        } else {
-            Set<Long> acbIdSet = convertToSetWithDelimeter(acbIdsDelimited, ",");
-            acbIds = acbIdSet.stream().collect(Collectors.toList());
         }
-        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateReports(acbIds);
+        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateReports(acbs);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Criteria up-to-date counts monthly for the past year",
@@ -86,17 +83,14 @@ public class CriteriaUpToDateReportController {
                 + "(ex: \"1\" or \"1,4\").",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "acbIds")
     @RequestParam(value = "acbIds", required = false, defaultValue = "") String acbIdsDelimited) {
-        List<Long> acbIds = null;
-        if (StringUtils.isEmpty(acbIdsDelimited)) {
-            List<CertificationBody> allAcbs = acbManager.getAll();
-            acbIds = allAcbs.stream()
-                        .map(acb -> acb.getId())
+        List<CertificationBody> acbs = acbManager.getAllActive();
+        if (!StringUtils.isEmpty(acbIdsDelimited)) {
+            Set<Long> acbIdsFromParams = convertToSetWithDelimeter(acbIdsDelimited, ",");
+            acbs = acbs.stream()
+                    .filter(acb -> acbIdsFromParams.contains(acb.getId()))
                     .collect(Collectors.toList());
-        } else {
-            Set<Long> acbIdSet = convertToSetWithDelimeter(acbIdsDelimited, ",");
-            acbIds = acbIdSet.stream().collect(Collectors.toList());
         }
-        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbIds);
+        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbs);
     }
 
     @Operation(summary = "Retrieves all listing and attested criteria combinations that were not up-to-date on the "
