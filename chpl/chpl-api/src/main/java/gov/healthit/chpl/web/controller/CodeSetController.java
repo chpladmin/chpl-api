@@ -15,6 +15,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetManager;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -60,7 +61,8 @@ public class CodeSetController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody CodeSet createCodeSet(@RequestBody(required = true) CodeSet codeSet) throws EntityRetrievalException {
+    public @ResponseBody CodeSet createCodeSet(@RequestBody(required = true) CodeSet codeSet)
+            throws EntityRetrievalException, ValidationException {
         return codeSetManager.create(codeSet);
     }
 
@@ -73,7 +75,8 @@ public class CodeSetController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody CodeSet updateCodeSet(@RequestBody(required = true) CodeSet codeSet) throws EntityRetrievalException {
+    public @ResponseBody CodeSet updateCodeSet(@RequestBody(required = true) CodeSet codeSet)
+            throws EntityRetrievalException, ValidationException {
         return codeSetManager.update(codeSet);
     }
 
@@ -85,7 +88,7 @@ public class CodeSetController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{codeSetId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public void delete(@PathVariable("codeSetId") Long codeSetId) throws EntityRetrievalException {
+    public void delete(@PathVariable("codeSetId") Long codeSetId) throws EntityRetrievalException, ValidationException {
         codeSetManager.delete(codeSetId);
     }
 

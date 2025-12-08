@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,6 +24,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -64,14 +63,13 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public FunctionalityTested add(FunctionalityTested functionalityTested) {
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
-                .name(functionalityTested.getValue()) //TODO: OCD-4288 - Remove when column is removed
-                .number(functionalityTested.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
                 .value(functionalityTested.getValue())
                 .regulatoryTextCitation(functionalityTested.getRegulatoryTextCitation())
                 .additionalInformation(functionalityTested.getAdditionalInformation())
                 .startDay(functionalityTested.getStartDay())
                 .endDay(functionalityTested.getEndDay())
                 .requiredDay(functionalityTested.getRequiredDay())
+                .extensionEndDay(functionalityTested.getExtensionEndDay())
                 .rule(functionalityTested.getRule() != null && functionalityTested.getRule().getId() != null
                         ? ruleDAO.getRuleEntityById(functionalityTested.getRule().getId())
                         : null)
@@ -100,6 +98,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         entity.setStartDay(functionalityTested.getStartDay());
         entity.setEndDay(functionalityTested.getEndDay());
         entity.setRequiredDay(functionalityTested.getRequiredDay());
+        entity.setExtensionEndDay(functionalityTested.getExtensionEndDay());
         if (functionalityTested.getRule() != null) {
             entity.setRule(ruleDAO.getRuleEntityById(functionalityTested.getRule().getId()));
         } else {
