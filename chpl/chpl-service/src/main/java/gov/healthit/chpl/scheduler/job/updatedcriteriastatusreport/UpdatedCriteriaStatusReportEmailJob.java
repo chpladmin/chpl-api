@@ -113,9 +113,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds)//,
-                        //updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
-                        //criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
+                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds),
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
+                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
                         ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
