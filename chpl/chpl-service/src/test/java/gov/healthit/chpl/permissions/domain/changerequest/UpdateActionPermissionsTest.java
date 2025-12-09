@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -114,19 +115,27 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
-                .thenReturn(getDeveloperAcbs());
+        ChangeRequest changeRequest = ChangeRequest.builder()
+                .id(1L)
+                .certificationBodies(Stream.of(CertificationBody.builder().id(1L).build()).toList())
+                .build();
+
+//        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
+//                .thenReturn(getDeveloperAcbs());
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));
+        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+            .thenReturn(changeRequest);
+
         assertTrue(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
-                .changeRequest(ChangeRequest.builder().id(1L).build())
+                .changeRequest(changeRequest)
                 .acknowledgeWarnings(false)
                 .build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
-                .thenReturn(getAllAcbForUser(5l));
+                .thenReturn(getAllAcbForUser(5L));
         assertFalse(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
-                .changeRequest(ChangeRequest.builder().id(1L).build())
+                .changeRequest(changeRequest)
                 .acknowledgeWarnings(false)
                 .build()));
     }
