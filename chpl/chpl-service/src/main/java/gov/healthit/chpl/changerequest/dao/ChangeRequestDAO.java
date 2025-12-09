@@ -232,12 +232,11 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "FROM ChangeRequestEntity cr  "
                 + "JOIN FETCH cr.changeRequestType crt "
                 + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH cr.certificationBodies cb "
+                + "LEFT JOIN FETCH cr.certificationBodies crAcbs "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "INNER JOIN DeveloperCertificationBodyMapEntity devAcbMap ON devAcbMap.developer.id = dev.id "
-                + "WHERE devAcbMap.certificationBody.id IN (:acbIds) "
+                + "WHERE crAcbs.id IN (:acbIds) "
                 + "AND cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
@@ -271,8 +270,8 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     private ChangeRequestEntity getNewEntity(ChangeRequest cr) {
         ChangeRequestEntity entity = new ChangeRequestEntity();
         entity.setChangeRequestType(
-                getSession().load(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
-        entity.setDeveloper(getSession().load(DeveloperEntity.class, cr.getDeveloper().getId()));
+                getSession().getReference(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
+        entity.setDeveloper(getSession().getReference(DeveloperEntity.class, cr.getDeveloper().getId()));
         entity.setDeleted(false);
         return entity;
     }
