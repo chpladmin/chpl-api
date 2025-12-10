@@ -120,8 +120,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                 .certificationBodies(Stream.of(CertificationBody.builder().id(1L).build()).toList())
                 .build();
 
-//        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
-//                .thenReturn(getDeveloperAcbs());
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
