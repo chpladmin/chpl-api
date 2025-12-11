@@ -19,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.exception.ValidationException;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public final class FileUtils {
     public static final int BUFFER_SIZE = 1024;
@@ -58,6 +60,15 @@ public final class FileUtils {
 
     public File getDownloadFolder() throws IOException {
         String downloadFolderPath = env.getProperty(DOWNLOAD_FOLDER_PROPERTY_NAME);
+        Path path = Paths.get(downloadFolderPath);
+        try {
+            // Create all directories in the path if they don't exist
+            Files.createDirectories(path);
+            LOGGER.info("Created download folder path: " + path.toAbsolutePath());
+        } catch (IOException e) {
+            LOGGER.error("Failed to create download folder path: " + e.getMessage(), e);
+        }
+
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists() || !downloadFolder.canRead()) {
             throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
