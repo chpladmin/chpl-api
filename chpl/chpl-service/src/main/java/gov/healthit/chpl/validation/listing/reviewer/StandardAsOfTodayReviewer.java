@@ -25,7 +25,11 @@ public class StandardAsOfTodayReviewer extends StandardReviewer {
         super(certResultRules, validationUtils, standardDao, baselineStandardService, standardGroupService, msgUtil);
     }
 
-    public LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing) {
+    public LocalDate getStandardsCheckDateRangeStart(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationDay() == null ? LocalDate.now() : listing.getCertificationDay();
+    }
+
+    public LocalDate getStandardsCheckDateRangeEnd(CertifiedProductSearchDetails listing) {
         return LocalDate.now();
     }
 
