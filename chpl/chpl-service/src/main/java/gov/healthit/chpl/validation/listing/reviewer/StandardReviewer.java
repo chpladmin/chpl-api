@@ -43,7 +43,8 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         this.msgUtil = msgUtil;
     }
 
-    public abstract LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing);
+    public abstract LocalDate getStandardsCheckDateRangeStart(CertifiedProductSearchDetails listing);
+    public abstract LocalDate getStandardsCheckDateRangeEnd(CertifiedProductSearchDetails listing);
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -59,7 +60,7 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
         reviewRequiredBaselineStandardsExist(listing, certResult);
-        reviewStandardExistsForEachGroup(listing, certResult, getStandardsCheckDate(listing));
+        reviewStandardExistsForEachGroup(listing, certResult, getStandardsCheckDateRangeStart(listing), getStandardsCheckDateRangeEnd(listing));
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
@@ -137,8 +138,8 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     }
 
     private CertificationResult reviewRequiredBaselineStandardsExist(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
-                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandards(
+                certResult.getCriterion(), getStandardsCheckDateRangeStart(listing), getStandardsCheckDateRangeEnd(listing));
 
         validStandardsForCriterionAndListing
                 .forEach(std -> {
@@ -149,7 +150,7 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
                     if (!isStandardInList(std, standardsExistingInCertResult)) {
                         if (allowsExtension()
                                 && std.getExtensionEndDay() != null
-                                && getStandardsCheckDate(listing).isBefore(std.getExtensionEndDay())) {
+                                && getStandardsCheckDateRangeEnd(listing).isBefore(std.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     std.getRegulatoryTextCitation(),

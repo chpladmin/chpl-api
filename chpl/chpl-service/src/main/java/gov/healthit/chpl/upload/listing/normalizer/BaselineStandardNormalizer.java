@@ -33,7 +33,8 @@ public abstract class BaselineStandardNormalizer implements CertificationResultL
         this.msgUtil = msgUtil;
     }
 
-    public abstract LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing);
+    public abstract LocalDate getStandardsCheckDateRangeStart(CertifiedProductSearchDetails listing);
+    public abstract LocalDate getStandardsCheckDateRangeEnd(CertifiedProductSearchDetails listing);
 
     @Override
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -44,18 +45,27 @@ public abstract class BaselineStandardNormalizer implements CertificationResultL
                 .forEach(certResult -> addMissingStandards(listing, certResult, criteriaWithBaselineStandardsAdded));
 
             if (!CollectionUtils.isEmpty(criteriaWithBaselineStandardsAdded)) {
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.baselineStandardsAdded",
-                        getStandardsCheckDate(listing),
+                if (getStandardsCheckDateRangeStart(listing).equals(getStandardsCheckDateRangeEnd(listing))) {
+                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.baselineStandardsRequiredOnDateAdded",
+                        getStandardsCheckDateRangeStart(listing),
                         Util.joinListGrammatically(criteriaWithBaselineStandardsAdded.stream()
                                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                                 .collect(Collectors.toList()), "and")));
+                } else {
+                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.baselineStandardsRequiredBetweenDatesAdded",
+                            getStandardsCheckDateRangeStart(listing),
+                            getStandardsCheckDateRangeEnd(listing),
+                            Util.joinListGrammatically(criteriaWithBaselineStandardsAdded.stream()
+                                    .map(criterion -> Util.formatCriteriaNumber(criterion))
+                                    .collect(Collectors.toList()), "and")));
+                    }
             }
         }
     }
 
     private CertificationResult addMissingStandards(CertifiedProductSearchDetails listing, CertificationResult certResult, Set<CertificationCriterion> criteriaWithBaselineStandardsAdded) {
-        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
-                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandards(
+                certResult.getCriterion(), getStandardsCheckDateRangeStart(listing), getStandardsCheckDateRangeEnd(listing));
 
         validStandardsForCriterionAndListing
                 .forEach(std -> {

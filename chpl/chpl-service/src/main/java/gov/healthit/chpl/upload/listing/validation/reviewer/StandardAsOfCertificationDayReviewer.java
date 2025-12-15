@@ -26,7 +26,11 @@ public class StandardAsOfCertificationDayReviewer extends StandardReviewer {
         super(certResultRules, validationUtils, standardDao, baselineStandardService, standardGroupService, msgUtil);
     }
 
-    public LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing) {
+    public LocalDate getStandardsCheckDateRangeStart(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
+    }
+
+    public LocalDate getStandardsCheckDateRangeEnd(CertifiedProductSearchDetails listing) {
         return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
     }
 
