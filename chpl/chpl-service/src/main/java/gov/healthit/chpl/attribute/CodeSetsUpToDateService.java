@@ -64,6 +64,7 @@ public class CodeSetsUpToDateService {
                             .expiringButPresent(false)
                             .requiredButNotPresent(true)
                             .codeSet(cs)
+                            .updateRequiredBy(cs.getRequiredDay())
                             .build())
                     .forEach(csUpToDate -> codeSetUpToDateReports.add(csUpToDate));
         }

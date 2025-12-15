@@ -46,6 +46,24 @@ public class BaselineStandardService {
         }
     }
 
+    public List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion,
+            LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
+        try {
+            List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMap();
+            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
+
+            standardCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
+            return standardCriteriaMaps.stream()
+                    .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
+                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getStartDay(), map.getStandard().getEndDay()), standardCheckDateRangeStart))
+                    .map(map -> map.getStandard())
+                    .toList();
+        } catch (EntityRetrievalException e) {
+            LOGGER.info("Error retrieving Standards for Criterion");
+            throw new RuntimeException(e);
+        }
+    }
+
     private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {
         var x = standardGroups.entrySet().stream()
             .flatMap(mapEntry -> mapEntry.getValue().stream())

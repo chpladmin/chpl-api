@@ -5,12 +5,14 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.CodeSetUpToDate;
 import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
+import gov.healthit.chpl.attribute.StandardGroupUpToDate;
 import gov.healthit.chpl.attribute.StandardUpToDate;
 import lombok.Getter;
 
 public enum CriterionNotUpToDateReasonEnum {
     STANDARD_ATTESTED("Standard Attested"),
     REQUIRED_STANDARD_NOT_ATTESTED("Required Standard Not Attested"),
+    REQUIRED_STANDARD_FROM_GROUP_NOT_ATTESTED("Required Standard From Group Not Attested"),
     FUNCTIONALITY_TESTED_ATTESTED("Functionality Tested Attested"),
     REQUIRED_FUNCTIONALITY_TESTED_NOT_ATTESTED("Required Functionality Tested Not Attested"),
     CODE_SET_ATTESTED("Code Set Attested"),
@@ -34,6 +36,8 @@ public enum CriterionNotUpToDateReasonEnum {
         } else if (attributeUpToDate.getRequiredButNotPresent()) {
             if (attributeUpToDate instanceof StandardUpToDate) {
                 return REQUIRED_STANDARD_NOT_ATTESTED;
+            } else if (attributeUpToDate instanceof StandardGroupUpToDate) {
+                return REQUIRED_STANDARD_FROM_GROUP_NOT_ATTESTED;
             } else if (attributeUpToDate instanceof FunctionalityTestedUpToDate) {
                 return REQUIRED_FUNCTIONALITY_TESTED_NOT_ATTESTED;
             } else if (attributeUpToDate instanceof CodeSetUpToDate) {

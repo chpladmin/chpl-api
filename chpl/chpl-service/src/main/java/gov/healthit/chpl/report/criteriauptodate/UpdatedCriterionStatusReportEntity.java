@@ -64,29 +64,37 @@ public class UpdatedCriterionStatusReportEntity extends EntityAudit {
     @JoinColumn(name = "certification_result_id", insertable = false, updatable = false)
     private CertificationResultDetailsEntity certificationResult;
 
-    @Basic(optional = false)
-    @Column(name = "standard_id", nullable = false)
+    @Basic(optional = true)
+    @Column(name = "standard_id")
     private Long standardId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "standard_id", insertable = false, updatable = false)
     private StandardEntity standard;
 
-    @Basic(optional = false)
-    @Column(name = "functionality_tested_id", nullable = false)
+    @Basic(optional = true)
+    @Column(name = "standard_group_name", nullable = false)
+    private String standardGroupName;
+
+    @Basic(optional = true)
+    @Column(name = "functionality_tested_id")
     private Long functionalityTestedId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
     private FunctionalityTestedEntity functionalityTested;
 
-    @Basic(optional = false)
-    @Column(name = "code_set_id", nullable = false)
+    @Basic(optional = true)
+    @Column(name = "code_set_id")
     private Long codeSetId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "code_set_id", insertable = false, updatable = false)
     private CodeSetEntity codeSet;
+
+    @Basic(optional = false)
+    @Column(name = "required_day")
+    private LocalDate requiredDay;
 
     @Basic(optional = false)
     @Column(name = "criterion_not_up_to_date_reason_id", nullable = false)
@@ -132,8 +140,10 @@ public class UpdatedCriterionStatusReportEntity extends EntityAudit {
                 .certificationResultId(certificationResultId)
                 .certificationCriterion(certificationResult.getCertificationCriterion().toDomain())
                 .standard(standard != null ? standard.toDomain() : null)
+                .standardGroupName(standardGroupName)
                 .functionalityTested(functionalityTested != null ? functionalityTested.toDomain() : null)
                 .codeSet(codeSet != null ? codeSet.toDomain() : null)
+                .requiredDay(requiredDay)
                 .criterionNotUpToDateReason(criterionNotUpToDateReason.toDomain())
                 .product(product)
                 .version(version)

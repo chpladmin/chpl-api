@@ -1,5 +1,7 @@
 package gov.healthit.chpl.attribute;
 
+import java.time.LocalDate;
+
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +17,5 @@ public class AttributeUpToDate {
     private Boolean eligibleForAttribute;
     private Boolean expiringButPresent;
     private Boolean requiredButNotPresent;
+    private LocalDate updateRequiredBy;
 }
