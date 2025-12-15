@@ -17,7 +17,11 @@ public class BaselineStandardAsOfCertificationDayNormalizer extends BaselineStan
         super(baselineStandardService, msgUtil);
     }
 
-    public LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing) {
+    public LocalDate getStandardsCheckDateRangeStart(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
+    }
+
+    public LocalDate getStandardsCheckDateRangeEnd(CertifiedProductSearchDetails listing) {
         return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
     }
 }
