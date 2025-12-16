@@ -22,6 +22,7 @@ import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
 import gov.healthit.chpl.attribute.CodeSetUpToDate;
 import gov.healthit.chpl.attribute.FunctionalityTestedUpToDate;
+import gov.healthit.chpl.attribute.StandardGroupUpToDate;
 import gov.healthit.chpl.attribute.StandardUpToDate;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -139,14 +140,20 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
 
     private List<UpdatedCriterionStatusReport> getUpdatesRequiredForCriterion(CertifiedProductSearchDetails listing,
             CertificationResult certResult) {
-        List<StandardUpToDate> standardsUpToDate = attributeUpToDateService.getStandardsUpToDate(certResult, LOGGER);
+        List<StandardUpToDate> baselineStandardsUpToDate = attributeUpToDateService.getBaselineStandardsUpToDate(listing, certResult, LOGGER);
+        List<StandardGroupUpToDate> standardGroupsUpToDate = attributeUpToDateService.getStandardGroupsUpToDate(listing, certResult, LOGGER);
         List<FunctionalityTestedUpToDate> functionalityTestedUpToDate = attributeUpToDateService.getFunctionalitiesTestedUpToDate(certResult, LOGGER);
         List<CodeSetUpToDate> codeSetsUpToDate = attributeUpToDateService.getCodeSetsUpToDate(certResult, LOGGER);
 
         List<UpdatedCriterionStatusReport> updatesRequiredForCriterion = new ArrayList<UpdatedCriterionStatusReport>();
-        if (!CollectionUtils.isEmpty(standardsUpToDate)) {
-            standardsUpToDate.stream()
+        if (!CollectionUtils.isEmpty(baselineStandardsUpToDate)) {
+            baselineStandardsUpToDate.stream()
                 .map(stdReport -> buildReportFromStandardRequiringUpdate(listing, stdReport))
+                .forEach(report -> updatesRequiredForCriterion.add(report));
+        }
+        if (!CollectionUtils.isEmpty(standardGroupsUpToDate)) {
+            standardGroupsUpToDate.stream()
+                .map(stdGroupReport -> buildReportFromStandardGroupRequiringUpdate(listing, stdGroupReport))
                 .forEach(report -> updatesRequiredForCriterion.add(report));
         }
         if (!CollectionUtils.isEmpty(functionalityTestedUpToDate)) {
@@ -176,11 +183,37 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
             .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
             .certificationCriterion(standardReport.getCriterion())
+            .requiredDay(standardReport.getUpdateRequiredBy())
             .standard(standardReport.getStandard())
+            .standardGroupName(null)
             .functionalityTested(null)
             .codeSet(null)
             .certificationResultId(getCertificationResultId(listing, standardReport.getCriterion()))
             .criterionNotUpToDateReason(getCriterionNotUpToDateReason(standardReport))
+        .build();
+    }
+
+    private UpdatedCriterionStatusReport buildReportFromStandardGroupRequiringUpdate(CertifiedProductSearchDetails listing,
+            StandardGroupUpToDate groupReport) {
+        return UpdatedCriterionStatusReport.builder()
+            .certifiedProductId(listing.getId())
+            .chplProductNumber(listing.getChplProductNumber())
+            .product(listing.getProduct().getName())
+            .version(listing.getVersion().getVersion())
+            .developer(listing.getDeveloper().getName())
+            .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(listing.getCurrentStatus().getStatus().getName())
+            .developerId(listing.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
+            .certificationCriterion(groupReport.getCriterion())
+            .requiredDay(groupReport.getUpdateRequiredBy())
+            .standard(null)
+            .standardGroupName(groupReport.getStandardGroupName())
+            .functionalityTested(null)
+            .codeSet(null)
+            .certificationResultId(getCertificationResultId(listing, groupReport.getCriterion()))
+            .criterionNotUpToDateReason(getCriterionNotUpToDateReason(groupReport))
         .build();
     }
 
@@ -199,6 +232,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
             .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
             .certificationCriterion(ftReport.getCriterion())
+            .requiredDay(ftReport.getUpdateRequiredBy())
             .standard(null)
             .functionalityTested(ftReport.getFunctionalityTested())
             .codeSet(null)
@@ -221,6 +255,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
             .certificationBodyId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
             .certificationStatusId(listing.getCurrentStatus().getStatus().getId())
             .certificationCriterion(codeSetReport.getCriterion())
+            .requiredDay(codeSetReport.getUpdateRequiredBy())
             .standard(null)
             .functionalityTested(null)
             .codeSet(codeSetReport.getCodeSet())
