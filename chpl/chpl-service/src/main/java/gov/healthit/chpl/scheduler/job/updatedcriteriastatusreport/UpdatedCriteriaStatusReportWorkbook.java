@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,14 +41,14 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
         this.env = env;
     }
 
-    public File generateSpreadsheet(List<Long> acbIds) throws IOException {
+    public File generateSpreadsheet(List<Long> acbIds, Pair<LocalDate, LocalDate> requiredByDateRange) throws IOException {
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(TOTAL_NUMBER_OF_MONTHS);
 
         criteriaManager.getActiveToday().stream()
                 .sorted(certificationCriterionComparator)
-                .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteriaOnDates(crit, acbIds, allReportDates, workbook));
+                .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteriaOnDates(crit, acbIds, allReportDates, requiredByDateRange, workbook));
 
         //Remove the template sheet
         workbook.removeSheetAt(0);

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,7 +92,9 @@ public class CriteriaUpToDateReportController {
                     .filter(acb -> acbIdsFromParams.contains(acb.getId()))
                     .collect(Collectors.toList());
         }
-        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbs);
+        //TODO what should this do
+        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(LocalDate.MIN, LocalDate.now());
+        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbs, requiredByDateRange);
     }
 
     @Operation(summary = "Retrieves all listing and attested criteria combinations that were not up-to-date on the "

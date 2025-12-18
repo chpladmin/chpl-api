@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
@@ -39,7 +40,7 @@ public class UpdatedCriteriaStatusReportSheet {
     }
 
     public void generateSheetForCriteriaOnDates(CertificationCriterion criterion, List<Long> acbIds,
-            List<LocalDate> reportDates, Workbook workbook) {
+            List<LocalDate> reportDates, Pair<LocalDate, LocalDate> requiredByDateRange, Workbook workbook) {
         LOGGER.info("Generating worksheet for " + Util.formatCriteriaNumber(criterion));
         Sheet sheet = addWorksheetForCriteria(criterion, workbook);
 
@@ -52,7 +53,7 @@ public class UpdatedCriteriaStatusReportSheet {
 
         for (int i = UpdatedCriteriaStatusReportWorkbook.TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
             LocalDate actualReportDay = reportDates.get(i - 1);
-            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay, acbs);
+            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay, acbs, requiredByDateRange);
 
             long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(reports, criterion);
             long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(reports, criterion);
