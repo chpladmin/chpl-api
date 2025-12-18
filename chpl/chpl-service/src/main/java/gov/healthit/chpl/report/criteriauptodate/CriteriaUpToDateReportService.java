@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.util.CertificationStatusUtil;
@@ -46,29 +48,30 @@ public class CriteriaUpToDateReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(List<Long> acbIds) {
+    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(List<CertificationBody> acbs) {
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(ONE_YEAR_IN_MONTHS);
         LOGGER.info("Generating criteria up-to-date counts for the past year using report dates: "
                 + Util.joinListGrammatically(allReportDates.stream().map(reportDate -> reportDate.toString()).collect(Collectors.toList())));
 
         return allReportDates.stream()
-            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate, acbIds).stream())
+            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate, acbs).stream())
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate, List<Long> acbIds) {
+    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate, List<CertificationBody> acbs) {
         List<CertificationCriterion> activeCriteria = criteriaManager.getActiveToday();
         StatisticsSnapshot statisticsSnapshot = getSummaryStatisticsSnapshotForDate(reportDate);
         List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
 
         return activeCriteria.stream()
-            .map(criterion -> buildCriteriaUpToDateReport(criterion, acbIds, statisticsSnapshot, criteriaStatusReports, reportDate))
+            .flatMap(criterion ->
+                buildCriteriaUpToDateReports(criterion, acbs, statisticsSnapshot, criteriaStatusReports, reportDate).stream())
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(List<Long> acbIds) {
+    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(List<CertificationBody> acbs) {
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(
                 LocalDate.now());
 
@@ -77,7 +80,8 @@ public class CriteriaUpToDateReportService {
         List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
 
         return activeCriteria.stream()
-            .map(criterion -> buildCriteriaUpToDateReport(criterion, acbIds, statisticsSnapshot, criteriaStatusReports, reportDate))
+            .flatMap(criterion ->
+                buildCriteriaUpToDateReports(criterion, acbs, statisticsSnapshot, criteriaStatusReports, reportDate).stream())
             .collect(Collectors.toList());
     }
 
@@ -98,15 +102,27 @@ public class CriteriaUpToDateReportService {
         return results.stream().collect(Collectors.toList());
     }
 
-    private CriteriaUpToDateReport buildCriteriaUpToDateReport(CertificationCriterion criterion,
-            List<Long> acbIds,
+    private List<CriteriaUpToDateReport> buildCriteriaUpToDateReports(CertificationCriterion criterion,
+            List<CertificationBody> acbs,
             StatisticsSnapshot statisticsSnapshot,
             List<UpdatedCriterionStatusReport> criteriaStatusReports,
             LocalDate reportDate) {
-        long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(statisticsSnapshot, criterion, acbIds);
-        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion, acbIds, reportDate);
+        return acbs.stream()
+            .map(acb -> buildCriteriaUpToDateReport(criterion, acb, statisticsSnapshot, criteriaStatusReports, reportDate))
+            .collect(Collectors.toList());
+    }
+
+    private CriteriaUpToDateReport buildCriteriaUpToDateReport(CertificationCriterion criterion,
+            CertificationBody acb,
+            StatisticsSnapshot statisticsSnapshot,
+            List<UpdatedCriterionStatusReport> criteriaStatusReports,
+            LocalDate reportDate) {
+        long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(statisticsSnapshot, criterion, Stream.of(acb.getId()).toList());
+        long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(criteriaStatusReports, criterion, Stream.of(acb.getId()).toList(), reportDate);
 
         return CriteriaUpToDateReport.builder()
+                .acbId(acb.getId())
+                .acbName(acb.getName())
                 .accurateAsOfDate(reportDate)
                 .activeListingsAttestingToCriterionCount(totalActiveListingsWithCriterion)
                 .activeListingsUpToDateOnCriterionCount(totalActiveListingsWithCriterion - totalListingsRequiringUpdates)
