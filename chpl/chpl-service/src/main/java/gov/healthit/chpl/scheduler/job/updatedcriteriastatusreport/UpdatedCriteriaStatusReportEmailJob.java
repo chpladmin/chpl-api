@@ -73,7 +73,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setAcbIds(context);
+        LOGGER.info("Report includes data for ACBs: " + Util.joinListGrammatically(acbIds.stream().map(acbId -> acbId.toString()).collect(Collectors.toList())));
         setIncludeFutureDeadlines(context);
+        LOGGER.info("Report includes data for " + (includeFutureDeadlines ? "future" : "past") + " deadlines");
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -120,7 +122,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
                 .recipient(emailAddress)
-                .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .subject(String.format(env.getProperty("updatedCriteriaStatusReport.subject"), includeFutureDeadlines ? "Upcoming Deadlines" : "Past Deadlines"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
@@ -134,7 +136,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     private String createHtmlMessage() throws ValidationException {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .heading(String.format(env.getProperty("updatedCriteriaStatusReport.subject"), includeFutureDeadlines ? "Upcoming Deadlines" : "Past Deadlines"))
                 .paragraph("", getHtmlEmailBody())
                 .footer(AdminFooter.class)
                 .build();
@@ -149,7 +151,8 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .collect(Collectors.toList());
         return String.format(env.getProperty("updatedCriteriaStatusReport.body"),
                 getReportDate().toString(),
-                Util.joinListGrammatically(acbNames, "and"));
+                Util.joinListGrammatically(acbNames, "and"),
+                includeFutureDeadlines ? "upcoming deadlines" : "past deadlines");
     }
 
     private LocalDate getReportDate() {
