@@ -93,7 +93,7 @@ public class CriteriaUpToDateReportController {
                     .collect(Collectors.toList());
         }
         //TODO what should this do
-        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(LocalDate.MIN, LocalDate.now());
+        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(LocalDate.MIN, LocalDate.MAX);
         return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbs, requiredByDateRange);
     }
 
