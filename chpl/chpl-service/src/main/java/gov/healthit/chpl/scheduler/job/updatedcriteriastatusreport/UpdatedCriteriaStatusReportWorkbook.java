@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDateService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 @Component
 public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsheetBase {
     public static final Integer TOTAL_NUMBER_OF_MONTHS = 12;
@@ -42,6 +44,8 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
     }
 
     public File generateSpreadsheet(List<Long> acbIds, Pair<LocalDate, LocalDate> requiredByDateRange) throws IOException {
+        LOGGER.info("Generating Updated Criteria Charts for all active criteria");
+
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(TOTAL_NUMBER_OF_MONTHS);
@@ -54,6 +58,7 @@ public class UpdatedCriteriaStatusReportWorkbook extends UpdatedCriteriaSpreadsh
         workbook.removeSheetAt(0);
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+        LOGGER.info("Completed generating Updated Criteria Charts for all active criteria");
         return writeFileToDisk(workbook, newFile);
     }
 

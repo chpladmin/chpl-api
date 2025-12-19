@@ -111,8 +111,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     }
 
     private void setIncludeFutureDeadlines(JobExecutionContext context) {
-        String includeFutureDeadlinesStr = context.getMergedJobDataMap().getString(JOB_DATA_KEY_INCLUDE_FUTURE);
-        includeFutureDeadlines = Boolean.getBoolean(includeFutureDeadlinesStr);
+        includeFutureDeadlines = context.getMergedJobDataMap().getBooleanValue(JOB_DATA_KEY_INCLUDE_FUTURE);
     }
 
     private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
