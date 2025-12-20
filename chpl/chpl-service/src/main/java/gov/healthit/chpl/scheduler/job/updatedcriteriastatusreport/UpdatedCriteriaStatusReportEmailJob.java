@@ -115,8 +115,10 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     }
 
     private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
-        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(includeFutureDeadlines ? LocalDate.now().plusDays(1) : LocalDate.MIN,
+        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(
+                includeFutureDeadlines ? LocalDate.now().plusDays(1) : LocalDate.MIN,
                 includeFutureDeadlines ? LocalDate.now().plusYears(1) : LocalDate.now());
+        LOGGER.info("Getting reports with criteria up-to-date deadlines between " + requiredByDateRange.getLeft() + " and " + requiredByDateRange.getRight());
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
