@@ -25,6 +25,12 @@ public class CriteriaUpToDateReport {
     @Schema(description = "The criterion being checked")
     private CertificationCriterion criterion;
 
+    @Schema(description = "The name of the ONC-ACB to which the listing counts apply")
+    private String acbName;
+
+    @Schema(description = "The internal database ID of the ONC-ACB to which the listing counts apply")
+    private Long acbId;
+
     @Schema(description = "The total number of listings attesting to the criterion")
     private Long activeListingsAttestingToCriterionCount;
 

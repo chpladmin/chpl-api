@@ -55,6 +55,7 @@ public class FunctionalitiesTestedUpToDateService {
                             .expiringButPresent(false)
                             .requiredButNotPresent(true)
                             .functionalityTested(ft)
+                            .updateRequiredBy(ft.getRequiredDay())
                             .build())
                     .forEach(ftUpToDate -> functionalityTestedUpToDateReports.add(ftUpToDate));
         }

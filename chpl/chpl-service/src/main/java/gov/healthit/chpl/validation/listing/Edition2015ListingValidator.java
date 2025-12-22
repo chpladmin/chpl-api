@@ -38,7 +38,6 @@ import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardAsOfTodayReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
@@ -260,9 +259,6 @@ public class Edition2015ListingValidator extends Validator {
     private TestingLabComparisonReviewer testingLabComparisonReviewer;
 
     @Autowired
-    private StandardRemovalReviewer standardRemovalReviewer;
-
-    @Autowired
     private IcsCodeReviewer icsCodeReviewer;
 
     @Autowired
@@ -335,7 +331,6 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);
         comparisonReviewers.add(testingLabComparisonReviewer);
-        comparisonReviewers.add(standardRemovalReviewer);
         return comparisonReviewers;
     }
 

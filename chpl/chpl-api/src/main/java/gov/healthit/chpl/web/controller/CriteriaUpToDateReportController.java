@@ -1,11 +1,17 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +23,8 @@ import gov.healthit.chpl.report.criteriauptodate.ListingNotUpToDateReport;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
@@ -43,12 +51,22 @@ public class CriteriaUpToDateReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaUpToDateReport> getCriteriaUpToDateReports() {
-        List<CertificationBody> allAcbs = acbManager.getAll();
-        List<Long> acbIds = allAcbs.stream()
-                    .map(acb -> acb.getId())
+    public @ResponseBody List<CriteriaUpToDateReport> getCriteriaUpToDateReports(
+            @Parameter(description = "A comma-separated list of certification body IDs. "
+                    + "The specified certification body IDs will have up-to-date data for the listings that they are responsible for "
+                    + "in the returned criteria up-to-date reports. This parameter is optional and if it is not included "
+                    + "then data for all ONC-ACBs will be included."
+                    + "(ex: \"1\" or \"1,4\").",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "acbIds")
+            @RequestParam(value = "acbIds", required = false, defaultValue = "") String acbIdsDelimited) {
+        List<CertificationBody> acbs = acbManager.getAllActive();
+        if (!StringUtils.isEmpty(acbIdsDelimited)) {
+            Set<Long> acbIdsFromParams = convertToSetWithDelimeter(acbIdsDelimited, ",");
+            acbs = acbs.stream()
+                    .filter(acb -> acbIdsFromParams.contains(acb.getId()))
                     .collect(Collectors.toList());
-        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateReports(acbIds);
+        }
+        return reportDataManager.getCriteriaAttributeUpToDateService().getAllCriteriaUpToDateReports(acbs);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Criteria up-to-date counts monthly for the past year",
@@ -57,12 +75,22 @@ public class CriteriaUpToDateReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/monthly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports() {
-        List<CertificationBody> allAcbs = acbManager.getAll();
-        List<Long> acbIds = allAcbs.stream()
-                .map(acb -> acb.getId())
-                .collect(Collectors.toList());
-        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbIds);
+    public @ResponseBody List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(
+            @Parameter(description = "A comma-separated list of certification body IDs. "
+                + "The specified certification body IDs will have up-to-date data for the listings that they are responsible for "
+                + "in the returned criteria up-to-date reports. This parameter is optional and if it is not included "
+                + "then data for all ONC-ACBs will be included."
+                + "(ex: \"1\" or \"1,4\").",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "acbIds")
+    @RequestParam(value = "acbIds", required = false, defaultValue = "") String acbIdsDelimited) {
+        List<CertificationBody> acbs = acbManager.getAllActive();
+        if (!StringUtils.isEmpty(acbIdsDelimited)) {
+            Set<Long> acbIdsFromParams = convertToSetWithDelimeter(acbIdsDelimited, ",");
+            acbs = acbs.stream()
+                    .filter(acb -> acbIdsFromParams.contains(acb.getId()))
+                    .collect(Collectors.toList());
+        }
+        return reportDataManager.getCriteriaAttributeUpToDateService().getMonthlyCriteriaUpToDateReports(acbs);
     }
 
     @Operation(summary = "Retrieves all listing and attested criteria combinations that were not up-to-date on the "
@@ -74,5 +102,14 @@ public class CriteriaUpToDateReportController {
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingNotUpToDateReport> getCriteriaUpToDateListings() {
         return reportDataManager.getCriteriaAttributeUpToDateService().getAllListingNotUpToDateReports();
+    }
+
+    private Set<Long> convertToSetWithDelimeter(String delimitedString, String delimeter) {
+        if (ObjectUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<Long>();
+        }
+        return Stream.of(delimitedString.split(delimeter))
+                .map(value -> Long.parseLong(value.trim()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

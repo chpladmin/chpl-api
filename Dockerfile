@@ -19,7 +19,7 @@ COPY chpl/chpl-service/src chpl-service/src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Deploy to Tomcat
-FROM tomcat:10.1.49-jdk17
+FROM tomcat:10.1.50-jdk17
 # Copy the custom server.xml
 COPY tomcat-config/* /usr/local/tomcat/conf
 # Copy the WAR file from the build stage

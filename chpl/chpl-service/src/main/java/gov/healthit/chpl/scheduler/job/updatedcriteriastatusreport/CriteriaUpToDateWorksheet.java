@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -79,7 +81,10 @@ public class CriteriaUpToDateWorksheet {
     }
 
     public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Workbook workbook) throws IOException {
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbIds);
+        List<CertificationBody> acbs = acbDao.findAllActive().stream()
+            .filter(acb -> acbIds.contains(acb.getId()))
+            .collect(Collectors.toList());
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbs);
         updateChartTitle(workbook.getSheetAt(0), reportDataDate);
         populateData(workbook.getSheetAt(0), reports);
     }
@@ -96,7 +101,7 @@ public class CriteriaUpToDateWorksheet {
             return;
         }
         LOGGER.info("Generating worksheet for ACB " + acb.getName());
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acbId).toList());
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acb).toList());
         Sheet acbWorksheet = addWorksheetForAcb(acb, workbook);
         updateChartTitle(acbWorksheet, reportDataDate);
         populateData(acbWorksheet, reports);
@@ -124,10 +129,23 @@ public class CriteriaUpToDateWorksheet {
     }
 
     private CriteriaUpToDateReport getUpToDateReportByCriterion(List<CriteriaUpToDateReport> reports, CertificationCriterion criterion) {
-        return reports.stream()
+        List<CriteriaUpToDateReport> upToDateReportsForCriteriaPerAcb = reports.stream()
             .filter(report -> report.getCriterion().getId().equals(criterion.getId()))
-            .findAny()
-            .get();
+            .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(upToDateReportsForCriteriaPerAcb)) {
+            return null;
+        }
+
+        return CriteriaUpToDateReport.builder()
+                .accurateAsOfDate(upToDateReportsForCriteriaPerAcb.get(0).getAccurateAsOfDate())
+                .activeListingsAttestingToCriterionCount(upToDateReportsForCriteriaPerAcb.stream()
+                        .map(report -> report.getActiveListingsAttestingToCriterionCount())
+                        .collect(Collectors.summingLong(Long::longValue)))
+                .activeListingsUpToDateOnCriterionCount(upToDateReportsForCriteriaPerAcb.stream()
+                        .map(report -> report.getActiveListingsUpToDateOnCriterionCount())
+                        .collect(Collectors.summingLong(Long::longValue)))
+                .build();
     }
 
     private void updateChartTitle(Sheet sheet, LocalDate reportDate) {

@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 52.3.0
+_22 December 2025_
+
+### Features
+* Attempt correct logic for standard in group being out-of-date
+* Add acbIds parameter to criteria-up-to-date report-data endpoint
+* Determine standard grouping differently during listing edit
+
+---
+
 ## Version 52.2.0
 _8 December 2025_
 
