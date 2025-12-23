@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
@@ -11,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReport;
 import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateReportService;
 import gov.healthit.chpl.util.Util;
@@ -26,9 +30,12 @@ public class UpdatedCriteriaStatusReportSheet {
     private static final Integer DESCRIPTIONS_COL_IDX = 0;
 
     private CriteriaUpToDateReportService reportService;
+    private CertificationBodyDAO acbDao;
 
-    public UpdatedCriteriaStatusReportSheet(CriteriaUpToDateReportService reportService) {
+    public UpdatedCriteriaStatusReportSheet(CriteriaUpToDateReportService reportService,
+            CertificationBodyDAO acbDao) {
         this.reportService = reportService;
+        this.acbDao = acbDao;
     }
 
     public void generateSheetForCriteriaOnDates(CertificationCriterion criterion, List<Long> acbIds,
@@ -39,9 +46,13 @@ public class UpdatedCriteriaStatusReportSheet {
         CellUtil.getCell(CellUtil.getRow(DATE_ROW_IDX, sheet), DESCRIPTIONS_COL_IDX).setCellValue(criterion.getNumber() + " Up-to-Date Progress");
         updateChartTitle(sheet, criterion);
 
+        List<CertificationBody> acbs = acbDao.findAllActive().stream()
+                .filter(acb -> acbIds.contains(acb.getId()))
+                .collect(Collectors.toList());
+
         for (int i = UpdatedCriteriaStatusReportWorkbook.TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
             LocalDate actualReportDay = reportDates.get(i - 1);
-            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay, acbIds);
+            List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(actualReportDay, acbs);
 
             long totalActiveListingsWithCriterion = calculateActiveListingsWithCriterionCount(reports, criterion);
             long totalListingsRequiringUpdates = calculateListingsRequiringUpdatesCount(reports, criterion);
@@ -53,27 +64,33 @@ public class UpdatedCriteriaStatusReportSheet {
     }
 
     private long calculateActiveListingsWithCriterionCount(List<CriteriaUpToDateReport> reports, CertificationCriterion criterion) {
-        CriteriaUpToDateReport reportForCriterion = reports.stream()
+        List<CriteriaUpToDateReport> reportsForCriterion = reports.stream()
                 .filter(report -> report.getCriterion().getId().equals(criterion.getId()))
-                .findAny().orElse(null);
-        if (reportForCriterion == null) {
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(reportsForCriterion)) {
             LOGGER.error("Unable to calculate active listings with criterion " + Util.formatCriteriaNumber(criterion));
             return 0;
         }
-        return reportForCriterion.getActiveListingsAttestingToCriterionCount();
+        // reports are per acb, so sum the counts for each acb
+        return reportsForCriterion.stream()
+                .map(report -> report.getActiveListingsAttestingToCriterionCount())
+                .collect(Collectors.summingLong(Long::longValue));
     }
 
     private long calculateListingsRequiringUpdatesCount(List<CriteriaUpToDateReport> reports, CertificationCriterion criterion) {
-        CriteriaUpToDateReport reportForCriterion = reports.stream()
+        List<CriteriaUpToDateReport> reportsForCriterion = reports.stream()
                 .filter(report -> report.getCriterion().getId().equals(criterion.getId()))
-                .findAny().orElse(null);
+                .collect(Collectors.toList());
 
-        if (reportForCriterion == null) {
+        if (CollectionUtils.isEmpty(reportsForCriterion)) {
             LOGGER.error("Unable to calculate listings requiring update count for criterion " + Util.formatCriteriaNumber(criterion));
             return 0;
         }
 
-        return reportForCriterion.getActiveListingsAttestingToCriterionCount() - reportForCriterion.getActiveListingsUpToDateOnCriterionCount();
+        // reports are per acb, so sum the counts for each acb
+        return reportsForCriterion.stream()
+                .map(report -> report.getActiveListingsAttestingToCriterionCount() - report.getActiveListingsUpToDateOnCriterionCount())
+                .collect(Collectors.summingLong(Long::longValue));
     }
 
     private void updateChartTitle(Sheet sheet, CertificationCriterion criterion) {
