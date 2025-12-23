@@ -33,7 +33,11 @@ public class UpdateActionPermissions extends ActionPermissions {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
-                return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getId());
+                return cr.getCertificationBodies().stream()
+                        .map(acb -> acb.getId())
+                        .filter(acbId -> isAcbValidForCurrentUser(acbId))
+                        .findAny()
+                        .isPresent();
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getId());
