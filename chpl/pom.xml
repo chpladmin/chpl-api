@@ -15,25 +15,25 @@
         <module>chpl-resources</module>
     </modules>
     <properties>
-        <aspectj.version>1.9.22.1</aspectj.version>
+        <aspectj.version>1.9.25.1</aspectj.version>
         <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
         <checkstyle.version>9.2.1</checkstyle.version>
-        <commons.csv.version>1.10.0</commons.csv.version>
-        <commons.fileupload.version>1.5</commons.fileupload.version>
+        <commons.csv.version>1.14.1</commons.csv.version>
+        <commons.fileupload.version>2.0.0-M4</commons.fileupload.version>
         <ff4j.version>2.0.0</ff4j.version>
         <java.version>17</java.version>
-        <junit.version>5.9.3</junit.version>
+        <junit.version>6.1.0-M1</junit.version>
         <log4j2.version>2.25.3</log4j2.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
         <mvn.jar.plugin.version>3.2.1</mvn.jar.plugin.version>
         <mvn.jxr.plugin.version>3.1.1</mvn.jxr.plugin.version>
         <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
         <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
         <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
-        <org.springboot.version>3.4.6</org.springboot.version>
-        <org.springframework.version>6.2.7</org.springframework.version>
-        <org.springsecurity.version>6.5.0</org.springsecurity.version>
+        <org.springboot.version>4.0.1</org.springboot.version>
+        <org.springframework.version>7.0.2</org.springframework.version>
+        <org.springsecurity.version>7.0.2</org.springsecurity.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
