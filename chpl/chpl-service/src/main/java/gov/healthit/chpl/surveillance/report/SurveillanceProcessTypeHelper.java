@@ -1,13 +1,11 @@
 package gov.healthit.chpl.surveillance.report;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Objects;
 
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 
@@ -36,8 +34,8 @@ public final class SurveillanceProcessTypeHelper {
 
     private static boolean doValuesMatch(SurveillanceProcessType procType1, SurveillanceProcessType procType2) {
         return ((procType1.getId() != null && procType2.getId() != null
-                    && Objects.equal(procType1.getId(), procType2.getId()))
+                    && Objects.equals(procType1.getId(), procType2.getId()))
                 || (ObjectUtils.allNotNull(procType1.getName(), procType2.getName())
-                        && StringUtils.equals(procType1.getName(), procType2.getName())));
+                        && Objects.equals(procType1.getName(), procType2.getName())));
     }
 }
