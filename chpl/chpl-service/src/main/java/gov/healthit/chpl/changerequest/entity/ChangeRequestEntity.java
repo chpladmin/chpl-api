@@ -3,6 +3,11 @@ package gov.healthit.chpl.changerequest.entity;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,12 +20,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,7 +59,7 @@ public class ChangeRequestEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "changeRequestId")
     @Basic(optional = false)
     @Column(name = "change_request_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<ChangeRequestStatusEntity> statuses = new LinkedHashSet<ChangeRequestStatusEntity>();
 
     @OneToMany(fetch = FetchType.LAZY)
