@@ -9,9 +9,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SelectBeforeUpdate;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.type.SqlTypes;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -85,7 +85,7 @@ public class ListingUploadEntity extends EntityAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @JdbcTypeCode(SqlTypes.ENUM)
     private ListingUploadStatus status;
 
     @Column(name = "certified_product_id")
