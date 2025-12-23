@@ -5,6 +5,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +19,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.logging.log4j.LogManager;
@@ -172,10 +173,9 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Bean
     public CookieLocaleResolver localeResolver() {
-        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver("my-locale-cookie");
         localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE_SECONDS);
+        localeResolver.setCookieMaxAge(Duration.ofSeconds(MAX_COOKIE_AGE_SECONDS));
         return localeResolver;
     }
 
@@ -241,18 +241,15 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
                         .setDefaultSocketConfig(SocketConfig.custom()
                                 .setSoTimeout(getRequestTimeout(), TimeUnit.MILLISECONDS)
                                 .build())
-                        .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
-                                .setSslContext(SSLContextBuilder.create()
-                                        .loadTrustMaterial(TrustAllStrategy.INSTANCE)
-                                        .build())
-                                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                                .build())
+                        .setTlsSocketStrategy(new DefaultClientTlsStrategy(
+                                SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
+                                NoopHostnameVerifier.INSTANCE))
                         .build())
                 .build();
 
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
-        requestFactory.setConnectTimeout(getRequestTimeout());
+        requestFactory.setConnectionRequestTimeout(getRequestTimeout());
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
