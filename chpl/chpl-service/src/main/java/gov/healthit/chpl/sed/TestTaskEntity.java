@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
@@ -89,7 +89,7 @@ public class TestTaskEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "testTaskId")
     @Basic(optional = false)
     @Column(name = "test_task_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
 
     public TestTask toDomain() {
