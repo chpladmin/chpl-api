@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -311,7 +312,7 @@ public class ListingUploadController {
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
         } else {
-            return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<CertifiedProductSearchDetails>(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));
         }
     }
 
