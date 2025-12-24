@@ -20,7 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
@@ -62,7 +62,7 @@ public class CHPLHttpSecurityConfig {
     @Order(1)
     public SecurityFilterChain configureFf4j(HttpSecurity http) throws Exception {
         LOGGER.info("Configure CHPL Security");
-        return http.securityMatcher(new AntPathRequestMatcher(ff4jWebConsoleUrl + "/**"))
+        return http.securityMatcher(PathPatternRequestMatcher.pathPattern(ff4jWebConsoleUrl + "/**"))
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -77,12 +77,12 @@ public class CHPLHttpSecurityConfig {
     @Order(2)
     public SecurityFilterChain configureApi(HttpSecurity http) throws Exception {
         LOGGER.info("Configure CHPL Security");
-        return http.securityMatcher(new AntPathRequestMatcher("/**"))
+        return http.securityMatcher(PathPatternRequestMatcher.pathPattern("/**"))
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                       .requestMatchers(new AntPathRequestMatcher("/**"))
+                       .requestMatchers(PathPatternRequestMatcher.pathPattern("/**"))
                        .permitAll())
                 .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
