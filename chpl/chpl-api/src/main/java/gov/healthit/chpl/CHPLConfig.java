@@ -1,5 +1,6 @@
 package gov.healthit.chpl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -151,10 +152,9 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Bean
     public CookieLocaleResolver localeResolver() {
-        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver("my-locale-cookie");
         localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE_SECONDS);
+        localeResolver.setCookieMaxAge(Duration.ofSeconds(MAX_COOKIE_AGE_SECONDS));
         return localeResolver;
     }
 
