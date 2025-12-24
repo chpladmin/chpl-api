@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +38,8 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private boolean enabled;
 
     // Authentication Interface
-    private Collection<GrantedAuthority> authorities;
+    @lombok.Builder.Default
+    private Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
     private Object credentials;
     private Object details;
     private Object principal;
