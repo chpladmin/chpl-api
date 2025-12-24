@@ -1,8 +1,10 @@
 package gov.healthit.chpl.auth.authentication;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -38,6 +40,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                 return JWTAuthenticatedUser.builder()
                         .authenticated(true)
                         .cognitoId(UUID.fromString(decodedJwt.getSubject()))
+                        .authorities(new ArrayList<GrantedAuthority>())
                         .build();
             } else {
                 throw new JWTValidationException("Invalid authentication token.");

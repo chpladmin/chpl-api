@@ -2,6 +2,7 @@ package gov.healthit.chpl.realworldtesting.manager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 import org.quartz.SchedulerException;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -155,6 +157,7 @@ public class RealWorldTestingManagerTest {
     private JWTAuthenticatedUser getUser() {
         return JWTAuthenticatedUser.builder()
                 .email("user@abc.com")
+                .authorities(new ArrayList<GrantedAuthority>())
                 .build();
     }
 
