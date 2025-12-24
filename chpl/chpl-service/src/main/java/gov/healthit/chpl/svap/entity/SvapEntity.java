@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLJoinTableRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.svap.domain.Svap;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,13 +21,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.WhereJoinTable;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +55,7 @@ public class SvapEntity extends EntityAudit {
     @JoinTable(name = "svap_criteria_map",
         joinColumns = {@JoinColumn(name = "svap_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
-    @WhereJoinTable(clause = "deleted <> true")
+    @SQLJoinTableRestriction("deleted <> true")
     private List<CertificationCriterionEntity> criteria;
 
     @Column(name = "replaced", nullable = false)
