@@ -59,8 +59,10 @@ public class AttestationManagerTest {
 
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenReturn(getFirstPeriodForm());
 
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+            .thenReturn("This is an error message.");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
-                .thenReturn("This is an error message.");
+            .thenReturn("This is an error message.");
 
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
@@ -454,58 +456,6 @@ public class AttestationManagerTest {
 
         assertNotNull(spyManager.createAttestationPeriodDeveloperException(1L,  1L));
     }
-
-/*
-    @Test
-    public void getDeveloperAttestations_Success_Returns2DeveloperAttestations() {
-        List<DeveloperAttestationSubmission> submissions = manager.getDeveloperAttestations(1L);
-
-        assertEquals(2, submissions.size());
-    }
-
-    @Test
-    public void saveDeveloperAttestation_NoPreviousAttestationForDeveloperAndPeriod_DeleteNotCalled() throws EntityRetrievalException {
-        Mockito.when(attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong())).thenReturn(
-                new ArrayList<DeveloperAttestationSubmission>());
-
-        manager.saveDeveloperAttestation(DeveloperAttestationSubmission.builder()
-                .developer(Developer.builder()
-                        .id(1L)
-                        .build())
-                .period(AttestationPeriod.builder()
-                        .id(1L)
-                        .build())
-                .build());
-
-        Mockito.verify(attestationDAO, Mockito.never()).deleteDeveloperAttestationSubmission(ArgumentMatchers.anyLong());
-    }
-
-    @Test
-    public void saveDeveloperAttestation_1PreviousAttestationForDeveloperAndPeriod_DeleteCalled1Time() throws EntityRetrievalException {
-        Mockito.doNothing().when(attestationDAO).deleteDeveloperAttestationSubmission(ArgumentMatchers.anyLong());
-        Mockito.when(attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong())).thenReturn(
-                Arrays.asList(DeveloperAttestationSubmission.builder()
-                .id(1L)
-                .developer(Developer.builder()
-                        .id(1L)
-                        .build())
-                .period(AttestationPeriod.builder()
-                        .id(1L)
-                        .build())
-                .build()));
-
-        manager.saveDeveloperAttestation(DeveloperAttestationSubmission.builder()
-                .developer(Developer.builder()
-                        .id(1L)
-                        .build())
-                .period(AttestationPeriod.builder()
-                        .id(1L)
-                        .build())
-                .build());
-
-        Mockito.verify(attestationDAO, Mockito.times(1)).deleteDeveloperAttestationSubmission(1L);
-    }
-    */
 
     private AttestationPeriod getFirstAttestationPeriod() {
         return AttestationPeriod.builder()
