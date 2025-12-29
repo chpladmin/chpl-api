@@ -9,12 +9,15 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
@@ -31,8 +34,12 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public GetActivityDetailsActionPermissions(QuarterlyReportDAO quarterlyReportDao,
+    public GetActivityDetailsActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            QuarterlyReportDAO quarterlyReportDao,
             AnnualReportDAO annualReportDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         jsonMapper = new ObjectMapper();
         this.quarterlyReportDao = quarterlyReportDao;
         this.annualReportDao = annualReportDao;

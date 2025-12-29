@@ -15,14 +15,18 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public abstract class ActionPermissions {
-    @Autowired
     private ResourcePermissionsFactory resourcePermissionsFactory;
+    private CertifiedProductDAO certifiedProductDao;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
-
-    @Autowired
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    public ActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.certifiedProductDao = certifiedProductDao;
+        this.developerCertificationBodyMapDao = developerCertificationBodyMapDao;
+    }
 
     public abstract boolean hasAccess();
 
@@ -55,7 +59,7 @@ public abstract class ActionPermissions {
     @Transactional(readOnly = true)
     public boolean doesCurrentUserHaveAccessToAllOfDevelopersListings(Long developerId,
             List<CertificationStatusType> listingStatuses) {
-        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.findListingsByDeveloperId(developerId);
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDao.findListingsByDeveloperId(developerId);
         return !cpDtos.stream().filter(cpDto ->
                 !isAcbValidForCurrentUser(cpDto.getCertificationBodyId())
                 && isInStatuses(cpDto.getCertificationStatusName(), listingStatuses))
@@ -64,7 +68,7 @@ public abstract class ActionPermissions {
 
     @Transactional(readOnly = true)
     public boolean doesCurrentUserHaveAccessToAllOfProductListings(Long productId) {
-        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDAO.getDetailsByProductId(productId);
+        List<CertifiedProductDetailsDTO> cpDtos = certifiedProductDao.getDetailsByProductId(productId);
         for (CertifiedProductDetailsDTO cpDto : cpDtos) {
             if (!isAcbValidForCurrentUser(cpDto.getCertificationBodyId())) {
                 return false;
@@ -75,7 +79,7 @@ public abstract class ActionPermissions {
 
     @Transactional(readOnly = true)
     public boolean isCurrentAcbUserAssociatedWithDeveloper(final Long developerId) {
-        List<CertificationBody> developerAcbs = developerCertificationBodyMapDAO
+        List<CertificationBody> developerAcbs = developerCertificationBodyMapDao
                 .getCertificationBodiesForDeveloper(developerId);
         List<CertificationBody> userAcbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
 

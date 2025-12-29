@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +22,12 @@ public class CreateActionPermissions extends ActionPermissions {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CreateActionPermissions(CertifiedProductDAO cpDao, ErrorMessageUtil msgUtil) {
+    public CreateActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            CertifiedProductDAO cpDao,
+            ErrorMessageUtil msgUtil) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         this.cpDao = cpDao;
         this.msgUtil = msgUtil;
     }
