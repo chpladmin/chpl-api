@@ -23,7 +23,7 @@
       <microsoft-graph.version>6.59.0</microsoft-graph.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
       <poi.version>5.5.1</poi.version>
-      <postgresql.version>42.7.2</postgresql.version>
+      <postgresql.version>42.7.8</postgresql.version>
       <quartz.version>2.5.2</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
       <spring.data.redis.version>4.0.1</spring.data.redis.version>
