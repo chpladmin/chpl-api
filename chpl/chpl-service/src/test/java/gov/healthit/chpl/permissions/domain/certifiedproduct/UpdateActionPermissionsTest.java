@@ -1,11 +1,11 @@
 package gov.healthit.chpl.permissions.domain.certifiedproduct;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -25,7 +25,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @InjectMocks
     private UpdateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
@@ -34,7 +34,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
@@ -47,7 +47,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
@@ -60,7 +60,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -80,7 +80,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
@@ -93,7 +93,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 

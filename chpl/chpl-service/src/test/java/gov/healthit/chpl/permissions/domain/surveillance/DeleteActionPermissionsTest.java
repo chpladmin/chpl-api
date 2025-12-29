@@ -1,12 +1,12 @@
 package gov.healthit.chpl.permissions.domain.surveillance;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -28,15 +28,15 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     private CertifiedProductDAO certifiedProductDAO;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private DeleteActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         try {
             CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
@@ -52,7 +52,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
@@ -65,7 +65,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
@@ -78,7 +78,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

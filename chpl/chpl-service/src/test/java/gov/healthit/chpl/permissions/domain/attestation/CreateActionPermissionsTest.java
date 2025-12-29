@@ -1,12 +1,12 @@
 package gov.healthit.chpl.permissions.domain.attestation;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,7 +27,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Mock
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
@@ -35,11 +35,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @InjectMocks
     private CreateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
                 List.of(Developer.builder().id(1L).build()));

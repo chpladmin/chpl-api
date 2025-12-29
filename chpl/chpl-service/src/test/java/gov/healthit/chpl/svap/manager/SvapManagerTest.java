@@ -1,12 +1,13 @@
 package gov.healthit.chpl.svap.manager;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -28,7 +29,7 @@ public class SvapManagerTest {
     private ErrorMessageUtil errorMessageUtil;
     private SvapManager svapManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         ActivityManager activityManager = Mockito.mock(ActivityManager.class);
         svapDao = Mockito.mock(SvapDAO.class);
@@ -128,7 +129,7 @@ public class SvapManagerTest {
         Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_EmptyRegTextCit_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap origSvap = Svap.builder()
                 .svapId(1L)
@@ -152,10 +153,13 @@ public class SvapManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error Message");
 
-        svapManager.update(updatedSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(updatedSvap);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_EmptyAppStdVer_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap origSvap = Svap.builder()
                 .svapId(1L)
@@ -178,10 +182,13 @@ public class SvapManagerTest {
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
 
-        svapManager.update(updatedSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(updatedSvap);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_NoCriteriaAssoc_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap origSvap = Svap.builder()
                 .svapId(1L)
@@ -204,10 +211,13 @@ public class SvapManagerTest {
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
 
-        svapManager.update(updatedSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(updatedSvap);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_RemovedCriteriaAssocWithListing_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap origSvap = Svap.builder()
                 .svapId(1L)
@@ -239,7 +249,10 @@ public class SvapManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error Message");
 
-        svapManager.update(updatedSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(updatedSvap);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -265,7 +278,7 @@ public class SvapManagerTest {
         Mockito.verify(svapDao, Mockito.times(1)).create(ArgumentMatchers.any(Svap.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_EmptyRegTextCit_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap newSvap = Svap.builder()
                 .svapId(1L)
@@ -285,10 +298,13 @@ public class SvapManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error Message");
 
-        svapManager.update(newSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(newSvap);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_EmptyAppStdVer_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap newSvap = Svap.builder()
                 .svapId(1L)
@@ -307,10 +323,13 @@ public class SvapManagerTest {
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
 
-        svapManager.create(newSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.create(newSvap);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_NoCriteriaAssoc_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap newSvap = Svap.builder()
                 .svapId(1L)
@@ -325,7 +344,10 @@ public class SvapManagerTest {
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
 
-        svapManager.update(newSvap);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.update(newSvap);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -355,7 +377,7 @@ public class SvapManagerTest {
         svapManager.delete(svap.getSvapId());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void delete_SvapAssocWithListing_ValidationException() throws EntityRetrievalException, ValidationException {
         Svap svap = Svap.builder()
                 .svapId(1L)
@@ -382,7 +404,10 @@ public class SvapManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error Message");
 
-        svapManager.delete(svap.getSvapId());
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            svapManager.delete(svap.getSvapId());
+        });
+        assertNotNull(exception);
     }
 
 }

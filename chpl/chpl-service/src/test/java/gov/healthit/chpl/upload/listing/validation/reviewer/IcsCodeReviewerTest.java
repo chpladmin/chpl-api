@@ -1,10 +1,10 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,7 +21,7 @@ public class IcsCodeReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private IcsCodeReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);

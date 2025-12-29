@@ -1,8 +1,8 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,8 +13,8 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -33,7 +33,8 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
     private SvapNoticeUrlLastUpdateActivityExplorer explorer;
     private SimpleDateFormat formatter;
-    @Before
+
+    @BeforeEach
     public void setup() {
         formatter = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));

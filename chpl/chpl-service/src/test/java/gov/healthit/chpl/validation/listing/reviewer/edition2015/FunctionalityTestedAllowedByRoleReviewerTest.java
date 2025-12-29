@@ -1,12 +1,12 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -33,7 +33,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
     private ResourcePermissions permissions;
     private FunctionalityTestedAllowedByRoleReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() {
         // Setup some common mocks - these can be changed in each test if necessary
         ErrorMessageUtil errorMessages = Mockito.mock(ErrorMessageUtil.class);

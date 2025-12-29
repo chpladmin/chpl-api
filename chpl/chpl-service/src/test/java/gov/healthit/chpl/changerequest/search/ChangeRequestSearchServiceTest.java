@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -26,7 +26,7 @@ public class ChangeRequestSearchServiceTest {
     private ChangeRequestSearchService changeRequestSearchService;
     private ChangeRequestDAO changeRequestDao;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ChangeRequestSearchRequestValidator searchRequestValidator = Mockito.mock(ChangeRequestSearchRequestValidator.class);
         changeRequestDao = Mockito.mock(ChangeRequestDAO.class);

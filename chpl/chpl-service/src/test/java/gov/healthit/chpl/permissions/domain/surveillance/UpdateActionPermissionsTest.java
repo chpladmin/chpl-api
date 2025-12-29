@@ -1,10 +1,12 @@
 package gov.healthit.chpl.permissions.domain.surveillance;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,15 +34,15 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private CertifiedProductDAO cpDAO;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
@@ -85,7 +87,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(1L));
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void hasAccess_Acb_2014Listing() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -98,7 +100,10 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
                 .thenReturn("message");
 
-        permissions.hasAccess(1L);
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
+            permissions.hasAccess(1L);
+        });
+        assertNotNull(exception);
     }
 
     @Override

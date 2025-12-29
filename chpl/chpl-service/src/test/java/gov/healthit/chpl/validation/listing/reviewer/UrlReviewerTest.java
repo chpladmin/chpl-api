@@ -1,10 +1,10 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -23,7 +23,7 @@ public class UrlReviewerTest {
     private ValidationUtils validationUtils;
     private UrlReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         validationUtils = new ValidationUtils();
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);

@@ -7,8 +7,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -42,7 +42,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
     private Date betweenBoth;
     private Date afterBoth;
 
-    @Before
+    @BeforeEach
     public void before() {
         b3 = CertificationCriterion.builder()
                 .id(18L)

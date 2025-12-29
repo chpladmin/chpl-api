@@ -1,17 +1,18 @@
 package gov.healthit.chpl.attestation.manager;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -47,7 +48,7 @@ public class AttestationManagerTest {
     private ErrorMessageUtil errorMessageUtil;
     private static final Integer DEFAULT_EXCEPTION_WINDOW = 3;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         attestationDAO = Mockito.mock(AttestationDAO.class);
         attestationPeriodService = Mockito.mock(AttestationPeriodService.class);
@@ -59,9 +60,7 @@ public class AttestationManagerTest {
 
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenReturn(getFirstPeriodForm());
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
-            .thenReturn("This is an error message.");
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any(Object[].class)))
             .thenReturn("This is an error message.");
 
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
@@ -88,10 +87,14 @@ public class AttestationManagerTest {
         assertNotNull(attestationPeriodForm.getPeriod());
     }
 
-    @Test(expected = EntityRetrievalException.class)
+    @Test
     public void getAttestationForm_FormDoesNotExistForPeriod_ThrowsException() throws EntityRetrievalException {
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenThrow(EntityRetrievalException.class);
-        manager.getAttestationForm(1L, null);
+
+        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+            manager.getAttestationForm(1L, null);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -428,16 +431,19 @@ public class AttestationManagerTest {
         assertFalse(spyManager.canCreateException(1L));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void createAttestationPeriodDeveloperException_InvalidPeriodId_ThrowsValidationException() throws EntityRetrievalException, ValidationException {
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
 
-        //3L should not exist in list of periods
-        manager.createAttestationPeriodDeveloperException(1L,  3L);
+        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+            //3L should not exist in list of periods
+            manager.createAttestationPeriodDeveloperException(1L,  3L);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void createAttestationPeriodDeveloperException_CanCreateExceptionIsFalse_ThrowsValidationException() throws EntityRetrievalException, ValidationException {
         /////use a spy to mock canCreateException()
         AttestationManager spyManager = Mockito.spy(
@@ -454,7 +460,11 @@ public class AttestationManagerTest {
         Mockito.when(attestationDAO.createAttestationPeriodDeveloperException(ArgumentMatchers.any(AttestationPeriodDeveloperException.class))).thenReturn(
                 AttestationPeriodDeveloperException.builder().build());
 
-        assertNotNull(spyManager.createAttestationPeriodDeveloperException(1L,  1L));
+        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+            assertNotNull(spyManager.createAttestationPeriodDeveloperException(1L,  1L));
+
+        });
+        assertNotNull(exception);
     }
 
     private AttestationPeriod getFirstAttestationPeriod() {

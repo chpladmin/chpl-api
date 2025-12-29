@@ -1,10 +1,10 @@
 package gov.healthit.chpl.permissions.domain.productversion;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,15 +21,15 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private CreateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 

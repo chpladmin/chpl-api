@@ -1,15 +1,16 @@
 package gov.healthit.chpl.manager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.ff4j.FF4j;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -45,7 +46,7 @@ public class ChangeRequestManagerTest {
     private ErrorMessageUtil errorMessageUtil;
 
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
@@ -80,7 +81,7 @@ public class ChangeRequestManagerTest {
         assertEquals(getBasicChangeRequest().getId(), cr.getId());
     }
 
-    @Test(expected = EntityRetrievalException.class)
+    @Test
     public void getChangeRequest_InvalidCrId_ThrowsException() throws EntityRetrievalException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
@@ -94,11 +95,10 @@ public class ChangeRequestManagerTest {
                 null, null, null, null, null, null, null, null, null, activityManager, null, null,
                 null, null, null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
-        // Run
-        changeRequestManager.getChangeRequest(11L);
-
-        // Check
-        fail("Exception was not thrown");
+        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+            changeRequestManager.getChangeRequest(11L);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class ChangeRequestManagerTest {
         Mockito.verify(crStatusService, Mockito.times(1)).updateChangeRequestStatus(ArgumentMatchers.any());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void updateChangeRequest_ValidationErrors_ThrowsException()
             throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
@@ -197,13 +197,14 @@ public class ChangeRequestManagerTest {
                 null,
                 ff4j);
 
-        // Run
-        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
-                .changeRequest(getBasicChangeRequest())
-                .acknowledgeWarnings(true)
-                .build());
-        // Check
-        fail("Exception was not thrown");
+
+        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+            changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
+                    .changeRequest(getBasicChangeRequest())
+                    .acknowledgeWarnings(true)
+                    .build());
+        });
+        assertNotNull(exception);
     }
 
     @Test

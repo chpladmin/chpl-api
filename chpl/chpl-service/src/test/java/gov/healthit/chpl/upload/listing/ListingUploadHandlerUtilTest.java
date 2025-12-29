@@ -1,10 +1,11 @@
 package gov.healthit.chpl.upload.listing;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,8 +17,8 @@ import java.util.stream.Stream;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -45,7 +46,7 @@ public class ListingUploadHandlerUtilTest {
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
 
-    @Before
+    @BeforeEach
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
         EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFile();
@@ -760,14 +761,18 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(3, nextIndex);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void getChplProductNumber_NoChplProductNumberHeading_ThrowsException()
             throws IOException {
         List<CSVRecord> headingRecords = ListingUploadTestUtil.getRecordsFromString("PRODUCT__C");
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
-        handlerUtil.parseRequiredSingleRowField(Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            handlerUtil.parseRequiredSingleRowField(Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+        });
+        assertNotNull(exception);
     }
 
     @Test

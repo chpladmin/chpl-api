@@ -1,10 +1,12 @@
 package gov.healthit.chpl.permissions.domain.product;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,15 +28,15 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private SplitActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("product.split.notAllowedMultipleAcbs"),
@@ -60,7 +62,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     }
 
     @Override
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -88,7 +90,11 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(false).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
-        spyPermissions.hasAccess(product);
+
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
+            spyPermissions.hasAccess(product);
+        });
+        assertNotNull(exception);
     }
 
     @Override

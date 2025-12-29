@@ -1,14 +1,15 @@
 package gov.healthit.chpl.ucdProcess;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,7 +28,7 @@ public class UcdProcessManagerTest {
     private ErrorMessageUtil msgUtil;
     private UcdProcessManager ucdProcessManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         ucdProcessDao = Mockito.mock(UcdProcessDAO.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -88,7 +89,7 @@ public class UcdProcessManagerTest {
         Mockito.verify(ucdProcessDao, Mockito.times(1)).update(ArgumentMatchers.any(UcdProcess.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_emptyName_throwsValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess origUcdProcess = UcdProcess.builder()
                 .id(1L)
@@ -103,16 +104,14 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(origUcdProcess);
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.update(updatedUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_blankName_throwsValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess origUcdProcess = UcdProcess.builder()
                 .id(1L)
@@ -127,16 +126,14 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(origUcdProcess);
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.update(updatedUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_nullName_throwsValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess origUcdProcess = UcdProcess.builder()
                 .id(1L)
@@ -151,16 +148,14 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(origUcdProcess);
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.update(updatedUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_duplicateName_throwsValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess origUcdProcess = UcdProcess.builder()
                 .id(1L)
@@ -182,13 +177,11 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getAll())
             .thenReturn(Stream.of(origUcdProcess, otherUcdProcess).toList());
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.update(updatedUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(DUPLICATE_NAME, "Different UCD Name")));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(String.format(DUPLICATE_NAME, "Different UCD Name")));
     }
 
     @Test
@@ -207,52 +200,46 @@ public class UcdProcessManagerTest {
         Mockito.verify(ucdProcessDao, Mockito.times(1)).create(ArgumentMatchers.any(UcdProcess.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_emptyName_throwsValidationException() throws EntityCreationException, ValidationException {
         UcdProcess newUcdProcess = UcdProcess.builder()
                 .name("")
                 .build();
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.create(newUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_blankName_throwsValidationException() throws EntityCreationException, ValidationException {
         UcdProcess newUcdProcess = UcdProcess.builder()
                 .name("  ")
                 .build();
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.create(newUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_nullName_throwsValidationException() throws EntityCreationException, ValidationException {
         UcdProcess newUcdProcess = UcdProcess.builder()
                 .name(null)
                 .build();
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.create(newUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(EMPTY_NAME));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(EMPTY_NAME));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void create_duplicateName_throwsValidationException() throws EntityCreationException, ValidationException {
         UcdProcess newUcdProcess = UcdProcess.builder()
                 .name("UCD Process Name")
@@ -271,13 +258,11 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getAll())
             .thenReturn(Stream.of(ucdProcess1, ucdProcess2).toList());
 
-        try {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.create(newUcdProcess);
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(DUPLICATE_NAME, "UCD Process Name")));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(String.format(DUPLICATE_NAME, "UCD Process Name")));
     }
 
     @Test
@@ -296,7 +281,7 @@ public class UcdProcessManagerTest {
         Mockito.verify(ucdProcessDao, Mockito.times(1)).delete(ArgumentMatchers.eq(1L));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void delete_UcdProcessAssociatedWith1Listing_ValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess toDelete = UcdProcess.builder()
                 .id(1L)
@@ -307,16 +292,15 @@ public class UcdProcessManagerTest {
                 .thenReturn(toDelete);
         Mockito.when(ucdProcessDao.getCertifiedProductsByUcdProcess(ArgumentMatchers.any(UcdProcess.class)))
             .thenReturn(Stream.of(CertifiedProduct.builder().chplProductNumber("123456").build()).toList());
-        try {
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.delete(toDelete.getId());
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(UCD_PROCESS_IS_USED, "1", "") + " 123456"));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(String.format(UCD_PROCESS_IS_USED, "1", "") + " 123456"));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void delete_UcdProcessAssociatedWith2Listings_ValidationException() throws EntityRetrievalException, ValidationException {
         UcdProcess toDelete = UcdProcess.builder()
                 .id(1L)
@@ -328,12 +312,11 @@ public class UcdProcessManagerTest {
         Mockito.when(ucdProcessDao.getCertifiedProductsByUcdProcess(ArgumentMatchers.any(UcdProcess.class)))
             .thenReturn(Stream.of(CertifiedProduct.builder().chplProductNumber("1").build(),
                     CertifiedProduct.builder().chplProductNumber("2").build()).toList());
-        try {
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
             ucdProcessManager.delete(toDelete.getId());
-        } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(UCD_PROCESS_IS_USED, "2", "s") + " 1, 2"));
-            throw ex;
-        }
+        });
+        assertEquals(1, exception.getErrorMessages().size());
+        assertTrue(exception.getErrorMessages().contains(String.format(UCD_PROCESS_IS_USED, "2", "s") + " 1, 2"));
     }
 }

@@ -1,9 +1,10 @@
 package gov.healthit.chpl.upload.listing;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,8 +16,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -64,7 +65,7 @@ public class ListingUploadManagerTest {
     private ListingUploadValidator listingUploadValidator;
     private ListingConfirmationManager listingConfirmationManager;
 
-    @Before
+    @BeforeEach
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
     EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFiles();
@@ -111,23 +112,33 @@ public class ListingUploadManagerTest {
                 Mockito.mock(BaselineStandardAsOfTodayNormalizer.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void upload_EmptyData_Fails() throws ValidationException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", "".getBytes());
-        uploadManager.parseUploadFile(file);
+
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void upload_HeaderOnly_Fails() throws ValidationException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", HEADER_2015_V19.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void upload_BadContentType_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/plain", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -182,32 +193,44 @@ public class ListingUploadManagerTest {
         assertEquals(3, parsedListings.size());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_MissingDeveloperColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("VENDOR__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_MissingProductColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("PRODUCT__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_MissingVersionColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("VERSION__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_MissingUniqueIdColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("UNIQUE_CHPL_ID__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -249,44 +272,56 @@ public class ListingUploadManagerTest {
         assertEquals("1.0", metadata.getVersion());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_HasRequiredColumnsMissingChplIdData_ThrowsException()
             throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + ",DEV Name,Prod Name,1.0";
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_HasRequiredColumnsMissingDeveloperData_ThrowsException()
             throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,,Prod Name,1.0";
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_HasRequiredColumnsMissingProductData_ThrowsException()
             throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,,1.0";
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadSingleListing_HasRequiredColumnsMissingVersionData_ThrowsException()
             throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,";
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
-        uploadManager.parseUploadFile(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.parseUploadFile(file);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -393,7 +428,7 @@ public class ListingUploadManagerTest {
                 .build());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void confirmListing_hasWarningsNoAcknowledgment_throwsValidationException()
             throws JsonProcessingException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
             ValidationException, ActivityException {
@@ -411,10 +446,14 @@ public class ListingUploadManagerTest {
         }).when(listingUploadValidator).review(Mockito.eq(listing));
         Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
             .thenReturn(true);
-        uploadManager.confirm(1L, ConfirmListingRequest.builder()
-                .acknowledgeWarnings(false)
-                .listing(listing)
-                .build());
+
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                    .acknowledgeWarnings(false)
+                    .listing(listing)
+                    .build());
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -443,7 +482,7 @@ public class ListingUploadManagerTest {
                 .build());
     }
 
-    @Test(expected = InvalidArgumentsException.class)
+    @Test
     public void confirmListing_notAvailableForConfirmation_throwsInvalidArgumentsException()
             throws JsonProcessingException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
             ValidationException, ActivityException  {
@@ -453,10 +492,14 @@ public class ListingUploadManagerTest {
                 .build();
         Mockito.when(listingUploadDao.isAvailableForProcessing(ArgumentMatchers.eq(listing.getId())))
             .thenReturn(false);
-        uploadManager.confirm(1L, ConfirmListingRequest.builder()
-                .acknowledgeWarnings(false)
-                .listing(listing)
-                .build());
+
+        Exception exception = assertThrows(InvalidArgumentsException.class, () -> {
+            uploadManager.confirm(1L, ConfirmListingRequest.builder()
+                    .acknowledgeWarnings(false)
+                    .listing(listing)
+                    .build());
+        });
+        assertNotNull(exception);
     }
 
     private CertificationBody createAcb() {

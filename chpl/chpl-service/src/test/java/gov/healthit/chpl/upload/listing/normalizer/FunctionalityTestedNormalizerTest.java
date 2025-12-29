@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -38,7 +38,7 @@ public class FunctionalityTestedNormalizerTest {
     private FunctionalityTestedNormalizer normalizer;
     private FunctionalityTestedManager functionalityTestedManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);

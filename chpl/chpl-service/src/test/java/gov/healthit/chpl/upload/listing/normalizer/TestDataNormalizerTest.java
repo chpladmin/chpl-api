@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,7 +27,7 @@ public class TestDataNormalizerTest {
     private TestDataDAO testDataDao;
     private TestDataNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         testDataDao = Mockito.mock(TestDataDAO.class);
