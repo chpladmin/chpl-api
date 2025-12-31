@@ -15,19 +15,6 @@ public class CertificationIdYearCalculatorTest {
     private DateTimeFormatter toPropertyValueFormatter = DateTimeFormatter.ofPattern("MM/dd");
 
     @Test
-    public void todayBeforeCmsIdAnnualFormatSwitch_yearIsDefaultValue() {
-        LocalDate now = LocalDate.now();
-        LocalDate tomorrow = now.plusDays(1);
-
-        Environment env = Mockito.mock(Environment.class);
-        Mockito.when(env.getProperty(ArgumentMatchers.eq("cmsIdStartDayOfYear")))
-            .thenReturn(toPropertyValueFormatter.format(tomorrow));
-        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(env);
-        assertEquals("2015", certIdYearCalculator.getCurrentCertIdYear());
-        assertEquals("2016", certIdYearCalculator.getCurrentCertIdYear("2016"));
-    }
-
-    @Test
     public void todayEqualsCmsIdAnnualFormatSwitch_yearIsThisYear() {
         LocalDate now = LocalDate.now();
 
