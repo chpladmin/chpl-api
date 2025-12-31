@@ -18,17 +18,14 @@ import lombok.extern.log4j.Log4j2;
 @Component("surveillanceCreateActionPermissions")
 public class CreateActionPermissions extends ActionPermissions {
 
-    private CertifiedProductDAO cpDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CreateActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
             CertifiedProductDAO certifiedProductDao,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
-            CertifiedProductDAO cpDao,
             ErrorMessageUtil msgUtil) {
         super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
-        this.cpDao = cpDao;
         this.msgUtil = msgUtil;
     }
 
@@ -48,7 +45,7 @@ public class CreateActionPermissions extends ActionPermissions {
             CertifiedProductDTO listing = null;
             try {
                 if (listingId != null) {
-                    listing = cpDao.getById(listingId);
+                    listing = getCertifiedProductDao().getById(listingId);
                 }
             } catch (EntityRetrievalException ex) {
                 LOGGER.error("Could not find listing with ID " + listingId);

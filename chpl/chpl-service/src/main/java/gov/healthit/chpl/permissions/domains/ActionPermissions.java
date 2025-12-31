@@ -13,7 +13,9 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import lombok.Data;
 
+@Data
 public abstract class ActionPermissions {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertifiedProductDAO certifiedProductDao;
