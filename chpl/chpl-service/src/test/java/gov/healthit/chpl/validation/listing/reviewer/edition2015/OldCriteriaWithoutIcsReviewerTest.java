@@ -76,7 +76,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("listing.criteria.hasOldVersionOfCriteria"),
-                ArgumentMatchers.any())).thenAnswer(i -> i.getArguments()[1]);
+                ArgumentMatchers.any(Object[].class))).thenAnswer(i -> i.getArguments()[1]);
 
         certificationCriterionDAO = Mockito.mock(CertificationCriterionDAO.class);
         Mockito.when(certificationCriterionDAO.findAll()).thenReturn(makeAllCriteria());

@@ -436,7 +436,7 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
 
-        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+        Exception exception = assertThrows(ValidationException.class, () -> {
             //3L should not exist in list of periods
             manager.createAttestationPeriodDeveloperException(1L,  3L);
         });
@@ -460,7 +460,7 @@ public class AttestationManagerTest {
         Mockito.when(attestationDAO.createAttestationPeriodDeveloperException(ArgumentMatchers.any(AttestationPeriodDeveloperException.class))).thenReturn(
                 AttestationPeriodDeveloperException.builder().build());
 
-        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+        Exception exception = assertThrows(ValidationException.class, () -> {
             assertNotNull(spyManager.createAttestationPeriodDeveloperException(1L,  1L));
 
         });

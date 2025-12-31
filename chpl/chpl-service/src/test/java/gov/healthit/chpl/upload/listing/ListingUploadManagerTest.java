@@ -88,12 +88,12 @@ public class ListingUploadManagerTest {
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"), ArgumentMatchers.any())).thenReturn("Empty file message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"), ArgumentMatchers.any())).thenReturn("Not CSV message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"), ArgumentMatchers.any())).thenReturn("Header only message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredData"), ArgumentMatchers.any()))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"), ArgumentMatchers.any(Object[].class))).thenReturn("Empty file message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"), ArgumentMatchers.any(Object[].class))).thenReturn("Not CSV message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"), ArgumentMatchers.any(Object[].class))).thenReturn("Header only message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredData"), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("The following headings require non-empty data in the upload file: %s.");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredHeadings"), ArgumentMatchers.any()))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredHeadings"), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("Headings with the following values are required but were not found: %s.");
 
         Mockito.doNothing().when(listingNormalizer).normalize(ArgumentMatchers.any());

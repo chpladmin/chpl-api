@@ -198,7 +198,7 @@ public class ChangeRequestManagerTest {
                 ff4j);
 
 
-        Exception exception = assertThrows(EntityRetrievalException.class, () -> {
+        Exception exception = assertThrows(ValidationException.class, () -> {
             changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
                     .changeRequest(getBasicChangeRequest())
                     .acknowledgeWarnings(true)

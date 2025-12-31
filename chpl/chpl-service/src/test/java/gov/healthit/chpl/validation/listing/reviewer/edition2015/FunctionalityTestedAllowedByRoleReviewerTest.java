@@ -37,7 +37,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
     public void before() {
         // Setup some common mocks - these can be changed in each test if necessary
         ErrorMessageUtil errorMessages = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessages.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(ERROR_MESSAGE);
+        Mockito.when(errorMessages.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any(Object[].class))).thenReturn(ERROR_MESSAGE);
 
         permissions = Mockito.mock(CognitoResourcePermissions.class);
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(true);
