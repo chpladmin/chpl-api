@@ -11,8 +11,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -20,32 +20,39 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.surveillance.CreateActionPermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private CertifiedProductDAO certifiedProductDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
 
     @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Mock
+    private ErrorMessageUtil msgUtil;
 
     @InjectMocks
     private CreateActionPermissions permissions;
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new CreateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, msgUtil);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         try {
             CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
             listingNoAccess.setCertificationBodyId(1L);
-            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
+            Mockito.when(certifiedProductDao.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
             CertifiedProductDTO listingWithAccess = new CertifiedProductDTO();
             listingWithAccess.setCertificationBodyId(2L);
-            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
+            Mockito.when(certifiedProductDao.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
         } catch (Exception ex) {
             fail(ex.getMessage());
         }
@@ -82,10 +89,10 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1L));
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1L));
         assertFalse(permissions.hasAccess(1L));
 
-        Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2L));
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2L));
         assertTrue(permissions.hasAccess(1L));
     }
 

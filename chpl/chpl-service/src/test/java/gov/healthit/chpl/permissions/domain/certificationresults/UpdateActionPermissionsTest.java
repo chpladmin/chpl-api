@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -22,7 +22,10 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private CertifiedProductDAO cpDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
 
     @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
@@ -32,7 +35,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new UpdatePermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }

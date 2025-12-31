@@ -11,9 +11,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -28,10 +28,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ErrorMessageUtil errorMessageUtil;
+    private ErrorMessageUtil msgUtil;
 
     @Mock
-    private CertifiedProductDAO cpDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
 
     @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
@@ -41,7 +44,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new UpdateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, msgUtil);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
@@ -78,11 +81,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(1L, 3L));
         assertFalse(permissions.hasAccess(1L));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(2L, 3L));
         assertTrue(permissions.hasAccess(1L));
     }
@@ -94,10 +97,10 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(3L, 2L));
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.anyString()))
                 .thenReturn("message");
 
         Exception exception = assertThrows(AccessDeniedException.class, () -> {

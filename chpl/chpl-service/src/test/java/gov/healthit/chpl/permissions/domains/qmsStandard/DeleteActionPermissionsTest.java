@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -19,6 +21,12 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
@@ -26,6 +34,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @BeforeEach
     public void setup() {
+        permissions = new DeleteActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
     }
 

@@ -8,8 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -25,6 +26,12 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
     private ResourcePermissions resourcePermissions;
 
     @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
@@ -32,9 +39,8 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new CreateBackgroundJobTriggerActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-        //permissions.init();
     }
 
     @Override

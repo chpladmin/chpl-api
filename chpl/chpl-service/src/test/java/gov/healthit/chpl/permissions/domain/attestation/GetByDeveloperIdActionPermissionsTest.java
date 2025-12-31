@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -23,6 +24,12 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
     private ResourcePermissions resourcePermissions;
 
     @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
@@ -30,7 +37,7 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new GetByDeveloperIdActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
                 Arrays.asList(Developer.builder().id(1L).build()));

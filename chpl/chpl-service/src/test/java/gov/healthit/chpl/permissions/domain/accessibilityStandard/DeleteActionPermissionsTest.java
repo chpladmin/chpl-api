@@ -39,7 +39,6 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
     }
 
-
     @Override
     @Test
     public void hasAccess_Admin() throws Exception {

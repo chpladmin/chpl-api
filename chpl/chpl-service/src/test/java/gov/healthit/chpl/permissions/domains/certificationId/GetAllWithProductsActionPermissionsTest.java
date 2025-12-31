@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -19,6 +21,12 @@ public class GetAllWithProductsActionPermissionsTest extends ActionPermissionsBa
     private ResourcePermissions resourcePermissions;
 
     @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
@@ -26,6 +34,7 @@ public class GetAllWithProductsActionPermissionsTest extends ActionPermissionsBa
 
     @BeforeEach
     public void setup() {
+        permissions = new GetAllWithProductsActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }

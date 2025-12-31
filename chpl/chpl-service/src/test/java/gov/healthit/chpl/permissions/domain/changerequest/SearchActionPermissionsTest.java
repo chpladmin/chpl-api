@@ -13,10 +13,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -30,17 +30,20 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFactory;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Mock
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private SearchActionPermissions permissions;
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new SearchActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
     }
@@ -82,7 +85,7 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
 
-        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
+        Mockito.when(developerCertificationBodyMapDao.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong()))
                 .thenReturn(getDeveloperAcbs());
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));

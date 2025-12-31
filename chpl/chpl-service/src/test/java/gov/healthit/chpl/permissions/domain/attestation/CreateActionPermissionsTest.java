@@ -11,10 +11,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -27,17 +27,20 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFactory;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Mock
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private CreateActionPermissions permissions;
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new CreateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
 
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
@@ -47,7 +50,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 List.of(CertificationBody.builder().id(1L).build()));
 
-        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(developerCertificationBodyMapDao.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
                 List.of(CertificationBody.builder().id(1L).build()));
     }
 
@@ -87,7 +90,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
                 .developerId(1L)
                 .build()));
 
-        Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(developerCertificationBodyMapDao.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
                 List.of(CertificationBody.builder().id(2L).build()));
 
         assertFalse(permissions.hasAccess(AttestationSubmission.builder()

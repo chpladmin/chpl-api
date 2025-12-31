@@ -11,9 +11,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -25,8 +26,16 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ErrorMessageUtil msgUtil;
+
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
     @Mock
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
@@ -35,7 +44,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        permissions = new SplitActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, msgUtil);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         Mockito.when(msgUtil.getMessage(
