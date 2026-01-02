@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
+import javax.sql.DataSource;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +53,10 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -120,11 +125,40 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public LocalEntityManagerFactoryBean entityManagerFactory() {
-        LOGGER.info("get LocalEntityManagerFactoryBean");
-        LocalEntityManagerFactoryBean bean = new LocalEntityManagerFactoryBean();
-        bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LOGGER.info("get LocalContainerEntityManagerFactoryBean");
+        LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
+        bean.setDataSource(dataSource());
+        bean.setPackagesToScan("gov.healthit.chpl");
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        bean.setJpaVendorAdapter(vendorAdapter); // Use Hibernate as the JPA provider
+        bean.setJpaProperties(additionalProperties()); // Set JPA/Hibernate specific properties
+
         return bean;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+        // The JNDI name must match the resource name in Tomcat
+        return lookup.getDataSource("java:/comp/env/jdbc/openchpl");
+    }
+
+    private Properties additionalProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.flush_before_completion", "true");
+        properties.setProperty("hibernate.c3p0.min_size", "5");
+        properties.setProperty("hibernate.c3p0.max_size", "20");
+        properties.setProperty("hibernate.c3p0.timeout", "300");
+        properties.setProperty("hibernate.c3p0.max_statements", "50");
+        properties.setProperty("hibernate.c3p0.idle_test_period", "3000");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+
+        // Set the two below properties to true to see the generated SQL
+        // Very useful for debugging
+        properties.setProperty("hibernate.show_sql", "false");
+        properties.setProperty("hibernate.format_sql", "false");
+        return properties;
     }
 
     @Bean
