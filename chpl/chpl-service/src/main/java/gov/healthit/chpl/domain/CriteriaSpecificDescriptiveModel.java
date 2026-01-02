@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 
@@ -44,7 +44,7 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
 
         CriteriaSpecificDescriptiveModel rhs = (CriteriaSpecificDescriptiveModel) obj;
 
-        if (StringUtils.isEmpty(rhs.getName()) != StringUtils.isEmpty(this.getName())) {
+        if (ObjectUtils.isEmpty(rhs.getName()) != ObjectUtils.isEmpty(this.getName())) {
             return false;
         }
 
@@ -61,7 +61,7 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
 
     @Override
     public int hashCode() {
-        if (StringUtils.isEmpty(this.getName()) || this.criteria == null || this.getCriteria().getId() == null) {
+        if (ObjectUtils.isEmpty(this.getName()) || this.criteria == null || this.getCriteria().getId() == null) {
             return 0;
         }
         return this.getName().hashCode() + this.getCriteria().getId().hashCode();

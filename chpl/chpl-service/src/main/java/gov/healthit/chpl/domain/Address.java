@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -69,17 +70,17 @@ public class Address implements Serializable {
         }
         Address anotherAddress = (Address) obj;
         return (StringUtils.isAllEmpty(this.line1, anotherAddress.line1)
-                    || StringUtils.equals(this.line1, anotherAddress.line1))
+                    || Strings.CS.equals(this.line1, anotherAddress.line1))
                 && (StringUtils.isAllEmpty(this.line2, anotherAddress.line2)
-                    || StringUtils.equals(this.line2, anotherAddress.line2))
+                    || Strings.CS.equals(this.line2, anotherAddress.line2))
                 && (StringUtils.isAllEmpty(this.city, anotherAddress.city)
-                    || StringUtils.equals(this.city, anotherAddress.city))
+                    || Strings.CS.equals(this.city, anotherAddress.city))
                 && (StringUtils.isAllEmpty(this.state, anotherAddress.state)
-                    || StringUtils.equals(this.state, anotherAddress.state))
+                    || Strings.CS.equals(this.state, anotherAddress.state))
                 && (StringUtils.isAllEmpty(this.zipcode, anotherAddress.zipcode)
-                    || StringUtils.equals(this.zipcode, anotherAddress.zipcode))
+                    || Strings.CS.equals(this.zipcode, anotherAddress.zipcode))
                 && (StringUtils.isAllEmpty(this.country, anotherAddress.country)
-                    || StringUtils.equals(this.country, anotherAddress.country));
+                    || Strings.CS.equals(this.country, anotherAddress.country));
     }
 
     @Override

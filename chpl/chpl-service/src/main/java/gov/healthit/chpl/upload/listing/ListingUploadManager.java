@@ -510,10 +510,10 @@ public class ListingUploadManager {
 
         List<CSVRecord> records = null;
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new BOMInputStream(file.getInputStream()), StandardCharsets.UTF_8.name()));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL
-                        .withIgnoreEmptyLines()
-                        .withIgnoreSurroundingSpaces())) {
+                new InputStreamReader(BOMInputStream.builder().setInputStream(file.getInputStream()).setCharset(StandardCharsets.UTF_8.name()).get()));
+                CSVParser parser = CSVParser.builder().setReader(reader)
+                        .setFormat(CSVFormat.EXCEL.builder().setIgnoreEmptyLines(true).setIgnoreSurroundingSpaces(true).get())
+                        .get()) {
             records = parser.getRecords();
             trimTailingEmptyLines(records);
             if (records.size() <= 1) {

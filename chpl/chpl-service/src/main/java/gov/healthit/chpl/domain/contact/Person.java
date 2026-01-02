@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -47,11 +48,11 @@ public class Person implements Serializable {
         }
         Person anotherPerson = (Person) obj;
         return (StringUtils.isAllEmpty(this.fullName, anotherPerson.fullName)
-                    || StringUtils.equals(this.fullName, anotherPerson.fullName))
+                    || Strings.CS.equals(this.fullName, anotherPerson.fullName))
                 && (StringUtils.isAllEmpty(this.email, anotherPerson.email)
-                    || StringUtils.equals(this.email, anotherPerson.email))
+                    || Strings.CS.equals(this.email, anotherPerson.email))
                 && (StringUtils.isAllEmpty(this.phoneNumber, anotherPerson.phoneNumber)
-                    || StringUtils.equals(this.phoneNumber, anotherPerson.phoneNumber));
+                    || Strings.CS.equals(this.phoneNumber, anotherPerson.phoneNumber));
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -671,8 +672,8 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private boolean haveQmsDetailsChanged(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
-        return !StringUtils.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
-                || !StringUtils.equals(orig.getQmsModification(), updated.getQmsModification());
+        return !Strings.CS.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
+                || !Strings.CS.equals(orig.getQmsModification(), updated.getQmsModification());
     }
 
     private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,

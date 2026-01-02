@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 public enum ValidationMessageType {
     Error, Warning;
@@ -17,7 +17,7 @@ public enum ValidationMessageType {
 
     @Override
     public String toString() {
-        if (!StringUtils.isEmpty(this.name)) {
+        if (!ObjectUtils.isEmpty(this.name)) {
             return this.name;
         }
         return name();

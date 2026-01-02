@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -76,7 +76,7 @@ public class CognitoUserManager {
         this.invitationLengthDays = invitationLengthDays;
         this.activityManager = activityManager;
         this.groupNameForEnvironment = groupNameForEnvironment;
-        if (StringUtils.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
+        if (Strings.CS.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
             isProdEnvironment = false;
         }
     }

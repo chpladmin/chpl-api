@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 public class KeyValueModel implements Serializable {
     private static final long serialVersionUID = -6175366628840719513L;
@@ -50,7 +50,7 @@ public class KeyValueModel implements Serializable {
 
         DescriptiveModel rhs = (DescriptiveModel) obj;
 
-        if (StringUtils.isEmpty(rhs.getName()) != StringUtils.isEmpty(this.getName())) {
+        if (ObjectUtils.isEmpty(rhs.getName()) != ObjectUtils.isEmpty(this.getName())) {
             return false;
         }
 
@@ -59,7 +59,7 @@ public class KeyValueModel implements Serializable {
 
     @Override
     public int hashCode() {
-        if (StringUtils.isEmpty(this.getName())) {
+        if (ObjectUtils.isEmpty(this.getName())) {
             return 0;
         }
         return this.getName().hashCode();

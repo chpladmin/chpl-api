@@ -3,9 +3,9 @@ package gov.healthit.chpl.questionableactivity.listing;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
@@ -26,8 +26,8 @@ public class AddedRwtResultsNonEligibleListingActivity implements ListingActivit
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListing activity = null;
-        if (StringUtils.isEmpty(origListing.getRwtResultsUrl())
-                && !StringUtils.isEmpty(newListing.getRwtResultsUrl())
+        if (ObjectUtils.isEmpty(origListing.getRwtResultsUrl())
+                && !ObjectUtils.isEmpty(newListing.getRwtResultsUrl())
                 && !isListingRealWorldTestingEligible(newListing.getId())) {
             activity = new QuestionableActivityListing();
             activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());

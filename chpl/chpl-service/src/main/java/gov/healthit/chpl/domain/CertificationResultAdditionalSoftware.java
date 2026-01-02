@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -101,7 +102,7 @@ public class CertificationResultAdditionalSoftware implements Serializable {
             } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(other.getName())
                     && this.getName().equalsIgnoreCase(other.getName())
                     && ((StringUtils.isEmpty(this.getVersion()) && StringUtils.isEmpty(other.getVersion()))
-                            || StringUtils.equals(this.getVersion(), other.getVersion()))) {
+                            || Strings.CS.equals(this.getVersion(), other.getVersion()))) {
                 result = true;
             }
         }

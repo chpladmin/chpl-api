@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain.compliance;
 
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JacksonConfigurer {

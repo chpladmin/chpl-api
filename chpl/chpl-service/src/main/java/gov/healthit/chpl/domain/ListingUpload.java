@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -54,7 +55,7 @@ public class ListingUpload implements Serializable {
         ListingUpload anotherListingUpload = (ListingUpload) another;
         if (StringUtils.isNotEmpty(this.getChplProductNumber())
                 && StringUtils.isNotEmpty(anotherListingUpload.getChplProductNumber())) {
-            return StringUtils.equals(this.getChplProductNumber(), anotherListingUpload.getChplProductNumber());
+            return Strings.CS.equals(this.getChplProductNumber(), anotherListingUpload.getChplProductNumber());
         }
         return false;
     }

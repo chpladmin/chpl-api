@@ -3,7 +3,7 @@ package gov.healthit.chpl;
 import java.io.IOException;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.collections.api.factory.SortedSets;
 import org.redisson.client.RedisTimeoutException;
@@ -237,7 +237,7 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
-        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+        if (Strings.CI.contains(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
             return null; // socket is closed, cannot return any response
         } else {

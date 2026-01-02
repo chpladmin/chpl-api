@@ -57,7 +57,7 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
 
     private ChangeRequestDeveloperDemographicsEntity getNewEntity(Long changeRequestId, ChangeRequestDeveloperDemographics crDev) {
         ChangeRequestDeveloperDemographicsEntity entity = new ChangeRequestDeveloperDemographicsEntity();
-        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, changeRequestId));
+        entity.setChangeRequest(getSession().find(ChangeRequestEntity.class, changeRequestId));
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }

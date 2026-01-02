@@ -25,7 +25,7 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -128,8 +128,8 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
    }
 
     @Bean
-    public MappingJackson2HttpMessageConverter jsonConverter() {
-        MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+    public JacksonJsonHttpMessageConverter jsonConverter() {
+        JacksonJsonHttpMessageConverter bean = new JacksonJsonHttpMessageConverter();
         bean.setPrefixJson(false);
         List<MediaType> mediaTypes = new ArrayList<MediaType>();
         mediaTypes.add(MediaType.APPLICATION_JSON);

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -173,7 +174,7 @@ public class UcdProcessReviewer implements Reviewer {
     private boolean hasFuzzyMatch(CertifiedProductUcdProcess ucdProcess) {
         return !StringUtils.isEmpty(ucdProcess.getUserEnteredName())
                 && !StringUtils.isEmpty(ucdProcess.getName())
-                && !StringUtils.equals(ucdProcess.getName(), ucdProcess.getUserEnteredName());
+                && !Strings.CS.equals(ucdProcess.getName(), ucdProcess.getUserEnteredName());
     }
 
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
