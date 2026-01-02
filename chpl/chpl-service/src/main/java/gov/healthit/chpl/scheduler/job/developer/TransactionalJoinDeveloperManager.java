@@ -6,12 +6,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +63,12 @@ public class TransactionalJoinDeveloperManager {
     private DeveloperManager developerManager;
 
     @Autowired
+    private Environment env;
+
+    @Autowired
     private DirectReviewUpdateEmailService directReviewEmailService;
+
+    private ExecutorService executorService;
 
     @Transactional(rollbackFor = Exception.class)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToJoin.id")
@@ -68,6 +77,7 @@ public class TransactionalJoinDeveloperManager {
         List<Long> developerIdsJoining = developersJoining.stream()
                 .map(Developer::getId)
                 .collect(Collectors.toList());
+        initializeExecutorService();
 
         Map<Long, CertifiedProductSearchDetails> preJoinListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postJoinListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -78,7 +88,7 @@ public class TransactionalJoinDeveloperManager {
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            List<Future<CertifiedProductSearchDetails>> beforeListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings, true);
+            List<CompletableFuture<CertifiedProductSearchDetails>> beforeListingFutures = getCertifiedProductDetailFutures(affectedListings, true);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -97,7 +107,7 @@ public class TransactionalJoinDeveloperManager {
             productManager.updateProductForOwnerJoin(product);
 
             // get the listing details again - this time they will have the new developer code
-            List<Future<CertifiedProductSearchDetails>> afterListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings, false);
+            List<CompletableFuture<CertifiedProductSearchDetails>> afterListingFutures = getCertifiedProductDetailFutures(affectedListings, false);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -127,7 +137,7 @@ public class TransactionalJoinDeveloperManager {
                 CertifiedProductSearchDetails preJoinListing = preJoinListingDetails.get(postJoinListingId);
                 CertifiedProductSearchDetails postJoinListing = postJoinListingDetails.get(postJoinListingId);
                 try {
-                    if (!StringUtils.equals(preJoinListing.getChplProductNumber(), postJoinListing.getChplProductNumber())) {
+                    if (!Objects.equals(preJoinListing.getChplProductNumber(), postJoinListing.getChplProductNumber())) {
                         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preJoinListing.getId(),
                             "Updated certified product " + postJoinListing.getChplProductNumber() + ".", preJoinListing,
                             postJoinListing);
@@ -156,27 +166,38 @@ public class TransactionalJoinDeveloperManager {
             });
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
-            List<CertifiedProductDetailsDTO> listings, boolean fromCache) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
-                futures.add(new AsyncResult<CertifiedProductSearchDetails>(
-                        getDetails(currListing.getId(), fromCache)));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-            }
+    private List<CompletableFuture<CertifiedProductSearchDetails>> getCertifiedProductDetailFutures(List<CertifiedProductDetailsDTO> listings, boolean fromCache) {
+        List<CompletableFuture<CertifiedProductSearchDetails>> futures = new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
+        for (CertifiedProductDetailsDTO certifiedProductDetails : listings) {
+            futures.add(CompletableFuture.supplyAsync(() -> getDetails(certifiedProductDetails.getId(), fromCache), executorService)
+                .thenApply(listing -> listing.isPresent() ? listing.get() : null));
         }
         return futures;
     }
 
-    private CertifiedProductSearchDetails getDetails(Long listingId, boolean fromCache) throws EntityRetrievalException {
+    private Optional<CertifiedProductSearchDetails> getDetails(Long listingId, boolean fromCache) {
         if (fromCache) {
-            return cpdManager.getCertifiedProductDetails(listingId);
+            try {
+                return Optional.of(cpdManager.getCertifiedProductDetails(listingId));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+                return Optional.empty();
+            }
         } else {
-            return cpdManager.getCertifiedProductDetailsNoCache(listingId);
+            try {
+                return Optional.of(cpdManager.getCertifiedProductDetailsNoCache(listingId));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+                return Optional.empty();
+            }
         }
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private void initializeExecutorService() {
+        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
     }
 }

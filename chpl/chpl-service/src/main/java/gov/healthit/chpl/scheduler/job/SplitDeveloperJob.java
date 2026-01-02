@@ -7,6 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -21,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -62,6 +66,8 @@ public class SplitDeveloperJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    private ExecutorService executorService;
 
     @Autowired
     private DeveloperManager devManager;
@@ -160,14 +166,15 @@ public class SplitDeveloperJob extends QuartzJob {
         // re-assign products to the new developer
         // log activity for all listings whose ID will have changed
         Date splitDate = new Date();
+        initializeExecutorService();
         for (Long productIdToMove : productIdsToMove) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(productIdToMove);
             LOGGER.info("Found " + affectedListings.size() + " affected listings");
 
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings, true);
+            List<CompletableFuture<CertifiedProductSearchDetails>> beforeListingFutures
+                = getCertifiedProductDetailFutures(affectedListings, true);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -189,8 +196,8 @@ public class SplitDeveloperJob extends QuartzJob {
             productManager.update(productToMove);
 
             // get the listing details again - this time they will have the new developer code
-            List<Future<CertifiedProductSearchDetails>> afterListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings, false);
+            List<CompletableFuture<CertifiedProductSearchDetails>> afterListingFutures
+                = getCertifiedProductDetailFutures(affectedListings, false);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -202,7 +209,7 @@ public class SplitDeveloperJob extends QuartzJob {
         for (Long id : postSplitListingDetails.keySet()) {
             CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
             CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
-            if (!StringUtils.equals(preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber())) {
+            if (!Objects.equals(preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber())) {
                 //listing activity should only be recorded if the CHPL product number of the listing changed
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
                     "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
@@ -223,27 +230,30 @@ public class SplitDeveloperJob extends QuartzJob {
         return afterDeveloper;
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
-            List<CertifiedProductDetailsDTO> listings, boolean fromCache) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
-                futures.add(new AsyncResult<CertifiedProductSearchDetails>(
-                        getDetails(currListing.getId(), fromCache)));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-            }
+    private List<CompletableFuture<CertifiedProductSearchDetails>> getCertifiedProductDetailFutures(List<CertifiedProductDetailsDTO> listings, boolean fromCache) {
+        List<CompletableFuture<CertifiedProductSearchDetails>> futures = new ArrayList<CompletableFuture<CertifiedProductSearchDetails>>();
+        for (CertifiedProductDetailsDTO certifiedProductDetails : listings) {
+            futures.add(CompletableFuture.supplyAsync(() -> getDetails(certifiedProductDetails.getId(), fromCache), executorService)
+                .thenApply(listing -> listing.isPresent() ? listing.get() : null));
         }
         return futures;
     }
 
-    private CertifiedProductSearchDetails getDetails(Long listingId, boolean fromCache) throws EntityRetrievalException {
+    private Optional<CertifiedProductSearchDetails> getDetails(Long listingId, boolean fromCache) {
         if (fromCache) {
-            return cpdManager.getCertifiedProductDetails(listingId);
+            try {
+                return Optional.of(cpdManager.getCertifiedProductDetails(listingId));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+                return Optional.empty();
+            }
         } else {
-            return cpdManager.getCertifiedProductDetailsNoCache(listingId);
+            try {
+                return Optional.of(cpdManager.getCertifiedProductDetailsNoCache(listingId));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+                return Optional.empty();
+            }
         }
     }
 
@@ -366,5 +376,13 @@ public class SplitDeveloperJob extends QuartzJob {
                 .build();
 
         return htmlMessage;
+    }
+
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private void initializeExecutorService() {
+        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
     }
 }

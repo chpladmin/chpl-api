@@ -85,8 +85,7 @@ public class PromotingInteroperabilityUploadJob extends QuartzJob implements Job
         Set<PromotingInteroperabilityUserRecord> piusToUpdate = new LinkedHashSet<PromotingInteroperabilityUserRecord>();
         Set<String> uniquePiusFromFile = new LinkedHashSet<String>();
         try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
-
+                CSVParser parser = CSVParser.builder().setReader(reader).setFormat(CSVFormat.EXCEL).get()) {
             List<CSVRecord> records = parser.getRecords();
             CSVRecord heading = null;
             for (int i = 1; i <= records.size(); i++) {

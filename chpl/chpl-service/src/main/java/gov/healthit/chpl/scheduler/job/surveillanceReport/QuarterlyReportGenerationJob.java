@@ -14,10 +14,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -61,7 +61,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
     private String quarterlyReportFailureSubject;
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private ErrorMessageUtil msgUtil;
@@ -94,11 +94,9 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
             Long quarterlyReportId = (Long) jobDataMap.get(QUARTERLY_REPORT_ID_KEY);
             setSecurityContext(user);
 
-            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            txTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
+            TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                    new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+            transactionOperations.executeWithoutResult(status -> {
                     QuarterlyReport report = null;
                     try {
                         report = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -138,7 +136,6 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
                         }
                         workbookWrapper.close();
                     }
-                }
             });
         } else {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);

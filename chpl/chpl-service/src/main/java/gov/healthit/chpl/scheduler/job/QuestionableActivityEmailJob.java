@@ -91,7 +91,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private static final Integer MIN_RANGE_IN_DAYS = 1;
     private static final Integer MAX_RANGE_IN_DAYS = 365;
-    private Range<Integer> rangeInDays = Range.between(MIN_RANGE_IN_DAYS, MAX_RANGE_IN_DAYS);
+    private Range<Integer> rangeInDays = Range.of(MIN_RANGE_IN_DAYS, MAX_RANGE_IN_DAYS);
     private static final Integer DEFAULT_RANGE = 7;
 
     /**
@@ -711,7 +711,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (maxNode != null) {
                 max = maxNode.asInt();
             }
-            rangeInDays = Range.between(min, max);
+            rangeInDays = Range.of(min, max);
         }
     }
 

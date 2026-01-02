@@ -29,6 +29,7 @@ public class SummaryStatisticsPdfFooterEvent extends AbstractPdfDocumentEventHan
         float x = (pageSize.getLeft() + pageSize.getRight()) / 2;
         float y = pageSize.getBottom() + 15;
         canvas.showTextAligned(FOOTER_TEXT, x, y, TextAlignment.CENTER);
+        canvas.close();
     }
 
 

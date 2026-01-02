@@ -8,6 +8,9 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class StatisticsWorksheetStyles {
     private static final Short DEFAULT_FONT_SIZE = 11;
 
