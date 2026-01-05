@@ -2,35 +2,39 @@ package gov.healthit.chpl.util;
 
 import java.io.IOException;
 
+import com.flipkart.zjsonpatch.Jackson3JsonDiff;
+
+import gov.healthit.chpl.activity.ActivityExclude;
+import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
 import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.AnnotatedMember;
 import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.flipkart.zjsonpatch.JsonDiff;
-
-import gov.healthit.chpl.activity.ActivityExclude;
-import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 public final class JSONUtils {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
-    private static final ObjectMapper MAPPER_EXCLUDING_IGNORED_FIELDS = new ObjectMapper().findAndRegisterModules()
-            .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+    private static final ObjectMapper MAPPER_EXCLUDING_IGNORED_FIELDS = JsonMapper.builder()
+            .annotationIntrospector(new JacksonAnnotationIntrospector() {
                 private static final long serialVersionUID = -1856550954546461022L;
 
                 @Override
-                public boolean hasIgnoreMarker(final AnnotatedMember m) {
-                    return super.hasIgnoreMarker(m) || m.hasAnnotation(Deprecated.class)
+                public boolean hasIgnoreMarker(MapperConfig<?> config, AnnotatedMember m) {
+                    return super.hasIgnoreMarker(config, m)
+                            || m.hasAnnotation(Deprecated.class)
                             || m.hasAnnotation(ActivityExclude.class);
                 }
-            });
+              })
+            .build();
     private static final ObjectWriter WRITER_EXCLUDING_IGNORED_FIELDS = MAPPER_EXCLUDING_IGNORED_FIELDS.writer();
 
     private JSONUtils() {
@@ -85,12 +89,11 @@ public final class JSONUtils {
             JsonNode node2 = getReader().readTree(json2);
             equals = node1.equals(node2);
 
-            JsonNode patch = JsonDiff.asJson(node1, node2);
+            JsonNode patch = Jackson3JsonDiff.asJson(node1, node2);
             if (patch != null && !patch.isEmpty()) {
                 LOGGER.debug("Data was updated. Differences found in the JSON.");
                 LOGGER.debug(patch.toString());
             }
-
         } catch (final NullPointerException e) {
             equals = false;
         }

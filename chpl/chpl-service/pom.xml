@@ -157,9 +157,9 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.zjsonpatch</groupId>
+            <groupId>io.github.vishwakarma</groupId>
             <artifactId>zjsonpatch</artifactId>
-            <version>0.4.16</version>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
