@@ -59,6 +59,7 @@ import lombok.extern.log4j.Log4j2;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.AnnotatedMember;
 import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
@@ -117,39 +118,19 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.rateLimitTimePeriod = Integer.parseInt(e.getProperty("rateLimitTimePeriod"));
     }
 
-//    @Autowired
-//    void configureObjectMapper(ObjectMapper mapper) {
-//        // Use this property if your input JSON is a long timestamp value
-//        mapper.enable(DeserializationFeature.READ_DATES_AS_TIMESTAMPS);
-//        mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
-//            private static final long serialVersionUID = 2803278488940499378L;
-//
-//            @Override
-//            public boolean hasIgnoreMarker(AnnotatedMember m) {
-//                Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
-//                if (_findAnnotation(m, JsonIgnore.class) != null) {
-//                    return true;
-//                } else {
-//                    return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
-//                }
-//            }
-//        });
-//   }
-
     @Bean
     @Primary // Mark as primary to ensure it's the one used globally by Spring
     public ObjectMapper configureObjectMapper() {
         ObjectMapper mapper = JsonMapper.builder()
+                .annotationIntrospector(getDeprecatedAnnotationIntrospector())
                 .changeDefaultPropertyInclusion(include -> include.withContentInclusion(Include.NON_NULL).withValueInclusion(JsonInclude.Include.NON_NULL))
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                         DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .findAndAddModules()
                 .build();
-
-        //TODO how to add this in??
-        mapper.deserializationConfig().getAnnotationIntrospector()registeredModules().add(getDeprecatedAnnotationIntrospector());
         return mapper;
     }
 
