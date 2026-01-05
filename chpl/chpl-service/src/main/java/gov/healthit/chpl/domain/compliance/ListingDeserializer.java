@@ -16,13 +16,17 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 public class ListingDeserializer extends StdDeserializer<List<DeveloperAssociatedListing>> {
     private static final String ID_FIELD = "id";
     private static final String CHPL_PRODUCT_NUMBER_FIELD = "chplProductNumber";
+    private static ChplProductNumberUtil chplProductNumberUtil;
 
-    protected ListingDeserializer() {
-        super(DeveloperAssociatedListing.class);
+    public ListingDeserializer() {
+        super(List.class);
     }
 
     @Autowired
-    private ChplProductNumberUtil chplProductNumberUtil;
+    public ListingDeserializer(ChplProductNumberUtil chplProductNumberUtil) {
+        super(List.class);
+        ListingDeserializer.chplProductNumberUtil = chplProductNumberUtil;
+    }
 
     /*********************************************
      * This deserializer handles 2 different situations:
