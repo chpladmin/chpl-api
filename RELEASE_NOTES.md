@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 52.4.0
+_5 January 2026_
+
+### Features
+* Allow ONC-ACB to access/edit change request they were associated with
+
+### Bug Fixes
+* Check for null code set value
+
+---
+
 ## Version 52.3.0
 _22 December 2025_
 

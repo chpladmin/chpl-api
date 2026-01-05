@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,12 +88,14 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
                 .thenReturn(getAllAcbForUser(1L));
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
                 .developer(Developer.builder().id(1L).build())
+                .certificationBodies(Stream.of(CertificationBody.builder().id(1L).build()).toList())
                 .build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(5l));
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
                 .developer(Developer.builder().id(99l).build())
+                .certificationBodies(Stream.of(CertificationBody.builder().id(1L).build()).toList())
                 .build()));
 
     }
