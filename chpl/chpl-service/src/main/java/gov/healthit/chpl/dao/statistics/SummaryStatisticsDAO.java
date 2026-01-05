@@ -1,13 +1,10 @@
 package gov.healthit.chpl.dao.statistics;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
@@ -16,6 +13,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Log4j2
 @Repository("summaryStatisticsDAO")
@@ -76,7 +75,7 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
             StatisticsSnapshot snapshot = mapper.readValue(entity.getSummaryStatistics(), StatisticsSnapshot.class);
             snapshot.setSnapshotDate(entity.getEndDate());
             return snapshot;
-        } catch (IOException ex) {
+        } catch (JacksonException ex) {
             LOGGER.error("Unable to convert SummaryStatisticsEntity JSON into StatisticsSnapshot java object.", ex);
             return null;
         }

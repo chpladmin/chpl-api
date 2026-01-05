@@ -14,7 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -125,7 +125,7 @@ public class ListingConfirmationManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
-            throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException, JsonProcessingException {
+            throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException, JacksonException {
 
         if (listing.getDeveloper().getId() == null) {
             //create developer, set developer ID in listing

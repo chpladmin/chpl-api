@@ -3,7 +3,7 @@ package gov.healthit.chpl.activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.domain.activity.ActivityCategory;

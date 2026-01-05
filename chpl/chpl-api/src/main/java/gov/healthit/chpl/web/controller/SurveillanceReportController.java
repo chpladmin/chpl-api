@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -321,7 +321,7 @@ public class SurveillanceReportController {
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
             throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
-            JsonProcessingException, EntityRetrievalException, ValidationException, ActivityException {
+            JacksonException, EntityRetrievalException, ValidationException, ActivityException {
         if (createRequest.getAcb() == null || createRequest.getAcb().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingAcb"));
         }
@@ -346,7 +346,7 @@ public class SurveillanceReportController {
             @PathVariable Long surveillanceId,
             @RequestBody(required = true) PrivilegedSurveillance updateRequest)
             throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException,
-            EntityCreationException, JsonProcessingException, ActivityException {
+            EntityCreationException, JacksonException, ActivityException {
         QuarterlyReport quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
         updateRequest.setQuarterlyReport(quarterlyReport);
         updateRequest.setId(surveillanceId);
@@ -364,7 +364,7 @@ public class SurveillanceReportController {
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public QuarterlyReport updateQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport updateRequest)
-            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JacksonException,
             EntityCreationException, ValidationException, ActivityException {
         if (updateRequest.getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingReportId"));
@@ -382,7 +382,7 @@ public class SurveillanceReportController {
             })
     @RequestMapping(value = "/quarterly/{quarterlyReportId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public void deleteQuarterlyReport(@PathVariable Long quarterlyReportId) throws EntityRetrievalException, ActivityException, JsonProcessingException, EntityCreationException {
+    public void deleteQuarterlyReport(@PathVariable Long quarterlyReportId) throws EntityRetrievalException, ActivityException, JacksonException, EntityCreationException {
         reportManager.deleteQuarterlyReport(quarterlyReportId);
     }
 

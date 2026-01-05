@@ -1,24 +1,25 @@
 package gov.healthit.chpl.domain.compliance;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 @Component
-public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociatedListing>> {
+public class ListingDeserializer extends StdDeserializer<List<DeveloperAssociatedListing>> {
     private static final String ID_FIELD = "id";
     private static final String CHPL_PRODUCT_NUMBER_FIELD = "chplProductNumber";
+
+    protected ListingDeserializer() {
+        super(DeveloperAssociatedListing.class);
+    }
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -34,10 +35,9 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
      *      in a DeveloperAssociatedListing object
     *********************************************/
     @Override
-    public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context)
-      throws IOException, JsonProcessingException {
+    public List<DeveloperAssociatedListing> deserialize(JsonParser jsonParser, DeserializationContext context) {
         List<DeveloperAssociatedListing> listings = new ArrayList<DeveloperAssociatedListing>();
-        JsonNode listingDatabaseIdsNode = jsonParser.getCodec().readTree(jsonParser);
+        JsonNode listingDatabaseIdsNode = jsonParser.objectReadContext().readTree(jsonParser);
         if (listingDatabaseIdsNode != null && listingDatabaseIdsNode.isArray() && listingDatabaseIdsNode.size() > 0) {
             for (JsonNode listingDatabaseIdObj : listingDatabaseIdsNode) {
                 Long listingId = null;
@@ -45,7 +45,7 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
                 if (representsDeveloperAssociatedListingObject(listingDatabaseIdsNode)) {
                     // From an existing DeveloperAssociatedListing form {"id":10764,"chplProductNumber":"15.04.04.2883.eCli.11.01.1.211228"}
                     listingId = listingDatabaseIdObj.findValue(ID_FIELD).asLong();
-                    chplProductNumber = listingDatabaseIdObj.findValue(CHPL_PRODUCT_NUMBER_FIELD).textValue();
+                    chplProductNumber = listingDatabaseIdObj.findValue(CHPL_PRODUCT_NUMBER_FIELD).asString();
                 } else {
                     //From a listing id - form "10989"
                     listingId = listingDatabaseIdObj.asLong();

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.insight;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +14,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Log4j2
 @Component
@@ -70,7 +69,7 @@ public class InsightService {
         JsonNode root = null;
         try {
             root = objectMapper.readTree(responseBody);
-        } catch (IOException ex) {
+        } catch (JacksonException ex) {
             LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
             throw new InsightRequestFailedException("Could not convert " + responseBody + " to expected object.", ex);
         }
@@ -84,7 +83,7 @@ public class InsightService {
                 try {
                     InsightSubmission is = objectMapper.readValue(submissionObj.toString(), InsightSubmission.class);
                     submissions.add(is);
-                } catch (IOException ex) {
+                } catch (JacksonException ex) {
                     LOGGER.error("Cannot map submission JSON to InsightSubmission class", ex);
                 }
             }

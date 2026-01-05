@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -27,7 +27,7 @@ public abstract class SharedStoreProvider<K, V> {
 
     protected abstract String getDomain();
     protected abstract Class<V> getClazz();
-    protected abstract V getFromJson(String json) throws JsonProcessingException;
+    protected abstract V getFromJson(String json) throws JacksonException;
     protected abstract Integer getTimeToLive();
 
     public boolean containsKey(K key) {
@@ -41,7 +41,7 @@ public abstract class SharedStoreProvider<K, V> {
             try {
                 LOGGER.info("Retreived from shared data: {} {}", getDomain(), key.toString());
                 obj = getFromJson(data.getValue());
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, Math.min(data.getValue().length(), MAX_JSON_LENGTH)), e);
             }
 
@@ -64,7 +64,7 @@ public abstract class SharedStoreProvider<K, V> {
                     .key(key.toString())
                     .value(mapper.writeValueAsString(value))
                     .build());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Could not write object to JSON: {} {}", getDomain(), key.toString(), e);
         }
     }

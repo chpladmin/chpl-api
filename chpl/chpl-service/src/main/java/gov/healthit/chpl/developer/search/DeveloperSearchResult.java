@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;

@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -36,9 +37,8 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
@@ -56,6 +56,13 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.MapperConfig;
+import tools.jackson.databind.introspect.AnnotatedMember;
+import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 @EnableWebMvc
@@ -110,22 +117,57 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.rateLimitTimePeriod = Integer.parseInt(e.getProperty("rateLimitTimePeriod"));
     }
 
-    @Autowired
-    void configureObjectMapper(ObjectMapper mapper) {
-        mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
-            private static final long serialVersionUID = 2803278488940499378L;
+//    @Autowired
+//    void configureObjectMapper(ObjectMapper mapper) {
+//        // Use this property if your input JSON is a long timestamp value
+//        mapper.enable(DeserializationFeature.READ_DATES_AS_TIMESTAMPS);
+//        mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+//            private static final long serialVersionUID = 2803278488940499378L;
+//
+//            @Override
+//            public boolean hasIgnoreMarker(AnnotatedMember m) {
+//                Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
+//                if (_findAnnotation(m, JsonIgnore.class) != null) {
+//                    return true;
+//                } else {
+//                    return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
+//                }
+//            }
+//        });
+//   }
 
-            @Override
-            public boolean hasIgnoreMarker(AnnotatedMember m) {
-                Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
-                if (_findAnnotation(m, JsonIgnore.class) != null) {
-                    return true;
-                } else {
-                    return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
-                }
-            }
-        });
-   }
+    @Bean
+    @Primary // Mark as primary to ensure it's the one used globally by Spring
+    public ObjectMapper configureObjectMapper() {
+        ObjectMapper mapper = JsonMapper.builder()
+                .changeDefaultPropertyInclusion(include -> include.withContentInclusion(Include.NON_NULL).withValueInclusion(JsonInclude.Include.NON_NULL))
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .findAndAddModules()
+                .build();
+
+        //TODO how to add this in??
+        mapper.deserializationConfig().getAnnotationIntrospector()registeredModules().add(getDeprecatedAnnotationIntrospector());
+        return mapper;
+    }
+
+    private JacksonAnnotationIntrospector getDeprecatedAnnotationIntrospector() {
+        return new JacksonAnnotationIntrospector() {
+          private static final long serialVersionUID = 2803278488940499378L;
+
+          @Override
+          public boolean hasIgnoreMarker(MapperConfig<?> config, AnnotatedMember m) {
+              Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
+              if (_findAnnotation(m, JsonIgnore.class) != null) {
+                  return true;
+              } else {
+                  return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
+              }
+          }
+        };
+    }
 
     @Bean
     public JacksonJsonHttpMessageConverter jsonConverter() {

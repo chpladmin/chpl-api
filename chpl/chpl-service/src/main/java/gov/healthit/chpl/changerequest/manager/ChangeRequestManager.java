@@ -14,8 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
@@ -221,7 +221,7 @@ public class ChangeRequestManager {
     @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
     public ChangeRequest updateChangeRequest(ChangeRequestUpdateRequest crUpdateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
+            JacksonException, ActivityException, InvalidArgumentsException, EmailNotSentException {
 
         ChangeRequest cr = updateChangeRequestWithCastedDetails(crUpdateRequest.getChangeRequest());
 

@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -62,7 +62,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     }
 
     @Override
-    protected CertifiedProductSearchDetails getFromJson(String json) throws JsonProcessingException {
+    protected CertifiedProductSearchDetails getFromJson(String json) throws JacksonException {
         return mapper.readValue(json, CertifiedProductSearchDetails.class);
     }
 

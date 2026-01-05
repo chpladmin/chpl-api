@@ -34,6 +34,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Jackson BOM can manage all Jackson dependencies-->
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <!-- Allow the BOM to manage any/all Azure dependencies -->
             <dependency>
                 <groupId>com.azure</groupId>
@@ -143,12 +151,10 @@
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.flipkart.zjsonpatch</groupId>

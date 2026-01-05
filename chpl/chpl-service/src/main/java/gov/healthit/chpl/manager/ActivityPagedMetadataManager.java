@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import tools.jackson.core.exc.StreamReadException;
 
 import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
@@ -66,7 +66,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_METADATA_BY_CONCEPT, #concept)")
     public ActivityMetadataPage getActivityMetadataByConcept(ActivityConcept concept, Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(concept, startMillis, endMillis, pageNum, pageSize);
     }
@@ -75,7 +75,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACB_METADATA)")
     @Transactional
     public ActivityMetadataPage getCertificationBodyActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.CERTIFICATION_BODY,
                 startMillis, endMillis, pageNum, pageSize);
@@ -85,7 +85,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA)")
     @Transactional
     public ActivityMetadataPage getTestingLabActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.TESTING_LAB,
                 startMillis, endMillis, pageNum, pageSize);
@@ -95,14 +95,14 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_API_KEY_MANAGEMENT_METADATA)")
     public ActivityMetadataPage getApiKeyManagementMetadata(Long startMillis, Long endMillis,
-        Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.API_KEY, startMillis, endMillis, pageNum, pageSize);
     }
 
     @Transactional
     public ActivityMetadataPage getAnnouncementActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         if (resourcePermissionsFactory.get().isUserAnonymous()) {
             List<Announcement> publicAnnouncements = announcementDao.findAll(true, false);
@@ -120,7 +120,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_SURVEILLANCE_METADATA)")
     @Transactional
     public ActivityMetadataPage getPendingSurveillanceActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.PENDING_SURVEILLANCE, startMillis, endMillis, pageNum, pageSize);
     }
@@ -129,7 +129,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CONFORMANCE_METHOD_METADATA)")
     @Transactional
     public ActivityMetadataPage getConformanceMethodActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.CONFORMANCE_METHOD, startMillis, endMillis, pageNum, pageSize);
     }
@@ -138,7 +138,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_FUNCTIONALITY_TESTED_METADATA)")
     @Transactional
     public ActivityMetadataPage getFunctionalityTestedActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.FUNCTIONALITY_TESTED, startMillis, endMillis, pageNum, pageSize);
     }
@@ -147,7 +147,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CODE_SET_METADATA)")
     @Transactional
     public ActivityMetadataPage getCodeSetActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.CODE_SET, startMillis, endMillis, pageNum, pageSize);
     }
@@ -156,7 +156,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_STANDARD_METADATA)")
     @Transactional
     public ActivityMetadataPage getStandardActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.STANDARD, startMillis, endMillis, pageNum, pageSize);
     }
@@ -165,7 +165,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_SVAP_METADATA)")
     @Transactional
     public ActivityMetadataPage getSvapActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+            Integer pageNum, Integer pageSize) throws ValidationException, StreamReadException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.SVAP, startMillis, endMillis, pageNum, pageSize);
     }
@@ -182,7 +182,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
 
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,
             Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
-                    throws JsonParseException, IOException {
+                    throws StreamReadException, IOException {
         Date startDate = new Date(0);
         if (startMillis != null) {
             startDate = new Date(startMillis);
@@ -225,7 +225,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
 
     private ActivityMetadataPage getActivityMetadataPageByConceptAndObject(ActivityConcept concept, List<Long> objectIds,
             Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
-                    throws JsonParseException, IOException {
+                    throws StreamReadException, IOException {
         Date startDate = new Date(0);
         if (startMillis != null) {
             startDate = new Date(startMillis);

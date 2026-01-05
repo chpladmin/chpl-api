@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
@@ -73,7 +73,7 @@ public class TransactionalJoinDeveloperManager {
     @Transactional(rollbackFor = Exception.class)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToJoin.id")
     public void join(List<Developer> developersJoining, Developer developerToJoin)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, ValidationException, Exception {
+            throws JacksonException, EntityCreationException, EntityRetrievalException, ValidationException, Exception {
         List<Long> developerIdsJoining = developersJoining.stream()
                 .map(Developer::getId)
                 .collect(Collectors.toList());

@@ -2,13 +2,13 @@ package gov.healthit.chpl.util;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.introspect.AnnotatedMember;
+import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.flipkart.zjsonpatch.JsonDiff;
 
 import gov.healthit.chpl.activity.ActivityExclude;
@@ -44,7 +44,7 @@ public final class JSONUtils {
         return WRITER;
     }
 
-    public static String toJSON(final Object obj) throws JsonProcessingException {
+    public static String toJSON(final Object obj) throws JacksonException {
 
         String json = null;
         if (obj != null) {
@@ -53,7 +53,7 @@ public final class JSONUtils {
         return json;
     }
 
-    public static String toJSONExcludingIgnoredFields(final Object obj) throws JsonProcessingException {
+    public static String toJSONExcludingIgnoredFields(final Object obj) throws JacksonException {
         String json = null;
         if (obj != null) {
             json = WRITER_EXCLUDING_IGNORED_FIELDS.writeValueAsString(obj);
@@ -62,7 +62,7 @@ public final class JSONUtils {
     }
 
     public static <T> T fromJSON(final String json, final Class<T> type)
-            throws JsonProcessingException, IOException {
+            throws JacksonException, IOException {
 
         JsonNode node = getReader().readTree(json);
         T obj = getReader().treeToValue(node, type);
@@ -71,7 +71,7 @@ public final class JSONUtils {
     }
 
     public static boolean jsonEquals(String json1, String json2)
-            throws JsonProcessingException, IOException {
+            throws JacksonException, IOException {
         if (json1 == null && json2 == null) {
             return true;
         } else if ((json1 == null && json2 != null)

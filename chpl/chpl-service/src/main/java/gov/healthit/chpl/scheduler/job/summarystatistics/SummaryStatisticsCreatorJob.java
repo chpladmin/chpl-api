@@ -13,8 +13,8 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
@@ -56,7 +56,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     }
 
     public void saveStatisticsSnapshot(StatisticsSnapshot statisticsSnapshot)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            throws JacksonException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -78,7 +78,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         });
     }
 
-    private String getJson(StatisticsSnapshot statisticsSnapshot) throws JsonProcessingException {
+    private String getJson(StatisticsSnapshot statisticsSnapshot) throws JacksonException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(statisticsSnapshot);
     }

@@ -29,7 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
@@ -159,7 +159,7 @@ public class SplitDeveloperJob extends QuartzJob {
     }
 
     private Developer splitDeveloper(Developer developerToCreate, List<Long> productIdsToMove)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
+            throws JacksonException, EntityCreationException, EntityRetrievalException, Exception {
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         Long createdDeveloperId = devManager.create(developerToCreate);
 

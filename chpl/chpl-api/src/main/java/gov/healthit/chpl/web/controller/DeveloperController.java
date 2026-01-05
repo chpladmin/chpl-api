@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
@@ -208,7 +208,7 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger join(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) JoinDevelopersRequest joinRequest)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JacksonException,
             ValidationException, SchedulerException {
         if (CollectionUtils.isEmpty(joinRequest.getDeveloperIds())) {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.join.missingDeveloperIds"));

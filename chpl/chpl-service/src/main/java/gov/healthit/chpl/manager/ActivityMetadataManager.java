@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import tools.jackson.core.exc.StreamReadException;
 
 import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
@@ -47,7 +47,7 @@ public class ActivityMetadataManager extends SecuredManager {
 
     @Transactional
     public List<ActivityMetadata> getActivityMetadataByObject(Long objectId, ActivityConcept concept,
-            final Date startDate, final Date endDate) throws JsonParseException, IOException {
+            final Date startDate, final Date endDate) throws StreamReadException, IOException {
 
         return getActivityMetadataByObjectWithoutSecurity(objectId, concept, startDate, endDate);
     }
@@ -56,7 +56,7 @@ public class ActivityMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
     @Transactional
     public List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate,
-            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+            final Date endDate) throws EntityRetrievalException, StreamReadException, IOException {
         acbDao.getById(acbId); // throws not found exception for invalid id
         return getActivityMetadataByObjectWithoutSecurity(acbId, ActivityConcept.CERTIFICATION_BODY, startDate,
                 endDate);
@@ -66,7 +66,7 @@ public class ActivityMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
     @Transactional
     public List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate,
-            final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
+            final Date endDate) throws EntityRetrievalException, StreamReadException, IOException {
         atlDao.getById(atlId); // throws not found exception for invalid id
         return getActivityMetadataByObjectWithoutSecurity(atlId, ActivityConcept.TESTING_LAB, startDate, endDate);
     }
@@ -123,7 +123,7 @@ public class ActivityMetadataManager extends SecuredManager {
     }
 
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(ActivityConcept concept,
-            Date startDate, Date endDate) throws JsonParseException, IOException {
+            Date startDate, Date endDate) throws StreamReadException, IOException {
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
         // get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
@@ -147,7 +147,7 @@ public class ActivityMetadataManager extends SecuredManager {
 
     private List<ActivityMetadata> getActivityMetadataByObjectWithoutSecurity(Long objectId,
             ActivityConcept concept, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
+            throws StreamReadException, IOException {
 
         LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through "
                 + endDate);

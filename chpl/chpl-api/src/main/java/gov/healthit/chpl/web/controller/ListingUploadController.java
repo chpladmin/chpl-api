@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -294,7 +294,7 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
             @RequestBody(required = true) ConfirmListingRequest confirmListingRequest)
-                    throws JsonProcessingException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                    throws JacksonException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
                     ValidationException, ActivityException {
 
         CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
