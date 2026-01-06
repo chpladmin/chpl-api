@@ -19,7 +19,7 @@ import tools.jackson.databind.json.JsonMapper;
 @Log4j2
 public final class JSONUtils {
 
-    private static final ObjectMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
+    private static final JsonMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
