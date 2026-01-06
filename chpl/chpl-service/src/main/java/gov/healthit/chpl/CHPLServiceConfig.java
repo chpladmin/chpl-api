@@ -1,19 +1,16 @@
 package gov.healthit.chpl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.codec.binary.Base64;
@@ -26,8 +23,6 @@ import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.ssl.SSLContexts;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.spi.JobFactory;
@@ -52,7 +47,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -65,16 +60,11 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableAsync
 @EnableAspectJAutoProxy
@@ -92,7 +82,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
-public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
+public class CHPLServiceConfig implements EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
     private static final int MAX_COOKIE_AGE_SECONDS = 3600; // 1 hour
@@ -112,16 +102,6 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
     @Override
     public void setEnvironment(final Environment environment) {
         this.env = environment;
-    }
-
-    @Bean
-    public JacksonJsonHttpMessageConverter jsonConverter() {
-        JacksonJsonHttpMessageConverter bean = new JacksonJsonHttpMessageConverter();
-        bean.setPrefixJson(false);
-        List<MediaType> mediaTypes = new ArrayList<MediaType>();
-        mediaTypes.add(MediaType.APPLICATION_JSON);
-        bean.setSupportedMediaTypes(mediaTypes);
-        return bean;
     }
 
     @Bean
@@ -214,13 +194,6 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public LocaleChangeInterceptor localeInterceptor() {
-        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("lang");
-        return interceptor;
-    }
-
-    @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
@@ -229,16 +202,6 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         return viewResolver;
     }
 
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(localeInterceptor());
-    }
-
-    /**
-     * Get a task executor.
-     *
-     * @return TaskExecutor object
-     */
     @Bean(name = "jobAsyncDataExecutor")
     public TaskExecutor specificTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -257,19 +220,15 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         MethodInvokingFactoryBean methodInvokingFactoryBean = new MethodInvokingFactoryBean();
         methodInvokingFactoryBean.setTargetClass(SecurityContextHolder.class);
         methodInvokingFactoryBean.setTargetMethod("setStrategyName");
-        methodInvokingFactoryBean.setArguments(new String[] {
+        methodInvokingFactoryBean.setArguments(
                 SecurityContextHolder.MODE_INHERITABLETHREADLOCAL
-        });
+        );
         return methodInvokingFactoryBean;
     }
 
     @Bean
     public RestTemplate jiraAuthenticatedRestTemplate()
             throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
                         .setDefaultSocketConfig(SocketConfig.custom()
@@ -286,6 +245,10 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         requestFactory.setConnectionRequestTimeout(getRequestTimeout());
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
+        // Remove the default StringHttpMessageConverter
+        // Add our custom message converter - see that class for a description of why we had to do this
+        restTemplate.getMessageConverters().removeIf(converter -> converter instanceof StringHttpMessageConverter);
+        restTemplate.getMessageConverters().add(0, new FullStringHttpMessageConverter(StandardCharsets.UTF_8));
         restTemplate.getInterceptors().add(
                 new ClientHttpRequestInterceptor() {
                     private String jiraUsername = env.getRequiredProperty("jira.username");
@@ -298,6 +261,7 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
                         String base64Credentials = new String(Base64.encodeBase64(plainCredentials.getBytes()));
                         request.getHeaders().add("Authorization", "Basic " + base64Credentials);
                         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+                        request.getHeaders().setAcceptCharset(Arrays.asList(StandardCharsets.UTF_8));
                         return execution.execute(request, body);
                     }
                 });
