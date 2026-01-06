@@ -35,9 +35,9 @@ import gov.healthit.chpl.util.RedisUtil;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component("directReviewCachingService")
@@ -69,7 +69,7 @@ public class DirectReviewCachingService {
     private DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler;
     private CacheManager cacheManager;
     private RedisUtil redisUtil;
-    private ObjectMapper directReviewDeserializingObjectMapper;
+    private JsonMapper directReviewDeserializingObjectMapper;
 
     @Autowired
     public DirectReviewCachingService(DirectReviewValidator drValidator,
@@ -83,7 +83,9 @@ public class DirectReviewCachingService {
         this.cacheManager = cacheManager;
         this.redisUtil = redisUtil;
         this.directReviewDeserializingObjectMapper = JsonMapper.builder()
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
                 .build();
     }
 
