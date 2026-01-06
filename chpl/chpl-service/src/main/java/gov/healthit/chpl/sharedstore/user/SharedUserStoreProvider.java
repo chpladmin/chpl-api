@@ -8,19 +8,18 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @Log4j2
 public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
-    private ObjectMapper mapper = new ObjectMapper();
+    private JsonMapper mapper = JsonMapper.builder().build();
 
     @Autowired
     public SharedUserStoreProvider(SharedStoreDAO sharedStoreDAO) {

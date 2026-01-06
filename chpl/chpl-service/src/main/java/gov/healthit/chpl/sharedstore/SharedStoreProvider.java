@@ -6,10 +6,9 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "sharedDataStoreLogger")
 public abstract class SharedStoreProvider<K, V> {
@@ -17,12 +16,12 @@ public abstract class SharedStoreProvider<K, V> {
     public static final Integer MAX_JSON_LENGTH = 200;
 
     protected SharedStoreDAO sharedStoreDAO;
-    private ObjectMapper mapper;
+    private JsonMapper mapper;
 
     @Autowired
     public SharedStoreProvider(SharedStoreDAO sharedStoreDAO) {
         this.sharedStoreDAO = sharedStoreDAO;
-        this.mapper = new ObjectMapper();
+        this.mapper = JsonMapper.builder().build();
     }
 
     protected abstract String getDomain();
