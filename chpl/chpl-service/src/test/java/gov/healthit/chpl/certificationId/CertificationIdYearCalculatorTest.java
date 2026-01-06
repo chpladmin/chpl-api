@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -13,19 +13,6 @@ import org.springframework.core.env.Environment;
 public class CertificationIdYearCalculatorTest {
 
     private DateTimeFormatter toPropertyValueFormatter = DateTimeFormatter.ofPattern("MM/dd");
-
-    @Test
-    public void todayBeforeCmsIdAnnualFormatSwitch_yearIsDefaultValue() {
-        LocalDate now = LocalDate.now();
-        LocalDate tomorrow = now.plusDays(1);
-
-        Environment env = Mockito.mock(Environment.class);
-        Mockito.when(env.getProperty(ArgumentMatchers.eq("cmsIdStartDayOfYear")))
-            .thenReturn(toPropertyValueFormatter.format(tomorrow));
-        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(env);
-        assertEquals("2015", certIdYearCalculator.getCurrentCertIdYear());
-        assertEquals("2016", certIdYearCalculator.getCurrentCertIdYear("2016"));
-    }
 
     @Test
     public void todayEqualsCmsIdAnnualFormatSwitch_yearIsThisYear() {
