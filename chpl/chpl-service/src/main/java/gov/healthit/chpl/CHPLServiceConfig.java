@@ -41,13 +41,13 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -245,10 +245,6 @@ public class CHPLServiceConfig implements EnvironmentAware {
         requestFactory.setConnectionRequestTimeout(getRequestTimeout());
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        // Remove the default StringHttpMessageConverter
-        // Add our custom message converter - see that class for a description of why we had to do this
-        restTemplate.getMessageConverters().removeIf(converter -> converter instanceof StringHttpMessageConverter);
-        restTemplate.getMessageConverters().add(0, new FullStringHttpMessageConverter(StandardCharsets.UTF_8));
         restTemplate.getInterceptors().add(
                 new ClientHttpRequestInterceptor() {
                     private String jiraUsername = env.getRequiredProperty("jira.username");
@@ -262,6 +258,19 @@ public class CHPLServiceConfig implements EnvironmentAware {
                         request.getHeaders().add("Authorization", "Basic " + base64Credentials);
                         request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
                         request.getHeaders().setAcceptCharset(Arrays.asList(StandardCharsets.UTF_8));
+                        //This header was not needed in Spring 6, but in Spring 7, we must specify it here
+                        //otherwise a gzip encoding seems to be assumed either on our end of the Jira end
+                        //(not sure which even after much digging around).
+                        //Without this header, Jira is sending back a content-length header that is shorter than
+                        //the actual response content byte length on some requests.
+                        //When initially loading all of the direct reviews, the responses from Jira are large and do NOT specify a
+                        //content-length header, so Spring just reads all of the bytes in the response.
+                        //When requesting direct reviews for a specific developer that has none, the Jira response does include a response header
+                        //of content-length. When there are no direct reviews the length is given as 111 bytes (the gzipped length),
+                        //but it is not gzipped, or I can't make Spring handle it as though it is, and the value should actually be 116 bytes.
+                        //If only 111 bytes out of 116 bytes are read from the response, this ends up being an
+                        //incomplete JSON string and gives an error.
+                        request.getHeaders().put(HttpHeaders.ACCEPT_ENCODING, Arrays.asList("UTF-8"));
                         return execution.execute(request, body);
                     }
                 });
