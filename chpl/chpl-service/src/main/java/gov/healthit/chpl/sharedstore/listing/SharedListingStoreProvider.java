@@ -2,6 +2,7 @@ package gov.healthit.chpl.sharedstore.listing;
 
 import java.util.function.Supplier;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +13,11 @@ import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @Log4j2
 public class SharedListingStoreProvider extends SharedStoreProvider<Long, CertifiedProductSearchDetails> {
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private JsonMapper mapper = JsonMapper.builder().build();
 
     @Autowired
     public SharedListingStoreProvider(ResourcePermissionsFactory resourcePermissionsFactory,
@@ -37,7 +36,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     }
 
     private void filterListingDataForUser(CertifiedProductSearchDetails listing) {
-        if (!canUserViewCertificationEventReasons()) {
+        if (!canUserViewCertificationEventReasons() && !CollectionUtils.isEmpty(listing.getCertificationEvents())) {
             listing.getCertificationEvents().stream()
                 .forEach(certEvent -> certEvent.setReason(null));
         }
@@ -62,7 +61,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
 
     @Override
     protected CertifiedProductSearchDetails getFromJson(String json) throws JacksonException {
-        return mapper.readValue(json, CertifiedProductSearchDetails.class);
+        return getMapper().readValue(json, CertifiedProductSearchDetails.class);
     }
 
     @Override

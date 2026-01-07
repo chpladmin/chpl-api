@@ -14,12 +14,10 @@ import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @Log4j2
 public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
-    private JsonMapper mapper = JsonMapper.builder().build();
 
     @Autowired
     public SharedUserStoreProvider(SharedStoreDAO sharedStoreDAO) {
@@ -88,7 +86,7 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
 
     @Override
     protected User getFromJson(String json) throws JacksonException {
-        return mapper.readValue(json, User.class);
+        return getMapper().readValue(json, User.class);
     }
 
     @Override

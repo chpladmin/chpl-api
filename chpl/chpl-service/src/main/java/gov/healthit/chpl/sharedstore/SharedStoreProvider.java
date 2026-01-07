@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "sharedDataStoreLogger")
@@ -21,7 +23,9 @@ public abstract class SharedStoreProvider<K, V> {
     @Autowired
     public SharedStoreProvider(SharedStoreDAO sharedStoreDAO) {
         this.sharedStoreDAO = sharedStoreDAO;
-        this.mapper = JsonMapper.builder().build();
+        this.mapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .build();
     }
 
     protected abstract String getDomain();
@@ -93,5 +97,9 @@ public abstract class SharedStoreProvider<K, V> {
         } else {
             return sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
         }
+    }
+
+    protected ObjectMapper getMapper() {
+        return this.mapper;
     }
 }

@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 public class DirectReviewDeserializationTest {
 
@@ -135,12 +135,16 @@ public class DirectReviewDeserializationTest {
     }
 
     private DirectReview parseJsonToDirectReview(String json) {
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .build();
         DirectReview dr = null;
         JsonNode root = null;
         try {
             root = mapper.readTree(json);
-        } catch (IOException ex) {
+        } catch (JacksonException ex) {
             fail("Could not convert " + json + " to JsonNode object.");
         }
 
@@ -153,7 +157,7 @@ public class DirectReviewDeserializationTest {
                     JsonNode fields = issueNode.get("fields");
                     dr = mapper.readValue(fields.toString(), DirectReview.class);
                     dr.setJiraKey(jiraKey);
-                } catch (IOException ex) {
+                } catch (JacksonException ex) {
                     ex.printStackTrace();
                     fail("Cannot map issue JSON to DirectReview class");
                 }

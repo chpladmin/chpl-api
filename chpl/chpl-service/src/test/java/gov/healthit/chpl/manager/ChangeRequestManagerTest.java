@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -104,7 +102,7 @@ public class ChangeRequestManagerTest {
     @Test
     public void updateChangeRequest_ValidCr_ReturnsUpdatedCr()
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
+            ActivityException, InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -163,7 +161,7 @@ public class ChangeRequestManagerTest {
     @Test
     public void updateChangeRequest_ValidationErrors_ThrowsException()
             throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
@@ -210,7 +208,7 @@ public class ChangeRequestManagerTest {
     @Test
     public void updateChangeRequest_UserIsNotDeveloper_CrDetailsAreNotUpdate()
             throws EntityRetrievalException, ValidationException, ActivityException, EntityCreationException,
-            JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
+            InvalidArgumentsException, EmailNotSentException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());

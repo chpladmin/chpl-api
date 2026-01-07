@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -47,7 +45,7 @@ public class ListingUploadHandlerUtilTest {
     private ListingUploadHandlerUtil handlerUtil;
 
     @BeforeEach
-    public void setup() throws InvalidArgumentsException, JsonProcessingException,
+    public void setup() throws InvalidArgumentsException,
         EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFile();
 

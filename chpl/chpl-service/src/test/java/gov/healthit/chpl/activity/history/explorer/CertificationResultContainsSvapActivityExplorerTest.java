@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.query.CertificationResultContainsSvapActivityQuery;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -78,7 +76,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingSvaps_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingSvaps_returnsNull() throws ParseException {
         CertificationCriterion criterion = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
@@ -111,7 +109,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingCriterion_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingCriterion_returnsNull() throws ParseException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         CertificationCriterion a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
@@ -151,7 +149,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_confirmActivityHasMatchingCriterion_returnsActivity() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_confirmActivityHasMatchingCriterion_returnsActivity() throws ParseException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
@@ -191,7 +189,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_editActivityAttestsToCriterionAndAddsSvap_returnsActivity() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_editActivityAttestsToCriterionAndAddsSvap_returnsActivity() throws ParseException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
@@ -247,7 +245,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_editActivityAddsSvapOnly_returnsActivity() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_editActivityAddsSvapOnly_returnsActivity() throws ParseException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
@@ -303,7 +301,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_multipleEditActivities_returnsActivity() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_multipleEditActivities_returnsActivity() throws ParseException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
