@@ -26,6 +26,9 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,12 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.ratelimiting.RateLimitingInterceptor;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -57,12 +55,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
-import tools.jackson.databind.cfg.MapperConfig;
-import tools.jackson.databind.introspect.AnnotatedMember;
-import tools.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
@@ -92,7 +86,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private Boolean tryItOutEnabled;
 
     @Autowired
-    private Environment env;
+    private DeprecatedResponseFieldAnnotationIntrospector deprecatedResponseFieldAnnotationIntrospector;
 
     @Lazy
     @Autowired
@@ -119,45 +113,47 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    @Primary // Mark as primary to ensure it's the one used globally by Spring
-    public ObjectMapper configureObjectMapper() {
-        ObjectMapper mapper = JsonMapper.builder()
-                .annotationIntrospector(getDeprecatedAnnotationIntrospector())
-                .changeDefaultPropertyInclusion(include -> include.withContentInclusion(Include.NON_NULL).withValueInclusion(JsonInclude.Include.NON_NULL))
+    @Primary
+    public JsonMapper jsonMapper() {
+        JsonMapper mapper = JsonMapper.builder()
+                .annotationIntrospector(deprecatedResponseFieldAnnotationIntrospector)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                        DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
+                        DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                //Jackson 3.x changed the default rendering of java.util.Date objects to a formatted string.
+                //This setting is required to force them to be a milliseconds "long" value
+                //Until we convert everything to LocalDateTime or whatever.
                 .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .findAndAddModules()
                 .build();
         return mapper;
     }
 
-    private JacksonAnnotationIntrospector getDeprecatedAnnotationIntrospector() {
-        return new JacksonAnnotationIntrospector() {
-          private static final long serialVersionUID = 2803278488940499378L;
-
-          @Override
-          public boolean hasIgnoreMarker(MapperConfig<?> config, AnnotatedMember m) {
-              Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
-              if (_findAnnotation(m, JsonIgnore.class) != null) {
-                  return true;
-              } else {
-                  return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
-              }
-          }
-        };
-    }
-
     @Bean
     public JacksonJsonHttpMessageConverter jsonConverter() {
-        JacksonJsonHttpMessageConverter bean = new JacksonJsonHttpMessageConverter();
+        JacksonJsonHttpMessageConverter bean = new JacksonJsonHttpMessageConverter(jsonMapper());
         bean.setPrefixJson(false);
         List<MediaType> mediaTypes = new ArrayList<MediaType>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         bean.setSupportedMediaTypes(mediaTypes);
         return bean;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        //We are overriding the entire set of available message converters in Spring.
+        //This is the only way I could find to get our custom JsonMapper recognized and
+        //used in the application.
+        //There is a known issue with OpenAPI where it will return the "api" JSON as
+        //a Base-64 encoded string if the ByteArray and String message converters are not
+        //available. So, below we first add those (and they have to be first so OpenAPI
+        //doesn't choose our JSON Converter). Then we add our own custom JSON Converter
+        //for our API responses.
+        converters.add(new ByteArrayHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter());
+        converters.add(jsonConverter());
     }
 
     @Bean

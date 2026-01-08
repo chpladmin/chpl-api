@@ -32,6 +32,8 @@
         <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
         <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
         <org.springboot.version>4.0.1</org.springboot.version>
+		<!-- This cannot be updated to 3.0.x until the react api documentation component can be updated -->
+		<org.springdoc.version>2.7.0</org.springdoc.version>
         <org.springframework.version>7.0.2</org.springframework.version>
         <org.springsecurity.version>7.0.2</org.springsecurity.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

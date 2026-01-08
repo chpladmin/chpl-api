@@ -29,7 +29,6 @@
       <spring.data.redis.version>4.0.1</spring.data.redis.version>
       <redisson.version>4.0.0</redisson.version>
       <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
-      <org.springdoc.version>3.0.0</org.springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -337,19 +336,19 @@
             <version>13.0.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
+        <!-- Redis -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
             <version>${spring.data.redis.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>${redisson.version}</version>
         </dependency>
 
+        <!-- Checking URLs for validity -->
         <dependency>
             <groupId>org.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
@@ -372,35 +371,23 @@
         </dependency>
 
         <!-- Spring Doc (Swagger) -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>${org.springboot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>${org.springboot.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
             <version>${org.springdoc.version}</version>
         </dependency>
 
+        <!-- Cognito Stuff-->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>aws-sdk-java</artifactId>
             <version>2.40.13</version>
         </dependency>
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.5.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>jwks-rsa</artifactId>
