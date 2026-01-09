@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import com.datadog.api.client.ApiException;
+
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
@@ -148,6 +150,12 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(EmailNotSentException.class)
     public ResponseEntity<ErrorResponse> exception(EmailNotSentException e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> exception(ApiException e) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
