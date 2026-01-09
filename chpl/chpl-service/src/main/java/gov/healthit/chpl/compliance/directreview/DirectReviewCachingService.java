@@ -366,7 +366,7 @@ public class DirectReviewCachingService {
             if (issuesNode != null && issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
-                        String jiraKey = issueNode.get(JIRA_KEY_FIELD).textValue();
+                        String jiraKey = issueNode.get(JIRA_KEY_FIELD).asString();
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = directReviewDeserializingObjectMapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
