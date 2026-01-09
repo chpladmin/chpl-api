@@ -85,7 +85,7 @@ public class ListingUploadEntity extends EntityAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @JdbcTypeCode(SqlTypes.ENUM)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private ListingUploadStatus status;
 
     @Column(name = "certified_product_id")
