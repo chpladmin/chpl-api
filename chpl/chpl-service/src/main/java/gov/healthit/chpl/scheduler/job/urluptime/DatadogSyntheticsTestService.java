@@ -96,11 +96,11 @@ public class DatadogSyntheticsTestService {
                         .assertions(Arrays.asList(
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.LESS_THAN)
-                                        .target(new SyntheticsAssertionTargetValue(datadogTestTimeout.toString()))
+                                        .target(new SyntheticsAssertionTargetValue(Double.parseDouble(datadogTestTimeout.toString())))
                                         .type(SyntheticsAssertionType.RESPONSE_TIME)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.IS)
-                                        .target(new SyntheticsAssertionTargetValue(HTTP_STATUS_OK.toString()))
+                                        .target(new SyntheticsAssertionTargetValue(Double.parseDouble(HTTP_STATUS_OK.toString())))
                                         .type(SyntheticsAssertionType.STATUS_CODE)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.MATCHES)
