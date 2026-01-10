@@ -56,6 +56,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -127,6 +128,23 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 //Until we convert everything to LocalDateTime or whatever.
                 .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .findAndAddModules()
+                //Jackson 3.x started detecting constructors with args in POJOs and trying to select
+                //a constructor that matches the fields they have.
+                //All of our Lombok code provides no-arg and all-args constructors, when, if used
+                //by Jackson and a field is MISSING (not present at all) in the request and the all-args
+                //constructor is detected/used that field ends up being null because it's setter is never called.
+                //The initializing expression that we had in the object with @Builder.Default
+                //seemed to be recognized and used in Jackson 2.x but is no longer when the field is
+                //missing in the JSON input.
+                //I tried a lot of different ways to get that to be recognized, but it seems like a
+                //special situation where the field is totally missing that nothing was working.
+                //This constructorDetector setting forces the Jackson 3
+                //deserialization to use Lombok's no-args constructor which WILL have the Builder.Default
+                //initialized values.
+                .constructorDetector(ConstructorDetector.DEFAULT
+                        // Disables auto-detection of constructors with arguments
+                        // unless they have @JsonCreator or @JsonProperty annotations
+                        .withAllowImplicitWithDefaultConstructor(false))
                 .build();
         return mapper;
     }

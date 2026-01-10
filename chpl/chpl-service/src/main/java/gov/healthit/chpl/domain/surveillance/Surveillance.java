@@ -26,8 +26,8 @@ import tools.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
 
