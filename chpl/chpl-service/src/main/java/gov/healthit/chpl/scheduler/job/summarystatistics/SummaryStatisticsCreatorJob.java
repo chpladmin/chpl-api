@@ -13,9 +13,6 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -24,6 +21,8 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 @DisallowConcurrentExecution
@@ -37,6 +36,9 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private JsonMapper jsonMapper;
 
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
@@ -79,7 +81,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     }
 
     private String getJson(StatisticsSnapshot statisticsSnapshot) throws JacksonException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(statisticsSnapshot);
+        return jsonMapper.writeValueAsString(statisticsSnapshot);
     }
 }

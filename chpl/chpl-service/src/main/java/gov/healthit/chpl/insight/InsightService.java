@@ -21,22 +21,23 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component
 public class InsightService {
     private DeveloperDAO developerDao;
     private RestTemplate insightRestTemplate;
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
     private String unformattedInsightSubmissionsUrl;
 
     @Autowired
     public InsightService(DeveloperDAO developerDao,
+            JsonMapper jsonMapper,
             @Value("${insight.submissionsUrl}") String insightSubmissionsUrl) {
         this.developerDao = developerDao;
         this.insightRestTemplate = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-        this.objectMapper = new ObjectMapper();
+        this.jsonMapper = jsonMapper;
         this.unformattedInsightSubmissionsUrl = insightSubmissionsUrl;
     }
 
@@ -68,7 +69,7 @@ public class InsightService {
         String responseBody = ((response == null || StringUtils.isEmpty(response.getBody())) ? "{}" : response.getBody());
         JsonNode root = null;
         try {
-            root = objectMapper.readTree(responseBody);
+            root = jsonMapper.readTree(responseBody);
         } catch (JacksonException ex) {
             LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
             throw new InsightRequestFailedException("Could not convert " + responseBody + " to expected object.", ex);
@@ -81,7 +82,7 @@ public class InsightService {
         if (rootNode != null && rootNode.isArray() && rootNode.size() > 0) {
             for (JsonNode submissionObj : rootNode) {
                 try {
-                    InsightSubmission is = objectMapper.readValue(submissionObj.toString(), InsightSubmission.class);
+                    InsightSubmission is = jsonMapper.readValue(submissionObj.toString(), InsightSubmission.class);
                     submissions.add(is);
                 } catch (JacksonException ex) {
                     LOGGER.error("Cannot map submission JSON to InsightSubmission class", ex);

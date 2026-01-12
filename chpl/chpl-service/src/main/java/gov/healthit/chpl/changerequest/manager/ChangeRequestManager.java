@@ -14,9 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
@@ -64,6 +61,8 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component
@@ -103,10 +102,8 @@ public class ChangeRequestManager {
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FormValidator formValidator;
-
+    private JsonMapper jsonMapper;
     private FF4j ff4j;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public ChangeRequestManager(SchedulerManager schedulerManager,
@@ -131,6 +128,7 @@ public class ChangeRequestManager {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
             FormValidator formValidator,
+            JsonMapper jsonMapper,
             FF4j ff4j) {
         this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
@@ -152,6 +150,7 @@ public class ChangeRequestManager {
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;
+        this.jsonMapper = jsonMapper;
         this.ff4j = ff4j;
     }
 
@@ -338,11 +337,11 @@ public class ChangeRequestManager {
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {
         if (cr.getChangeRequestType().isDemographics()) {
-            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
+            cr.setDetails(jsonMapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
         } else if (cr.getChangeRequestType().isAttestation()) {
-            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
+            cr.setDetails(jsonMapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
         } else if (cr.getChangeRequestType().isListingUrl()) {
-            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
+            cr.setDetails(jsonMapper.convertValue(cr.getDetails(), ChangeRequestListingUrl.class));
             ((ChangeRequestListingUrl) cr.getDetails()).setUrl(((ChangeRequestListingUrl) cr.getDetails()).getUrl().trim());
         }
         return cr;

@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.activity.history.explorer.JsonMapperUtil;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
@@ -68,7 +69,8 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, activityManager, null, null, null, null,
-                null, null, resourcePermissionsFactory, null, null, null, ff4j);
+                null, null, resourcePermissionsFactory, null, null, null,
+                JsonMapperUtil.getJsonMapper(), ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -91,7 +93,8 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, activityManager, null, null,
-                null, null, null, null, resourcePermissionsFactory, null, null, null, ff4j);
+                null, null, null, null, resourcePermissionsFactory, null, null, null,
+                JsonMapperUtil.getJsonMapper(), ff4j);
 
         Exception exception = assertThrows(EntityRetrievalException.class, () -> {
             changeRequestManager.getChangeRequest(11L);
@@ -145,6 +148,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                JsonMapperUtil.getJsonMapper(),
                 ff4j);
 
         // Run
@@ -193,6 +197,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                JsonMapperUtil.getJsonMapper(),
                 ff4j);
 
 
@@ -251,6 +256,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                JsonMapperUtil.getJsonMapper(),
                 ff4j);
 
         // Run

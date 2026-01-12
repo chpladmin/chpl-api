@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -14,11 +15,18 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAO extends BaseDAOImpl {
+
+    private JsonMapper jsonMapper;
+
+    @Autowired
+    public SummaryStatisticsDAO(JsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
+    }
 
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
             throws EntityCreationException, EntityRetrievalException {
@@ -71,8 +79,7 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
             return null;
         }
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            StatisticsSnapshot snapshot = mapper.readValue(entity.getSummaryStatistics(), StatisticsSnapshot.class);
+            StatisticsSnapshot snapshot = jsonMapper.readValue(entity.getSummaryStatistics(), StatisticsSnapshot.class);
             snapshot.setSnapshotDate(entity.getEndDate());
             return snapshot;
         } catch (JacksonException ex) {

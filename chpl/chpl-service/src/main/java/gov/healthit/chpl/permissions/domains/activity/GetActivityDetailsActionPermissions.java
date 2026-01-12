@@ -6,9 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.complaint.domain.Complaint;
@@ -25,22 +22,25 @@ import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private QuarterlyReportDAO quarterlyReportDao;
     private AnnualReportDAO annualReportDao;
-    private ObjectMapper jsonMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     public GetActivityDetailsActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
             CertifiedProductDAO certifiedProductDao,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
             QuarterlyReportDAO quarterlyReportDao,
-            AnnualReportDAO annualReportDao) {
+            AnnualReportDAO annualReportDao,
+            JsonMapper jsonMapper) {
         super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
-        jsonMapper = new ObjectMapper();
+        this.jsonMapper = jsonMapper;
         this.quarterlyReportDao = quarterlyReportDao;
         this.annualReportDao = annualReportDao;
     }
