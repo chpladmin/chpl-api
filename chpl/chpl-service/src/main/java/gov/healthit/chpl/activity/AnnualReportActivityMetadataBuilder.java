@@ -3,40 +3,38 @@ package gov.healthit.chpl.activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("annualReportActivityMetadataBuilder")
 public class AnnualReportActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
-    public AnnualReportActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
+    public AnnualReportActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override
     protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         AnnualReportActivityMetadata annualReportActivityMetadata = (AnnualReportActivityMetadata) metadata;
-        ObjectMapper jsonMapper = new ObjectMapper();
-
         AnnualReport report = null;
         if (dto.getNewData() != null) {
             try {
-                report = jsonMapper.readValue(dto.getNewData(), AnnualReport.class);
+                report = getJsonMapper().readValue(dto.getNewData(), AnnualReport.class);
             } catch (Exception e) {
                 LOGGER.warn("Could not parse activity ID " + dto.getId() + " new data " + "as AnnualReport. "
                         + "JSON was: " + dto.getNewData());
             }
         } else if (dto.getOriginalData() != null) {
             try {
-                report = jsonMapper.readValue(dto.getOriginalData(), AnnualReport.class);
+                report = getJsonMapper().readValue(dto.getOriginalData(), AnnualReport.class);
             } catch (Exception e) {
                 LOGGER.warn("Could not parse activity ID " + dto.getId() + " original data " + "as AnnualReport. "
                         + "JSON was: " + dto.getOriginalData());

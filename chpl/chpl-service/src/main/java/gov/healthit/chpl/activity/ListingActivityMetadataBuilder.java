@@ -9,14 +9,16 @@ import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
-    public ListingActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
+    public ListingActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override

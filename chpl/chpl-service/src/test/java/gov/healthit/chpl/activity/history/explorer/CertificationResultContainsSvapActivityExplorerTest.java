@@ -32,7 +32,7 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class CertificationResultContainsSvapActivityExplorerTest {
     private ActivityDAO activityDao;
-    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null,  null);
+    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null,  null, JsonMapperUtil.getJsonMapper());
     private CertificationResultContainsSvapActivityExplorer explorer;
     private SimpleDateFormat formatter;
 

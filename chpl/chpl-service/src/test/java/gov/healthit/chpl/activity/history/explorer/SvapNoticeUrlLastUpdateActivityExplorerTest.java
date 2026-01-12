@@ -28,7 +28,7 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     private ActivityDAO activityDao;
-    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
+    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null, JsonMapperUtil.getJsonMapper());
     private SvapNoticeUrlLastUpdateActivityExplorer explorer;
     private SimpleDateFormat formatter;
 

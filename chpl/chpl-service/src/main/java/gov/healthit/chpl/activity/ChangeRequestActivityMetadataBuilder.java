@@ -4,34 +4,33 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("changeRequestActivityMetadataBuilder")
 public class ChangeRequestActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
-    public ChangeRequestActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
+    public ChangeRequestActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override
     protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         ChangeRequestActivityMetadata crActivityMetadata = (ChangeRequestActivityMetadata) metadata;
-        ObjectMapper jsonMapper = new ObjectMapper();
         String json = "";
         try {
             json = getChangeRequestJson(dto);
 
             if (!StringUtils.isEmpty(json)) {
-                ChangeRequest cr = jsonMapper.readValue(json, ChangeRequest.class);
+                ChangeRequest cr = getJsonMapper().readValue(json, ChangeRequest.class);
                 crActivityMetadata.setDeveloper(cr.getDeveloper());
                 crActivityMetadata.getCertificationBodies().addAll(cr.getCertificationBodies());
             } else {
