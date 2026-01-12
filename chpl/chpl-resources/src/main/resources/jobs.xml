@@ -790,7 +790,7 @@
         </job>
 
         <job>
-            <name>Updated Criteria Status Report - Past Due</name>
+            <name>Updated Criteria Status Report - Past Deadlines</name>
             <group>chplJobs</group>
             <description>Sends the Updated Criteria Status Report</description>
             <job-class>gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport.UpdatedCriteriaStatusReportEmailJob</job-class>
