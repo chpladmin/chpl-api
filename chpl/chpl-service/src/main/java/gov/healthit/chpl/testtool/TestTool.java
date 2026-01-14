@@ -11,9 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,11 +36,6 @@ public class TestTool implements Serializable {
     @Schema(description = "A string value to represent the value to be used for the Criteria Attribute.")
     private String value;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-11-30")
-    @Schema(description = "A string value representing a law and section (e.g., 170.202(a)).")
-    private String regulatoryTextCitation;
-
     @Schema(description = "A date value representing the date by which the Criteria Attribute became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -58,11 +51,6 @@ public class TestTool implements Serializable {
     @JsonInclude(value = Include.NON_EMPTY)
     @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-11-30")
-    @Schema(description = "The rule which this Criteria Attrbute is associated with.")
-    private Rule rule;
 
     public Boolean isRetired() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
