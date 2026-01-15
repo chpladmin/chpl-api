@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
@@ -115,6 +116,9 @@ public class RealWorldTestingEligiblityService {
         List<CertificationCriterion> attestedCriteria = new ArrayList<CertificationCriterion>();
         if (listing != null && listing.isPresent()) {
             attestedCriteria = listing.get().getCertificationResults().stream()
+                    //we aren't using "success" anymore, but this listing may be from it's original state
+                    //meaning some older saved JSON, which might require checking "success"
+                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                     .map(certResult -> certResult.getCriterion())
                     .collect(Collectors.toList());
         }
