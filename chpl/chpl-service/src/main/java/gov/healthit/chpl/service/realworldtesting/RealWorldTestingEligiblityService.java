@@ -116,8 +116,12 @@ public class RealWorldTestingEligiblityService {
         List<CertificationCriterion> attestedCriteria = new ArrayList<CertificationCriterion>();
         if (listing != null && listing.isPresent()) {
             attestedCriteria = listing.get().getCertificationResults().stream()
-                    //we aren't using "success" anymore, but this listing may be from it's original state
-                    //meaning some older saved JSON, which might require checking "success"
+                    //We might be getting this listing in it's original state from saved JSON.
+                    //For most of CHPL before mid-2023, we saved a certification result on the listing for each criteria
+                    //and used the "success" field to determine if that listing attested to that criterion.
+                    //If we have pulled listing JSON pre-that-time, then we must check the success field here.
+                    //We still have "success" today, but it is always "true" because after mid-2023, we changed our
+                    //listing details response to only include certification results for each criterion the listing attests to.
                     .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                     .map(certResult -> certResult.getCriterion())
                     .collect(Collectors.toList());
