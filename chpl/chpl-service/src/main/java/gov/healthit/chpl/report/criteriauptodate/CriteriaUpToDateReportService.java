@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.util.CertificationStatusUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
@@ -48,21 +50,25 @@ public class CriteriaUpToDateReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(List<CertificationBody> acbs) {
+    public List<CriteriaUpToDateReport> getMonthlyCriteriaUpToDateReports(List<CertificationBody> acbs,
+            Pair<LocalDate, LocalDate> requiredByDateRange) {
         List<LocalDate> allReportDates = reportDateService.calculateAllMonthsOfReportDatesBasedOnAvailableData(ONE_YEAR_IN_MONTHS);
         LOGGER.info("Generating criteria up-to-date counts for the past year using report dates: "
                 + Util.joinListGrammatically(allReportDates.stream().map(reportDate -> reportDate.toString()).collect(Collectors.toList())));
 
         return allReportDates.stream()
-            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate, acbs).stream())
+            .flatMap(reportDate -> getAllCriteriaUpToDateReports(reportDate, acbs, requiredByDateRange).stream())
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate, List<CertificationBody> acbs) {
+    public List<CriteriaUpToDateReport> getAllCriteriaUpToDateReports(LocalDate reportDate, List<CertificationBody> acbs,
+            Pair<LocalDate, LocalDate> requiredByDateRange) {
         List<CertificationCriterion> activeCriteria = criteriaManager.getActiveToday();
         StatisticsSnapshot statisticsSnapshot = getSummaryStatisticsSnapshotForDate(reportDate);
-        List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate);
+        List<UpdatedCriterionStatusReport> criteriaStatusReports = updatedCriteriaStatusReportDao.getUpdatedCriterionStatusReportsByDay(reportDate).stream()
+                .filter(dataRecord -> DateUtil.isDateBetweenInclusive(requiredByDateRange, dataRecord.getRequiredDay()))
+                .collect(Collectors.toList());
 
         return activeCriteria.stream()
             .flatMap(criterion ->
