@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,17 +33,17 @@ public class CriteriaUpToDateChartWorkbook extends UpdatedCriteriaSpreadsheetBas
         this.env = env;
     }
 
-    public File generateSpreadsheet(List<Long> acbIds) throws IOException {
+    public File generateSpreadsheet(List<Long> acbIds, Pair<LocalDate, LocalDate> requiredByDateRange) throws IOException {
         LOGGER.info("Generating Criteria Up-To-Date Workbook");
         File newFile = copyTemplateFileToTemporaryFile(template, getFilename());
         Workbook workbook = getWorkbook(newFile);
         LocalDate reportDate = reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now());
 
         LOGGER.info("Populating worksheet for all ACBs: " + acbIds);
-        criteriaUpToDateWorksheet.populateWithDataForAllAcbsOnDate(acbIds, reportDate, workbook);
+        criteriaUpToDateWorksheet.populateWithDataForAllAcbsOnDate(acbIds, reportDate, requiredByDateRange, workbook);
         if (acbIds.size() > 1) {
             acbIds.stream()
-                .forEach(acbId -> criteriaUpToDateWorksheet.generateSheetForAcbOnDate(acbId, reportDate, workbook));
+                .forEach(acbId -> criteriaUpToDateWorksheet.generateSheetForAcbOnDate(acbId, reportDate, requiredByDateRange, workbook));
         }
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
