@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import gov.healthit.chpl.report.criteriauptodate.CriteriaUpToDateStatusReportDat
 import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReport;
 import gov.healthit.chpl.report.criteriauptodate.UpdatedCriterionStatusReportDao;
 import gov.healthit.chpl.report.criteriauptodate.UpdatedListingStatusReport;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 //This report rolls up to a listing level the count of all updates needed
@@ -43,7 +45,7 @@ public class UpdatedListingStatusReportCsvCreator {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<Long> acbIds) throws IOException {
+    public File createCsvFile(List<Long> acbIds, Pair<LocalDate, LocalDate> requiredByDateRange) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -55,7 +57,7 @@ public class UpdatedListingStatusReportCsvCreator {
 
             csvFilePrinter.printRecord(getHeaderRow());
 
-            List<UpdatedCriterionStatusReport> criteriaReports = getReportData().stream()
+            List<UpdatedCriterionStatusReport> criteriaReports = getReportData(requiredByDateRange).stream()
                     .filter(data -> acbIds.contains(data.getCertificationBodyId()))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(criteriaReports)) {
@@ -84,12 +86,13 @@ public class UpdatedListingStatusReportCsvCreator {
         return temp;
     }
 
-    private List<UpdatedCriterionStatusReport> getReportData() {
+    private List<UpdatedCriterionStatusReport> getReportData(Pair<LocalDate, LocalDate> requiredByDateRange) {
         LOGGER.info("Getting report data for the listing CSV file");
         List<UpdatedCriterionStatusReport> reportData = updatedCriterionStatusReportDao.getUpdatedCriterionStatusReportsByDay(
                 reportDateService.findClosestDateWithSummaryStatisticsAndUpdatedCriterionStatusData(LocalDate.now()));
         reportData = reportData.stream()
                 .filter(dataRecord -> !dataRecord.getCertificationCriterion().isRemoved())
+                .filter(dataRecord -> DateUtil.isDateBetweenInclusive(requiredByDateRange, dataRecord.getRequiredDay()))
                 .collect(Collectors.toList());
         return reportData;
     }
