@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -80,16 +81,17 @@ public class CriteriaUpToDateWorksheet {
         criteriaToRowMaps.add(new CriteraToRowMap(CertificationCriterionService.Criteria2015.G_10, G_10_ROW_IDX));
     }
 
-    public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Workbook workbook) throws IOException {
+    public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Pair<LocalDate, LocalDate> requiredByDateRange, Workbook workbook)
+            throws IOException {
         List<CertificationBody> acbs = acbDao.findAllActive().stream()
             .filter(acb -> acbIds.contains(acb.getId()))
             .collect(Collectors.toList());
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbs);
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbs, requiredByDateRange);
         updateChartTitle(workbook.getSheetAt(0), reportDataDate);
         populateData(workbook.getSheetAt(0), reports);
     }
 
-    public void generateSheetForAcbOnDate(Long acbId, LocalDate reportDataDate, Workbook workbook) {
+    public void generateSheetForAcbOnDate(Long acbId, LocalDate reportDataDate, Pair<LocalDate, LocalDate> requiredByDateRange, Workbook workbook) {
         CertificationBody acb = null;
         try {
             acb = acbDao.getById(acbId);
@@ -101,7 +103,7 @@ public class CriteriaUpToDateWorksheet {
             return;
         }
         LOGGER.info("Generating worksheet for ACB " + acb.getName());
-        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acb).toList());
+        List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, Stream.of(acb).toList(), requiredByDateRange);
         Sheet acbWorksheet = addWorksheetForAcb(acb, workbook);
         updateChartTitle(acbWorksheet, reportDataDate);
         populateData(acbWorksheet, reports);
