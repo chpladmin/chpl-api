@@ -3,6 +3,8 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -46,6 +48,9 @@ public class CheckInReport {
     private String realWorldTestingValidation;
     private String apiValidation;
     private String warnings;
+    private Boolean attestsG7;
+    private Boolean attestsG9;
+    private Boolean attestsG10;
 
     private ChangeRequest mostRecentAttestationChangeRequest;
     private Developer developer;
@@ -80,7 +85,10 @@ public class CheckInReport {
                 openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
                 assurancesValidation != null ? assurancesValidation : "",
                 apiValidation != null ? apiValidation : "",
-                realWorldTestingValidation != null ? realWorldTestingValidation : "");
+                realWorldTestingValidation != null ? realWorldTestingValidation : "",
+                BooleanUtils.isTrue(attestsG7) ? "TRUE" : "FALSE",
+                BooleanUtils.isTrue(attestsG9) ? "TRUE" : "FALSE",
+                BooleanUtils.isTrue(attestsG10) ? "TRUE" : "FALSE");
     }
 
     public static List<String> getHeaders() {
@@ -112,6 +120,9 @@ public class CheckInReport {
                 "Open Direct Review Non-conformities",
                 "Has listing(s) with Assurances criteria (b)(10)",
                 "Has listing(s) with API criteria (g)(7)-(g)(10)",
-                "Has listing(s) with RWT criteria");
+                "Has listing(s) with RWT criteria",
+                "170.315 (g)(7)",
+                "170.315 (g)(9)",
+                "170.315 (g)(10)");
     }
 }
