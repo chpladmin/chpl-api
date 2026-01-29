@@ -14,7 +14,7 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 
 @Log4j2
 public class TimestampDeserializer extends StdDeserializer<Date> {
-    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
     protected TimestampDeserializer() {
         super(Date.class);
