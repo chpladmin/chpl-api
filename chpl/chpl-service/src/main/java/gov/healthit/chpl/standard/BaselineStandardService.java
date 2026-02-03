@@ -36,7 +36,7 @@ public class BaselineStandardService {
             return stdCriteriaMaps.stream()
                     .filter(stdCriteriaMap -> !isStandardInAGroup(standardGroups, stdCriteriaMap.getStandard())
                             && DateUtil.isDateBetweenInclusive(
-                                    Pair.of(stdCriteriaMap.getStandard().getRequiredDay(), stdCriteriaMap.getStandard().getEndDay()),
+                                    Pair.of(stdCriteriaMap.getStandard().getRequiredDay().plusDays(1), stdCriteriaMap.getStandard().getEndDay()),
                                     standardCheckDateRangeEnd))
                     .map(map -> map.getStandard())
                     .toList();
