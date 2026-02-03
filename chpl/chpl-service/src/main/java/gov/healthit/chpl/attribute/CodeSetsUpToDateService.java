@@ -1,5 +1,6 @@
 package gov.healthit.chpl.attribute;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component
@@ -73,6 +75,7 @@ public class CodeSetsUpToDateService {
 
     private List<CodeSet> getUnattestedToCodeSets(CertificationResult certResult) {
         return getAllCodeSetsForCriterion(certResult.getCriterion()).stream()
+                .filter(codeSet -> DateUtil.isOnOrBefore(codeSet.getStartDay(), LocalDate.now()))
                 .filter(codeSet -> !isCodeSetInList(codeSet, certResult.getCodeSets().stream().map(crcs -> crcs.getCodeSet()).toList()))
                 .toList();
     }
@@ -82,18 +85,6 @@ public class CodeSetsUpToDateService {
                 .filter(cs -> cs.getId().equals(codeSetToCheck.getId()))
                 .findAny()
                 .isPresent();
-    }
-
-    private Boolean areCodeSetsUpToDate(CertificationResult certificationResult) {
-        // TODO - Will need to determine for HTI-2 how to correctly handle this.  Possible
-        // future state is we will need to make sure the most recent and in the past codes set is
-        // attested to.
-
-        // Initially, we will just make sure that the cert result has attested to the same
-        // number of code sets as are available for the criteria.
-        return (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
-                && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size())
-                || CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()));
     }
 
     private List<CodeSet> getAllCodeSetsForCriterion(CertificationCriterion criterion) {
