@@ -103,7 +103,8 @@ public abstract class StandardGroupReviewer implements Reviewer {
             CertificationResult certResult, LocalDate requiredAsOfDate) {
         List<Standard> attestedStandardsFromGroup = getAttestedStandardsFromGroup(groupedStandards, certResult);
         return groupedStandards.stream()
-                .filter(stdFromGroup -> stdFromGroup.getRequiredDay() != null && stdFromGroup.getRequiredDay().isBefore(requiredAsOfDate)
+                .filter(stdFromGroup -> stdFromGroup.getRequiredDay() != null
+                        && stdFromGroup.getRequiredDay().isBefore(requiredAsOfDate)
                         && stdFromGroup.getRequiredDay().isAfter(getLatestRequiredDateFromStandardList(attestedStandardsFromGroup)))
                 .filter(reqStandardFromGroup -> !isStandardInList(reqStandardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
                 .collect(Collectors.toList());
