@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 52.5.0
+_4 February 2026_
+
+### Features
+* Separate Criteria Status Report by upcoming and passed deadlines
+* Add POST to generate surveillance activity report
+
+### Bug Fixes
+* Correctly calculate g7, g9, and g10 columns in RWT Report
+
+---
+
 ## Version 52.4.0
 _5 January 2026_
 
