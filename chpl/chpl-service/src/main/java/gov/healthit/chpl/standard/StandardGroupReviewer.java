@@ -62,12 +62,12 @@ public abstract class StandardGroupReviewer implements Reviewer {
                                     listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelectedDuringExtensionPeriod",
                                             Util.formatCriteriaNumber(certResult.getCriterion()),
                                             unattestedRequiredStandardsInGroup.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", ")),
-                                            DateUtil.format(extensionEndDay)));
+                                            DateUtil.format(extensionEndDay.plusDays(1))));
                                 } else {
                                     listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
                                             Util.formatCriteriaNumber(certResult.getCriterion()),
                                             unattestedRequiredStandardsInGroup.get(0).getRegulatoryTextCitation(),
-                                            DateUtil.format(extensionEndDay)));
+                                            DateUtil.format(extensionEndDay.plusDays(1))));
                                 }
                             } else {
                                 // Give a grammatically different message if it's multiple standards that are required vs just one
