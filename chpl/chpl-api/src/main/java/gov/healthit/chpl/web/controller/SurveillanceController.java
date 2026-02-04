@@ -6,10 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,21 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.domain.LocalDateRange;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.exception.ActivityException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -108,6 +97,10 @@ public class SurveillanceController {
         return survManager.getAllNonconformityTypes();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/reports/activity", httpMethod = "GET",
+        message = "This endpoint is deprecated and will be removed. Please POST to /surveillance/reports/activity instead.",
+        removalDate = "2026-06-01")
     @Operation(summary = "Triggers a Scheduled Job to create a surveillance activity report and email it to the current user.",
             description = "",
             security = {
@@ -115,7 +108,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
+    public @ResponseBody ChplOneTimeTrigger getActivityReportDeprecated(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate;
         LocalDate endDate;
@@ -126,5 +119,21 @@ public class SurveillanceController {
         } catch (DateTimeException e) {
             throw new ValidationException(errorMessageUtil.getMessage("surveillance.activity.report.invalidDate"));
         }
+    }
+
+    @Operation(summary = "Triggers a Scheduled Job to create a surveillance activity report and email it to the current user.",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/reports/activity", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestBody(required = true) LocalDateRange dateRange) throws ValidationException, UserRetrievalException {
+        if (dateRange == null || dateRange.getStartDay() == null || dateRange.getEndDay() == null
+                || dateRange.getStartDay().isAfter(dateRange.getEndDay())) {
+            throw new ValidationException(errorMessageUtil.getMessage("surveillance.activity.report.invalidDate"));
+        }
+
+        return survManager.submitActivityReportRequest(dateRange.getStartDay(), dateRange.getEndDay());
     }
 }

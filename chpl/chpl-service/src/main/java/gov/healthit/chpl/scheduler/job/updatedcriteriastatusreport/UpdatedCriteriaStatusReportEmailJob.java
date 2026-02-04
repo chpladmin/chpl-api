@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
+    public static final String JOB_DATA_KEY_INCLUDE_FUTURE = "includeFutureDeadlines";
 
     @Autowired
     private CriteriaUpToDateStatusReportDateService reportDateService;
@@ -63,6 +65,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     @Autowired
     private CertificationBodyDAO acbDao;
 
+    private boolean includeFutureDeadlines;
     private List<Long> acbIds;
 
     @Override
@@ -70,6 +73,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("*****Updated Criteria Status Reporting Email Job is starting.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setAcbIds(context);
+        LOGGER.info("Report includes data for ACBs: " + Util.joinListGrammatically(acbIds.stream().map(acbId -> acbId.toString()).collect(Collectors.toList())));
+        setIncludeFutureDeadlines(context);
+        LOGGER.info("Report includes data for " + (includeFutureDeadlines ? "future" : "past") + " deadlines");
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -104,18 +110,26 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .collect(Collectors.toList());
     }
 
+    private void setIncludeFutureDeadlines(JobExecutionContext context) {
+        includeFutureDeadlines = context.getMergedJobDataMap().getBooleanValue(JOB_DATA_KEY_INCLUDE_FUTURE);
+    }
+
     private void sendEmail(JobExecutionContext context) throws EmailNotSentException, IOException, ValidationException {
+        Pair<LocalDate, LocalDate> requiredByDateRange = Pair.of(
+                includeFutureDeadlines ? LocalDate.now().plusDays(1) : LocalDate.MIN,
+                includeFutureDeadlines ? LocalDate.now().plusYears(1) : LocalDate.now());
+        LOGGER.info("Getting reports with criteria up-to-date deadlines between " + requiredByDateRange.getLeft() + " and " + requiredByDateRange.getRight());
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
                 .recipient(emailAddress)
-                .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .subject(String.format(env.getProperty("updatedCriteriaStatusReport.subject"), includeFutureDeadlines ? "Upcoming Deadlines" : "Past Deadlines"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(
-                        updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds),
-                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds),
-                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds)
+                        updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
+                        updatedListingStatusReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
+                        updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds, requiredByDateRange),
+                        criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds, requiredByDateRange)
                         ))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
@@ -123,7 +137,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     private String createHtmlMessage() throws ValidationException {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .heading(String.format(env.getProperty("updatedCriteriaStatusReport.subject"), includeFutureDeadlines ? "Upcoming Deadlines" : "Past Deadlines"))
                 .paragraph("", getHtmlEmailBody())
                 .footer(AdminFooter.class)
                 .build();
@@ -138,7 +152,8 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .collect(Collectors.toList());
         return String.format(env.getProperty("updatedCriteriaStatusReport.body"),
                 getReportDate().toString(),
-                Util.joinListGrammatically(acbNames, "and"));
+                Util.joinListGrammatically(acbNames, "and"),
+                includeFutureDeadlines ? "upcoming deadlines" : "past deadlines");
     }
 
     private LocalDate getReportDate() {
