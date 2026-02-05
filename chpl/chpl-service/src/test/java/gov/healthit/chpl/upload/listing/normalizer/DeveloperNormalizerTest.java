@@ -1,14 +1,14 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -28,7 +28,7 @@ public class DeveloperNormalizerTest {
     private DeveloperDAO developerDao;
     private DeveloperNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())

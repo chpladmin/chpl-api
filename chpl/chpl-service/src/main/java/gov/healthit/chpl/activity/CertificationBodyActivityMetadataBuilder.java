@@ -3,8 +3,6 @@ package gov.healthit.chpl.activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
@@ -12,16 +10,16 @@ import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("acbActivityMetadataBuilder")
 public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private ObjectMapper jsonMapper;
 
     @Autowired
-    public CertificationBodyActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
-        jsonMapper = new ObjectMapper();
+    public CertificationBodyActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
         CertificationBody origAcb = null;
         if (dto.getOriginalData() != null) {
             try {
-                origAcb = jsonMapper.readValue(dto.getOriginalData(), CertificationBody.class);
+                origAcb = getJsonMapper().readValue(dto.getOriginalData(), CertificationBody.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. " + "JSON was: "
                         + dto.getOriginalData(), ex);
@@ -45,7 +43,7 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
         CertificationBody newAcb = null;
         if (dto.getNewData() != null) {
             try {
-                newAcb = jsonMapper.readValue(dto.getNewData(), CertificationBody.class);
+                newAcb = getJsonMapper().readValue(dto.getNewData(), CertificationBody.class);
             } catch (final Exception ex) {
                 LOGGER.error(
                         "Could not parse activity ID " + dto.getId() + " new data. " + "JSON was: " + dto.getNewData(),

@@ -9,9 +9,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.SelectBeforeUpdate;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -42,7 +41,8 @@ import lombok.extern.log4j.Log4j2;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@SelectBeforeUpdate
+//TODO: @SelectBeforeUpdate was added for OCD-4313 with this commit comment, and also Dynamic Update was added here too:
+//fix: Re-uploading a file before upload is complete causes duplicates
 @DynamicUpdate
 @Entity
 @Log4j2
@@ -85,7 +85,7 @@ public class ListingUploadEntity extends EntityAudit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private ListingUploadStatus status;
 
     @Column(name = "certified_product_id")

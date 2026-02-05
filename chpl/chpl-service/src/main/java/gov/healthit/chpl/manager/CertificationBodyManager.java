@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -123,7 +124,7 @@ public class CertificationBodyManager extends SecuredManager {
             CertificationBody result = null;
             CertificationBody toUpdate = certificationBodyDao.getById(acbToUpdate.getId());
             result = certificationBodyDao.update(acbToUpdate);
-            if (!StringUtils.equals(acbToUpdate.getName(), toUpdate.getName())) {
+            if (!Strings.CS.equals(acbToUpdate.getName(), toUpdate.getName())) {
                 schedulerManager.changeAcbName(toUpdate.getName(), acbToUpdate.getName());
             }
 

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -116,7 +117,7 @@ public class AccessibilityStandardReviewer implements Reviewer {
 
     private boolean hasFuzzyMatch(CertifiedProductAccessibilityStandard accStd) {
         return !StringUtils.isEmpty(accStd.getUserEnteredAccessibilityStandardName())
-                && !StringUtils.equals(accStd.getAccessibilityStandardName(), accStd.getUserEnteredAccessibilityStandardName());
+                && !Strings.CS.equals(accStd.getAccessibilityStandardName(), accStd.getUserEnteredAccessibilityStandardName());
     }
 
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductAccessibilityStandard accStd) {

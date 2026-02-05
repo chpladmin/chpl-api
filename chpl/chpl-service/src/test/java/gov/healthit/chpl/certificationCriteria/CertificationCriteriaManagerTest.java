@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -21,7 +21,7 @@ public class CertificationCriteriaManagerTest {
     private CertificationCriterionComparator criterionComparator;
     private CertificationCriteriaManager manager;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         certificationCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
         rules = Mockito.mock(CertificationResultRules.class);

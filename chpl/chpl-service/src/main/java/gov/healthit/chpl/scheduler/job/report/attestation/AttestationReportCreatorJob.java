@@ -11,10 +11,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -36,7 +36,7 @@ import lombok.extern.log4j.Log4j2;
 public class AttestationReportCreatorJob extends QuartzJob {
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private Environment env;
@@ -73,11 +73,9 @@ public class AttestationReportCreatorJob extends QuartzJob {
         // proxy is called when the method is public and is called from a different
         // object.
         // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 try {
                     LOGGER.info("Collecting checkin report data");
                     List<Long> acbIds = certificationBodyManager.getAllActive().stream()
@@ -134,7 +132,6 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 } catch (Exception e) {
                     LOGGER.error(e);
                 }
-            }
         });
         LOGGER.info("********* Completed Attestation Report Creator job. *********");
     }

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.email;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -10,8 +10,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,7 +26,7 @@ import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 public class ChplHtmlEmailBuilderTest {
     private ChplHtmlEmailBuilder emailBuilder;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() throws IOException {
         Resource htmlSkeletonResource = new ByteArrayResource("<html>${email-content}</html>".getBytes());

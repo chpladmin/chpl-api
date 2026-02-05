@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -196,7 +196,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #createRequest)")
     public Long createQuarterlyReport(QuarterlyReport createRequest)
-    throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, ValidationException, ActivityException {
+    throws EntityCreationException, InvalidArgumentsException, JacksonException, EntityRetrievalException, ValidationException, ActivityException {
 
         reviewQuarterlyReportForDeprecatedFields(createRequest);
         reviewQuarterlyReportToCreate(createRequest);
@@ -214,7 +214,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #updateRequest)")
     public void updateQuarterlyReport(QuarterlyReport updateRequest)
-    throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException, ActivityException {
+    throws EntityRetrievalException, JacksonException, EntityCreationException, ValidationException, ActivityException {
         QuarterlyReport origReport = quarterlyDao.getById(updateRequest.getId());
         reviewQuarterlyReportForDeprecatedFields(updateRequest, origReport);
         //above line throws entity retrieval exception if bad id
@@ -228,7 +228,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate.quarterlyReport)")
     public PrivilegedSurveillance createOrUpdateQuarterlyReportSurveillanceMap(PrivilegedSurveillance toUpdate)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ActivityException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException, ActivityException {
         // make sure passed-in surveillance is relevant to the report i.e. that it was open at some point
         //during the reporting period
         if (!quarterlyDao.isSurveillanceRelevant(toUpdate.getQuarterlyReport(), toUpdate.getId())) {
@@ -258,7 +258,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #id)")
     public void deleteQuarterlyReport(Long id)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException, ActivityException {
+            throws EntityRetrievalException, EntityCreationException, JacksonException, ActivityException {
         QuarterlyReport report = quarterlyDao.getById(id);
         quarterlyDao.delete(id);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
@@ -413,7 +413,7 @@ public class SurveillanceReportManager extends SecuredManager {
     }
 
     private void reviewQuarterlyReportToCreate(QuarterlyReport toCreate)
-            throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
+            throws EntityCreationException, InvalidArgumentsException, JacksonException, EntityRetrievalException {
         //Quarterly report has to have an ACB, year, and quarter
         if (toCreate.getYear() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.quarterlySurveillance.missingYear"));

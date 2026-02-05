@@ -3,7 +3,10 @@ package gov.healthit.chpl.permissions.domains.surveillance.report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
@@ -11,8 +14,16 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 @Component("surveillanceReportDeleteQuarterlyReportActionPermissions")
 public class DeleteQuarterlyReportActionPermissions extends ActionPermissions {
 
-    @Autowired
     private QuarterlyReportDAO quarterlyReportDao;
+
+    @Autowired
+    public DeleteQuarterlyReportActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            QuarterlyReportDAO quarterlyReportDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+        this.quarterlyReportDao = quarterlyReportDao;
+    }
 
     @Override
     public boolean hasAccess() {

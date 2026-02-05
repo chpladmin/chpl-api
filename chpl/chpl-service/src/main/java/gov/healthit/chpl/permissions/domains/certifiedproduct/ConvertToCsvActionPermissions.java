@@ -1,14 +1,25 @@
 package gov.healthit.chpl.permissions.domains.certifiedproduct;
 
 import org.apache.commons.collections4.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 
 @Component("certifiedProductConvertToCsvActionPermissions")
 public class ConvertToCsvActionPermissions extends ActionPermissions {
+
+    @Autowired
+    public ConvertToCsvActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+    }
 
     @Override
     public boolean hasAccess() {

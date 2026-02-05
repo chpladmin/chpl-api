@@ -1,6 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -61,7 +61,7 @@ public class ConformanceMethodReviewerTest {
     private ConformanceMethod attestationConformanceMethod;
     private ConformanceMethod gapConformanceMethod;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         edition2015 = CertificationEdition.builder()
                 .id(3L)

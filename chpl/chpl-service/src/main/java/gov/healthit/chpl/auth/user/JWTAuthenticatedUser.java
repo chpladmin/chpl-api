@@ -38,7 +38,7 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private boolean enabled;
 
     // Authentication Interface
-    @Builder.Default
+    @lombok.Builder.Default
     private Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
     private Object credentials;
     private Object details;

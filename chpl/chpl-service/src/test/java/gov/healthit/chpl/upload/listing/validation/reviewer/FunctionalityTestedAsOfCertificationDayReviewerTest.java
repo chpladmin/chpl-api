@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -43,7 +43,7 @@ public class FunctionalityTestedAsOfCertificationDayReviewerTest {
     private FunctionalityTestedDAO functionalityTestedDao;
     private FunctionalityTestedReviewer reviewer;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         certResultRules = Mockito.mock(CertificationResultRules.class);

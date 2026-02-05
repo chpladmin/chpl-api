@@ -6,8 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -19,18 +17,20 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("versionActivityMetadataBuilder")
 public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private ObjectMapper jsonMapper;
     private DeveloperDAO developerDao;
     private ProductDAO productDao;
 
     @Autowired
-    public VersionActivityMetadataBuilder(DeveloperDAO developerDao, ProductDAO productDao, ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
-        jsonMapper = new ObjectMapper();
+    public VersionActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper,
+            DeveloperDAO developerDao,
+            ProductDAO productDao) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
         this.developerDao = developerDao;
         this.productDao = productDao;
     }
@@ -50,13 +50,13 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (activity.getOriginalData() != null) {
             try {
                 origVersion =
-                    jsonMapper.readValue(activity.getOriginalData(), ProductVersionDTO.class);
+                    getJsonMapper().readValue(activity.getOriginalData(), ProductVersionDTO.class);
             } catch (Exception ignore) { }
 
             if (origVersion == null) {
                 try {
-                    origVersions = jsonMapper.readValue(activity.getOriginalData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
+                    origVersions = getJsonMapper().readValue(activity.getOriginalData(),
+                            getJsonMapper().getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
                 } catch (Exception ignore) { }
             }
 
@@ -72,13 +72,13 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (activity.getNewData() != null) {
             try {
                 newVersion =
-                    jsonMapper.readValue(activity.getNewData(), ProductVersionDTO.class);
+                        getJsonMapper().readValue(activity.getNewData(), ProductVersionDTO.class);
             } catch (Exception ignore) { }
 
             if (newVersion == null) {
                 try {
-                    newVersions = jsonMapper.readValue(activity.getNewData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
+                    newVersions = getJsonMapper().readValue(activity.getNewData(),
+                            getJsonMapper().getTypeFactory().constructCollectionType(List.class, ProductVersionDTO.class));
                 } catch (Exception ignore) { }
             }
 

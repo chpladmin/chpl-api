@@ -7,10 +7,11 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.upload.listing.ListingUploadStatus;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -54,7 +55,7 @@ public class ListingUpload implements Serializable {
         ListingUpload anotherListingUpload = (ListingUpload) another;
         if (StringUtils.isNotEmpty(this.getChplProductNumber())
                 && StringUtils.isNotEmpty(anotherListingUpload.getChplProductNumber())) {
-            return StringUtils.equals(this.getChplProductNumber(), anotherListingUpload.getChplProductNumber());
+            return Strings.CS.equals(this.getChplProductNumber(), anotherListingUpload.getChplProductNumber());
         }
         return false;
     }

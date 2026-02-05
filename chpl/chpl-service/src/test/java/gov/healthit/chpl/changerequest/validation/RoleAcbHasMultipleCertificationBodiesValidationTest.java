@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationBody;
@@ -15,7 +15,7 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 public class RoleAcbHasMultipleCertificationBodiesValidationTest {
     private RoleAcbHasMultipleCertificationBodiesValidation validator;
 
-    @Before
+    @BeforeEach
     public void setup() {
         validator = new RoleAcbHasMultipleCertificationBodiesValidation();
     }

@@ -2,9 +2,10 @@ package gov.healthit.chpl.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
@@ -16,7 +17,7 @@ public class ChplProductNumberUtilTest {
     private ChplProductNumberDAO chplProductNumberDao;
     private ChplProductNumberUtil chplProductNumberUtil;
 
-    @Before
+    @BeforeEach
     public void before() {
         certifiedProductSearchResultDao = Mockito.mock(CertifiedProductSearchResultDAO.class);
         chplProductNumberDao = Mockito.mock(ChplProductNumberDAO.class);
@@ -44,28 +45,43 @@ public class ChplProductNumberUtilTest {
         assertEquals("4", acbCode);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void parseAcbCode_MissingPartBeforeAcb_throwsException() {
-        chplProductNumberUtil.getAcbCode("03.04.2669.MDTB.03.01.1.200707");
+        Exception exception = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+            chplProductNumberUtil.getAcbCode("03.04.2669.MDTB.03.01.1.200707");
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void parseAcbCode_MissingPartAfterAcb_throwsException() {
-        chplProductNumberUtil.getAcbCode("15.03.04.MDTB.03.01.1.200707");
+        Exception exception = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+            chplProductNumberUtil.getAcbCode("15.03.04.MDTB.03.01.1.200707");
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void parseAcbCode_ExtraPartBeforeAcb_throwsException() {
-        chplProductNumberUtil.getAcbCode("15.15.03.04.2669.MDTB.03.01.1.200707");
+        Exception exception = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+            chplProductNumberUtil.getAcbCode("15.15.03.04.2669.MDTB.03.01.1.200707");
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void parseAcbCode_ExtraPartAfterAcb_throwsException() {
-        chplProductNumberUtil.getAcbCode("15.03.04.2669.MDTB.03.01.1.200707.200707");
+        Exception exception = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+            chplProductNumberUtil.getAcbCode("15.03.04.2669.MDTB.03.01.1.200707.200707");
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void parseAcbCode_JunkChplProductNumber_throwsException() {
-        chplProductNumberUtil.getAcbCode("JUNK");
+        Exception exception = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+            chplProductNumberUtil.getAcbCode("JUNK");
+        });
+        assertNotNull(exception);
     }
 }

@@ -2,8 +2,8 @@ package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
@@ -21,7 +21,7 @@ public class CommentRequiredValidationTest {
     private ChangeRequest newChangeRequest;
     private ChangeRequest origChangeRequest;
 
-    @Before
+    @BeforeEach
     public void setup() {
         validator = new CommentRequiredValidation();
 

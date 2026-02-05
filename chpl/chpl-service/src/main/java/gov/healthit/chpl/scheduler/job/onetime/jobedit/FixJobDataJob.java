@@ -104,5 +104,4 @@ public class FixJobDataJob implements Job {
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
     }
-
 }

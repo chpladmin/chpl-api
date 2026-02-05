@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class InactiveDevelopersAndProductsReportCsvCreator {
     public File createCsvFile(List<InactiveProduct> inactiveProducts) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
-                .build();
+                .get();
 
         File csvFile = getOutputFile();
         try (FileWriter fileWriter = new FileWriter(csvFile);
@@ -106,11 +106,11 @@ public class InactiveDevelopersAndProductsReportCsvCreator {
 
         @Override
         public int compare(InactiveProduct o1, InactiveProduct o2) {
-            int devNameComparison = StringUtils.compare(o1.getDeveloperName().toUpperCase(), o2.getDeveloperName().toUpperCase());
+            int devNameComparison = Strings.CI.compare(o1.getDeveloperName(), o2.getDeveloperName());
             if (devNameComparison != 0) {
                 return devNameComparison;
             } else {
-                return StringUtils.compare(o1.getProductName().toUpperCase(), o2.getProductName().toUpperCase());
+                return Strings.CI.compare(o1.getProductName(), o2.getProductName());
             }
         }
 

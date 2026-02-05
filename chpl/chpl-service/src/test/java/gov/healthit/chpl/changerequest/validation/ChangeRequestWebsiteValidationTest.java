@@ -1,10 +1,10 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -21,6 +21,7 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class ChangeRequestWebsiteValidationTest {
+
     @Test
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);

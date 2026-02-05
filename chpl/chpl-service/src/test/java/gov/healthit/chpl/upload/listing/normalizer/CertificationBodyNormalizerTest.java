@@ -1,14 +1,14 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -24,7 +24,7 @@ public class CertificationBodyNormalizerTest {
     private CertificationBodyDAO acbDao;
     private CertificationBodyNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         normalizer = new CertificationBodyNormalizer(acbDao, new ChplProductNumberUtil(), new ValidationUtils());

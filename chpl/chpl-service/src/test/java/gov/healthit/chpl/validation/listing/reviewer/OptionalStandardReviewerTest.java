@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -38,7 +38,7 @@ public class OptionalStandardReviewerTest {
     private ResourcePermissions resourcePermissions;
     private CertificationEdition edition2015;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         edition2015 = CertificationEdition.builder()
                 .id(3L)
@@ -49,9 +49,9 @@ public class OptionalStandardReviewerTest {
                 .thenReturn(getOptionalStandardCriteriaMaps());
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_EDITION_ERROR_KEY), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_EDITION_ERROR_KEY), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("Test Error Message 1");
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_OPTIONAL_STANDARD_CRITERIA_ERROR_KEY), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_OPTIONAL_STANDARD_CRITERIA_ERROR_KEY), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("Test Error Message 2");
 
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);

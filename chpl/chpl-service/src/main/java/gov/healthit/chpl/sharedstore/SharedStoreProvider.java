@@ -6,10 +6,11 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "sharedDataStoreLogger")
 public abstract class SharedStoreProvider<K, V> {
@@ -17,17 +18,19 @@ public abstract class SharedStoreProvider<K, V> {
     public static final Integer MAX_JSON_LENGTH = 200;
 
     protected SharedStoreDAO sharedStoreDAO;
-    private ObjectMapper mapper;
+    private JsonMapper mapper;
 
     @Autowired
     public SharedStoreProvider(SharedStoreDAO sharedStoreDAO) {
         this.sharedStoreDAO = sharedStoreDAO;
-        this.mapper = new ObjectMapper();
+        this.mapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .build();
     }
 
     protected abstract String getDomain();
     protected abstract Class<V> getClazz();
-    protected abstract V getFromJson(String json) throws JsonProcessingException;
+    protected abstract V getFromJson(String json) throws JacksonException;
     protected abstract Integer getTimeToLive();
 
     public boolean containsKey(K key) {
@@ -41,7 +44,7 @@ public abstract class SharedStoreProvider<K, V> {
             try {
                 LOGGER.info("Retreived from shared data: {} {}", getDomain(), key.toString());
                 obj = getFromJson(data.getValue());
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, Math.min(data.getValue().length(), MAX_JSON_LENGTH)), e);
             }
 
@@ -64,7 +67,7 @@ public abstract class SharedStoreProvider<K, V> {
                     .key(key.toString())
                     .value(mapper.writeValueAsString(value))
                     .build());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Could not write object to JSON: {} {}", getDomain(), key.toString(), e);
         }
     }
@@ -94,5 +97,9 @@ public abstract class SharedStoreProvider<K, V> {
         } else {
             return sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
         }
+    }
+
+    protected ObjectMapper getMapper() {
+        return this.mapper;
     }
 }

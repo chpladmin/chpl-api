@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -127,7 +127,7 @@ public class ChangeRequestController {
             produces = "application/json; charset=utf-8")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequestUpdateRequest updateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
-            JsonProcessingException, ActivityException, InvalidArgumentsException, EmailNotSentException {
+            JacksonException, ActivityException, InvalidArgumentsException, EmailNotSentException {
         return changeRequestManager.updateChangeRequest(updateRequest);
     }
 }

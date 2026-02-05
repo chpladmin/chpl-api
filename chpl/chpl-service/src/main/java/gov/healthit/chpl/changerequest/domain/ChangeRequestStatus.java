@@ -3,8 +3,8 @@ package gov.healthit.chpl.changerequest.domain;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;

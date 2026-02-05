@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -155,14 +156,14 @@ public class OptionalStandardReviewer implements Reviewer {
         return !StringUtils.isEmpty(userEnteredValue)
                 && optionalStandard != null
                 && !StringUtils.isEmpty(optionalStandard.getDisplayValue())
-                && StringUtils.equals(userEnteredValue, optionalStandard.getDisplayValue());
+                && Strings.CS.equals(userEnteredValue, optionalStandard.getDisplayValue());
     }
 
     private boolean userEnteredValueMatchesCitation(String userEnteredValue, OptionalStandard optionalStandard) {
         return !StringUtils.isEmpty(userEnteredValue)
                 && optionalStandard != null
                 && !StringUtils.isEmpty(optionalStandard.getCitation())
-                && StringUtils.equals(userEnteredValue, optionalStandard.getCitation());
+                && Strings.CS.equals(userEnteredValue, optionalStandard.getCitation());
     }
 
     private void reviewOptionalStandardIsValidForCriterion(CertifiedProductSearchDetails listing,

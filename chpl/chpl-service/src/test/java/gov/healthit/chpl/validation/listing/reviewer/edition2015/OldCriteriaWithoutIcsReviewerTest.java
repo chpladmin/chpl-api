@@ -7,8 +7,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -42,7 +42,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
     private Date betweenBoth;
     private Date afterBoth;
 
-    @Before
+    @BeforeEach
     public void before() {
         b3 = CertificationCriterion.builder()
                 .id(18L)
@@ -76,7 +76,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("listing.criteria.hasOldVersionOfCriteria"),
-                ArgumentMatchers.any())).thenAnswer(i -> i.getArguments()[1]);
+                ArgumentMatchers.any(Object[].class))).thenAnswer(i -> i.getArguments()[1]);
 
         certificationCriterionDAO = Mockito.mock(CertificationCriterionDAO.class);
         Mockito.when(certificationCriterionDAO.findAll()).thenReturn(makeAllCriteria());

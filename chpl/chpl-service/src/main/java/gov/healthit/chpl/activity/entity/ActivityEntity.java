@@ -21,8 +21,6 @@ import jakarta.persistence.NamedNativeQueries;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -91,7 +89,6 @@ public class ActivityEntity extends EntityAudit {
     private String newData;
 
     @Column(name = "activity_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date activityDate;
 
     @Column(name = "activity_object_id", nullable = false)

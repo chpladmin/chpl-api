@@ -8,10 +8,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -42,7 +42,7 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private Environment env;
@@ -52,17 +52,14 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Service Base Url List Uptime Email job *********");
         serviceBaseUrlListUptimeCalculator.setLogger(LOGGER);
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 try {
                     sendEmail(context, getReportRows());
                 } catch (Exception e) {
                     LOGGER.error(e);
                 }
-            }
         });
         LOGGER.info("********* Completed the Service Base Url List Uptime Email job *********");
     }

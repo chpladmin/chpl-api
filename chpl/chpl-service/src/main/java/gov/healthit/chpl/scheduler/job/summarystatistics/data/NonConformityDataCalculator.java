@@ -272,7 +272,4 @@ public class NonConformityDataCalculator {
             return nonconformity;
         }
     }
-
-
-
 }
