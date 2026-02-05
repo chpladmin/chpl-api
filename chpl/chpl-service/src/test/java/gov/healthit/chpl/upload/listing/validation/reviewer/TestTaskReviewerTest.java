@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -39,7 +39,7 @@ public class TestTaskReviewerTest {
     private CertificationCriterion a1, a2, a3, a6, a7;
     private TestTaskReviewer reviewer;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);

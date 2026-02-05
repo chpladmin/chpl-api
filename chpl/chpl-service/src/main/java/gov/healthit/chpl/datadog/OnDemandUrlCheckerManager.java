@@ -62,10 +62,14 @@ public class OnDemandUrlCheckerManager {
         validateUrlWellFormed(url);
         try {
             test = createTest(url);
-            triggerTest(test);
-            SyntheticsGetAPITestLatestResultsResponse result = awaitTestResults(test);
-            OnDemandUrlCheckerResponse response = analyzeTestResults(result, test);
-            return response;
+            if (test != null) {
+                triggerTest(test);
+                SyntheticsGetAPITestLatestResultsResponse result = awaitTestResults(test);
+                OnDemandUrlCheckerResponse response = analyzeTestResults(result, test);
+                return response;
+            } else {
+                throw new ApiException("Unable to complete On Demand URL Check for " + url);
+            }
         } finally {
             try {
                 LOGGER.info("Completed On Demand URL Check");
@@ -90,7 +94,11 @@ public class OnDemandUrlCheckerManager {
     private SyntheticsAPITest createTest(String url) {
         LOGGER.info("Creating On Demand URL Check for: {}", url);
         var x =  datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
-        LOGGER.info("Created On Demand URL Check: {}", x.getPublicId());
+        if (x != null) {
+            LOGGER.info("Created On Demand URL Check: {}", x.getPublicId());
+        } else {
+            LOGGER.error("Error creating On Demand URL Check for: {}", url);
+        }
         return x;
     }
 

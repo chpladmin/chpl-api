@@ -8,19 +8,16 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Component
 @Log4j2
 public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public SharedUserStoreProvider(SharedStoreDAO sharedStoreDAO) {
@@ -66,7 +63,7 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
     private void addToUsers(SharedStore sharedStoreResult, List<User> allUsers) {
         try {
             allUsers.add(getFromJson(sharedStoreResult.getValue()));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Could not create object from JSON: {} {}", getDomain(),
                     sharedStoreResult.getValue().substring(0, Math.min(sharedStoreResult.getValue().length(), MAX_JSON_LENGTH)), e);
         }
@@ -88,8 +85,8 @@ public class SharedUserStoreProvider extends SharedStoreProvider<String, User> {
     }
 
     @Override
-    protected User getFromJson(String json) throws JsonProcessingException {
-        return mapper.readValue(json, User.class);
+    protected User getFromJson(String json) throws JacksonException {
+        return getMapper().readValue(json, User.class);
     }
 
     @Override

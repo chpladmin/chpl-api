@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -56,7 +57,6 @@ import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -112,7 +112,6 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -124,7 +123,6 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}/submitted")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -293,7 +291,7 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
             @RequestBody(required = true) ConfirmListingRequest confirmListingRequest)
-                    throws JsonProcessingException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                    throws JacksonException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
                     ValidationException, ActivityException {
 
         CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
@@ -311,7 +309,7 @@ public class ListingUploadController {
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
         } else {
-            return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<CertifiedProductSearchDetails>(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));
         }
     }
 

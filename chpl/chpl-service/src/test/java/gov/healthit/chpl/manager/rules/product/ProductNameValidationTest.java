@@ -1,14 +1,14 @@
 package gov.healthit.chpl.manager.rules.product;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -23,7 +23,7 @@ public class ProductNameValidationTest {
     private ProductDAO productDao;
     private ErrorMessageUtil msgUtil;
 
-    @Before
+    @BeforeEach
     public void setup() {
         productDao = Mockito.mock(ProductDAO.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);

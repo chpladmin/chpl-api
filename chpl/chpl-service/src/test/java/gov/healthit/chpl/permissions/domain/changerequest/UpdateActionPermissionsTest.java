@@ -1,26 +1,26 @@
 package gov.healthit.chpl.permissions.domain.changerequest;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -35,26 +35,27 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Mock
-    private ChangeRequestDAO changeRequestDAO;
+    private ChangeRequestDAO changeRequestDao;
 
     @Mock
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
-        MockitoAnnotations.initMocks(this);
-
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new UpdateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, changeRequestDao);
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
-
-        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+        Mockito.when(changeRequestDao.get(ArgumentMatchers.anyLong()))
                 .thenReturn(ChangeRequest.builder()
                         .developer(Developer.builder().id(2L).build())
                         .build());
@@ -62,13 +63,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void hasAccess_Developer() throws Exception {
         setupForDeveloperUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+        Mockito.when(changeRequestDao.get(ArgumentMatchers.anyLong()))
                 .thenReturn(ChangeRequest.builder()
                         .developer(Developer.builder().id(2L).build())
                         .build());
@@ -80,7 +81,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                     .acknowledgeWarnings(false)
                     .build()));
 
-        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+        Mockito.when(changeRequestDao.get(ArgumentMatchers.anyLong()))
                 .thenReturn(ChangeRequest.builder()
                         .developer(Developer.builder().id(3L).build())
                         .build());
@@ -122,7 +123,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));
-        Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
+        Mockito.when(changeRequestDao.get(ArgumentMatchers.anyLong()))
             .thenReturn(changeRequest);
 
         assertTrue(permissions.hasAccess(ChangeRequestUpdateRequest.builder()

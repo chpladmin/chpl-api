@@ -3,7 +3,7 @@ package gov.healthit.chpl.listing.measure;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
@@ -66,7 +66,7 @@ public class MeasureEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "measureId")
     @Basic(optional = false)
     @Column(name = "measure_id", nullable = false)
-    @Where(clause = " deleted = false ")
+    @SQLRestriction(" deleted = false ")
     private Set<MeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MeasureCriterionMapEntity>();
 
     public Measure toDomain() {

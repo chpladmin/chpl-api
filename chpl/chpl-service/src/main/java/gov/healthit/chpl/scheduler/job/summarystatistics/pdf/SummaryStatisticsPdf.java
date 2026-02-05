@@ -12,9 +12,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.event.PdfDocumentEvent;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 
@@ -83,9 +83,8 @@ public class SummaryStatisticsPdf {
         document.add(subtitle);
 
         Paragraph currentDate = new Paragraph(LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")));
-        currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
+        currentDate.setFont(SummaryStatisticsPdfDefaults.getDefaultItalicFont());
         currentDate.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
-        currentDate.setItalic();
         document.add(currentDate);
 
     }

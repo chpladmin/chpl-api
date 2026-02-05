@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -33,7 +33,7 @@ public class MeasureType implements Serializable {
         if (this.name == null && anotherType.name != null || this.name != null && anotherType.name == null) {
             return false;
         } else if (ObjectUtils.allNotNull(this.name, anotherType.name)
-                && !StringUtils.equalsIgnoreCase(this.name, anotherType.name)) {
+                && !Strings.CI.equals(this.name, anotherType.name)) {
             return false;
         }
         return true;

@@ -26,7 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -302,7 +302,7 @@ public class ListingUploadManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
     public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
-            throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
+            throws InvalidArgumentsException, JacksonException, EntityRetrievalException, EntityCreationException,
             ValidationException, ActivityException {
         // Is listing already processing?
         if (!listingUploadDao.isAvailableForProcessing(id)) {
@@ -510,10 +510,10 @@ public class ListingUploadManager {
 
         List<CSVRecord> records = null;
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new BOMInputStream(file.getInputStream()), StandardCharsets.UTF_8.name()));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL
-                        .withIgnoreEmptyLines()
-                        .withIgnoreSurroundingSpaces())) {
+                new InputStreamReader(BOMInputStream.builder().setInputStream(file.getInputStream()).setCharset(StandardCharsets.UTF_8.name()).get()));
+                CSVParser parser = CSVParser.builder().setReader(reader)
+                        .setFormat(CSVFormat.EXCEL.builder().setIgnoreEmptyLines(true).setIgnoreSurroundingSpaces(true).get())
+                        .get()) {
             records = parser.getRecords();
             trimTailingEmptyLines(records);
             if (records.size() <= 1) {

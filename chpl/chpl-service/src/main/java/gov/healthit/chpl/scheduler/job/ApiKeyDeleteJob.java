@@ -11,10 +11,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -33,7 +33,7 @@ public class ApiKeyDeleteJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private Environment env;
@@ -66,21 +66,17 @@ public class ApiKeyDeleteJob extends QuartzJob {
             // The object's proxy is not called when the method is called from within this class. The object's proxy
             // is called when the method is public and is called from a different object.
             // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            txTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    for (ApiKey apiKey : apiKeys) {
-
-                        try {
-                            delete(apiKey);
-                            sendEmail(apiKey);
-                        } catch (EntityRetrievalException | ActivityException e) {
-                            LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
-                        } catch (EmailNotSentException e) {
-                            LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
-                        }
+            TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                    new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+            transactionOperations.executeWithoutResult(status -> {
+                for (ApiKey apiKey : apiKeys) {
+                    try {
+                        delete(apiKey);
+                        sendEmail(apiKey);
+                    } catch (EntityRetrievalException | ActivityException e) {
+                        LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
+                    } catch (EmailNotSentException e) {
+                        LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
                     }
                 }
             });

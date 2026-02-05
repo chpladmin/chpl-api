@@ -11,17 +11,18 @@ import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("developerActivityMetadataBuilder")
 public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
-
     private DeveloperDAO developerDao;
 
     @Autowired
     public DeveloperActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper,
             DeveloperDAO developerDao) {
-        super(chplUserToCognitoUserUtil);
+        super(chplUserToCognitoUserUtil, jsonMapper);
         this.developerDao = developerDao;
     }
 

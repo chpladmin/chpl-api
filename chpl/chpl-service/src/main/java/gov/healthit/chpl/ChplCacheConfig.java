@@ -30,12 +30,12 @@ public class ChplCacheConfig {
     @Bean(destroyMethod = "shutdown")
     RedissonClient redisson() {
         Config config = new Config();
+        config.setPassword(env.getProperty("spring.redis.password"));
         config.setNettyThreads(Integer.valueOf(env.getProperty("spring.redis.nettythreads")))
                 .setThreads(Integer.valueOf(env.getProperty("spring.redis.threads")))
                 .useSingleServer()
                 .setTimeout(Integer.valueOf(env.getProperty("spring.redis.timeout")))
-                .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
-                .setPassword(env.getProperty("spring.redis.password"));
+                .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"));
         return Redisson.create(config);
     }
 

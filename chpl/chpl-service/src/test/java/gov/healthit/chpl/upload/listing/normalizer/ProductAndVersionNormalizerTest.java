@@ -1,11 +1,11 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -23,7 +23,7 @@ public class ProductAndVersionNormalizerTest {
     private ProductVersionDAO versionDao;
     private ProductAndVersionNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         productDao = Mockito.mock(ProductDAO.class);
         versionDao = Mockito.mock(ProductVersionDAO.class);

@@ -1,15 +1,15 @@
 package gov.healthit.chpl.developer.search;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
@@ -17,7 +17,7 @@ public class SearchRequestNormalizerTest {
 
     private SearchRequestNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         normalizer = new SearchRequestNormalizer();
     }
@@ -249,31 +249,31 @@ public class SearchRequestNormalizerTest {
     @Test
     public void normalize_orderByStringValid_resolvesCorrectly() {
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-                .orderByString("DEVELOPER")
+                .orderByString("DEVELOPER_NAME")
                 .build();
         normalizer.normalize(searchRequest);
 
-        assertEquals(OrderByOption.DEVELOPER, searchRequest.getOrderBy());
+        assertEquals(OrderByOption.DEVELOPER_NAME, searchRequest.getOrderBy());
     }
 
     @Test
     public void normalize_orderByStringLowercase_resolvesCorrectly() {
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-                .orderByString("developer")
+                .orderByString("developer_name")
                 .build();
         normalizer.normalize(searchRequest);
 
-        assertEquals(OrderByOption.DEVELOPER, searchRequest.getOrderBy());
+        assertEquals(OrderByOption.DEVELOPER_NAME, searchRequest.getOrderBy());
     }
 
     @Test
     public void normalize_orderByDeveloper_noChanges() {
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-                .orderBy(OrderByOption.DEVELOPER)
+                .orderBy(OrderByOption.DEVELOPER_NAME)
                 .build();
         normalizer.normalize(searchRequest);
 
-        assertEquals(OrderByOption.DEVELOPER, searchRequest.getOrderBy());
+        assertEquals(OrderByOption.DEVELOPER_NAME, searchRequest.getOrderBy());
     }
 
     @Test

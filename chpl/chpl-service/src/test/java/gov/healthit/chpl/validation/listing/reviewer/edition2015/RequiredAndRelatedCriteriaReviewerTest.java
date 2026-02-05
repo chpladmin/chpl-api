@@ -7,8 +7,8 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -44,7 +44,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         e1, e1Cures, e2, e3, f1, f2, f3, f4, f5, f5Cures, f6, f7, g6, g6Cures, g7, g8, g9, g9Cures, g10,
         g31, g32, g33, h1, h2, j20, j21;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void before() throws ParseException {
         a1 = getCriterion(1L, "170.315 (a)(1)", "a1 title", false);

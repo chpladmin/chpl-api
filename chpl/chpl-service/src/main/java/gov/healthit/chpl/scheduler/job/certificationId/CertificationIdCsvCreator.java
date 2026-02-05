@@ -34,7 +34,7 @@ public class CertificationIdCsvCreator {
     public File createCsvFile(List<SimpleCertificationId> certificationIds) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
-                .build();
+                .get();
 
         File csvFile = getOutputFile();
         try (FileWriter fileWriter = new FileWriter(csvFile);

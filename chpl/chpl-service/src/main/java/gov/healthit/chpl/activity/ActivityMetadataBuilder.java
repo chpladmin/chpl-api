@@ -19,14 +19,18 @@ import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component("activityMetadataBuilder")
 public class ActivityMetadataBuilder {
 
     private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+    private JsonMapper jsonMapper;
 
-    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
         this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+        this.jsonMapper = jsonMapper;
     }
 
    public ActivityMetadata build(ActivityDTO dto) {
@@ -36,6 +40,10 @@ public class ActivityMetadataBuilder {
             addConceptSpecificMetadata(dto, metadata);
         }
         return metadata;
+    }
+
+    protected JsonMapper getJsonMapper() {
+        return this.jsonMapper;
     }
 
     protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {

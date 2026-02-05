@@ -1,16 +1,16 @@
 package gov.healthit.chpl.complaint.search;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -27,11 +27,10 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class ComplaintSearchServiceTest {
     private ResourcePermissions resourcePermissions;
-    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ComplaintDAO complaintDao;
     private ComplaintSearchService complaintSearchService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ComplaintSearchRequestValidator searchRequestValidator = Mockito.mock(ComplaintSearchRequestValidator.class);
         ComplaintSearchRequestNormalizer searchRequestNormalizer = Mockito.mock(ComplaintSearchRequestNormalizer.class);

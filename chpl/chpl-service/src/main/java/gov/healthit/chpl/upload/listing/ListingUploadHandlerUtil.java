@@ -130,7 +130,7 @@ public class ListingUploadHandlerUtil {
         CSVFormat csvFormat = CSVFormat.EXCEL.builder()
                 .setRecordSeparator(System.lineSeparator())
                 .setQuoteMode(QuoteMode.ALL)
-                .build();
+                .get();
         CSVRecord csvRecord = null;
         final StringWriter out = new StringWriter();
         try (CSVPrinter csvPrinter = new CSVPrinter(out, csvFormat)) {

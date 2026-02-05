@@ -136,7 +136,7 @@ public class TestTaskUploadHandler {
             } catch (NumberFormatException ex) {
                 LOGGER.debug("Cannot parse taskTimeAvg '" + taskTimeAvgAtIndex + "' into a Long.");
                 try {
-                    taskTimeAvg = new Long(Math.round(Float.valueOf(taskTimeAvgAtIndex)));
+                    taskTimeAvg = Long.valueOf(Math.round(Float.valueOf(taskTimeAvgAtIndex)));
                 } catch (NumberFormatException ex2) {
                     LOGGER.debug("Cannot round taskTimeAvg '" + taskTimeAvgAtIndex + "' to a Long.");
                 }

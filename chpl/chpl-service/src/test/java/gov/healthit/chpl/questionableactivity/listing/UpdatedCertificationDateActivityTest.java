@@ -1,8 +1,8 @@
 package gov.healthit.chpl.questionableactivity.listing;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -23,7 +23,7 @@ public class UpdatedCertificationDateActivityTest {
 
     private UpdatedCertificationDateActivity activityChecker;
 
-    @Before
+    @BeforeEach
     public void setup() {
         activityChecker = new UpdatedCertificationDateActivity();
     }

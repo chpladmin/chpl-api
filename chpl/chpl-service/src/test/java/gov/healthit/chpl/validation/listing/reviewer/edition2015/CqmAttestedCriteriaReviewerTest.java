@@ -1,15 +1,15 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -36,7 +36,7 @@ public class CqmAttestedCriteriaReviewerTest {
     private ErrorMessageUtil msgUtil;
     private CqmAttestedCriteriaReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         c1 = buildCriterion(1L, "170.315 (c)(1)", "C1");
         c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1");

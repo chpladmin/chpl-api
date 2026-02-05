@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -26,7 +26,7 @@ public class DeletedCertificationsActivityTest {
     private DeletedCertificationsActivity activityChecker;
     private CertificationCriterion a1, b1, b1Cures, g8, g10Cures;
 
-    @Before
+    @BeforeEach
     public void setup() {
         a1 = buildCriterion(1L, "170.315 (a)(1)", "a1");
         b1 = buildCriterion(20L, "170.315 (b)(1)", "b1");

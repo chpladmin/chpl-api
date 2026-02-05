@@ -1,7 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -33,7 +33,7 @@ public class MeasureNormalizerTest {
 
     private MeasureType g1, g2;
 
-    @Before
+    @BeforeEach
     public void before() {
         measureDao = Mockito.mock(MeasureDAO.class);
         listingMeasureDao = Mockito.mock(ListingMeasureDAO.class);

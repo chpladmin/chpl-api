@@ -1,15 +1,15 @@
 package gov.healthit.chpl.criteriaattribute;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -29,7 +29,7 @@ public class CriteriAttributeValidatorTest {
 
     private CriteriaAttributeDAO criteriaAttributeDAO;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         ruleDAO = Mockito.mock(RuleDAO.class);
@@ -41,9 +41,8 @@ public class CriteriAttributeValidatorTest {
                         .name("Rule Name")
                         .build());
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any(Object[].class)))
                 .thenAnswer(i -> i.getArguments()[0]);
-
 
         Mockito.when(criteriaAttributeDAO.getCriteriaAttributeById(ArgumentMatchers.anyLong()))
                 .thenReturn(getStandardCriteriaAttrbute());

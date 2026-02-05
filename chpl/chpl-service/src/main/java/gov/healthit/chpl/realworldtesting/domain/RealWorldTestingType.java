@@ -1,6 +1,6 @@
 package gov.healthit.chpl.realworldtesting.domain;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 public enum RealWorldTestingType {
     PLANS("PLANS"),
@@ -20,7 +20,7 @@ public enum RealWorldTestingType {
 
     @Override
     public String toString() {
-        if (!StringUtils.isEmpty(this.name)) {
+        if (!ObjectUtils.isEmpty(this.name)) {
             return this.name;
         }
         return name();

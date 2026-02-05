@@ -1,9 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -22,7 +22,7 @@ public class TestDataDuplicateReviewerTest {
     private ErrorMessageUtil msgUtil;
     private TestDataDuplicateReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestDataNameAndVersion"),

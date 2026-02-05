@@ -74,7 +74,7 @@ public class PromotingInteroperabilityManager {
 
     private void checkFileCanBeReadAndMultipleRowsExist(String fileContents) throws IOException, ValidationException  {
         try (BufferedReader reader = new BufferedReader(new StringReader(fileContents));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
+                CSVParser parser = CSVParser.builder().setReader(reader).setFormat(CSVFormat.EXCEL).get()) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {

@@ -1,26 +1,26 @@
 package gov.healthit.chpl.domain.compliance;
 
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class SimpleValueDeserializer extends JsonDeserializer<String> {
+public class SimpleValueDeserializer extends StdDeserializer<String> {
     private static final String FIELD_NAME = "value";
 
+    protected SimpleValueDeserializer() {
+        super(String.class);
+    }
+
     @Override
-    public String deserialize(JsonParser jsonParser, DeserializationContext context)
-      throws IOException, JsonProcessingException {
+    public String deserialize(JsonParser jsonParser, DeserializationContext context) {
         String value = "";
-        JsonNode valueNode = jsonParser.getCodec().readTree(jsonParser);
+        JsonNode valueNode = jsonParser.objectReadContext().readTree(jsonParser);
         if (valueNode != null && valueNode.has(FIELD_NAME)) {
-            value = valueNode.get(FIELD_NAME).textValue();
-        } else if (valueNode != null && valueNode.isTextual()) {
+            value = valueNode.get(FIELD_NAME).asString();
+        } else if (valueNode != null && valueNode.isString()) {
             //when value node comes out of shared store it looks like a string
-            value = valueNode.textValue();
+            value = valueNode.asString();
         }
         return value;
     }
