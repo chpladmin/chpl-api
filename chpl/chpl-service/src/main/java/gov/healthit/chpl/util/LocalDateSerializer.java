@@ -1,13 +1,11 @@
 package gov.healthit.chpl.util;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 public class LocalDateSerializer extends StdSerializer<LocalDate> {
 
@@ -18,8 +16,7 @@ public class LocalDateSerializer extends StdSerializer<LocalDate> {
     }
 
     @Override
-    public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider sp)
-            throws IOException, JsonProcessingException {
+    public void serialize(LocalDate value, JsonGenerator gen, SerializationContext sc) {
         if (value == null) {
             gen.writeString("");
         } else {

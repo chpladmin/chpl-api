@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -48,7 +48,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
     private CertificationCriterion a1, a2, a5;
     private CodeSet a1a2CodeSet, a5CodeSet;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         a1 = CertificationCriterion.builder()
                 .id(1L)

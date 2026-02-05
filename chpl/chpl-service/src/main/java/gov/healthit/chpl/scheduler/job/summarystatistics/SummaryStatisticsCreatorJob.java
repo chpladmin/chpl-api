@@ -6,15 +6,12 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
@@ -24,6 +21,8 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 @DisallowConcurrentExecution
@@ -36,7 +35,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private JsonMapper jsonMapper;
 
     public SummaryStatisticsCreatorJob() throws Exception {
         super();
@@ -56,19 +58,16 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     }
 
     public void saveStatisticsSnapshot(StatisticsSnapshot statisticsSnapshot)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+            throws JacksonException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
         // The object's proxy is not called when the method is called from within this class. The object's proxy
         // is called when the method is public and is called from a different object.
         // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 try {
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
                     entity.setEndDate(new Date());
@@ -78,12 +77,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                     LOGGER.error("Could not save Summary Statistic entity", e);
                     status.setRollbackOnly();
                 }
-            }
         });
     }
 
-    private String getJson(StatisticsSnapshot statisticsSnapshot) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(statisticsSnapshot);
+    private String getJson(StatisticsSnapshot statisticsSnapshot) throws JacksonException {
+        return jsonMapper.writeValueAsString(statisticsSnapshot);
     }
 }

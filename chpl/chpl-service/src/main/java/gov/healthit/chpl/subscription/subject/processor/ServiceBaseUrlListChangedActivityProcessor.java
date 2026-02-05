@@ -1,6 +1,6 @@
 package gov.healthit.chpl.subscription.subject.processor;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -32,7 +32,7 @@ public class ServiceBaseUrlListChangedActivityProcessor extends SubscriptionSubj
         return (originalG10CertResult == null && newG10CertResult != null)
                 || (originalG10CertResult != null && newG10CertResult == null)
                 || (originalG10CertResult != null && newG10CertResult != null
-                    && !StringUtils.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList()));
+                    && !Strings.CS.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList()));
 
     }
 

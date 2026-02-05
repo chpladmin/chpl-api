@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("productActivityMetadataBuilder")
@@ -20,8 +21,9 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
     public ProductActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper,
             ProductDAO productDao) {
-        super(chplUserToCognitoUserUtil);
+        super(chplUserToCognitoUserUtil, jsonMapper);
         this.productDao = productDao;
     }
 

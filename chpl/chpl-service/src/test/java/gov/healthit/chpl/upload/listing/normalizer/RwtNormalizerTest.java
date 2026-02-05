@@ -1,12 +1,12 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
@@ -14,7 +14,7 @@ public class RwtNormalizerTest {
 
     private RwtNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         normalizer = new RwtNormalizer();
     }

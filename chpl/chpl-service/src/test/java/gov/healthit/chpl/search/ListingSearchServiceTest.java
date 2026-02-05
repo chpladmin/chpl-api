@@ -1,6 +1,6 @@
 package gov.healthit.chpl.search;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
@@ -43,7 +43,7 @@ public class ListingSearchServiceTest {
     private ListingSearchService listingSearchService;
     private DirectReviewSearchService drService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         drService = Mockito.mock(DirectReviewSearchService.class);

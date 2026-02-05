@@ -2,7 +2,7 @@ package gov.healthit.chpl.subscription.domain;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +30,7 @@ public class Subscriber {
         if (otherSubscriber.id == null || this.id == null) {
             return false;
         }
-        return StringUtils.equals(this.id.toString(), otherSubscriber.id.toString());
+        return Strings.CS.equals(this.id.toString(), otherSubscriber.id.toString());
     }
 
     @Override

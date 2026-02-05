@@ -10,7 +10,7 @@ import org.jfree.data.statistics.BoxAndWhiskerCalculator;
 import org.jfree.data.statistics.BoxAndWhiskerItem;
 import org.jfree.data.statistics.Statistics;
 
-public abstract class BoxAndWhiskerCalculatorWithNoOutliers extends BoxAndWhiskerCalculator {
+public abstract class BoxAndWhiskerCalculatorWithNoOutliers {
 
     private static final Double FORCE_OUTLIERS_VERY_FAR_OUT = 1000d;
 
@@ -41,8 +41,8 @@ public abstract class BoxAndWhiskerCalculatorWithNoOutliers extends BoxAndWhiske
 
         double mean = Statistics.calculateMean(vlist, false);
         double median = Statistics.calculateMedian(vlist, false);
-        double q1 = calculateQ1(vlist);
-        double q3 = calculateQ3(vlist);
+        double q1 = BoxAndWhiskerCalculator.calculateQ1(vlist);
+        double q3 = BoxAndWhiskerCalculator.calculateQ3(vlist);
 
         double interQuartileRange = q3 - q1;
 

@@ -3,8 +3,11 @@ package gov.healthit.chpl.permissions.domains.activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +18,11 @@ public class GetActivityMetadataByAcbActionPermissions extends ActionPermissions
     private CertificationBodyDAO acbDao;
 
     @Autowired
-    public GetActivityMetadataByAcbActionPermissions(final CertificationBodyDAO acbDao) {
+    public GetActivityMetadataByAcbActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            CertificationBodyDAO acbDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         this.acbDao = acbDao;
     }
 

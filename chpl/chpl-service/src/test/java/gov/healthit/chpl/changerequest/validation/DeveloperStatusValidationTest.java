@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -30,7 +30,7 @@ public class DeveloperStatusValidationTest {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private CognitoResourcePermissions resourcePermissions;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);

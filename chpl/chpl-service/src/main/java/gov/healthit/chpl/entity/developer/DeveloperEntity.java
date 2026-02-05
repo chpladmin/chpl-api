@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
@@ -88,7 +88,7 @@ public class DeveloperEntity extends EntityAudit {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true, insertable = false, updatable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private AddressEntity address;
 
     @Basic(optional = true)
@@ -103,13 +103,13 @@ public class DeveloperEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
     @Column(name = "vendor_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<DeveloperStatusEventEntity> statusEvents = new LinkedHashSet<DeveloperStatusEventEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
     @Column(name = "developer_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<AttestationSubmissionEntity> attestations = new LinkedHashSet<AttestationSubmissionEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")

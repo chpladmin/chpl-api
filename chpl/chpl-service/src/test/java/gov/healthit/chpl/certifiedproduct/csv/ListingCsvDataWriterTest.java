@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,7 +27,7 @@ public class ListingCsvDataWriterTest {
 
     private ListingCsvDataWriter writer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         CertificationCriteriaManager criteriaManager = Mockito.mock(CertificationCriteriaManager.class);
         StandardManager standardManager = Mockito.mock(StandardManager.class);

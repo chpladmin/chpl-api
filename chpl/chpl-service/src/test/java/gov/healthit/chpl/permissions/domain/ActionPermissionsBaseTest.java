@@ -3,7 +3,10 @@ package gov.healthit.chpl.permissions.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.TestingUsers;
@@ -13,6 +16,27 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public abstract class ActionPermissionsBaseTest extends TestingUsers {
+    private AutoCloseable closeable;
+
+    @BeforeEach
+    public void openMocks() {
+        closeable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() {
+        if (closeable == null) {
+            return;
+        }
+
+        try {
+            closeable.close();
+        } catch (Exception ex) {
+            System.out.println("Error closing mocks");
+            ex.printStackTrace();
+        }
+    }
+
     public abstract void hasAccess_Admin() throws Exception;
 
     public abstract void hasAccess_Onc() throws Exception;

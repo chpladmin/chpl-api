@@ -9,13 +9,6 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -36,14 +29,21 @@ import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service("activityManager")
 @Log4j2
 public class ActivityManager extends SecuredManager {
     private ActivityDAO activityDAO;
     private DeveloperDAO devDao;
-    private ObjectMapper jsonMapper = new ObjectMapper();
-    private JsonFactory factory = jsonMapper.getFactory();
+    private JsonMapper jsonMapper = new JsonMapper();
+    private JsonFactory factory = jsonMapper.tokenStreamFactory();
     private QuestionableActivityListener questionableActivityListener;
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
     private SubscriptionObserver subscriptionObserver;
@@ -144,7 +144,7 @@ public class ActivityManager extends SecuredManager {
 
     private ActivityDTO addActivity(ActivityConcept concept, Long objectId, UUID objectUuid, String activityDescription,
             Object originalData, Object newData, String reason, Date timestamp, User asUser)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         String originalDataStr = null;
         String newDataStr = null;
@@ -196,13 +196,13 @@ public class ActivityManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_DETAILS, returnObject)")
     @Transactional
     public ActivityDetails getActivityById(Long activityId)
-            throws EntityRetrievalException, JsonParseException, IOException, UserRetrievalException {
+            throws EntityRetrievalException, StreamReadException, IOException, UserRetrievalException {
         ActivityDTO result = activityDAO.getById(activityId);
         ActivityDetails event = getActivityDetailsFromDTO(result);
         return event;
     }
 
-    private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws UserRetrievalException, JsonParseException, IOException {
+    private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws UserRetrievalException, StreamReadException, IOException {
         ActivityDetails event = null;
         if (dto.getConcept() == ActivityConcept.PRODUCT) {
             event = new ProductActivityDetails();
@@ -220,14 +220,14 @@ public class ActivityManager extends SecuredManager {
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {
-            try (JsonParser origData = factory.createParser(dto.getOriginalData())) {
+            try (JsonParser origData = factory.createParser(ObjectReadContext.empty(), dto.getOriginalData())) {
                 originalJSON = jsonMapper.readTree(origData);
             }
         }
 
         JsonNode newJSON = null;
         if (dto.getNewData() != null) {
-            try (JsonParser newData = factory.createParser(dto.getNewData())) {
+            try (JsonParser newData = factory.createParser(ObjectReadContext.empty(), dto.getNewData())) {
                 newJSON = jsonMapper.readTree(newData);
 
             }

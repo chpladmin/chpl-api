@@ -2,8 +2,8 @@ package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -18,7 +18,7 @@ public class DeveloperExistenceValidationTest {
     private ChangeRequest newChangeRequest;
     private DeveloperDAO developerDAO;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         validator = new DeveloperExistenceValidation();
 

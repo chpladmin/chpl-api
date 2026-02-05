@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfLongs;
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;

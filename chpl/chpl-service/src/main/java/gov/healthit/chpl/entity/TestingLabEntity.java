@@ -2,6 +2,9 @@ package gov.healthit.chpl.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.domain.TestingLab;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,10 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.domain.TestingLab;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,7 +45,7 @@ public class TestingLabEntity extends EntityAudit {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", unique = true, nullable = true)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private AddressEntity address;
 
     @Column(name = "name")

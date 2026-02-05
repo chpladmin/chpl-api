@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -212,13 +213,13 @@ public class TestTask implements Serializable {
         if (this.getId() != null && anotherTask.getId() != null
                 && this.getId().longValue() == anotherTask.getId().longValue()) {
             result = true;
-        } else if (StringUtils.equals(this.getDescription(), anotherTask.getDescription())
+        } else if (Strings.CS.equals(this.getDescription(), anotherTask.getDescription())
                 && Objects.equals(this.getTaskErrors(), anotherTask.getTaskErrors())
                 && Objects.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev())
                 && Objects.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved())
                 && Objects.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal())
                 && Objects.equals(this.getTaskRating(), anotherTask.getTaskRating())
-                && StringUtils.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale())
+                && Strings.CS.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale())
                 && Objects.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev())
                 && Objects.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage())
                 && Objects.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev())

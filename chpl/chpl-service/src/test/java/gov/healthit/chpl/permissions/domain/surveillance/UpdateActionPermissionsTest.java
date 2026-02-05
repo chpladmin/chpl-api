@@ -1,17 +1,19 @@
 package gov.healthit.chpl.permissions.domain.surveillance;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -26,21 +28,24 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ErrorMessageUtil errorMessageUtil;
+    private ErrorMessageUtil msgUtil;
 
     @Mock
-    private CertifiedProductDAO cpDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new UpdateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, msgUtil);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
@@ -76,29 +81,32 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(1L, 3L));
         assertFalse(permissions.hasAccess(1L));
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(2L, 3L));
         assertTrue(permissions.hasAccess(1L));
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void hasAccess_Acb_2014Listing() throws Exception {
         setupForAcbUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+        Mockito.when(certifiedProductDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(3L, 2L));
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.anyString()))
                 .thenReturn("message");
 
-        permissions.hasAccess(1L);
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
+            permissions.hasAccess(1L);
+        });
+        assertNotNull(exception);
     }
 
     @Override

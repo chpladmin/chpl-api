@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -13,8 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Objects;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -102,9 +101,9 @@ public class CertificationStatusEventsService {
 
     private boolean doValuesMatch(CertificationStatusEvent event1, CertificationStatusEvent event2) {
         return (event1.getStatus() != null && event2.getStatus() != null
-                    && StringUtils.equals(event1.getStatus().getName(), event2.getStatus().getName()))
-                && Objects.equal(event1.getEventDay(), event2.getEventDay())
-                && StringUtils.equals(event1.getReason(), event2.getReason());
+                    && Objects.equals(event1.getStatus().getName(), event2.getStatus().getName()))
+                && Objects.equals(event1.getEventDay(), event2.getEventDay())
+                && Objects.equals(event1.getReason(), event2.getReason());
     }
 
     private CertificationStatusEvent createCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {

@@ -1,6 +1,6 @@
 package gov.healthit.chpl;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public enum ChplHttpStatus {
     RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed"),

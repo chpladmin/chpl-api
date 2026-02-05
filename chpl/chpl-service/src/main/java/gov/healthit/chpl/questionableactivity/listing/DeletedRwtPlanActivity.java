@@ -3,8 +3,8 @@ package gov.healthit.chpl.questionableactivity.listing;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
@@ -16,7 +16,7 @@ public class DeletedRwtPlanActivity implements ListingActivity {
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListing activity = null;
-        if (!StringUtils.isEmpty(origListing.getRwtPlansUrl()) && StringUtils.isEmpty(newListing.getRwtPlansUrl())) {
+        if (!ObjectUtils.isEmpty(origListing.getRwtPlansUrl()) && ObjectUtils.isEmpty(newListing.getRwtPlansUrl())) {
             activity = new QuestionableActivityListing();
             activity.setBefore("Removed Plans URL: " + origListing.getRwtPlansUrl());
         }

@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,12 +20,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,7 +59,7 @@ public class SurveillanceRequirementEntity extends EntityAudit {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId")
     @Column(name = "surveillance_requirement_id", nullable = false, insertable = false, updatable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
 
     public SurveillanceRequirement toDomain(CertificationCriterionService certificationCriterionService) {

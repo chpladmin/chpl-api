@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
@@ -254,7 +255,7 @@ public class CertifiedProductManager extends SecuredManager {
     // no other caches have ACB data so we do not need to clear all
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, CertifiedProductUpdateException {
+            throws EntityRetrievalException, JacksonException, EntityCreationException, CertifiedProductUpdateException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
         toUpdate.setCertificationBodyId(acbId);
         return cpDao.update(toUpdate);
@@ -263,7 +264,7 @@ public class CertifiedProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #updateRequest)")
     @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            EntityRetrievalException.class, EntityCreationException.class, JacksonException.class,
             AccessDeniedException.class, InvalidArgumentsException.class, CertifiedProductUpdateException.class
     })
     @CacheEvict(value = {
@@ -397,7 +398,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateTestingLabs(Long listingId, List<CertifiedProductTestingLab> existingTestingLabs,
             List<CertifiedProductTestingLab> updatedTestingLabs)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         int numChanges = 0;
 
@@ -595,7 +596,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
             List<CertifiedProductQmsStandard> updatedQmsStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -671,13 +672,13 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private boolean haveQmsDetailsChanged(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
-        return !StringUtils.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
-                || !StringUtils.equals(orig.getQmsModification(), updated.getQmsModification());
+        return !Strings.CS.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
+                || !Strings.CS.equals(orig.getQmsModification(), updated.getQmsModification());
     }
 
     private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,
             List<ListingMeasure> updatedMeasures)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException, IOException {
 
         int numChanges = 0;
         List<ListingMeasure> measuresToAdd = new ArrayList<ListingMeasure>();
@@ -759,7 +760,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateTargetedUsers(Long listingId,
             List<CertifiedProductTargetedUser> existingTargetedUsers,
             List<CertifiedProductTargetedUser> updatedTargetedUsers)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         int numChanges = 0;
         List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
@@ -823,7 +824,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -891,7 +892,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void updateCertificationDate(Long listingId, Date existingCertDate, Date newCertDate)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
         if (existingCertDate != null && newCertDate != null && existingCertDate.getTime() != newCertDate.getTime()) {
             CertificationStatusEvent certificationEvent = statusEventDao
                     .findInitialCertificationEventForCertifiedProduct(listingId);
@@ -904,7 +905,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateCertificationStatusEvents(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         int numChanges = 0;
         List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
@@ -957,7 +958,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updatePromotingInteroperabilityUserHistory(Long listingId,
             List<PromotingInteroperabilityUser> existingPiuHistory,
             List<PromotingInteroperabilityUser> updatedPiuHistory)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         int numChanges = 0;
         List<PromotingInteroperabilityUser> itemsToAdd = new ArrayList<PromotingInteroperabilityUser>();
@@ -1067,7 +1068,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
         return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
     }
 

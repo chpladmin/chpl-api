@@ -43,7 +43,7 @@ public class ChplWebappInitializer implements WebApplicationInitializer {
               org.springdoc.webmvc.core.configuration.MultipleOpenApiSupportConfiguration.class,
               org.springdoc.core.configuration.SpringDocConfiguration.class,
               org.springdoc.core.properties.SpringDocConfigProperties.class,
-              org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.class);
+              org.springframework.data.web.config.SpringDataJackson3Configuration.class);
 
         return context;
      }

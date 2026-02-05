@@ -25,7 +25,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
     public Long create(Long changeRequestId, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
         ChangeRequestAttestationSubmissionEntity entity = ChangeRequestAttestationSubmissionEntity.builder()
-                .changeRequest(getSession().load(ChangeRequestEntity.class, changeRequestId))
+                .changeRequest(getSession().find(ChangeRequestEntity.class, changeRequestId))
                 .attestationPeriod(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
                 .signature(changeRequestAttestationSubmission.getSignature())
                 .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())

@@ -1,14 +1,14 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -28,7 +28,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     private ValidationUtils validationUtil;
     private PrivacyAndSecurityCriteriaReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         certificationCriterionService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(certificationCriterionService.get(1L)).thenReturn(getCriterion(1L, "170.315 (a)(1)", false));
