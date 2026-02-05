@@ -38,7 +38,6 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -330,9 +329,6 @@ public class SurveillanceReportController {
         return reportManager.getQuarterlyReport(createdReportId);
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportyId}/surveillance/{surveillanceId}",
-            httpMethod = "PUT",
-            responseClass = PrivilegedSurveillance.class)
     @Operation(summary = "Updates surveillance data that is tied to the quarterly report. ",
             description = "Security Restrictions: Users with either role chpl-admin or chpl-onc-acb "
                     + "and administrative authority on the ONC-ACB associated with the report.",

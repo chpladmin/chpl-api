@@ -49,7 +49,6 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
@@ -123,7 +122,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/certified_products/{certifiedProductId}/details")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
@@ -151,7 +149,6 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/certified_products/{chplProductNumber}/details")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -188,7 +185,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/certified_products/{chplProductNumber}/details")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
@@ -597,7 +593,6 @@ public class CertifiedProductController {
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{chplProductNumber}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -636,7 +631,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = CertificationResults.class, friendlyUrl = "/certified_products/{chplProductNumber}/certification_results")
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
@@ -708,7 +702,6 @@ public class CertifiedProductController {
             })
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, httpMethod = "PUT", friendlyUrl = "/certified_products/{certifiedProductId}")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest)
                     throws MissingReasonException, EntityRetrievalException, EntityCreationException,
