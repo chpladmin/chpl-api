@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -23,7 +23,7 @@ public class InheritanceComparisonReviewerTest {
 
     private InheritanceComparisonReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.icsChildRemoved"), ArgumentMatchers.anyString()))

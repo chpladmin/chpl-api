@@ -1,28 +1,29 @@
 package gov.healthit.chpl.domain.compliance;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-public class CircumstancesDeserializer extends JsonDeserializer<List<String>> {
+public class CircumstancesDeserializer extends StdDeserializer<List<String>> {
     private static final String FIELD_NAME = "value";
 
+    protected CircumstancesDeserializer() {
+        super(List.class);
+    }
+
     @Override
-    public List<String> deserialize(JsonParser jsonParser, DeserializationContext context)
-      throws IOException, JsonProcessingException {
+    public List<String> deserialize(JsonParser jsonParser, DeserializationContext context) {
         List<String> circumstanceValues = new ArrayList<String>();
-        JsonNode circumstancesNode = jsonParser.getCodec().readTree(jsonParser);
+        JsonNode circumstancesNode = jsonParser.objectReadContext().readTree(jsonParser);
         if (circumstancesNode != null && circumstancesNode.isArray() && circumstancesNode.size() > 0) {
             for (JsonNode circumstanceObj : circumstancesNode) {
                 JsonNode circumstanceField = circumstanceObj.get(FIELD_NAME);
                 if (circumstanceField != null) {
-                    circumstanceValues.add(circumstanceField.textValue());
+                    circumstanceValues.add(circumstanceField.asString());
                 }
             }
         }

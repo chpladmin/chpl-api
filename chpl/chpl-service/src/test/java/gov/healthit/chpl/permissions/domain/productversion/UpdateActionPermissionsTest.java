@@ -1,16 +1,17 @@
 package gov.healthit.chpl.permissions.domain.productversion;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -25,18 +26,24 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ProductVersionDAO productVersionDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ProductVersionDAO productVersionDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private UpdateActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new UpdateActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, productVersionDao);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
@@ -72,7 +79,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         Developer dev = new Developer();
         dev.setId(1L);
 
-        Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
+        Mockito.when(productVersionDao.getById(ArgumentMatchers.anyLong())).thenReturn(version);
 
         // If the current status is Active
         Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);

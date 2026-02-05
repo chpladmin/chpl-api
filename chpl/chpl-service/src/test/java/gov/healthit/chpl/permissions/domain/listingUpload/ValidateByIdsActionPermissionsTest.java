@@ -1,15 +1,16 @@
 package gov.healthit.chpl.permissions.domain.listingUpload;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -21,16 +22,21 @@ public class ValidateByIdsActionPermissionsTest extends ActionPermissionsBaseTes
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private ValidateByIdsActionPermissions permissions;
 
-
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new ValidateByIdsActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L));
     }
 

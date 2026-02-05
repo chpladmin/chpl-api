@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -26,7 +26,7 @@ public class TestStandardReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private TestStandardReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         testStandardDao = Mockito.mock(TestStandardDAO.class);
         TestStandard ts = new TestStandard();
@@ -43,11 +43,11 @@ public class TestStandardReviewerTest {
                 .thenReturn(ts);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardIdNotFound"), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardIdNotFound"), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("Test error message 1!");
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"), ArgumentMatchers.any(Object[].class)))
                 .thenAnswer(i -> String.format("There was no test standard name found for certification criteria %s.", i.getArgument(1), ""));
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardNotFound"), ArgumentMatchers.any()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardNotFound"), ArgumentMatchers.any(Object[].class)))
                 .thenReturn("Test error message 3!");
 
         reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil);

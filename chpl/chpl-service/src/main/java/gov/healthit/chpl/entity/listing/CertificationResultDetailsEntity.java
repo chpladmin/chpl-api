@@ -3,7 +3,7 @@ package gov.healthit.chpl.entity.listing;
 import java.util.Set;
 
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.codeset.CertificationResultCodeSetEntity;
@@ -99,66 +99,66 @@ public class CertificationResultDetailsEntity {
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultOptionalStandardEntity> certificationResultOptionalStandards;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultTestDataEntity> certificationResultTestData;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultFunctionalityTestedEntity> certificationResultFunctionalitiesTested;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultConformanceMethodEntity> certificationResultConformanceMethods;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultTestProcedureEntity> certificationResultTestProcedures;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultTestStandardEntity> certificationResultTestStandards;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultAdditionalSoftwareEntity> certificationResultAdditionalSoftware;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultTestToolEntity> certificationResultTestTools;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultSvapEntity> certificationResultSvaps;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultStandardEntity> certificationResultStandards;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<CertificationResultCodeSetEntity> certificationResultCodeSets;
 }

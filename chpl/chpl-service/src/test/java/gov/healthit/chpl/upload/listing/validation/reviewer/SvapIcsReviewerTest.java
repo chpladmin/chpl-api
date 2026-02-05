@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -32,7 +32,7 @@ public class SvapIcsReviewerTest {
     private SvapIcsReviewer reviewer;
     private CertificationEdition edition2015;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         edition2015 = CertificationEdition.builder()
                 .id(3L)

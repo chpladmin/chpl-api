@@ -35,7 +35,7 @@ public class SubscriptionObservationNotificationsReportCsvCreator {
     public File createCsvFile(List<SubscriptionObservationNotification> notifications) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
-                .build();
+                .get();
 
         File csvFile = getOutputFile();
         try (FileWriter fileWriter = new FileWriter(csvFile);

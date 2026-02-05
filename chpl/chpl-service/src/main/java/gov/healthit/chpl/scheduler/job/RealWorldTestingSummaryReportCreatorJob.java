@@ -10,10 +10,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -43,7 +43,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     private CertificationBodyManager certificationBodyManager;
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -56,16 +56,12 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
             List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER);
 
-            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            txTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
+            TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                    new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+            transactionOperations.executeWithoutResult(status -> {
                     processRwtPlanCounts(reportRows);
                     processRwtResultsCounts(reportRows);
-                }
             });
-
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {

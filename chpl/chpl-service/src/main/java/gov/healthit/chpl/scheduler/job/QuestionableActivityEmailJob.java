@@ -26,9 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -45,6 +42,8 @@ import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 public class QuestionableActivityEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("questionableActivityEmailJobLogger");
@@ -71,6 +70,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private Environment env;
 
     @Autowired
+    private JsonMapper jsonMapper;
+
+    @Autowired
     private ChplEmailFactory chplEmailFactory;
 
     private static final int NUM_REPORT_COLS = 14;
@@ -91,7 +93,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private static final Integer MIN_RANGE_IN_DAYS = 1;
     private static final Integer MAX_RANGE_IN_DAYS = 365;
-    private Range<Integer> rangeInDays = Range.between(MIN_RANGE_IN_DAYS, MAX_RANGE_IN_DAYS);
+    private Range<Integer> rangeInDays = Range.of(MIN_RANGE_IN_DAYS, MAX_RANGE_IN_DAYS);
     private static final Integer DEFAULT_RANGE = 7;
 
     /**
@@ -560,7 +562,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/" + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser() != null ? activity.getUser().getEmail() : "");
 
         String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
         if (!StringUtils.isEmpty(currActivityRowValue)) {
@@ -583,7 +585,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private void putDeveloperActivityInRow(QuestionableActivityDeveloper developerActivity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
-        activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getEmail());
+        activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser() != null ? developerActivity.getUser().getEmail() : "");
+
         if (developerActivity.getReason() != null) {
             activityRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, developerActivity.getReason());
         }
@@ -631,7 +634,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private void putProductActivityInRow(QuestionableActivityProduct activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
-        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser() != null ? activity.getUser().getEmail() : "");
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED.getName())) {
             activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
@@ -674,7 +677,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
         activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
         activityRow.set(VERSION_COL, activity.getVersion().getVersion());
-        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser() != null ? activity.getUser().getEmail() : "");
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName())) {
             activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
@@ -690,11 +693,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private void populateRangeDefaultsFromJobData(JobExecutionContext context) {
-        ObjectMapper mapper = new ObjectMapper();
         String parametersJson = context.getMergedJobDataMap().getString("parameters");
         JsonNode rootNode = null;
         try {
-            rootNode = mapper.readTree(parametersJson);
+            rootNode = jsonMapper.readTree(parametersJson);
         } catch (Exception e) {
             LOGGER.error(String.format("Could not determine min and max range values.  Using default: %d - %d.",
                     rangeInDays.getMinimum(), rangeInDays.getMaximum()));
@@ -711,7 +713,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             if (maxNode != null) {
                 max = maxNode.asInt();
             }
-            rangeInDays = Range.between(min, max);
+            rangeInDays = Range.of(min, max);
         }
     }
 

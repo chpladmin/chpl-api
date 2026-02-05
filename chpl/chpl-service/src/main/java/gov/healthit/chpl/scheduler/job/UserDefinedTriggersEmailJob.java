@@ -109,7 +109,7 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
             return "";
         }
         return Stream.of(acbList)
-            .map(acbIdStr -> new Long(acbIdStr))
+            .map(acbIdStr -> Long.valueOf(acbIdStr))
             .map(acbId -> {
                 try {
                     return acbDao.getById(acbId);

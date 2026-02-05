@@ -3,10 +3,10 @@ package gov.healthit.chpl.scheduler;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -103,7 +103,7 @@ public class ChplRepeatableTriggerChangeEmailer {
         table.append("                " + trigger.getCronSchedule() + "\n");
         table.append("            </td>\n");
         table.append("        </tr>\n");
-        if (!StringUtils.isEmpty(trigger.getAcb())) {
+        if (!ObjectUtils.isEmpty(trigger.getAcb())) {
             table.append("        <tr class='odd'>\n");
             table.append("            <td>\n");
             table.append("                Selected ONC-ACBs\n");

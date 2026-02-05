@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -66,7 +66,7 @@ public class FutureCertificationStatusAddedActivity implements ListingActivity {
     private boolean doValuesMatch(CertificationStatusEvent event1, CertificationStatusEvent event2) {
         return event1.getStatus().getName().equals(event2.getStatus().getName())
                 && event1.getEventDay().equals(event2.getEventDay())
-                && StringUtils.equalsIgnoreCase(event1.getReason(), event2.getReason());
+                && Strings.CI.equals(event1.getReason(), event2.getReason());
     }
 
     @Override

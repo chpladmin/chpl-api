@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -58,7 +58,7 @@ public class ServiceBaseUrlListChangedFormatter extends ObservationSubjectFormat
                     newG10CertResult.getServiceBaseUrlList(),
                     Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
         } else if (originalG10CertResult != null && newG10CertResult != null
-                && !StringUtils.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList())) {
+                && !Strings.CS.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList())) {
             formattedObservation = String.format(DESCRIPTION_UPDATED,
                     originalG10CertResult.getServiceBaseUrlList(),
                     newG10CertResult.getServiceBaseUrlList(),

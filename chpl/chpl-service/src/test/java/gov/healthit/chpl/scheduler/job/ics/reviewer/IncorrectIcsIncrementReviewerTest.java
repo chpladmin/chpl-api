@@ -1,13 +1,13 @@
 package gov.healthit.chpl.scheduler.job.ics.reviewer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -22,7 +22,7 @@ public class IncorrectIcsIncrementReviewerTest {
     private ListingGraphDAO listingGraphDao;
     private IncorrectIcsIncrementReviewer reviewer;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);

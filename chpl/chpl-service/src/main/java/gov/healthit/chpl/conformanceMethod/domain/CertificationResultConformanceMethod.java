@@ -3,6 +3,7 @@ package gov.healthit.chpl.conformanceMethod.domain;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -54,7 +55,7 @@ public class CertificationResultConformanceMethod implements Serializable {
                 && this.getConformanceMethod().getId() != null && anotherMethod.getConformanceMethod().getId() != null
                 && this.getConformanceMethod().getId().longValue() == anotherMethod.getConformanceMethod().getId().longValue()
                 && (StringUtils.isAllBlank(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion())
-                        || StringUtils.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion()))) {
+                        || Strings.CS.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion()))) {
             result = true;
         }
         return result;

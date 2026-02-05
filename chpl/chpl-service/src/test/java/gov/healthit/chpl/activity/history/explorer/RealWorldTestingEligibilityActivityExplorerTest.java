@@ -1,8 +1,8 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,12 +14,10 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
@@ -32,7 +30,8 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     private ActivityDAO activityDao;
     private RealWorldTestingEligibilityActivityExplorer explorer;
     private SimpleDateFormat formatter;
-    @Before
+
+    @BeforeEach
     public void setup() {
         formatter = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
@@ -71,7 +70,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_nullAsOfDateAndOneActivityForListing_returnsOldestActivity()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -96,7 +95,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_nullAsOfDateAndTwoActivitiesForListing_returnsOldestActivity()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -131,7 +130,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_AsOfDateBeforeOneActivityForListing_returnsNull()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -155,7 +154,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_AsOfDateBeforeTwoActivitiesForListing_returnsNull()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -189,7 +188,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_AsOfDateAfterOneActivityForListing_returnsActivity()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -214,7 +213,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_AsOfDateBetweenTwoActivitiesForListing_returnsEarlierActivity()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
@@ -249,7 +248,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
 
     @Test
     public void getActivityForRwtEligibility_AsOfDateAfterTwoActivitiesForListing_returnsLatestActivity()
-            throws ParseException, JsonProcessingException {
+            throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.subscriptions.subjects.formatter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -42,7 +41,6 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
             return null;
         }
 
-        LocalDate today = LocalDate.now();
         List<List<String>> formattedObservations = new ArrayList<List<String>>();
         CertificationStatusEvent beforeStatusEvent = before.getCurrentStatus();
         CertificationStatusEvent afterStatusEvent = after.getCurrentStatus();

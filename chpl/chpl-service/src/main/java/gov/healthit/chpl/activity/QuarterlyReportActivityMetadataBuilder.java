@@ -3,8 +3,6 @@ package gov.healthit.chpl.activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
@@ -13,20 +11,21 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("quarterlyReportActivityMetadataBuilder")
 public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
-    public QuarterlyReportActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
+    public QuarterlyReportActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override
     protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         QuarterlyReportActivityMetadata quarterlyReportActivityMetadata = (QuarterlyReportActivityMetadata) metadata;
-        ObjectMapper jsonMapper = new ObjectMapper();
 
         //either a report object or relevant listing object is in the activity
         QuarterlyReport report = null;
@@ -34,7 +33,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
         if (activity.getNewData() != null) {
             if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
                 try {
-                    listing = jsonMapper.readValue(activity.getNewData(), RelevantListing.class);
+                    listing = getJsonMapper().readValue(activity.getNewData(), RelevantListing.class);
                 } catch (Exception e) {
                     LOGGER.warn("Could not parse activity ID " + activity.getId()
                             + " new data " + "as RelevantListing. "
@@ -42,7 +41,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
                 }
             } else if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
                 try {
-                    report = jsonMapper.readValue(activity.getNewData(), QuarterlyReport.class);
+                    report = getJsonMapper().readValue(activity.getNewData(), QuarterlyReport.class);
                 } catch (Exception e) {
                     LOGGER.warn("Could not parse activity ID " + activity.getId() + " new data " + "as QuarterlyReport. "
                             + "JSON was: " + activity.getNewData());
@@ -51,7 +50,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
         } else if (activity.getOriginalData() != null) {
             if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
                 try {
-                    listing = jsonMapper.readValue(activity.getOriginalData(), RelevantListing.class);
+                    listing = getJsonMapper().readValue(activity.getOriginalData(), RelevantListing.class);
                 } catch (Exception e) {
                     LOGGER.warn("Could not parse activity ID " + activity.getId()
                             + " original data " + "as RelevantListing. "
@@ -59,7 +58,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
                 }
             } else if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
                 try {
-                    report = jsonMapper.readValue(activity.getOriginalData(), QuarterlyReport.class);
+                    report = getJsonMapper().readValue(activity.getOriginalData(), QuarterlyReport.class);
                 } catch (Exception e) {
                     LOGGER.warn("Could not parse activity ID " + activity.getId() + " original data " + "as QuarterlyReport. "
                             + "JSON was: " + activity.getOriginalData());

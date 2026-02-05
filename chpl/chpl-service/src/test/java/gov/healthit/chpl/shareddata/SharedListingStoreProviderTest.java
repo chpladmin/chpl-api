@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -24,7 +24,7 @@ public class SharedListingStoreProviderTest {
     private SharedStoreDAO sharedStoreDAO;
     private SharedListingStoreProvider sharedListingStoreProvider;
 
-    @Before
+    @BeforeEach
     public void setup() {
         sharedStoreDAO = Mockito.mock(SharedStoreDAO.class);
         resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);

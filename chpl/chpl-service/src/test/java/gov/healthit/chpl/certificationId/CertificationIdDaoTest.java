@@ -1,15 +1,15 @@
 package gov.healthit.chpl.certificationId;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -20,7 +20,7 @@ public class CertificationIdDaoTest {
 
     private CertificationIdDAO certIdDao;
 
-    @Before
+    @BeforeEach
     public void setup() {
         EntityManager entityManager = Mockito.mock(EntityManager.class);
         CertificationIdYearCalculator certIdYearCalculator = Mockito.mock(CertificationIdYearCalculator.class);

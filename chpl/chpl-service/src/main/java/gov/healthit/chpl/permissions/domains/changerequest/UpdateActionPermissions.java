@@ -5,17 +5,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("changeRequestUpdateActionPermissions")
 public class UpdateActionPermissions extends ActionPermissions {
-    private ChangeRequestDAO changeRequestDAO;
+    private ChangeRequestDAO changeRequestDao;
 
     @Autowired
-    public UpdateActionPermissions(final ChangeRequestDAO changeRequestDAO) {
-        this.changeRequestDAO = changeRequestDAO;
+    public UpdateActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            ChangeRequestDAO changeRequestDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+        this.changeRequestDao = changeRequestDao;
     }
 
     @Override
@@ -32,14 +39,14 @@ public class UpdateActionPermissions extends ActionPermissions {
             } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
+                ChangeRequest cr = changeRequestDao.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
                 return cr.getCertificationBodies().stream()
                         .map(acb -> acb.getId())
                         .filter(acbId -> isAcbValidForCurrentUser(acbId))
                         .findAny()
                         .isPresent();
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
-                ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
+                ChangeRequest cr = changeRequestDao.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getId());
             }
             return false;

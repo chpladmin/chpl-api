@@ -3,6 +3,7 @@ package gov.healthit.chpl.compliance.surveillance;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -271,12 +272,25 @@ public class SurveillanceManager extends SecuredManager {
     }
 
     private void validateSurveillanceUpdate(Surveillance existingSurv, Surveillance updatedSurv) {
+        if (updatedSurv.getErrorMessages() == null) {
+            updatedSurv.setErrorMessages(new HashSet<String>());
+        }
+        if (updatedSurv.getWarningMessages() == null) {
+            updatedSurv.setWarningMessages(new HashSet<String>());
+        }
         updatedSurv.getErrorMessages().clear();
         survUpdateValidator.validate(existingSurv, updatedSurv);
     }
 
     private void validateSurveillanceCreation(CertifiedProductSearchDetails listing, Surveillance createdSurv) {
+        if (createdSurv.getErrorMessages() == null) {
+            createdSurv.setErrorMessages(new HashSet<String>());
+        }
+        if (createdSurv.getWarningMessages() == null) {
+            createdSurv.setWarningMessages(new HashSet<String>());
+        }
         createdSurv.getErrorMessages().clear();
+        createdSurv.getWarningMessages().clear();
         survCreationValidator.validate(listing, createdSurv);
     }
 

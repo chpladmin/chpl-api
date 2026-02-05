@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;

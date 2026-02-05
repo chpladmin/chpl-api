@@ -104,7 +104,7 @@ public class RealWorldTestingManager {
 
     private List<RealWorldTestingUpload> parseCsvFile(MultipartFile file) throws ValidationException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
+                CSVParser parser = CSVParser.builder().setReader(reader).setFormat(CSVFormat.EXCEL).get()) {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1 && doesHeaderRowExist(records)) {

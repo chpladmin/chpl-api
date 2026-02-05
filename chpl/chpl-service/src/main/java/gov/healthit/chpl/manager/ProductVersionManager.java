@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -224,7 +224,7 @@ public class ProductVersionManager extends SecuredManager {
 
 
     @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            EntityRetrievalException.class, EntityCreationException.class, JacksonException.class,
             AccessDeniedException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
@@ -270,7 +270,7 @@ public class ProductVersionManager extends SecuredManager {
 
 
     @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            EntityRetrievalException.class, EntityCreationException.class, JacksonException.class,
             AccessDeniedException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
@@ -333,7 +333,7 @@ public class ProductVersionManager extends SecuredManager {
             // do the update and add activity
             cpDao.update(affectedListing);
             CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedListingId);
-            if (!StringUtils.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
+            if (!Strings.CS.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);

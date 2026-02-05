@@ -64,7 +64,6 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Value("${contact.publicUrl}")
     private String publicFeedbackUrl;
 
-    @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);

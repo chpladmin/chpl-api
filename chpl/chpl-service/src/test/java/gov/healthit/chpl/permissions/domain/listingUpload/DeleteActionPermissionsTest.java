@@ -1,18 +1,19 @@
 package gov.healthit.chpl.permissions.domain.listingUpload;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -27,19 +28,25 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ListingUploadDao listingUploadDao;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
+
+    @Mock
+    private ListingUploadDao listingUploadDao;
 
     @InjectMocks
     private DeleteActionPermissions permissions;
 
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new DeleteActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, listingUploadDao);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L));
         Mockito.when(listingUploadDao.getById(ArgumentMatchers.anyLong()))
             .thenAnswer(i -> buildListingUpload(i.getArgument(0)));

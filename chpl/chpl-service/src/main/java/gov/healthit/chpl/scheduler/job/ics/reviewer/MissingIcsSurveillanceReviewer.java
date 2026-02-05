@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -101,12 +101,12 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
 
     private boolean isRequirementTypeIcs(SurveillanceRequirement req) {
         return req.getRequirementType() != null
-                && StringUtils.equals(req.getRequirementType().getTitle(), ICS_REQUIREMENT_TYPE);
+                && Strings.CS.equals(req.getRequirementType().getTitle(), ICS_REQUIREMENT_TYPE);
     }
 
     private boolean isRequirementGroupTypeIcs(SurveillanceRequirement req) {
         return req.getRequirementType() != null
                 && req.getRequirementType().getRequirementGroupType() != null
-                && StringUtils.equals(req.getRequirementType().getRequirementGroupType().getName(), ICS_REQUIREMENT_TYPE);
+                && Strings.CS.equals(req.getRequirementType().getRequirementGroupType().getName(), ICS_REQUIREMENT_TYPE);
     }
 }

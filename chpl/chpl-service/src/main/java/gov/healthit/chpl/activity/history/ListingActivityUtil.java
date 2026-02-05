@@ -6,8 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -16,20 +14,21 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component
 public class ListingActivityUtil {
     private CertificationCriterionService certificationCriterionService;
     private CertificationStatusEventsService certificationStatusEventsService;
+    private JsonMapper jsonMapper;
 
-    private ObjectMapper jsonMapper;
-
-    public ListingActivityUtil(CertificationCriterionService certificationCriterionService, CertificationStatusEventsService certificationStatusEventsService) {
+    public ListingActivityUtil(CertificationCriterionService certificationCriterionService,
+            CertificationStatusEventsService certificationStatusEventsService,
+            JsonMapper jsonMapper) {
         this.certificationCriterionService = certificationCriterionService;
         this.certificationStatusEventsService = certificationStatusEventsService;
-
-        jsonMapper = new ObjectMapper();
+        this.jsonMapper = jsonMapper;
     }
 
     public CertifiedProductSearchDetails getListing(String listingJson) {

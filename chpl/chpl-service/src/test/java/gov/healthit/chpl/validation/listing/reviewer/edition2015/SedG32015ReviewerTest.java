@@ -1,12 +1,12 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -29,7 +29,7 @@ public class SedG32015ReviewerTest {
     private ResourcePermissions resourcePermissions;
     private SedG32015Reviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.foundSedCriteriaWithoutAttestingSed")))

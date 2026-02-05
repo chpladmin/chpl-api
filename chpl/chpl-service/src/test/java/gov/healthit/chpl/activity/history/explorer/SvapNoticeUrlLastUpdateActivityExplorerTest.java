@@ -1,8 +1,8 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,12 +13,10 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
@@ -30,10 +28,11 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     private ActivityDAO activityDao;
-    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
+    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null, JsonMapperUtil.getJsonMapper());
     private SvapNoticeUrlLastUpdateActivityExplorer explorer;
     private SimpleDateFormat formatter;
-    @Before
+
+    @BeforeEach
     public void setup() {
         formatter = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
@@ -71,7 +70,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsNull() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl(null)
@@ -95,7 +94,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_emptyCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_emptyCurrentSvapNoticeUrl_returnsNull() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("")
@@ -119,7 +118,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsNull() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -143,7 +142,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -168,7 +167,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndEditActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndEditActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -203,7 +202,7 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndTwoEditActivitiesWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndTwoEditActivitiesWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")

@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -22,6 +19,7 @@ import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import lombok.extern.log4j.Log4j2;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
+import tools.jackson.core.exc.StreamReadException;
 
 @Service
 @Log4j2
@@ -101,7 +99,7 @@ public class FuzzyChoicesManager extends SecuredManager {
     }
 
     private List<String> getFuzzyChoices(FuzzyType type)
-            throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
+            throws StreamReadException, EntityRetrievalException, IOException {
         if (type.equals(FuzzyType.UCD_PROCESS)) {
             return ucdProcessDao.getAll().stream()
                 .map(ucdProcess -> ucdProcess.getName())
@@ -119,7 +117,7 @@ public class FuzzyChoicesManager extends SecuredManager {
     }
 
     private List<String> getFuzzyChoices(FuzzyType type, Long criterionId)
-            throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
+            throws StreamReadException, EntityRetrievalException, IOException {
         if (type.equals(FuzzyType.OPTIONAL_STANDARD)) {
             List<OptionalStandardCriteriaMap> oscms = optionalStandardDao.getAllOptionalStandardCriteriaMap();
             return oscms.stream()

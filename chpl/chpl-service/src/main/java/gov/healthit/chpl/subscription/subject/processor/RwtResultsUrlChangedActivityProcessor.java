@@ -1,6 +1,6 @@
 package gov.healthit.chpl.subscription.subject.processor;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -18,7 +18,7 @@ public class RwtResultsUrlChangedActivityProcessor extends SubscriptionSubjectPr
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
             return originalListing != null && newListing != null
-                    && !StringUtils.equals(originalListing.getRwtResultsUrl(), newListing.getRwtResultsUrl());
+                    && !Strings.CS.equals(originalListing.getRwtResultsUrl(), newListing.getRwtResultsUrl());
         }
         return false;
     }

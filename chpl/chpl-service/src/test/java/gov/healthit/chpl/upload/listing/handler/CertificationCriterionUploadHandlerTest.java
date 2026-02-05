@@ -1,14 +1,14 @@
 package gov.healthit.chpl.upload.listing.handler;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -21,7 +21,7 @@ public class CertificationCriterionUploadHandlerTest {
 
     private CertificationCriterion a1, d4;
 
-    @Before
+    @BeforeEach
     public void setup() {
         a1 = CertificationCriterion.builder()
                 .id(1L)

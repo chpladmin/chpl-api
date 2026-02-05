@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -371,7 +371,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.flush();
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.criteria.badAdditionalSoftware",
-                    (StringUtils.isEmpty(dto.getName()) ? dto.getCertifiedProductNumber() : dto.getName()));
+                    (ObjectUtils.isEmpty(dto.getName()) ? dto.getCertifiedProductNumber() : dto.getName()));
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
@@ -408,7 +408,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.flush();
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.criteria.badAdditionalSoftware",
-                    (StringUtils.isEmpty(toUpdate.getName()) ? toUpdate.getCertifiedProductNumber()
+                    (ObjectUtils.isEmpty(toUpdate.getName()) ? toUpdate.getCertifiedProductNumber()
                             : toUpdate.getName()));
             LOGGER.error(msg, ex);
             throw new EntityRetrievalException(msg);

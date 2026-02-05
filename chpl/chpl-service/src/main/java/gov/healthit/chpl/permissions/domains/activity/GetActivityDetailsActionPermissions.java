@@ -6,15 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
@@ -22,18 +22,25 @@ import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private QuarterlyReportDAO quarterlyReportDao;
     private AnnualReportDAO annualReportDao;
-    private ObjectMapper jsonMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
-    public GetActivityDetailsActionPermissions(QuarterlyReportDAO quarterlyReportDao,
-            AnnualReportDAO annualReportDao) {
-        jsonMapper = new ObjectMapper();
+    public GetActivityDetailsActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            QuarterlyReportDAO quarterlyReportDao,
+            AnnualReportDAO annualReportDao,
+            JsonMapper jsonMapper) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+        this.jsonMapper = jsonMapper;
         this.quarterlyReportDao = quarterlyReportDao;
         this.annualReportDao = annualReportDao;
     }

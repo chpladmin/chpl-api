@@ -7,6 +7,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,15 +22,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
-import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.Data;
 import lombok.Singular;
 
@@ -97,7 +96,7 @@ public class ListingWithSurveillanceEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certifiedProductId")
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<SurveillanceBasicEntity> surveillances = new HashSet<SurveillanceBasicEntity>();
 
     public RelevantListing toDomain() {

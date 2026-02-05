@@ -1,17 +1,27 @@
 package gov.healthit.chpl.permissions.domains.certifiedproduct;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("certifiedProductUpdateActionPermissions")
 public class UpdateActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(UpdateActionPermissions.class);
+
+    @Autowired
+    public UpdateActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+    }
 
     @Override
     public boolean hasAccess() {
