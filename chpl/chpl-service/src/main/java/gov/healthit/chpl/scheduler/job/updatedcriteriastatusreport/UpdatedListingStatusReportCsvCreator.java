@@ -48,7 +48,7 @@ public class UpdatedListingStatusReportCsvCreator {
     public File createCsvFile(List<Long> acbIds, Pair<LocalDate, LocalDate> requiredByDateRange) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
-                .build();
+                .get();
 
         File csvFile = getOutputFile();
 

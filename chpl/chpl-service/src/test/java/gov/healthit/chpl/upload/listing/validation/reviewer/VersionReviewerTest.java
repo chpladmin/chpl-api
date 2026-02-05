@@ -3,8 +3,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -17,7 +17,7 @@ public class VersionReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private VersionReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingVersion")))

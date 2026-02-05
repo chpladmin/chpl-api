@@ -6,33 +6,28 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.json.JsonMapper;
 
 public class CertifiedProductJsonPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private Logger logger;
 
-    private JsonFactory jfactory = new JsonFactory();
-    private ObjectMapper mapper = new ObjectMapper();
+    private JsonMapper mapper = JsonMapper.builder().build();
     private JsonGenerator jGenerator = null;
 
     @Override
     public void open(File file) throws IOException {
         getLogger().info("Opening file, initializing JSON doc.");
-
-        jfactory.setCodec(mapper);
-        jGenerator = jfactory.createGenerator(file, JsonEncoding.UTF8);
+        jGenerator = mapper.createGenerator(file, JsonEncoding.UTF8);
         jGenerator.writeStartArray();
     }
 
     @Override
     public synchronized void add(CertifiedProductSearchDetails cp) throws IOException {
         getLogger().info("Adding CP to JSON file: " + cp.getId());
-        jGenerator.writeObject(cp);
+        jGenerator.writePOJO(cp);
     }
 
     @Override

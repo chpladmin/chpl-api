@@ -2,7 +2,7 @@ package gov.healthit.chpl.web.controller.results;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeReportSerializer;
 import lombok.AllArgsConstructor;

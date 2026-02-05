@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -109,7 +110,7 @@ public class SedSynchronizationService {
             Long createdTaskId = testTaskDao.create(testTask);
             for (TestTask otherTask : allTestTasks) {
                 if (otherTask.getId() == null && !StringUtils.isEmpty(otherTask.getFriendlyId())
-                        && StringUtils.equals(prevId, otherTask.getFriendlyId())) {
+                        && Strings.CS.equals(prevId, otherTask.getFriendlyId())) {
                     otherTask.setId(createdTaskId);
                 }
             }
@@ -122,7 +123,7 @@ public class SedSynchronizationService {
                 for (TestTask otherTask : allTestTasks) {
                     for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
                         if (otherParticipant.getId() == null && !StringUtils.isEmpty(otherParticipant.getFriendlyId())
-                                && StringUtils.equals(prevId, otherParticipant.getFriendlyId())) {
+                                && Strings.CS.equals(prevId, otherParticipant.getFriendlyId())) {
                             otherParticipant.setId(createdParticipantId);
                         }
                     }
@@ -134,9 +135,9 @@ public class SedSynchronizationService {
     private void updateTestTask(CertifiedProductSearchDetails listing, TestTask origTestTask, TestTask updatedTestTask)
             throws EntityCreationException {
         boolean isDifferent = false;
-        if (!StringUtils.equals(origTestTask.getFriendlyId(), updatedTestTask.getFriendlyId())
-                || !StringUtils.equals(origTestTask.getDescription(), updatedTestTask.getDescription())
-                || !StringUtils.equals(origTestTask.getTaskRatingScale(), updatedTestTask.getTaskRatingScale())
+        if (!Strings.CS.equals(origTestTask.getFriendlyId(), updatedTestTask.getFriendlyId())
+                || !Strings.CS.equals(origTestTask.getDescription(), updatedTestTask.getDescription())
+                || !Strings.CS.equals(origTestTask.getTaskRatingScale(), updatedTestTask.getTaskRatingScale())
                 || !Objects.equals(origTestTask.getTaskErrors(), updatedTestTask.getTaskErrors())
                 || !Objects.equals(origTestTask.getTaskErrorsStddev(), updatedTestTask.getTaskErrorsStddev())
                 || !Objects.equals(origTestTask.getTaskPathDeviationObserved(),
@@ -144,7 +145,7 @@ public class SedSynchronizationService {
                 || !Objects.equals(origTestTask.getTaskPathDeviationOptimal(),
                         updatedTestTask.getTaskPathDeviationOptimal())
                 || !Objects.equals(origTestTask.getTaskRating(), updatedTestTask.getTaskRating())
-                || !StringUtils.equals(origTestTask.getTaskRatingScale(), updatedTestTask.getTaskRatingScale())
+                || !Strings.CS.equals(origTestTask.getTaskRatingScale(), updatedTestTask.getTaskRatingScale())
                 || !Objects.equals(origTestTask.getTaskRatingStddev(), updatedTestTask.getTaskRatingStddev())
                 || !Objects.equals(origTestTask.getTaskSuccessAverage(), updatedTestTask.getTaskSuccessAverage())
                 || !Objects.equals(origTestTask.getTaskSuccessStddev(), updatedTestTask.getTaskSuccessStddev())
@@ -282,15 +283,15 @@ public class SedSynchronizationService {
             boolean isDifferent = false;
             TestParticipant origParticipant = getMatchingItemInList(toUpdate, origParticipants).get();
             TestParticipant updatedParticipant = toUpdate;
-            if (!StringUtils.equals(origParticipant.getFriendlyId(), updatedParticipant.getFriendlyId())
-                    || !StringUtils.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
-                    || !StringUtils.equals(origParticipant.getAssistiveTechnologyNeeds(),
+            if (!Strings.CS.equals(origParticipant.getFriendlyId(), updatedParticipant.getFriendlyId())
+                    || !Strings.CS.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
+                    || !Strings.CS.equals(origParticipant.getAssistiveTechnologyNeeds(),
                             updatedParticipant.getAssistiveTechnologyNeeds())
                     || !Objects.equals(origParticipant.getComputerExperienceMonths(),
                             updatedParticipant.getComputerExperienceMonths())
-                    || !StringUtils.equals(origParticipant.getEducationType().getName(), updatedParticipant.getEducationType().getName())
-                    || !StringUtils.equals(origParticipant.getGender(), updatedParticipant.getGender())
-                    || !StringUtils.equals(origParticipant.getOccupation(), updatedParticipant.getOccupation())
+                    || !Strings.CS.equals(origParticipant.getEducationType().getName(), updatedParticipant.getEducationType().getName())
+                    || !Strings.CS.equals(origParticipant.getGender(), updatedParticipant.getGender())
+                    || !Strings.CS.equals(origParticipant.getOccupation(), updatedParticipant.getOccupation())
                     || !Objects.equals(origParticipant.getProductExperienceMonths(),
                             updatedParticipant.getProductExperienceMonths())
                     || !Objects.equals(origParticipant.getProfessionalExperienceMonths(),

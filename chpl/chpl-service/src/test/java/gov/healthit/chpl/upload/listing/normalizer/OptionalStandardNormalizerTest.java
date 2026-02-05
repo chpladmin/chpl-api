@@ -1,13 +1,13 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,7 +27,7 @@ public class OptionalStandardNormalizerTest {
     private OptionalStandardNormalizer normalizer;
     private FuzzyChoicesManager fuzzyChoicesManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
         List<OptionalStandardCriteriaMap> allowedOptionalStandards = new ArrayList<OptionalStandardCriteriaMap>();

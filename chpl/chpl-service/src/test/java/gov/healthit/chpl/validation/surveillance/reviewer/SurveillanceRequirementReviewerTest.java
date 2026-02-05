@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,7 +27,7 @@ public class SurveillanceRequirementReviewerTest {
 
     private SurveillanceRequirementReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() {
         surveillanceDAO = Mockito.mock(SurveillanceDAO.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);

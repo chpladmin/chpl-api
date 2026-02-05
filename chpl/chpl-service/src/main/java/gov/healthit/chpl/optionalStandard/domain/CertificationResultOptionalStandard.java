@@ -1,10 +1,10 @@
 package gov.healthit.chpl.optionalStandard.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.base.Objects;
 
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,7 +40,7 @@ public class CertificationResultOptionalStandard implements Serializable {
     }
 
     public boolean matches(CertificationResultOptionalStandard existingItem) {
-        return Objects.equal(this.optionalStandard.getId(), existingItem.getOptionalStandard().getId())
+        return Objects.equals(this.optionalStandard.getId(), existingItem.getOptionalStandard().getId())
                 || this.optionalStandard.getDisplayValue().equalsIgnoreCase(existingItem.getOptionalStandard().getDisplayValue());
     }
 }

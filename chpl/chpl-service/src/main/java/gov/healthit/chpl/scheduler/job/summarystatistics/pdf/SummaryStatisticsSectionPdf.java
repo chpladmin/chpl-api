@@ -67,10 +67,11 @@ public abstract class SummaryStatisticsSectionPdf {
                 .forEach(text -> {
                     Cell cell = new Cell();
                     cell.setBorder(new SolidBorder(1));
-                    cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
                     cell.setFontSize(SummaryStatisticsPdfDefaults.DEFAULT_FONT_SIZE);
                     if (bold) {
-                        cell.setBold();
+                        cell.setFont(SummaryStatisticsPdfDefaults.getDefaultBoldFont());
+                    } else {
+                        cell.setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
                     }
                     if (indentTimes != null && index.get() == 0) {
                         cell.setPaddingLeft(indentTimes * DEFAULT_INDENT);

@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.IdNamePair;
@@ -30,7 +30,7 @@ public class DeveloperSearchServiceTest {
     private CognitoResourcePermissions cognitoResourcePermissions;
     private ResourcePermissionsFactory resourcePermissionFactory;
 
-    @Before
+    @BeforeEach
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         developerManager = Mockito.mock(DeveloperManager.class);

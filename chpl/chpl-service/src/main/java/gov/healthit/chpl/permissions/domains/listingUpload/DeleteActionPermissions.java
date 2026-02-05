@@ -3,8 +3,11 @@ package gov.healthit.chpl.permissions.domains.listingUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 
@@ -14,7 +17,11 @@ public class DeleteActionPermissions extends ActionPermissions {
     private ListingUploadDao listingUploadDao;
 
     @Autowired
-    public DeleteActionPermissions(ListingUploadDao listingUploadDao) {
+    public DeleteActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            ListingUploadDao listingUploadDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         this.listingUploadDao = listingUploadDao;
     }
 

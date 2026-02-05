@@ -3,11 +3,9 @@ package gov.healthit.chpl.scheduler.job.listingvalidation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -34,7 +32,7 @@ public class ListingValidationReportCsvCreator {
     public File createCsvFile(List<ListingValidationReport> reports) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
-                .build();
+                .get();
 
         File csvFile = getOutputFile();
         try (FileWriter fileWriter = new FileWriter(csvFile);
@@ -97,8 +95,4 @@ public class ListingValidationReportCsvCreator {
         return env.getProperty("listingValidationReport.fileName") + LocalDate.now().toString();
     }
 
-    private String formatDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-        return sdf.format(date);
-    }
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -152,7 +153,7 @@ public class ProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductOwnership(Product product)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException, ActivityException {
+            throws EntityRetrievalException, JacksonException, EntityCreationException, ValidationException, ActivityException {
 
         Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -177,7 +178,7 @@ public class ProductManager extends SecuredManager {
         }
 
         for (Long id : preUpdateListingDetails.keySet()) {
-            if (!StringUtils.equals(preUpdateListingDetails.get(id).getChplProductNumber(), postUpdateListingDetails.get(id).getChplProductNumber())) {
+            if (!Strings.CS.equals(preUpdateListingDetails.get(id).getChplProductNumber(), postUpdateListingDetails.get(id).getChplProductNumber())) {
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
                     "Updated certified product " + postUpdateListingDetails.get(id).getChplProductNumber()
                     + ".", preUpdateListingDetails.get(id), postUpdateListingDetails.get(id));
@@ -223,7 +224,7 @@ public class ProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
-            throws EntityRetrievalException, JsonProcessingException, ValidationException, EntityCreationException, ActivityException {
+            throws EntityRetrievalException, JacksonException, ValidationException, EntityCreationException, ActivityException {
 
         List<Product> beforeProducts = new ArrayList<Product>();
         for (Long productId : productIdsToMerge) {
@@ -256,7 +257,7 @@ public class ProductManager extends SecuredManager {
     }
 
     @Transactional(rollbackFor = {
-            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
+            EntityRetrievalException.class, EntityCreationException.class, JacksonException.class,
             AccessDeniedException.class
     })
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
@@ -267,7 +268,7 @@ public class ProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
     public Product split(Product oldProduct, Product productToCreate, String newProductCode, List<ProductVersionDTO> newProductVersions)
-            throws JsonProcessingException, ValidationException, EntityRetrievalException, EntityCreationException, ActivityException {
+            throws JacksonException, ValidationException, EntityRetrievalException, EntityCreationException, ActivityException {
 
         Product createdProduct = createProduct(productToCreate, null);
         //must set the ID otherwise the "productToCreate.id" passed into the shared store is null
@@ -321,7 +322,7 @@ public class ProductManager extends SecuredManager {
             // do the update and add activity
             cpDao.update(affectedCp);
             CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedCp.getId());
-            if (!StringUtils.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
+            if (!Strings.CS.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
                 activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);

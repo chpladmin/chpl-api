@@ -1,6 +1,5 @@
 package gov.healthit.chpl.compliance.directreview;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -38,6 +34,11 @@ import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.util.RedisUtil;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component("directReviewCachingService")
 @Log4j2
@@ -65,24 +66,27 @@ public class DirectReviewCachingService {
     private DirectReviewValidator drValidator;
     private DeveloperDAO developerDao;
     private RestTemplate jiraAuthenticatedRestTemplate;
-    private DirectReviewDeserializingObjectMapper mapper;
     private DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler;
     private CacheManager cacheManager;
     private RedisUtil redisUtil;
+    private JsonMapper directReviewDeserializingObjectMapper;
 
     @Autowired
     public DirectReviewCachingService(DirectReviewValidator drValidator,
             DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
-            DirectReviewDeserializingObjectMapper mapper,
             DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler,
             CacheManager cacheManager, RedisUtil redisUtil) {
         this.drValidator = drValidator;
         this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
-        this.mapper = mapper;
         this.directReviewListingSharedStoreHandler = directReviewListingSharedStoreHandler;
         this.cacheManager = cacheManager;
         this.redisUtil = redisUtil;
+        this.directReviewDeserializingObjectMapper = JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .build();
     }
 
     @ListingSearchCacheRefresh
@@ -304,8 +308,8 @@ public class DirectReviewCachingService {
         String responseBody = response == null ? "" : response.getBody();
         JsonNode root = null;
         try {
-            root = mapper.readTree(responseBody);
-        } catch (IOException ex) {
+            root = directReviewDeserializingObjectMapper.readTree(responseBody);
+        } catch (JacksonException ex) {
             logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
@@ -326,8 +330,8 @@ public class DirectReviewCachingService {
         String responseBody = response == null ? "" : response.getBody();
         JsonNode root = null;
         try {
-            root = mapper.readTree(responseBody);
-        } catch (IOException ex) {
+            root = directReviewDeserializingObjectMapper.readTree(responseBody);
+        } catch (JacksonException ex) {
             logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
@@ -348,8 +352,8 @@ public class DirectReviewCachingService {
         String responseBody = response == null ? "" : response.getBody();
         JsonNode root = null;
         try {
-            root = mapper.readTree(responseBody);
-        } catch (IOException ex) {
+            root = directReviewDeserializingObjectMapper.readTree(responseBody);
+        } catch (JacksonException ex) {
             logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
@@ -362,14 +366,14 @@ public class DirectReviewCachingService {
             if (issuesNode != null && issuesNode.isArray() && issuesNode.size() > 0) {
                 for (JsonNode issueNode : issuesNode) {
                     try {
-                        String jiraKey = issueNode.get(JIRA_KEY_FIELD).textValue();
+                        String jiraKey = issueNode.get(JIRA_KEY_FIELD).asString();
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
-                        DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
+                        DirectReview dr = directReviewDeserializingObjectMapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
                         if (dr.getStartDate() != null) {
                             drs.add(dr);
                         }
-                    } catch (IOException ex) {
+                    } catch (JacksonException ex) {
                         logger.error("Cannot map issue JSON to DirectReview class", ex);
                     }
                 }
@@ -386,9 +390,9 @@ public class DirectReviewCachingService {
                 for (JsonNode issueNode : issuesNode) {
                     try {
                         String fieldsJson = issueNode.get(JIRA_FIELDS_FIELD).toString();
-                        DirectReviewNonConformity nc = mapper.readValue(fieldsJson, DirectReviewNonConformity.class);
+                        DirectReviewNonConformity nc = directReviewDeserializingObjectMapper.readValue(fieldsJson, DirectReviewNonConformity.class);
                         ncs.add(nc);
-                    } catch (IOException ex) {
+                    } catch (JacksonException ex) {
                         logger.error("Cannot map issue JSON to DirectReviewNonconformity class", ex);
                     }
                 }

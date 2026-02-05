@@ -2,6 +2,15 @@ package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.activity.entity.ActivityEntity;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,16 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.activity.entity.ActivityEntity;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +35,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "questionable_activity_listing")
-@Where(clause = " deleted = false ")
+@SQLRestriction(" deleted = false ")
 public class QuestionableActivityListingEntity extends EntityAudit implements QuestionableActivityBaseEntity {
     private static final long serialVersionUID = 8924743657187771758L;
 

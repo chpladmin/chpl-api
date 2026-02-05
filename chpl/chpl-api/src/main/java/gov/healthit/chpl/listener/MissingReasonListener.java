@@ -1,10 +1,10 @@
 package gov.healthit.chpl.listener;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.exception.MissingReasonException;
@@ -38,7 +38,7 @@ public class MissingReasonListener {
             final SimpleExplainableAction requestBody)
                     throws MissingReasonException {
         if (surveillanceId != null && (requestBody == null
-                ||  StringUtils.isEmpty(requestBody.getReason()))) {
+                ||  ObjectUtils.isEmpty(requestBody.getReason()))) {
             throw new MissingReasonException(errorMessageUtil.getMessage("surveillance.reasonRequired"));
         }
     }

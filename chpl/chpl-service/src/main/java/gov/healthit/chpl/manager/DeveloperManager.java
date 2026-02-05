@@ -21,7 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -359,7 +359,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            throws EntityRetrievalException, JacksonException, EntityCreationException,
             SchedulerException, ValidationException {
         List<Developer> beforeDevelopers = new ArrayList<Developer>();
         for (Long developerId : joiningDeveloperIds) {

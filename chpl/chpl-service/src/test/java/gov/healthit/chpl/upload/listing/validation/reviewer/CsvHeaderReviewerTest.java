@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -29,7 +29,7 @@ public class CsvHeaderReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private CSVHeaderReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())

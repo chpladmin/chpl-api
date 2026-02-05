@@ -20,8 +20,8 @@ public abstract class QuartzJob extends AuthenticatedUserAwareJob implements Job
     private FileUtils fileUtils;
 
     @Autowired
-    public final void setEnviroment(FileUtils fileUtils) {
-        this.fileUtils = fileUtils;
+    public final void setEnviroment(FileUtils utils) {
+        this.fileUtils = utils;
     }
 
     protected File getDownloadFolder() throws IOException {

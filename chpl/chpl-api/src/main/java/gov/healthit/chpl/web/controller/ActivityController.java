@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
-
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
@@ -41,6 +39,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.exc.StreamReadException;
 
 @Tag(name = "activity", description = "Find historical activity about objects in the CHPL.")
 @RestController
@@ -96,7 +95,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityDetails activityById(@PathVariable("id") final Long id)
-            throws EntityRetrievalException, JsonParseException, IOException, ValidationException, UserRetrievalException {
+            throws EntityRetrievalException, StreamReadException, IOException, ValidationException, UserRetrievalException {
         ActivityDetails details = activityManager.getActivityById(id);
         return details;
     }
@@ -110,7 +109,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForListingById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
 
         return getActivityForListing(start, end, id);
@@ -143,7 +142,7 @@ public class ActivityController {
             @PathVariable("certDateCode") final String certDateCode,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
@@ -173,7 +172,7 @@ public class ActivityController {
             @PathVariable("identifier") final String identifier,
             @RequestParam(required = false) final Long start,
             @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
@@ -216,7 +215,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForDevelopers(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
     }
@@ -230,7 +229,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         developerManager.getById(id, true); // allows getting activity for
                                             // deleted developer
 
@@ -264,7 +263,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.PRODUCT, start, end, pageNum, pageSize);
     }
@@ -278,7 +277,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         productManager.getById(id, true); // allows getting activity for deleted
                                           // product
 
@@ -312,7 +311,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForVersions(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.VERSION, start, end, pageNum, pageSize);
     }
@@ -326,7 +325,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         versionManager.getById(id, true); // allows getting activity for deleted
                                           // version
 
@@ -361,7 +360,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -375,7 +374,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAcbById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         // if one of start of end is provided then the other must also be
         // provided.
         // if neither is provided then query all dates
@@ -407,7 +406,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAtls(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -421,7 +420,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAtlById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            throws StreamReadException, IOException, EntityRetrievalException, ValidationException {
         // if one of start of end is provided then the other must also be
         // provided.
         // if neither is provided then query all dates
@@ -455,7 +454,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -469,7 +468,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+            @RequestParam final Long end) throws StreamReadException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
@@ -486,7 +485,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForQuarterlyReports(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+            @RequestParam final Long end) throws StreamReadException, IOException, ValidationException {
 
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -513,7 +512,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForAnnualReports(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+            @RequestParam final Long end) throws StreamReadException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
@@ -530,7 +529,7 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForCorrectiveActionPlans(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
     }
@@ -547,7 +546,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -563,7 +562,7 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/change-requests", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
+            @RequestParam final Long end) throws StreamReadException, IOException, ValidationException {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);
@@ -582,7 +581,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
     }
 
@@ -599,7 +598,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForConformanceMethods(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getConformanceMethodActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -616,7 +615,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForFunctionalitiesTested(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getFunctionalityTestedActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -633,7 +632,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForCodeSets(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getCodeSetActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -650,7 +649,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForStandards(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getStandardActivityMetadata(start, end, pageNum, pageSize);
     }
 
@@ -667,7 +666,7 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForSvaps(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+            @RequestParam(required = false) Integer pageSize) throws StreamReadException, IOException, ValidationException {
         return pagedMetadataManager.getSvapActivityMetadata(start, end, pageNum, pageSize);
     }
 

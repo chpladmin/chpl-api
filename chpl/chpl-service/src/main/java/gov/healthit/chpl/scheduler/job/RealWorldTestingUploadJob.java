@@ -125,7 +125,6 @@ public class RealWorldTestingUploadJob extends QuartzJob {
         }
     }
 
-    @SuppressWarnings("checkstyle:linelength")
     private RealWorldTestingUpload processRwtUploadItem(RealWorldTestingUpload rwt) {
         LOGGER.info("Processing record: " + rwt.getChplProductNumber());
         Optional<CertifiedProductSearchDetails> listing = getListing(rwt.getChplProductNumber());
@@ -185,7 +184,6 @@ public class RealWorldTestingUploadJob extends QuartzJob {
                 && Objects.equals(listing.getRwtResultsCheckDate(), rwt.getLastChecked()));
     }
 
-    @SuppressWarnings("checkstyle:linelength")
     private Optional<CertifiedProductSearchDetails> getListing(String chplProductNumber) {
         try {
             return Optional.ofNullable(certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber));

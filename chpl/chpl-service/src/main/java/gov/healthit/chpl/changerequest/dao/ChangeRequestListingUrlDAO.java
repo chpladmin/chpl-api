@@ -41,7 +41,7 @@ public class ChangeRequestListingUrlDAO extends BaseDAOImpl {
 
     private ChangeRequestListingUrlEntity getNewEntity(Long changeRequestId, ChangeRequestListingUrl crListingUpdate) {
         ChangeRequestListingUrlEntity entity = new ChangeRequestListingUrlEntity();
-        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, changeRequestId));
+        entity.setChangeRequest(getSession().find(ChangeRequestEntity.class, changeRequestId));
         entity.setUrl(crListingUpdate.getUrl());
         entity.setCheckDate(crListingUpdate.getCheckDate());
         entity.setListingId(crListingUpdate.getListing().getId());

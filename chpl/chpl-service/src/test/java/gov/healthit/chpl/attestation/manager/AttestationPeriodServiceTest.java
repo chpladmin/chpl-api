@@ -1,14 +1,14 @@
 package gov.healthit.chpl.attestation.manager;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -23,7 +23,7 @@ public class AttestationPeriodServiceTest {
     private AttestationPeriodService service;
     private AttestationDAO attestationDAO;
 
-    @Before
+    @BeforeEach
     public void setup() {
         attestationDAO = Mockito.mock(AttestationDAO.class);
 

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -28,7 +28,7 @@ public class TestToolNormalizerTest {
     private TestToolDAO testToolDao;
     private TestToolNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         testToolDao = Mockito.mock(TestToolDAO.class);
         List<TestToolCriteriaMap> allowedTestTools = new ArrayList<TestToolCriteriaMap>();

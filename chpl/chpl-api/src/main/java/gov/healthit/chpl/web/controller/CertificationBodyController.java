@@ -23,7 +23,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,13 +41,10 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationBodyController {
 
     private CertificationBodyManager acbManager;
-    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
-    public CertificationBodyController(CertificationBodyManager acbManager,
-            ResourcePermissionsFactory resourcePermissionsFactory) {
+    public CertificationBodyController(CertificationBodyManager acbManager) {
         this.acbManager = acbManager;
-        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Operation(summary = "List all certification bodies (ONC-ACBs).",

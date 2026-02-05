@@ -20,10 +20,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -47,7 +47,7 @@ public class ListingUploadValidationJob extends QuartzJob {
     public static final String USER_KEY = "user";
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private ListingUploadDao listingUploadDao;
@@ -101,11 +101,9 @@ public class ListingUploadValidationJob extends QuartzJob {
     }
 
     private void calculateErrorAndWarningCounts(Long listingUploadId) {
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 ListingUpload listingUpload = null;
                 try {
                     listingUpload = listingUploadDao.getById(listingUploadId);
@@ -137,30 +135,26 @@ public class ListingUploadValidationJob extends QuartzJob {
                         }
                     }
                 }
-            }
         });
     }
 
     private void saveValidationFailed(Long listingUploadId, Exception ex) {
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 try {
                     listingUploadDao.updateStatus(listingUploadId, ListingUploadStatus.UPLOAD_FAILURE);
-                } catch (Exception ex) {
+                } catch (Exception daoEx) {
                     LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
                 }
 
                 try {
                     sendUploadError(createCsv(listingUploadId), ex);
-                } catch (IOException ex) {
+                } catch (IOException emailEx) {
                     LOGGER.error("Error creating CSV file from upload failure.", ex);
-                } catch (Exception ex) {
+                } catch (Exception emailEx) {
                     LOGGER.error("Unexpected problem sending upload error email.", ex);
                 }
-            }
         });
     }
 
@@ -206,7 +200,7 @@ public class ListingUploadValidationJob extends QuartzJob {
         List<CSVRecord> csvRecords = listingUpload.getRecords();
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(System.lineSeparator())
-                .build();
+                .get();
 
         File csvFile = File.createTempFile("listing-upload-failure-" + listingUpload.getId() + "-", ".csv");
         try (FileWriter fileWriter = new FileWriter(csvFile);

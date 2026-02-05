@@ -1,17 +1,20 @@
 package gov.healthit.chpl.permissions.domain.product;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -23,18 +26,26 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ErrorMessageUtil msgUtil;
+
     @Mock
     private ResourcePermissions resourcePermissions;
+
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @InjectMocks
     private SplitActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new SplitActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, msgUtil);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("product.split.notAllowedMultipleAcbs"),
@@ -60,7 +71,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     }
 
     @Override
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -88,7 +99,11 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(false).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
-        spyPermissions.hasAccess(product);
+
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
+            spyPermissions.hasAccess(product);
+        });
+        assertNotNull(exception);
     }
 
     @Override
