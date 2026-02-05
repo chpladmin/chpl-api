@@ -19,8 +19,8 @@ import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.Page;
 import org.htmlunit.WebClient;
 import org.joda.time.LocalDateTime;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class UrlCallerTest {
     private WebClient webClient;
@@ -28,7 +28,7 @@ public class UrlCallerTest {
     private Map<String, Future<Integer>> urlResponseCodeFuturesMap;
 
     //I would like to leave this test here in the event we need to diagnose any issues with the Questionable URL Report.
-    @Ignore
+    @Disabled
     @Test
     public void testUrlHttpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException,
         IOException {

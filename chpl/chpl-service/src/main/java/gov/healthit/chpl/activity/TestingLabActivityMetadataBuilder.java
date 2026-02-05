@@ -4,23 +4,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component("atlActivityMetadataBuilder")
 public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
     private static final Logger LOGGER = LogManager.getLogger(TestingLabActivityMetadataBuilder.class);
-    private ObjectMapper jsonMapper;
 
-    public TestingLabActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
-        super(chplUserToCognitoUserUtil);
-        jsonMapper = new ObjectMapper();
+    public TestingLabActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil,
+            JsonMapper jsonMapper) {
+        super(chplUserToCognitoUserUtil, jsonMapper);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (dto.getOriginalData() != null) {
             try {
                 origAtl =
-                    jsonMapper.readValue(dto.getOriginalData(), TestingLab.class);
+                    getJsonMapper().readValue(dto.getOriginalData(), TestingLab.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. "
                         + "JSON was: " + dto.getOriginalData(), ex);
@@ -46,7 +44,7 @@ public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (dto.getNewData() != null) {
             try {
                 newAtl =
-                    jsonMapper.readValue(dto.getNewData(), TestingLab.class);
+                    getJsonMapper().readValue(dto.getNewData(), TestingLab.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " new data. "
                         + "JSON was: " + dto.getNewData(), ex);

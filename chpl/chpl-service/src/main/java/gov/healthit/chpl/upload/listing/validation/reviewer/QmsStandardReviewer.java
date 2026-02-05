@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -107,7 +108,7 @@ public class QmsStandardReviewer implements Reviewer {
 
     private boolean hasFuzzyMatch(CertifiedProductQmsStandard qmsStandard) {
         return !StringUtils.isEmpty(qmsStandard.getUserEnteredQmsStandardName())
-                && !StringUtils.equals(qmsStandard.getQmsStandardName(), qmsStandard.getUserEnteredQmsStandardName());
+                && !Strings.CS.equals(qmsStandard.getQmsStandardName(), qmsStandard.getUserEnteredQmsStandardName());
     }
 
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductQmsStandard qmsStandard) {

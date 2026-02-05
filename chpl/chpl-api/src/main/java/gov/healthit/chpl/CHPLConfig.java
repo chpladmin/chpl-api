@@ -1,5 +1,6 @@
 package gov.healthit.chpl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,12 +20,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,13 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.ratelimiting.RateLimitingInterceptor;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -55,6 +54,11 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.ConstructorDetector;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 @EnableWebMvc
@@ -83,7 +87,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private Boolean tryItOutEnabled;
 
     @Autowired
-    private Environment env;
+    private DeprecatedResponseFieldAnnotationIntrospector deprecatedResponseFieldAnnotationIntrospector;
 
     @Lazy
     @Autowired
@@ -109,31 +113,65 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.rateLimitTimePeriod = Integer.parseInt(e.getProperty("rateLimitTimePeriod"));
     }
 
-    @Autowired
-    void configureObjectMapper(ObjectMapper mapper) {
-        mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
-            private static final long serialVersionUID = 2803278488940499378L;
-
-            @Override
-            public boolean hasIgnoreMarker(AnnotatedMember m) {
-                Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
-                if (_findAnnotation(m, JsonIgnore.class) != null) {
-                    return true;
-                } else {
-                    return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
-                }
-            }
-        });
-   }
+    @Bean
+    @Primary
+    public JsonMapper jsonMapper() {
+        JsonMapper mapper = JsonMapper.builder()
+                .annotationIntrospector(deprecatedResponseFieldAnnotationIntrospector)
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                //Jackson 3.x changed the default rendering of java.util.Date objects to a formatted string.
+                //This setting is required to force them to be a milliseconds "long" value
+                //Until we convert everything to LocalDateTime or whatever.
+                .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .findAndAddModules()
+                //Jackson 3.x started detecting constructors with args in POJOs and trying to select
+                //a constructor that matches the fields they have.
+                //All of our Lombok code provides no-arg and all-args constructors, when, if used
+                //by Jackson and a field is MISSING (not present at all) in the request and the all-args
+                //constructor is detected/used that field ends up being null because it's setter is never called.
+                //The initializing expression that we had in the object with @Builder.Default
+                //seemed to be recognized and used in Jackson 2.x but is no longer when the field is
+                //missing in the JSON input.
+                //I tried a lot of different ways to get that to be recognized, but it seems like a
+                //special situation where the field is totally missing that nothing was working.
+                //This constructorDetector setting forces the Jackson 3
+                //deserialization to use Lombok's no-args constructor which WILL have the Builder.Default
+                //initialized values.
+                .constructorDetector(ConstructorDetector.DEFAULT
+                        // Disables auto-detection of constructors with arguments
+                        // unless they have @JsonCreator or @JsonProperty annotations
+                        .withAllowImplicitWithDefaultConstructor(false))
+                .build();
+        return mapper;
+    }
 
     @Bean
-    public MappingJackson2HttpMessageConverter jsonConverter() {
-        MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+    public JacksonJsonHttpMessageConverter jsonConverter() {
+        JacksonJsonHttpMessageConverter bean = new JacksonJsonHttpMessageConverter(jsonMapper());
         bean.setPrefixJson(false);
         List<MediaType> mediaTypes = new ArrayList<MediaType>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         bean.setSupportedMediaTypes(mediaTypes);
         return bean;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        //We are overriding the entire set of available message converters in Spring.
+        //This is the only way I could find to get our custom JsonMapper recognized and
+        //used in the application.
+        //There is a known issue with OpenAPI where it will return the "api" JSON as
+        //a Base-64 encoded string if the ByteArray and String message converters are not
+        //available. So, below we first add those (and they have to be first so OpenAPI
+        //doesn't choose our JSON Converter). Then we add our own custom JSON Converter
+        //for our API responses.
+        converters.add(new ByteArrayHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter());
+        converters.add(jsonConverter());
     }
 
     @Bean
@@ -151,10 +189,9 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Bean
     public CookieLocaleResolver localeResolver() {
-        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver("my-locale-cookie");
         localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE_SECONDS);
+        localeResolver.setCookieMaxAge(Duration.ofSeconds(MAX_COOKIE_AGE_SECONDS));
         return localeResolver;
     }
 

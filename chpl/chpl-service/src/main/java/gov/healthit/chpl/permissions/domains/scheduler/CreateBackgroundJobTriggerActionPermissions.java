@@ -3,9 +3,13 @@ package gov.healthit.chpl.permissions.domains.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.CognitoUserCacheRefreshJob;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
@@ -17,7 +21,6 @@ import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertific
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
-import jakarta.annotation.PostConstruct;
 
 @Component(value = "schedulerCreateBackgroundJobTriggerActionPermissions")
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
@@ -26,8 +29,12 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
     private static final List<String> BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE = new ArrayList<String>();
     private static final List<String> BACKGROUND_JOBS_DEVELOPER_CAN_CREATE = new ArrayList<String>();
 
-    @PostConstruct
-    public void init() {
+    @Autowired
+    public CreateBackgroundJobTriggerActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(SplitDeveloperJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUploadJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(QuarterlyReportGenerationJob.JOB_NAME);

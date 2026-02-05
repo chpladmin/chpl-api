@@ -6,10 +6,10 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -25,7 +25,7 @@ public class CognitoUserCacheRefreshJob extends QuartzJob  {
     public static final String JOB_GROUP = "systemJobs";
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private SharedUserStoreProvider sharedUserStoreProvider;
@@ -45,12 +45,9 @@ public class CognitoUserCacheRefreshJob extends QuartzJob  {
     }
 
     private void replaceSharedStore(List<User> users) {
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+        TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionOperations.executeWithoutResult(status -> {
                 try {
                     LOGGER.info("In transaction - removing all users from shared store.");
                     sharedUserStoreProvider.removeAll();
@@ -62,7 +59,6 @@ public class CognitoUserCacheRefreshJob extends QuartzJob  {
                 } catch (Exception e) {
                     LOGGER.catching(e);
                 }
-            }
         });
     }
 }

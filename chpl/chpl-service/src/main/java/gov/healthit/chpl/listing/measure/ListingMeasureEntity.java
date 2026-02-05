@@ -4,6 +4,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,11 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.domain.ListingMeasure;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,13 +61,13 @@ public class ListingMeasureEntity extends EntityAudit {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "measure_type_id", unique = true, nullable = true, insertable = false, updatable = false)
-    @Where(clause = " deleted = false ")
+    @SQLRestriction(" deleted = false ")
     private ListingMeasureTypeEntity type;
 
     @Basic(optional = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "listingMeasureMapId")
     @Column(name = "certified_product_measure_map_id", nullable = false)
-    @Where(clause = " deleted = false ")
+    @SQLRestriction(" deleted = false ")
     private Set<ListingMeasureCriterionMapEntity> associatedCriteria
         = new LinkedHashSet<ListingMeasureCriterionMapEntity>();
 

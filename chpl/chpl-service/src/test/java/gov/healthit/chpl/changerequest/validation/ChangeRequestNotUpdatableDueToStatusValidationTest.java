@@ -2,8 +2,8 @@ package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
@@ -19,7 +19,7 @@ public class ChangeRequestNotUpdatableDueToStatusValidationTest {
 
     private ChangeRequestNotUpdatableDueToStatusValidation validator;
 
-    @Before
+    @BeforeEach
     public void before() {
         validator = new ChangeRequestNotUpdatableDueToStatusValidation();
     }

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -29,7 +29,7 @@ public class MeasureComparisonReviewerTest {
     private static final long GAP_EP_ID = 87L;
     private static final long GAP_EH_CAH = 88L;
 
-    @Before
+    @BeforeEach
     public void before() {
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
 

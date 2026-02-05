@@ -1,12 +1,12 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -34,7 +34,7 @@ public class AttestationValidationTest {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ResourcePermissions resourcePermissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
         attestationManager = Mockito.mock(AttestationManager.class);
         attestationPeriodService = Mockito.mock(AttestationPeriodService.class);

@@ -1,8 +1,12 @@
 package gov.healthit.chpl.permissions.domains.scheduler;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.CognitoUserCacheRefreshJob;
 import gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob;
@@ -11,6 +15,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component(value = "schedulerCreateOneTimeTriggerActionPermissions")
 public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
+
+    @Autowired
+    public CreateOneTimeTriggerActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+    }
 
     @Override
     public boolean hasAccess() {

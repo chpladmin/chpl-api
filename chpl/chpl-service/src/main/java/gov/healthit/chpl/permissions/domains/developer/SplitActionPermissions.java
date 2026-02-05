@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -18,7 +21,11 @@ public class SplitActionPermissions extends ActionPermissions {
     private List<CertificationStatusType> allowedCertStatuses;
 
     @Autowired
-    public SplitActionPermissions(ErrorMessageUtil msgUtil) {
+    public SplitActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao,
+            ErrorMessageUtil msgUtil) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
         this.msgUtil = msgUtil;
 
         allowedCertStatuses = new ArrayList<CertificationStatusType>();

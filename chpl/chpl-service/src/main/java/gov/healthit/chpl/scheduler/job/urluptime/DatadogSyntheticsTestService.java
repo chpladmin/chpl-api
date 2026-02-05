@@ -14,6 +14,7 @@ import com.datadog.api.client.v1.model.SyntheticsAPITestType;
 import com.datadog.api.client.v1.model.SyntheticsAssertion;
 import com.datadog.api.client.v1.model.SyntheticsAssertionOperator;
 import com.datadog.api.client.v1.model.SyntheticsAssertionTarget;
+import com.datadog.api.client.v1.model.SyntheticsAssertionTargetValue;
 import com.datadog.api.client.v1.model.SyntheticsAssertionType;
 import com.datadog.api.client.v1.model.SyntheticsDeleteTestsPayload;
 import com.datadog.api.client.v1.model.SyntheticsPatchTestBody;
@@ -95,15 +96,15 @@ public class DatadogSyntheticsTestService {
                         .assertions(Arrays.asList(
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.LESS_THAN)
-                                        .target(datadogTestTimeout)
+                                        .target(new SyntheticsAssertionTargetValue(Double.parseDouble(datadogTestTimeout.toString())))
                                         .type(SyntheticsAssertionType.RESPONSE_TIME)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.IS)
-                                        .target(HTTP_STATUS_OK)
+                                        .target(new SyntheticsAssertionTargetValue(Double.parseDouble(HTTP_STATUS_OK.toString())))
                                         .type(SyntheticsAssertionType.STATUS_CODE)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.MATCHES)
-                                        .target(NOT_EMPTY_REGEX)
+                                        .target(new SyntheticsAssertionTargetValue(NOT_EMPTY_REGEX))
                                         .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
                                 .url(url)

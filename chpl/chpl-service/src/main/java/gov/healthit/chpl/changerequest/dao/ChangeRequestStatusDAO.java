@@ -55,10 +55,10 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
 
         entity.setChangeRequestId(changeRequestId);
         entity.setChangeRequestStatusType(
-                getSession().load(ChangeRequestStatusTypeEntity.class, crStatus.getChangeRequestStatusType().getId()));
+                getSession().find(ChangeRequestStatusTypeEntity.class, crStatus.getChangeRequestStatusType().getId()));
         if (crStatus.getCertificationBody() != null && crStatus.getCertificationBody().getId() != null) {
             entity.setCertificationBody(
-                    getSession().load(CertificationBodyEntity.class, crStatus.getCertificationBody().getId()));
+                    getSession().find(CertificationBodyEntity.class, crStatus.getCertificationBody().getId()));
         }
         entity.setUserGroupName(crStatus.getUserGroupName());
         entity.setComment(crStatus.getComment());

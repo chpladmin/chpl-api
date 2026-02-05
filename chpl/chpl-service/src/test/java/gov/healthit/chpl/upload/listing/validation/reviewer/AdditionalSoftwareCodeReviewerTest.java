@@ -1,13 +1,13 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
@@ -23,7 +23,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private AdditionalSoftwareCodeReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ChplProductNumberUtil chplProductNumberUtil =  new ChplProductNumberUtil();
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);

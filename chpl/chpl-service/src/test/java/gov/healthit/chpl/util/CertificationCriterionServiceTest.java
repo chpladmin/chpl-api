@@ -1,13 +1,13 @@
 package gov.healthit.chpl.util;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -25,7 +25,7 @@ public class CertificationCriterionServiceTest {
     private Environment env;
     private CertificationCriterionDAO certificationCriterionDAO;
 
-    @Before
+    @BeforeEach
     public void setup() {
         criterion = new CertificationCriterion();
         criterion1 = new CertificationCriterion();
@@ -45,25 +45,25 @@ public class CertificationCriterionServiceTest {
     public void sortCriteria_BetweenEditions_SortCorrectly() {
         criterion1.setId(137L);
         criterion2.setId(71L);
-        assertTrue("2011 should be earlier than 2014", service.sortCriteria(criterion1, criterion2) < 0);
+        assertTrue(service.sortCriteria(criterion1, criterion2) < 0, "2011 should be earlier than 2014");
         criterion1.setId(10L);
-        assertTrue("2015 should be later than 2014", service.sortCriteria(criterion1, criterion2) > 0);
+        assertTrue(service.sortCriteria(criterion1, criterion2) > 0, "2015 should be later than 2014");
         criterion2.setId(137L);
-        assertTrue("2015 should be later than 2011", service.sortCriteria(criterion1, criterion2) > 0);
+        assertTrue(service.sortCriteria(criterion1, criterion2) > 0, "2015 should be later than 2011");
     }
 
     @Test
     public void sortCriteria_WithOneParagraph_SortCorrectly() {
         criterion1.setId(129L);
         criterion2.setId(130L);
-        assertTrue("h should be earlier than i", service.sortCriteria(criterion1, criterion2) < 0);
+        assertTrue(service.sortCriteria(criterion1, criterion2) < 0, "h should be earlier than i");
     }
 
     @Test
     public void sortCriteria_WithTwoParagraphs_SortCorrectly() {
         criterion1.setId(63L);
         criterion2.setId(62L);
-        assertTrue("3 should be after 2", service.sortCriteria(criterion1, criterion2) > 0);
+        assertTrue(service.sortCriteria(criterion1, criterion2) > 0, "3 should be after 2");
     }
 
     @Test

@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.AttributedString;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -158,7 +159,7 @@ public class SurveillanceReportWorkbookWrapper implements Closeable {
             Sheet sheet, int firstColIndex, int lastColIndex) {
         int lineCount = 0;
 
-        if (StringUtils.isEmpty(textWithoutNewlines)) {
+        if (ObjectUtils.isEmpty(textWithoutNewlines)) {
             return lineCount;
         }
 

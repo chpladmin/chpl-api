@@ -1,12 +1,12 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.base.Objects;
 
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,14 +55,14 @@ public class CertifiedProductQmsStandard implements Serializable {
     public boolean matches(CertifiedProductQmsStandard other) {
         boolean result = false;
         if (this.getQmsStandardId() != null && other.getQmsStandardId() != null
-                && Objects.equal(this.getQmsStandardId(), other.getQmsStandardId())
-                && Objects.equal(this.getQmsModification(), other.getQmsModification())
-                && Objects.equal(this.getApplicableCriteria(), other.getApplicableCriteria())) {
+                && Objects.equals(this.getQmsStandardId(), other.getQmsStandardId())
+                && Objects.equals(this.getQmsModification(), other.getQmsModification())
+                && Objects.equals(this.getApplicableCriteria(), other.getApplicableCriteria())) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getQmsStandardName()) && !StringUtils.isEmpty(other.getQmsStandardName())
-                && Objects.equal(this.getQmsStandardName(), other.getQmsStandardName())
-                && Objects.equal(this.getQmsModification(), other.getQmsModification())
-                && Objects.equal(this.getApplicableCriteria(), other.getApplicableCriteria())) {
+                && Objects.equals(this.getQmsStandardName(), other.getQmsStandardName())
+                && Objects.equals(this.getQmsModification(), other.getQmsModification())
+                && Objects.equals(this.getApplicableCriteria(), other.getApplicableCriteria())) {
             result = true;
         }
         return result;

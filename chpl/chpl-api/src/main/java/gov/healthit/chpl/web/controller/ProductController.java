@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -135,7 +135,7 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, ValidationException, ActivityException {
+            JacksonException, ValidationException, ActivityException {
         Product result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -306,7 +306,7 @@ public class ProductController {
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            ValidationException, JsonProcessingException, ActivityException {
+            ValidationException, JacksonException, ActivityException {
 
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
@@ -378,7 +378,7 @@ public class ProductController {
     }
 
     private Product mergeProducts(UpdateProductsRequest productInfo)
-            throws JsonProcessingException, EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+            throws JacksonException, EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
         return productManager.merge(productInfo.getProductIds(), productInfo.getProduct());
     }
 

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -43,7 +43,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
         Collections.sort(origEvents, certStatusEventComparator);
         Collections.sort(updatedEvents, certStatusEventComparator);
 
-        if (!StringUtils.equalsIgnoreCase(origListing.getCurrentStatus().getStatus().getName(),
+        if (!Strings.CI.equals(origListing.getCurrentStatus().getStatus().getName(),
                 newListing.getCurrentStatus().getStatus().getName())) {
             CertificationStatusEvent origListingCurrentStatusEvent = origListing.getCurrentStatus();
             CertificationStatusEvent newListingPrevStatusEvent = getPreviousStatus(newListing);
@@ -102,7 +102,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
             // If the newListing "additional" certification status event is equivalent to the origListing
             // "current" certification status event
             // AND there are no other changes
-        if (!StringUtils.equalsIgnoreCase(origListing.getCurrentStatus().getStatus().getName(),
+        if (!Strings.CI.equals(origListing.getCurrentStatus().getStatus().getName(),
                 newListing.getCurrentStatus().getStatus().getName())
                 && (origListing.getCertificationEvents().size() == (newListing.getCertificationEvents().size() - 1))) {
             CertificationStatusEvent origListingCurrentStatusEvent = origListing.getCurrentStatus();
@@ -151,7 +151,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
 
     private boolean matchesValues(CertificationStatusEvent event1, CertificationStatusEvent event2) {
         return event1.getEventDay().equals(event2.getEventDay())
-                && StringUtils.equals(event1.getReason(), event2.getReason())
+                && Strings.CS.equals(event1.getReason(), event2.getReason())
                 && event1.getStatus().getName().equalsIgnoreCase(event2.getStatus().getName());
     }
 

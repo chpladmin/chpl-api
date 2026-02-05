@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager.rules.product;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -34,7 +34,7 @@ public class ProductOwnerValidationTest {
     private ProductDAO productDao;
     private ErrorMessageUtil msgUtil;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         devDao = Mockito.mock(DeveloperDAO.class);
         Mockito.when(devDao.getById(ArgumentMatchers.anyLong()))

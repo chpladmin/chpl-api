@@ -6,6 +6,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductOwner;
+import gov.healthit.chpl.domain.comparator.ProductOwnerComparator;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,15 +27,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.ProductOwner;
-import gov.healthit.chpl.domain.comparator.ProductOwnerComparator;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,7 +72,7 @@ public class ProductEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
     @Basic(optional = false)
     @Column(name = "product_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<ProductVersionEntity> productVersions = new HashSet<ProductVersionEntity>();
 
     @Basic(optional = true)
@@ -92,7 +91,7 @@ public class ProductEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
     @Basic(optional = true)
     @Column(name = "product_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 
     public Product toDomain() {

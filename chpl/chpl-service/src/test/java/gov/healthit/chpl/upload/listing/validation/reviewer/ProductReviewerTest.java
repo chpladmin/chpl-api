@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -28,7 +28,7 @@ public class ProductReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private ProductReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         fuzzyChoicesManager = Mockito.mock(FuzzyChoicesManager.class);
         productDao = Mockito.mock(ProductDAO.class);

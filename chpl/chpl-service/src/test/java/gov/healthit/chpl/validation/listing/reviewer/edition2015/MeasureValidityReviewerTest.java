@@ -1,6 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
@@ -9,8 +9,8 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -30,7 +30,7 @@ public class MeasureValidityReviewerTest {
     private ErrorMessageUtil msgUtil;
     private MeasureValidityReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         criterionService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criterionService.getByNumber(ArgumentMatchers.anyString()))

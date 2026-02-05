@@ -364,7 +364,6 @@ public class DeveloperSearchService {
                 developers.sort(new DeveloperCodeComparator(descending));
                 break;
             case DEVELOPER_NAME:
-            case DEVELOPER:
                 developers.sort(new DeveloperNameComparator(descending));
                 break;
             default:

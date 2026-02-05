@@ -84,18 +84,6 @@ public class CodeSetsUpToDateService {
                 .isPresent();
     }
 
-    private Boolean areCodeSetsUpToDate(CertificationResult certificationResult) {
-        // TODO - Will need to determine for HTI-2 how to correctly handle this.  Possible
-        // future state is we will need to make sure the most recent and in the past codes set is
-        // attested to.
-
-        // Initially, we will just make sure that the cert result has attested to the same
-        // number of code sets as are available for the criteria.
-        return (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
-                && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size())
-                || CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()));
-    }
-
     private List<CodeSet> getAllCodeSetsForCriterion(CertificationCriterion criterion) {
         if (codeSetMaps.containsKey(criterion.getId())) {
             return codeSetMaps.get(criterion.getId());

@@ -1,17 +1,21 @@
 package gov.healthit.chpl.realworldtesting.manager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -31,7 +35,7 @@ public class RealWorldTestingManagerTest {
     private SchedulerManager schedulerManager;
     private ErrorMessageUtil errorMessageUtil;
 
-    @Before
+    @BeforeEach
     public void setup() throws SchedulerException, ValidationException, UserRetrievalException {
         setSecurityContext();
 
@@ -40,14 +44,14 @@ public class RealWorldTestingManagerTest {
                 .thenReturn(new ChplOneTimeTrigger());
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
-                .thenReturn("This is an error message.");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any(Object[].class)))
+            .thenReturn("This is an error message.");
 
         realWorldTestingManager = new RealWorldTestingManager(Mockito.mock(RealWorldTestingByDeveloperDao.class),
                 schedulerManager, errorMessageUtil);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadRealWorldTestingCsv_EmptyFile_ValidationException()
             throws ValidationException, SchedulerException, UserRetrievalException {
         String fileContents = "";
@@ -57,10 +61,13 @@ public class RealWorldTestingManagerTest {
                 "text/csv",
                 fileContents.getBytes());
 
-        realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadRealWorldTestingCsv_WrongFileType_ValidationException()
             throws ValidationException, SchedulerException, UserRetrievalException {
         String fileContents = "<root/>";
@@ -70,10 +77,13 @@ public class RealWorldTestingManagerTest {
                 MediaType.APPLICATION_XHTML_XML_VALUE,
                 fileContents.getBytes());
 
-        realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        });
+        assertNotNull(exception);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void uploadRealWorldTestingCsv_FileOnlyHasHeader_ValidationException()
             throws ValidationException, SchedulerException, UserRetrievalException {
 
@@ -83,7 +93,10 @@ public class RealWorldTestingManagerTest {
                 "text/csv",
                 fileContents.getBytes());
 
-        realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        });
+        assertNotNull(exception);
     }
 
     @Test
@@ -155,6 +168,7 @@ public class RealWorldTestingManagerTest {
     private JWTAuthenticatedUser getUser() {
         return JWTAuthenticatedUser.builder()
                 .email("user@abc.com")
+                .authorities(new ArrayList<GrantedAuthority>())
                 .build();
     }
 
