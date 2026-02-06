@@ -211,6 +211,13 @@
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
     </Console>
+    <Console name="realWorldTestingValidationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingValidationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
     <Console name="auditDataRetentionJobJson" target="SYSTEM_OUT">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="auditDataRetentionJob" />

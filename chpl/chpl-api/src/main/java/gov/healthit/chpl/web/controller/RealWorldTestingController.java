@@ -19,6 +19,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingResultsUrlValidationRequest;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.ServerEnvironment;
@@ -71,15 +72,13 @@ public class RealWorldTestingController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/validate-results-url", method = RequestMethod.POST)
-    public @ResponseBody ChplOneTimeTrigger createAiValidationJob(@RequestBody String url) {
+    public @ResponseBody ChplOneTimeTrigger createAiValidationJob(@RequestBody RealWorldTestingResultsUrlValidationRequest request)
+            throws UserRetrievalException, SchedulerException, ValidationException {
         if (!ff4j.check(FeatureList.RWT_AI_INTEGRATION)
                 || this.serverEnvironment == null
                 || !this.serverEnvironment.equals(ServerEnvironment.PRODUCITON)) {
             throw new NotImplementedException("This method has not been implemented");
         }
-        //TODO
-        // write method to trigger one-time job
-        // also write job
-        return null;
+        return realWorldTestingManager.validateResultsUrlAsBackgroundJob(request);
     }
 }
