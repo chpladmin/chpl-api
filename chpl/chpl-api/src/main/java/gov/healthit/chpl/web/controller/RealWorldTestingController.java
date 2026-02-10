@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.astpai.AmazonTokenResponse;
+import gov.healthit.chpl.astpai.AstpAiAuthenticationService;
+import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -33,15 +36,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/real-world-testing")
 public class RealWorldTestingController {
 
+    private AstpAiAuthenticationService authService;
     private RealWorldTestingManager realWorldTestingManager;
     private FF4j ff4j;
     private ServerEnvironment serverEnvironment;
 
     @Autowired
     public RealWorldTestingController(RealWorldTestingManager realWorldTestingManager,
+            AstpAiAuthenticationService authService,
             FF4j ff4j,
             @Value("${server.environment}") String serverEnvironment) {
         this.realWorldTestingManager = realWorldTestingManager;
+        this.authService = authService;
         this.ff4j = ff4j;
         this.serverEnvironment = serverEnvironment != null ? ServerEnvironment.getByName(serverEnvironment) : null;
     }
@@ -80,5 +86,19 @@ public class RealWorldTestingController {
             throw new NotImplementedException("This method has not been implemented");
         }
         return realWorldTestingManager.validateResultsUrlAsBackgroundJob(request);
+    }
+
+    @Operation(summary = "Create and run a background job that fetches Real World Testing validation information "
+            + "about any URL. The validation is expecting an RWT Results URL. Validation data will be emailed to the "
+            + "logged-in user.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/astp-ai-auth", method = RequestMethod.POST)
+    public @ResponseBody AmazonTokenResponse authenticateToAspAi(@RequestBody RealWorldTestingResultsUrlValidationRequest request)
+            throws AstpAiRequestFailedException {
+
+        return authService.authenticate();
     }
 }

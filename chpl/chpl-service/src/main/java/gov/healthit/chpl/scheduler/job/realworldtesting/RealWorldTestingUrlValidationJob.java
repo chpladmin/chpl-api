@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.astpai.AmazonTokenResponse;
+import gov.healthit.chpl.astpai.AstpAiAuthenticationService;
+import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -46,6 +49,9 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
     private String quarterlyReportFailureSubject;
 
     @Autowired
+    private AstpAiAuthenticationService astpAiService;
+
+    @Autowired
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -70,16 +76,25 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             Integer year = (Integer) jobDataMap.get(YEAR_KEY);
             setSecurityContext(user);
 
-            //TODO ensure URL type is RESULTS
+            //authenticate
+            AmazonTokenResponse token = null;
+            try {
+                token = astpAiService.authenticate();
+            } catch (AstpAiRequestFailedException ex) {
+                LOGGER.error("Unable to authenticate with ASTP-AI", ex);
+                sendErrorEmail(user.getEmail(), quarterlyReportFailureSubject,
+                        env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"));
+            }
             //TODO call AI endpoint, get response or handle error
+
             //TODO parse results and send email
-            sendEmail(user.getEmail(), quarterlyReportFailureSubject,
+            sendResultsEmail(user.getEmail(), quarterlyReportFailureSubject,
                                     env.getProperty("surveillance.quarterlyReport.fileError.htmlBody"));
 
         } else {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
-                sendEmail(user.getEmail(), quarterlyReportFailureSubject,
+                sendErrorEmail(user.getEmail(), quarterlyReportFailureSubject,
                         env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"));
             }
         }
@@ -126,7 +141,26 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         return isValid;
     }
 
-    private void sendEmail(String recipientEmail, String subject, String htmlContent)  {
+    private void sendResultsEmail(String recipientEmail, String subject, String htmlContent)  {
+        LOGGER.info("Sending email to: " + recipientEmail);
+
+        try {
+            chplEmailFactory.emailBuilder()
+                    .recipient(recipientEmail)
+                    .subject(subject)
+                    .htmlMessage(chplHtmlEmailBuilder.initialize()
+                            .heading(subject)
+                            .paragraph("", htmlContent)
+                            .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
+                            .footer(AdminFooter.class)
+                            .build())
+                    .sendEmail();
+        } catch (EmailNotSentException ex) {
+            LOGGER.error("Could not send email to " + recipientEmail, ex);
+        }
+    }
+
+    private void sendErrorEmail(String recipientEmail, String subject, String htmlContent)  {
         LOGGER.info("Sending email to: " + recipientEmail);
 
         try {

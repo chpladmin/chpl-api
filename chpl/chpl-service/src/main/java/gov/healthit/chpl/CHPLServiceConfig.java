@@ -277,6 +277,27 @@ public class CHPLServiceConfig implements EnvironmentAware {
         return restTemplate;
     }
 
+    @Bean
+    public RestTemplate httpsRestTemplate()
+            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+                        .setDefaultSocketConfig(SocketConfig.custom()
+                                .setSoTimeout(getRequestTimeout(), TimeUnit.MILLISECONDS)
+                                .build())
+                        .setTlsSocketStrategy(new DefaultClientTlsStrategy(
+                                SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
+                                NoopHostnameVerifier.INSTANCE))
+                        .build())
+                .build();
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setHttpClient(httpClient);
+        requestFactory.setConnectionRequestTimeout(getRequestTimeout());
+
+        return new RestTemplate(requestFactory);
+    }
+
     private int getRequestTimeout() {
         int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
         String requestTimeoutProperty = env.getProperty("jira.requestTimeoutMillis");
