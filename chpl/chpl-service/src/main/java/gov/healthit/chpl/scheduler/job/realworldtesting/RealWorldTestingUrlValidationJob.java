@@ -7,20 +7,23 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.astpai.AmazonTokenResponse;
 import gov.healthit.chpl.astpai.AstpAiAuthenticationService;
+import gov.healthit.chpl.astpai.AstpAiQueryService;
 import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
+import gov.healthit.chpl.astpai.UrlValidationRequest;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlType;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -32,6 +35,7 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
     public static final String URL_TYPE_KEY = "urlType";
     public static final String YEAR_KEY = "year";
     public static final String USER_KEY = "user";
+    private static final Integer MAX_SEARCH_DEPTH = 5;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -42,23 +46,33 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
     @Value("${contact.acbatlUrl}")
     private String acbatlFeedbackUrl;
 
-    @Value("${surveillance.quarterlyReport.success.subject}")
-    private String quarterlyReportSubject;
+    @Value("${rwtResults.validation.subject}")
+    private String emailSubject;
 
-    @Value("${surveillance.quarterlyReport.failure.subject}")
-    private String quarterlyReportFailureSubject;
+    @Value("${rwtResults.validation.body}")
+    private String emailBody;
+
+    @Value("${rwtResults.validation.failure.subject}")
+    private String failureEmailSubject;
+
+    @Value("${rwtResults.validation.failure.body}")
+    private String failureEmailBody;
 
     @Autowired
-    private AstpAiAuthenticationService astpAiService;
+    private AstpAiAuthenticationService aiAuthService;
 
     @Autowired
-    private ErrorMessageUtil msgUtil;
+    private AstpAiQueryService aiQueryService;
 
     @Autowired
-    private Environment env;
+    private ListingSearchService listingSearchService;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    private String url;
+    private Long listingId;
+    private Integer year;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -70,32 +84,49 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         boolean isJobDataValid = isJobDataValid(jobDataMap);
         if (isJobDataValid) {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
-            Long listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
-            String url = (String) jobDataMap.get(URL_KEY);
+            listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
+            url= (String) jobDataMap.get(URL_KEY);
             RealWorldTestingUrlType urlType = RealWorldTestingUrlType.valueOf((String) jobDataMap.get(URL_TYPE_KEY));
-            Integer year = (Integer) jobDataMap.get(YEAR_KEY);
+            year = (Integer) jobDataMap.get(YEAR_KEY);
             setSecurityContext(user);
 
             //authenticate
             AmazonTokenResponse token = null;
             try {
-                token = astpAiService.authenticate();
+                token = aiAuthService.authenticate();
             } catch (AstpAiRequestFailedException ex) {
                 LOGGER.error("Unable to authenticate with ASTP-AI", ex);
-                sendErrorEmail(user.getEmail(), quarterlyReportFailureSubject,
-                        env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"));
+                sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
             }
-            //TODO call AI endpoint, get response or handle error
-
-            //TODO parse results and send email
-            sendResultsEmail(user.getEmail(), quarterlyReportFailureSubject,
-                                    env.getProperty("surveillance.quarterlyReport.fileError.htmlBody"));
+            //call AI endpoint, get response or handle error
+            String aiResponse = null;
+            if (token != null) {
+                try {
+                    aiResponse = aiQueryService.getRwtResultsUrlValidationResponse(token.getAccessToken(), UrlValidationRequest.builder()
+                        .chplProductNumber(getChplProductNumber())
+                        .url(url)
+                        .maxDepth(MAX_SEARCH_DEPTH)
+                        .targetYear(year)
+                        .build());
+                } catch (AstpAiRequestFailedException ex) {
+                    LOGGER.error("Unable to query ASTP-AI endpoint", ex);
+                    sendErrorEmail(user.getEmail(), "Unable to query ASTP-AI endpoint: " + ex.getMessage());
+                } catch (Exception ex) {
+                    LOGGER.error("Unexpected error querying ASTP-AI endpoint", ex);
+                    sendErrorEmail(user.getEmail(), "Unexpected error querying ASTP-AI endpoint: " + ex.getMessage());
+                }
+            } else {
+                LOGGER.error("Unable to authenticate with ASTP-AI");
+                sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
+            }
+            //parse results and send email
+            sendResultsEmail(user.getEmail(), aiResponse);
 
         } else {
+            //invalid inputs in the job data
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
-                sendErrorEmail(user.getEmail(), quarterlyReportFailureSubject,
-                        env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"));
+                sendErrorEmail(user.getEmail(), "Invalid inputs for RWT URL Validation");
             }
         }
         LOGGER.info("********* Completed the Real World Testing Url Validation job. *********");
@@ -113,6 +144,17 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         if (listingId == null) {
             isValid = false;
             LOGGER.fatal("No listing ID could be found in the job data.");
+        } else {
+            ListingSearchResult listing = null;
+            try {
+                listing = listingSearchService.findListing(listingId);
+            } catch (InvalidArgumentsException ex) {
+                LOGGER.fatal("Invalid listing ID " + listingId + " found in the job data.", ex);
+                isValid = false;
+            }
+            if (listing == null) {
+                isValid = false;
+            }
         }
 
         String url = (String) jobDataMap.get(URL_KEY);
@@ -133,24 +175,36 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             }
         }
 
-        String year = (String) jobDataMap.get(YEAR_KEY);
-        if (StringUtils.isEmpty(year)) {
+        Integer year = (Integer) jobDataMap.get(YEAR_KEY);
+        if (year == null) {
             isValid = false;
             LOGGER.fatal("No year could be found in the job data.");
         }
         return isValid;
     }
 
-    private void sendResultsEmail(String recipientEmail, String subject, String htmlContent)  {
+    private String getChplProductNumber() {
+        ListingSearchResult result = null;
+        try {
+            result = listingSearchService.findListing(listingId);
+        } catch (InvalidArgumentsException ex) {
+            LOGGER.error("No listing with ID " + listingId + " was found.");
+        }
+        if (result == null) {
+            return "";
+        }
+        return result.getChplProductNumber();
+    }
+
+    private void sendResultsEmail(String recipientEmail, String results)  {
         LOGGER.info("Sending email to: " + recipientEmail);
 
         try {
             chplEmailFactory.emailBuilder()
                     .recipient(recipientEmail)
-                    .subject(subject)
+                    .subject(emailSubject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
-                            .heading(subject)
-                            .paragraph("", htmlContent)
+                            .paragraph("", String.format(emailBody, url, getChplProductNumber(), year + "", results))
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
                             .footer(AdminFooter.class)
                             .build())
@@ -160,16 +214,15 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         }
     }
 
-    private void sendErrorEmail(String recipientEmail, String subject, String htmlContent)  {
+    private void sendErrorEmail(String recipientEmail, String errorMessage)  {
         LOGGER.info("Sending email to: " + recipientEmail);
 
         try {
             chplEmailFactory.emailBuilder()
                     .recipient(recipientEmail)
-                    .subject(subject)
+                    .subject(failureEmailSubject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
-                            .heading(subject)
-                            .paragraph("", htmlContent)
+                            .paragraph("", String.format(failureEmailBody, url, listingId + "", year + "", errorMessage))
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
                             .footer(AdminFooter.class)
                             .build())
