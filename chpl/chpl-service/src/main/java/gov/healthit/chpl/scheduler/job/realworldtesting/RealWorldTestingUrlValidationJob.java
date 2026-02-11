@@ -85,11 +85,12 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         if (isJobDataValid) {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
-            url= (String) jobDataMap.get(URL_KEY);
+            url = (String) jobDataMap.get(URL_KEY);
             RealWorldTestingUrlType urlType = RealWorldTestingUrlType.valueOf((String) jobDataMap.get(URL_TYPE_KEY));
             year = (Integer) jobDataMap.get(YEAR_KEY);
             setSecurityContext(user);
 
+            LOGGER.info("Validating URL " + url + " for listing " + listingId + " and year " + year);
             //authenticate
             AmazonTokenResponse token = null;
             try {
@@ -97,11 +98,14 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             } catch (AstpAiRequestFailedException ex) {
                 LOGGER.error("Unable to authenticate with ASTP-AI", ex);
                 sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
+                return;
             }
+            LOGGER.info("Successfully authenticated with the ASTP-AI application");
             //call AI endpoint, get response or handle error
             String aiResponse = null;
             if (token != null) {
                 try {
+                    LOGGER.info("Requesting RWT URL Validation from the ASTP-AI application");
                     aiResponse = aiQueryService.getRwtResultsUrlValidationResponse(token.getAccessToken(), UrlValidationRequest.builder()
                         .chplProductNumber(getChplProductNumber())
                         .url(url)
@@ -111,18 +115,22 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
                 } catch (AstpAiRequestFailedException ex) {
                     LOGGER.error("Unable to query ASTP-AI endpoint", ex);
                     sendErrorEmail(user.getEmail(), "Unable to query ASTP-AI endpoint: " + ex.getMessage());
+                    return;
                 } catch (Exception ex) {
                     LOGGER.error("Unexpected error querying ASTP-AI endpoint", ex);
                     sendErrorEmail(user.getEmail(), "Unexpected error querying ASTP-AI endpoint: " + ex.getMessage());
+                    return;
                 }
             } else {
                 LOGGER.error("Unable to authenticate with ASTP-AI");
                 sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
+                return;
             }
+            LOGGER.info("Received validation results. Emailing " + user.getEmail());
             //parse results and send email
             sendResultsEmail(user.getEmail(), aiResponse);
-
         } else {
+            LOGGER.error("Invalid inputs to job.");
             //invalid inputs in the job data
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
