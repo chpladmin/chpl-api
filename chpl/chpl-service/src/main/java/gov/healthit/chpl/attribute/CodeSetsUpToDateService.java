@@ -18,18 +18,17 @@ import gov.healthit.chpl.util.Util;
 @Component
 public class CodeSetsUpToDateService {
 
+    private CodeSetDAO codeSetDao;
     private CertificationResultRules certificationResultRules;
-    private Map<Long, List<CodeSet>> codeSetMaps;
 
     public CodeSetsUpToDateService(CodeSetDAO codeSetDao,
             CertificationResultRules certificationResultRules) {
-        this.codeSetMaps = codeSetDao.getCodeSetCriteriaMaps();
+        this.codeSetDao = codeSetDao;
         this.certificationResultRules = certificationResultRules;
     }
 
     public List<CodeSetUpToDate> getAttributeUpToDate(CertificationResult certResult, Logger logger) {
         List<CodeSetUpToDate> codeSetUpToDateReports = new ArrayList<CodeSetUpToDate>();
-
         Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certResult.getCriterion());
         if (isCriteriaEligible) {
             List<CodeSetUpToDate> upToDateReportsForUnattestedCodeSets = getUpToDateReportsForUnattestedCodeSets(certResult, logger);
@@ -85,6 +84,7 @@ public class CodeSetsUpToDateService {
     }
 
     private List<CodeSet> getAllCodeSetsForCriterion(CertificationCriterion criterion) {
+        Map<Long, List<CodeSet>> codeSetMaps = codeSetDao.getCodeSetCriteriaMaps();
         if (codeSetMaps.containsKey(criterion.getId())) {
             return codeSetMaps.get(criterion.getId());
         } else {
