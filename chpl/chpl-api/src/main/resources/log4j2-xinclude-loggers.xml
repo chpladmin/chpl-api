@@ -120,9 +120,9 @@
         <AppenderRef ref="realWorldTestingUploadJob" />
         <AppenderRef ref="realWorldTestingUploadJobJson" />
     </Logger>
-    <Logger name="realWorldTestingValidationJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="realWorldTestingValidationJob" />
-        <AppenderRef ref="realWorldTestingValidationJobJson" />
+    <Logger name="realWorldTestingUrlValidationJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingUrlValidationJob" />
+        <AppenderRef ref="realWorldTestingUrlValidationJobJson" />
     </Logger>
     <Logger name="realWorldTestingReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingReportEmailJob" />

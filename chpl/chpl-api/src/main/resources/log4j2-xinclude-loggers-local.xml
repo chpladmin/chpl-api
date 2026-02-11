@@ -132,8 +132,8 @@
     <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
     </Logger>
-    <Logger name="realWorldTestingValidationJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="realWorldTestingValidationJob" />
+    <Logger name="realWorldTestingUrlValidationJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingUrlValidationJob" />
     </Logger>
     <Logger name="realWorldTestingReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingReportEmailJob" />
