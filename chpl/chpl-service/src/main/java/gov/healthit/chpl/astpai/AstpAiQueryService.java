@@ -13,6 +13,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Service
@@ -20,16 +22,19 @@ public class AstpAiQueryService {
 
     private RestTemplate httpsRestTemplate;
     private String rwtResultsValidationUrl;
+    private JsonMapper jsonMapper;
 
     @Autowired
     public AstpAiQueryService(RestTemplate httpsRestTemplate,
+            JsonMapper jsonMapper,
             @Value("${astpai.domain}") String astpAiDomain,
             @Value("${astpai.rwtResultUrlValidation.endpoint}") String astpAiRwtResultValidationApi) {
         this.httpsRestTemplate = httpsRestTemplate;
+        this.jsonMapper = jsonMapper;
         this.rwtResultsValidationUrl = astpAiDomain + astpAiRwtResultValidationApi;
     }
 
-    public String getRwtResultsUrlValidationResponse(String accessToken, UrlValidationRequest requestBody)
+    public UrlValidationResponse getRwtResultsUrlValidationResponse(String accessToken, UrlValidationRequest requestBody)
             throws AstpAiRequestFailedException {
         LOGGER.info("Making request to " + rwtResultsValidationUrl + " with access token " + accessToken);
         ResponseEntity<String> response = null;
@@ -52,6 +57,13 @@ public class AstpAiQueryService {
         }
 
         String responseBody = response == null ? "" : response.getBody();
-        return responseBody;
+        UrlValidationResponse aiQueryResponse = null;
+        try {
+            aiQueryResponse = jsonMapper.readValue(responseBody, UrlValidationResponse.class);
+        } catch (JacksonException ex) {
+            LOGGER.error("Unable to read the response body as our custom AmazonTokenResponse", ex);
+            throw new AstpAiRequestFailedException(ex.getMessage(), ex);
+        }
+        return aiQueryResponse;
     }
 }

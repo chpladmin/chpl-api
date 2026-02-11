@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.realworldtesting;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.astpai.AstpAiAuthenticationService;
 import gov.healthit.chpl.astpai.AstpAiQueryService;
 import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
 import gov.healthit.chpl.astpai.UrlValidationRequest;
+import gov.healthit.chpl.astpai.UrlValidationResponse;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -70,24 +72,20 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    private JWTAuthenticatedUser user;
     private String url;
     private Long listingId;
     private Integer year;
+    private RealWorldTestingUrlType urlType;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Real World Testing Url Validation job. *********");
-
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        boolean isJobDataValid = isJobDataValid(jobDataMap);
-        if (isJobDataValid) {
-            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
-            listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
-            url = (String) jobDataMap.get(URL_KEY);
-            RealWorldTestingUrlType urlType = RealWorldTestingUrlType.valueOf((String) jobDataMap.get(URL_TYPE_KEY));
-            year = (Integer) jobDataMap.get(YEAR_KEY);
+        parseJobData(jobDataMap);
+        if (isJobDataValid()) {
             setSecurityContext(user);
 
             LOGGER.info("Validating URL " + url + " for listing " + listingId + " and year " + year);
@@ -102,7 +100,7 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             }
             LOGGER.info("Successfully authenticated with the ASTP-AI application");
             //call AI endpoint, get response or handle error
-            String aiResponse = null;
+            UrlValidationResponse aiResponse = null;
             if (token != null) {
                 try {
                     LOGGER.info("Requesting RWT URL Validation from the ASTP-AI application");
@@ -132,23 +130,31 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         } else {
             LOGGER.error("Invalid inputs to job.");
             //invalid inputs in the job data
-            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
+            user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
                 sendErrorEmail(user.getEmail(), "Invalid inputs for RWT URL Validation");
+            } else {
+                LOGGER.fatal("Invalid inputs to job and no user was found to email.");
             }
         }
         LOGGER.info("********* Completed the Real World Testing Url Validation job. *********");
     }
 
-    private boolean isJobDataValid(JobDataMap jobDataMap) {
+    private void parseJobData(JobDataMap jobDataMap) {
+        user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
+        listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
+        url = (String) jobDataMap.get(URL_KEY);
+        urlType = RealWorldTestingUrlType.valueOf((String) jobDataMap.get(URL_TYPE_KEY));
+        year = (Integer) jobDataMap.get(YEAR_KEY);
+    }
+
+    private boolean isJobDataValid() {
         boolean isValid = true;
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             isValid = false;
             LOGGER.fatal("No user could be found in the job data.");
         }
 
-        Long listingId = (Long) jobDataMap.get(LISTING_ID_KEY);
         if (listingId == null) {
             isValid = false;
             LOGGER.fatal("No listing ID could be found in the job data.");
@@ -165,25 +171,16 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             }
         }
 
-        String url = (String) jobDataMap.get(URL_KEY);
         if (StringUtils.isEmpty(url)) {
             isValid = false;
             LOGGER.fatal("No URL could be found in the job data.");
         }
 
-        String urlType = (String) jobDataMap.get(URL_TYPE_KEY);
-        if (StringUtils.isEmpty(urlType)) {
+        if (urlType == null) {
             isValid = false;
-            LOGGER.fatal("No URL Type could be found in the job data.");
-        } else {
-            RealWorldTestingUrlType urlTypeEnum = RealWorldTestingUrlType.valueOf(urlType);
-            if (urlTypeEnum == null || !urlTypeEnum.equals(RealWorldTestingUrlType.RESULTS)) {
-                isValid = false;
-                LOGGER.fatal("URL Type " + urlType + " is not recognized or supported.");
-            }
+            LOGGER.fatal("A valid URL Type was not found in the job data.");
         }
 
-        Integer year = (Integer) jobDataMap.get(YEAR_KEY);
         if (year == null) {
             isValid = false;
             LOGGER.fatal("No year could be found in the job data.");
@@ -204,15 +201,15 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         return result.getChplProductNumber();
     }
 
-    private void sendResultsEmail(String recipientEmail, String results)  {
+    private void sendResultsEmail(String recipientEmail, UrlValidationResponse results)  {
         LOGGER.info("Sending email to: " + recipientEmail);
-
+        String resultsHtml = createResultsHtml(results);
         try {
             chplEmailFactory.emailBuilder()
                     .recipient(recipientEmail)
                     .subject(emailSubject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
-                            .paragraph("", String.format(emailBody, url, getChplProductNumber(), year + "", results))
+                            .paragraph("", String.format(emailBody, url, getChplProductNumber(), year + "", resultsHtml))
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
                             .footer(AdminFooter.class)
                             .build())
@@ -220,6 +217,40 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
         } catch (EmailNotSentException ex) {
             LOGGER.error("Could not send email to " + recipientEmail, ex);
         }
+    }
+
+    private String createResultsHtml(UrlValidationResponse results) {
+        StringBuffer buf = new StringBuffer();
+        if (!StringUtils.isEmpty(results.getError())) {
+            buf.append("<p><b>Error: </b>" + results.getError() + "</p>");
+        }
+        if (results.getDocument() != null) {
+            buf.append("<h3>Document Discovery</h3><ul>");
+            if (!StringUtils.isEmpty(results.getDocument().getUrl())) {
+                buf.append("<li>Document URL: " + results.getDocument().getUrl() + "</li>");
+            }
+            if (!StringUtils.isEmpty(results.getDocument().getConfidence())) {
+                buf.append("<li>Confidence: " + results.getDocument().getConfidence() + "</li>");
+            }
+            buf.append("</ul>");
+        }
+        if (results.getValidation() != null) {
+            buf.append("<h3>Validation Results</h3><ul>");
+            if (!StringUtils.isEmpty(results.getValidation().getCompletenessScore())) {
+                buf.append("<li>Completeness Score: " + results.getValidation().getCompletenessScore() + "</li>");
+            }
+            if (!StringUtils.isEmpty(results.getValidation().getSummary())) {
+                buf.append("<li>Validation Summary: " + results.getValidation().getSummary() + "</li>");
+            }
+            if (!CollectionUtils.isEmpty(results.getValidation().getRecommendations())) {
+                buf.append("<li>Recommendations: <ul>");
+                results.getValidation().getRecommendations().stream()
+                    .forEach(rec -> buf.append("<li>" + rec + "</li>"));
+                buf.append("</ul></li>");
+            }
+            buf.append("</ul>");
+        }
+        return buf.toString();
     }
 
     private void sendErrorEmail(String recipientEmail, String errorMessage)  {
