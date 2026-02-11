@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 
 public enum ServerEnvironment {
-    PRODUCITON("production"),
+    PRODUCTION("production"),
     NON_PRODUCTION("non-production");
 
     @Getter

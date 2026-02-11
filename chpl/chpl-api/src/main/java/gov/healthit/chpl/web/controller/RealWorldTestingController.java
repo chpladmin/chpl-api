@@ -76,7 +76,7 @@ public class RealWorldTestingController {
             throws UserRetrievalException, SchedulerException, ValidationException {
         if (!ff4j.check(FeatureList.RWT_AI_INTEGRATION)
                 || this.serverEnvironment == null
-                || this.serverEnvironment.equals(ServerEnvironment.PRODUCITON)) {
+                || this.serverEnvironment.equals(ServerEnvironment.PRODUCTION)) {
             throw new NotImplementedException("This method has not been implemented");
         }
         return realWorldTestingManager.validateResultsUrlAsBackgroundJob(request);
