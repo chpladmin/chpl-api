@@ -1,5 +1,6 @@
 package gov.healthit.chpl.attribute;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component
@@ -72,6 +74,7 @@ public class CodeSetsUpToDateService {
 
     private List<CodeSet> getUnattestedToCodeSets(CertificationResult certResult) {
         return getAllCodeSetsForCriterion(certResult.getCriterion()).stream()
+                .filter(codeSet -> DateUtil.isOnOrBefore(codeSet.getStartDay(), LocalDate.now()))
                 .filter(codeSet -> !isCodeSetInList(codeSet, certResult.getCodeSets().stream().map(crcs -> crcs.getCodeSet()).toList()))
                 .toList();
     }

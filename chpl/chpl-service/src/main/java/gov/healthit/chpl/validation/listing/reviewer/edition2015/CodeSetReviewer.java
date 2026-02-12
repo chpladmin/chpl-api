@@ -15,6 +15,7 @@ import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -100,8 +101,7 @@ public abstract class CodeSetReviewer implements Reviewer {
         List<CodeSet> codeSetsForCriterion = mapOfCodeSets.get(certResult.getCriterion().getId());
         if (!CollectionUtils.isEmpty(codeSetsForCriterion)) {
             List<CodeSet> requiredCodeSetsForCriterion = codeSetsForCriterion.stream()
-                    .filter(codeSet -> codeSet.getRequiredDay().isEqual(getCodeSetCheckDate(listing))
-                            || codeSet.getRequiredDay().isBefore(getCodeSetCheckDate(listing)))
+                    .filter(codeSet -> codeSet.getRequiredDay().isBefore(getCodeSetCheckDate(listing)))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(requiredCodeSetsForCriterion)) {
                 requiredCodeSetsForCriterion.stream()
@@ -109,11 +109,11 @@ public abstract class CodeSetReviewer implements Reviewer {
                     .forEach(missingReqCodeSet -> {
                         if (allowsExtension()
                                 && missingReqCodeSet.getExtensionEndDay() != null
-                                && getCodeSetCheckDate(listing).isBefore(missingReqCodeSet.getExtensionEndDay())) {
+                                && DateUtil.isOnOrBefore(getCodeSetCheckDate(listing), missingReqCodeSet.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.codeSetRequiredDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     missingReqCodeSet.getName(),
-                                    missingReqCodeSet.getExtensionEndDay().toString()));
+                                    missingReqCodeSet.getExtensionEndDay().plusDays(1).toString()));
                         } else {
                             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.codeSetRequired",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),

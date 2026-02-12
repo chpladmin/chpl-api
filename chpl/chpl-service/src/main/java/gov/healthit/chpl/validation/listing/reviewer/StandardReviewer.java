@@ -150,11 +150,11 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
                     if (!isStandardInList(std, standardsExistingInCertResult)) {
                         if (allowsExtension()
                                 && std.getExtensionEndDay() != null
-                                && getStandardsCheckDateRangeEnd(listing).isBefore(std.getExtensionEndDay())) {
+                                && DateUtil.isOnOrBefore(getStandardsCheckDateRangeEnd(listing), std.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     std.getRegulatoryTextCitation(),
-                                    DateUtil.format(std.getExtensionEndDay())));
+                                    DateUtil.format(std.getExtensionEndDay().plusDays(1))));
                         } else {
                             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),

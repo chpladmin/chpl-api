@@ -15,6 +15,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -135,8 +136,7 @@ public abstract class FunctionalityTestedReviewer implements Reviewer {
         if (!CollectionUtils.isEmpty(functionalitiesTestedForCriterion)) {
             List<FunctionalityTested> requiredFunctionalitiesTestedForCriterion = functionalitiesTestedForCriterion.stream()
                     .filter(ft -> ft.getRequiredDay() != null
-                        && (ft.getRequiredDay().isEqual(getFunctionalityTestedCheckDate(listing))
-                                || ft.getRequiredDay().isBefore(getFunctionalityTestedCheckDate(listing))))
+                        && ft.getRequiredDay().isBefore(getFunctionalityTestedCheckDate(listing)))
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(requiredFunctionalitiesTestedForCriterion)) {
                 requiredFunctionalitiesTestedForCriterion.stream()
@@ -144,11 +144,11 @@ public abstract class FunctionalityTestedReviewer implements Reviewer {
                     .forEach(missingReqFt -> {
                         if (allowsExtension()
                                 && missingReqFt.getExtensionEndDay() != null
-                                && getFunctionalityTestedCheckDate(listing).isBefore(missingReqFt.getExtensionEndDay())) {
+                                && DateUtil.isOnOrBefore(getFunctionalityTestedCheckDate(listing), missingReqFt.getExtensionEndDay())) {
                             listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedRequiredDuringExtensionPeriod",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
                                     missingReqFt.getRegulatoryTextCitation(),
-                                    missingReqFt.getExtensionEndDay().toString()));
+                                    missingReqFt.getExtensionEndDay().plusDays(1).toString()));
                         } else {
                             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedRequired",
                                     Util.formatCriteriaNumber(certResult.getCriterion()),
