@@ -62,12 +62,12 @@ public abstract class StandardGroupReviewer implements Reviewer {
                                     listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelectedDuringExtensionPeriod",
                                             Util.formatCriteriaNumber(certResult.getCriterion()),
                                             unattestedRequiredStandardsInGroup.stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", ")),
-                                            DateUtil.format(extensionEndDay)));
+                                            DateUtil.format(extensionEndDay.plusDays(1))));
                                 } else {
                                     listing.addWarningMessage(msgUtil.getMessage("listing.criteria.standardNotSelectedDuringExtensionPeriod",
                                             Util.formatCriteriaNumber(certResult.getCriterion()),
                                             unattestedRequiredStandardsInGroup.get(0).getRegulatoryTextCitation(),
-                                            DateUtil.format(extensionEndDay)));
+                                            DateUtil.format(extensionEndDay.plusDays(1))));
                                 }
                             } else {
                                 // Give a grammatically different message if it's multiple standards that are required vs just one
@@ -103,7 +103,8 @@ public abstract class StandardGroupReviewer implements Reviewer {
             CertificationResult certResult, LocalDate requiredAsOfDate) {
         List<Standard> attestedStandardsFromGroup = getAttestedStandardsFromGroup(groupedStandards, certResult);
         return groupedStandards.stream()
-                .filter(stdFromGroup -> stdFromGroup.getRequiredDay() != null && stdFromGroup.getRequiredDay().isBefore(requiredAsOfDate)
+                .filter(stdFromGroup -> stdFromGroup.getRequiredDay() != null
+                        && stdFromGroup.getRequiredDay().isBefore(requiredAsOfDate)
                         && stdFromGroup.getRequiredDay().isAfter(getLatestRequiredDateFromStandardList(attestedStandardsFromGroup)))
                 .filter(reqStandardFromGroup -> !isStandardInList(reqStandardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
                 .collect(Collectors.toList());
