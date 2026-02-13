@@ -209,6 +209,7 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
                     .recipient(recipientEmail)
                     .subject(emailSubject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
+                            .heading(emailSubject)
                             .paragraph("", String.format(emailBody, url, getChplProductNumber(), year + "", resultsHtml))
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
                             .footer(AdminFooter.class)
@@ -230,14 +231,14 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
                 buf.append("<li>Document URL: " + results.getDocument().getUrl() + "</li>");
             }
             if (!StringUtils.isEmpty(results.getDocument().getConfidence())) {
-                buf.append("<li>Confidence: " + results.getDocument().getConfidence() + "</li>");
+                buf.append("<li>Confidence: " + results.getDocument().getConfidence() + "%</li>");
             }
             buf.append("</ul>");
         }
         if (results.getValidation() != null) {
             buf.append("<h3>Validation Results</h3><ul>");
             if (!StringUtils.isEmpty(results.getValidation().getCompletenessScore())) {
-                buf.append("<li>Completeness Score: " + results.getValidation().getCompletenessScore() + "</li>");
+                buf.append("<li>Completeness Score: " + results.getValidation().getCompletenessScore() + "%</li>");
             }
             if (!StringUtils.isEmpty(results.getValidation().getSummary())) {
                 buf.append("<li>Validation Summary: " + results.getValidation().getSummary() + "</li>");
@@ -261,6 +262,7 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
                     .recipient(recipientEmail)
                     .subject(failureEmailSubject)
                     .htmlMessage(chplHtmlEmailBuilder.initialize()
+                            .heading(failureEmailSubject)
                             .paragraph("", String.format(failureEmailBody, url, listingId + "", year + "", errorMessage))
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
                             .footer(AdminFooter.class)
