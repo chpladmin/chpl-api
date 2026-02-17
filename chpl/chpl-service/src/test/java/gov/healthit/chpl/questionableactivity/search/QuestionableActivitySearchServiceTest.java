@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.exception.ValidationException;
@@ -26,7 +26,7 @@ public class QuestionableActivitySearchServiceTest {
     private QuestionableActivityTrigger devTrigger, prodTrigger, listingTrigger;
     private QuestionableActivitySearchService questionableActivitySearchService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         devTrigger = QuestionableActivityTrigger.builder()
                 .id(1L)

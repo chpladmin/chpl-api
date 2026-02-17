@@ -1,17 +1,14 @@
 package gov.healthit.chpl.util;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 @Log4j2
 public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
@@ -24,8 +21,7 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
 
     @Override
-    public LocalDateTime deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+    public LocalDateTime deserialize(JsonParser jp, DeserializationContext ctxt) {
         String localDateTimeString = jp.readValueAs(String.class);
         if (StringUtils.isEmpty(localDateTimeString)) {
             return null;

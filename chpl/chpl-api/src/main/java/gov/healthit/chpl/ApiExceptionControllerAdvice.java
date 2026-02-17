@@ -3,7 +3,7 @@ package gov.healthit.chpl;
 import java.io.IOException;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.collections.api.factory.SortedSets;
 import org.redisson.client.RedisTimeoutException;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+
+import com.datadog.api.client.ApiException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.domain.error.ErrorResponse;
@@ -152,6 +154,12 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> exception(ApiException e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ValidationErrorResponse> exception(ValidationException e) {
         return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
@@ -237,7 +245,7 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
-        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+        if (Strings.CI.contains(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
             return null; // socket is closed, cannot return any response
         } else {

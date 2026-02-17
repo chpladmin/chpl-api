@@ -25,6 +25,16 @@ public final class DateUtil {
     private DateUtil() {
     }
 
+    //Determines if date1 occurs on or before date2
+    public static boolean isOnOrBefore(LocalDate date1, LocalDate date2) {
+        if (date1 == null) {
+            return false;
+        } else if (date2 == null) {
+            return true;
+        }
+        return date1.isEqual(date2) || date1.isBefore(date2);
+    }
+
     public static boolean datesOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
         Pair<LocalDate, LocalDate> dateRange1 = Pair.of(startDate1, endDate1);
         Pair<LocalDate, LocalDate> dateRange2 = Pair.of(startDate2, endDate2);

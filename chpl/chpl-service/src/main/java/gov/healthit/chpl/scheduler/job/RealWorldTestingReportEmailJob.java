@@ -58,7 +58,6 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     private List<Long> acbIds = new ArrayList<Long>();
 
-    @SuppressWarnings("checkstyle:linelength")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -201,7 +200,7 @@ public class RealWorldTestingReportEmailJob implements Job {
     @Getter
     @Setter
     @AllArgsConstructor
-    private static class DayAndMonth {
+    private static final class DayAndMonth {
         private Integer day;
         private Integer month;
     }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Component
-public class AttestationCheckinReportDAO extends BaseDAOImpl{
+public class AttestationCheckinReportDAO extends BaseDAOImpl {
     public LocalDate getMaxReportDate() {
         List<LocalDate> result = entityManager.createQuery("SELECT MAX(acr.reportDate) "
                 + "FROM AttestationCheckinReportEntity acr "

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -116,25 +117,25 @@ public class ComplaintSearchService {
     }
 
     private boolean matchesAcbComplaintId(Complaint complaint, String value) {
-        return StringUtils.containsIgnoreCase(complaint.getAcbComplaintId(), value);
+        return Strings.CI.contains(complaint.getAcbComplaintId(), value);
     }
 
     private boolean matchesOncComplaintId(Complaint complaint, String value) {
-        return StringUtils.containsIgnoreCase(complaint.getOncComplaintId(), value);
+        return Strings.CI.contains(complaint.getOncComplaintId(), value);
     }
 
     private boolean matchesAssociatedCertifiedProduct(Complaint complaint, String value) {
         String associatedChplProductNumbers = complaint.getListings().stream()
                 .map(listing -> listing.getChplProductNumber())
                 .collect(Collectors.joining(" "));
-        return StringUtils.containsIgnoreCase(associatedChplProductNumbers, value);
+        return Strings.CI.contains(associatedChplProductNumbers, value);
     }
 
     private boolean matchesAssociatedCriteria(Complaint complaint, String value) {
         String associatedCriteriaNumbers = complaint.getCriteria().stream()
                 .map(criterion -> criterion.getCertificationCriterion().getNumber())
                 .collect(Collectors.joining(" "));
-        return StringUtils.containsIgnoreCase(associatedCriteriaNumbers, value);
+        return Strings.CI.contains(associatedCriteriaNumbers, value);
     }
 
     private boolean matchesInformedOnc(Complaint complaint, Set<Boolean> values) {
@@ -382,7 +383,7 @@ public class ComplaintSearchService {
         @Override
         public int compare(Complaint complaint1, Complaint complaint2) {
             int sortFactor = descending ? -1 : 1;
-            return StringUtils.compare(complaint1.getAcbComplaintId(), complaint2.getAcbComplaintId()) * sortFactor;
+            return Strings.CS.compare(complaint1.getAcbComplaintId(), complaint2.getAcbComplaintId()) * sortFactor;
         }
     }
 
@@ -396,7 +397,7 @@ public class ComplaintSearchService {
         @Override
         public int compare(Complaint complaint1, Complaint complaint2) {
             int sortFactor = descending ? -1 : 1;
-            return StringUtils.compare(complaint1.getOncComplaintId(), complaint2.getOncComplaintId()) * sortFactor;
+            return Strings.CS.compare(complaint1.getOncComplaintId(), complaint2.getOncComplaintId()) * sortFactor;
         }
     }
 
@@ -413,7 +414,7 @@ public class ComplaintSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (StringUtils.compare(complaint1.getCertificationBody().getName(),
+            return (Strings.CS.compare(complaint1.getCertificationBody().getName(),
                     complaint2.getCertificationBody().getName())) * sortFactor;
         }
     }
@@ -432,7 +433,7 @@ public class ComplaintSearchService {
             String complainantType2 = complaint2.getComplainantType() == null ? complaint2.getComplainantTypeOther()
                     : complaint2.getComplainantType().getName();
             int sortFactor = descending ? -1 : 1;
-            return (StringUtils.compareIgnoreCase(complainantType1, complainantType2)) * sortFactor;
+            return (Strings.CI.compare(complainantType1, complainantType2)) * sortFactor;
         }
     }
 

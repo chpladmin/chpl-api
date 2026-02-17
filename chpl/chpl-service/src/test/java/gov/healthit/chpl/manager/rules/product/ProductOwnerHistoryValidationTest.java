@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -32,7 +32,7 @@ public class ProductOwnerHistoryValidationTest {
     private ProductDAO productDao;
     private ErrorMessageUtil msgUtil;
 
-    @Before
+    @BeforeEach
     public void setup() throws EntityRetrievalException {
         devDao = Mockito.mock(DeveloperDAO.class);
         Mockito.when(devDao.getById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))

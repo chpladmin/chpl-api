@@ -3,6 +3,11 @@ package gov.healthit.chpl.optionalStandard.entity;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLJoinTableRestriction;
+
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.WhereJoinTable;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,7 +56,7 @@ public class OptionalStandardEntity extends EntityAudit {
     @JoinTable(name = "optional_standard_criteria_map",
         joinColumns = {@JoinColumn(name = "optional_standard_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "criterion_id", referencedColumnName = "certification_criterion_id")})
-    @WhereJoinTable(clause = "deleted <> true")
+    @SQLJoinTableRestriction("deleted <> true")
     private List<CertificationCriterionEntity> criteria;
 
     public OptionalStandard toDomain() {

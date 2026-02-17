@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -29,7 +29,7 @@ public class CodeSetNormalizerTest {
     private CertificationCriterion a1, a2, a5;
     private CodeSet a1a2CodeSet, a5CodeSet;
 
-    @Before
+    @BeforeEach
     public void setup() {
         a1 = CertificationCriterion.builder()
                 .id(1L)

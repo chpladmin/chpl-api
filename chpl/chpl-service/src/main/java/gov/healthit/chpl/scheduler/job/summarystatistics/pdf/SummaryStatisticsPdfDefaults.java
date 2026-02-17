@@ -34,6 +34,14 @@ public final class SummaryStatisticsPdfDefaults {
         }
     }
 
+    public static PdfFont getDefaultItalicFont() {
+        try {
+            return PdfFontFactory.createFont(StandardFonts.TIMES_ITALIC);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static PdfFont getDefaultTableHeaderFont() {
         try {
             return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);

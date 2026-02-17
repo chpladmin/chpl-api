@@ -111,7 +111,7 @@ public class CheckInReport {
                 "Total Direct Review Non-conformities",
                 "Open Direct Review Non-conformities",
                 "Has listing(s) with Assurances criteria (b)(10)",
-                "Has listing(s) with API criteria (g)(7)-(g)(10)",
+                "Has listing(s) with API criteria",
                 "Has listing(s) with RWT criteria");
     }
 }

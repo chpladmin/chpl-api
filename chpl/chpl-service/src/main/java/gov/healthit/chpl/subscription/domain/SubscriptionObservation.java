@@ -2,8 +2,8 @@ package gov.healthit.chpl.subscription.domain;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;

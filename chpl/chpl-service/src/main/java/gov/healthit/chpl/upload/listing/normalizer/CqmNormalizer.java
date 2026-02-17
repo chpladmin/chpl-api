@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +69,7 @@ public class CqmNormalizer {
 
     private void normalizeCmsId(CQMResultDetails cqmResult) {
         String cmsId = cqmResult.getCmsId();
-        if (!StringUtils.isEmpty(cmsId) && !StringUtils.startsWithIgnoreCase(cmsId, CqmCriterionService.CMS_ID_BEGIN)) {
+        if (!StringUtils.isEmpty(cmsId) && !Strings.CI.startsWith(cmsId, CqmCriterionService.CMS_ID_BEGIN)) {
             cmsId = CqmCriterionService.CMS_ID_BEGIN + cmsId;
             cqmResult.setCmsId(cmsId);
         }

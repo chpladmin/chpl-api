@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import tools.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.domain.auth.User;
 import lombok.Data;
@@ -17,7 +18,9 @@ public class ActivityDetails implements Serializable {
 
     private Long id;
     private String description;
+    @JsonRawValue
     private JsonNode originalData;
+    @JsonRawValue
     private JsonNode newData;
     private Date activityDate;
     private Long activityObjectId;

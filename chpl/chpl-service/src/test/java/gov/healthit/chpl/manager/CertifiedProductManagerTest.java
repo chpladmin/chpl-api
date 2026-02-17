@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,8 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -99,7 +100,7 @@ public class CertifiedProductManagerTest {
 
     private CertifiedProductManager certifiedProductManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         cpDao = Mockito.mock(CertifiedProductDAO.class);
@@ -147,7 +148,7 @@ public class CertifiedProductManagerTest {
                 Mockito.mock(ChplHtmlEmailBuilder.class));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void update_HasValidationWarningsAndNoAck_ThrowsValidationException()
             throws MissingReasonException, EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
@@ -172,7 +173,10 @@ public class CertifiedProductManagerTest {
         request.setAcknowledgeWarnings(false);
         request.setListing(getCertifiedProductSearchDetails());
 
-        certifiedProductManager.update(request);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            certifiedProductManager.update(request);
+        });
+        assertNotNull(exception);
     }
 
     @Test

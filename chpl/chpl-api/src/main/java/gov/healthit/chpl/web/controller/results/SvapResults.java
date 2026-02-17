@@ -6,7 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 
-public class SvapResults implements Serializable{
+public class SvapResults implements Serializable {
     private static final long serialVersionUID = 2250111259774528020L;
     private List<SvapCriteriaMap> results;
 

@@ -126,7 +126,7 @@ public class GenerateListingDownloadFilesAspect {
     @Getter
     @Setter
     @AllArgsConstructor
-    private class DownloadJobRunInformation {
+    private final class DownloadJobRunInformation {
         private String jobName;
         private Environment env;
 

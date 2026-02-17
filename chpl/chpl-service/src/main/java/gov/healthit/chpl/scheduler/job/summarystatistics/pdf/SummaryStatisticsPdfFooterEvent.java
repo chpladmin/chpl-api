@@ -1,23 +1,22 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.pdf;
 
-import com.itextpdf.kernel.events.Event;
-import com.itextpdf.kernel.events.IEventHandler;
-import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.event.AbstractPdfDocumentEvent;
+import com.itextpdf.kernel.pdf.event.AbstractPdfDocumentEventHandler;
+import com.itextpdf.kernel.pdf.event.PdfDocumentEvent;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.properties.TextAlignment;
 
-public class SummaryStatisticsPdfFooterEvent implements IEventHandler {
+public class SummaryStatisticsPdfFooterEvent extends AbstractPdfDocumentEventHandler {
     private static final String FOOTER_TEXT =
             "* Developers and products may be certified by more than one ONC-ACB. Therefore, "
             + "counts for each ONC-ACB may not add up to the total developer or product count on CHPL.";
 
-    @SuppressWarnings("resource")
     @Override
-    public void handleEvent(Event event) {
+    protected void onAcceptedEvent(AbstractPdfDocumentEvent event) {
         PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
         PdfDocument pdf = docEvent.getDocument();
         PdfPage page = docEvent.getPage();
@@ -30,6 +29,7 @@ public class SummaryStatisticsPdfFooterEvent implements IEventHandler {
         float x = (pageSize.getLeft() + pageSize.getRight()) / 2;
         float y = pageSize.getBottom() + 15;
         canvas.showTextAligned(FOOTER_TEXT, x, y, TextAlignment.CENTER);
+        canvas.close();
     }
 
 

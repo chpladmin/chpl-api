@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -35,7 +35,7 @@ public class AdditionalSoftwareReviewerTest {
     private ErrorMessageUtil msgUtil;
     private AdditionalSoftwareReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);

@@ -1,15 +1,15 @@
 package gov.healthit.chpl.search;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -72,7 +72,7 @@ public class SearchRequestValidatorTest {
     private ErrorMessageUtil msgUtil;
     private SearchRequestValidator validator;
 
-    @Before
+    @BeforeEach
     public void setup() {
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         editionDao = Mockito.mock(CertificationEditionDAO.class);

@@ -2,6 +2,11 @@ package gov.healthit.chpl.changerequest.entity;
 
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,12 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +43,7 @@ public class ChangeRequestAttestationSubmissionEntity extends EntityAudit {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
             updatable = false)
-    @Where(clause = " deleted <> true ")
+    @SQLRestriction(" deleted <> true ")
     private ChangeRequestEntity changeRequest;
 
     @OneToOne(fetch = FetchType.LAZY)

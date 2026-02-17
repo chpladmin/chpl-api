@@ -1,7 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -26,7 +26,7 @@ public class CertificationCriterionNormalizerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionNormalizer normalizer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         certResultRules = Mockito.mock(CertificationResultRules.class);
         //mock that no criteria can have any fields, will change in specific tests

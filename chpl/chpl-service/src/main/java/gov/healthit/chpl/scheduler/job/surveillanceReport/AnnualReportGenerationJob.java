@@ -15,10 +15,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -57,7 +57,7 @@ public class AnnualReportGenerationJob extends QuartzJob implements Job {
     private String acbatlFeedbackUrl;
 
     @Autowired
-    private JpaTransactionManager txManager;
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private ErrorMessageUtil msgUtil;
@@ -90,11 +90,9 @@ public class AnnualReportGenerationJob extends QuartzJob implements Job {
             setSecurityContext(user);
             Long annualReportId = (Long) jobDataMap.get(ANNUAL_REPORT_ID_KEY);
 
-            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            txTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
+            TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
+                    new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+            transactionOperations.executeWithoutResult(status -> {
                     AnnualReport report = null;
                     try {
                         report = reportManager.getAnnualReport(annualReportId);
@@ -133,7 +131,6 @@ public class AnnualReportGenerationJob extends QuartzJob implements Job {
                         }
                         workbookWrapper.close();
                     }
-                }
             });
         } else {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);

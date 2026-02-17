@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,7 +34,7 @@ public class DeveloperBanComparisonReviewerTest {
     private ErrorMessageUtil msgUtil;
     private DeveloperBanComparisonReviewer reviewer;
 
-    @Before
+    @BeforeEach
     public void before() {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
         cseService = new CertificationStatusEventsService(

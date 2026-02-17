@@ -1,11 +1,22 @@
 package gov.healthit.chpl.permissions.domains.questionableActivity;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("questionableActivityGetActionPermissions")
 public class GetActionPermissions extends ActionPermissions {
+
+    @Autowired
+    public GetActionPermissions(ResourcePermissionsFactory resourcePermissionsFactory,
+            CertifiedProductDAO certifiedProductDao,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao) {
+        super(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao);
+    }
 
     @Override
     public boolean hasAccess() {

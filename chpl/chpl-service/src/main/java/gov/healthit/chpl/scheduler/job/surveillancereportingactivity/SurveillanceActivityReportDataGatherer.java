@@ -70,9 +70,7 @@ public class SurveillanceActivityReportDataGatherer {
 
     @SuppressWarnings("resource")
     private Iterable<CSVRecord> getIterableCsvRecords(String fileName) throws FileNotFoundException, IOException  {
-        return CSVFormat
-                .DEFAULT
-                .withHeader()
-                .parse(new BufferedReader(new FileReader(fileName)));
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader().get();
+        return csvFormat.parse(new BufferedReader(new FileReader(fileName)));
     }
 }

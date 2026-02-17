@@ -6,7 +6,6 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
-    public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String MEASURES = "measures";
     public static final String MEASURE_TYPES = "measureTypes";
     public static final String CERTIFICATION_CRITERIA = "certificationCriteria";

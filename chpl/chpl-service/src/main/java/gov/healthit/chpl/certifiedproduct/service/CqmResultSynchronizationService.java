@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import gov.healthit.chpl.cqm.CQMCriterion;
 import gov.healthit.chpl.cqm.CQMResultCertification;
@@ -41,7 +41,7 @@ public class CqmResultSynchronizationService {
 
     public int synchronizeCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JacksonException {
 
         int numChanges = 0;
         numChanges += addCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);

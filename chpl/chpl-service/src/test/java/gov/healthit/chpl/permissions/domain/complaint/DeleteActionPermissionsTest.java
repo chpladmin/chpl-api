@@ -1,18 +1,19 @@
 package gov.healthit.chpl.permissions.domain.complaint;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -25,18 +26,24 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private ComplaintDAO complaintDAO;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Mock
-    private ResourcePermissionsFactory resourcePermissionsFacotry;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDao;
+
+    @Mock
+    private CertifiedProductDAO certifiedProductDao;
+
+    @Mock
+    private ComplaintDAO complaintDao;
 
     @InjectMocks
     private DeleteActionPermissions permissions;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
+        permissions = new DeleteActionPermissions(resourcePermissionsFactory, certifiedProductDao, developerCertificationBodyMapDao, complaintDao);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 
@@ -69,11 +76,11 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
         complaint.setCertificationBody(new CertificationBody());
         complaint.getCertificationBody().setId(2L);
 
-        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
+        Mockito.when(complaintDao.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
         assertTrue(permissions.hasAccess(1L));
 
         complaint.getCertificationBody().setId(1L);
-        Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
+        Mockito.when(complaintDao.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
         assertFalse(permissions.hasAccess(1L));
     }
 

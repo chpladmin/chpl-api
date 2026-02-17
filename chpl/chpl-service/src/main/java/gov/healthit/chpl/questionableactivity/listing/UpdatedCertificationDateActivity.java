@@ -4,9 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
