@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 53.0.0
+_17 February 2026_
+
+### Breaking changes
+* Remove deprecated test tool fields
+* Remove /data/* endpoints
+
+### Features
+* Add new g-criteria as API eligible for Attestations
+
+### Bug Fixes
+* Adjust usage of required day and extension day warning message
+* Load codesets on demand to avoid server restart needed
+
+---
+
 ## Version 52.5.0
 _4 February 2026_
 
