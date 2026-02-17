@@ -40,7 +40,7 @@ public class DatadogUrlUptimeSynchonizer {
     // VARIABLE NAMING CONVENTION
     // ServiceBaseUrlList - these are service base url lists collected from the listings in CHPL, grouped by developer
     // DatadogSyntheticsTest - these are synthetic tests that exist in Datadog
-    // UrlUptimeMonitor - these are reporting entities that are store in the table url_uptime_monitors
+    // UrlUptimeMonitor - these are reporting entities that are store in the table url_uptime_monitor
 
     private DatadogSyntheticsTestService datadogSyntheticsTestService;
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
@@ -82,12 +82,16 @@ public class DatadogUrlUptimeSynchonizer {
                 .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor -> {
                         String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
                         datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
+                            try {
                                 urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                         .urlUptimeMonitorId(urlUptimeMonitor.getId())
                                         .datadogTestKey(syntheticsTestResult.getResultId())
                                         .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
                                         .passed(calculatePassed(syntheticsTestResult, publicId))
                                         .build());
+                            } catch (Exception ex) {
+                                LOGGER.error("Could not process url_uptime_monitor " + publicId + " for url " + urlUptimeMonitor.getUrl() + " and developer " + urlUptimeMonitor.getDeveloper().getId());
+                            }
                         });
                 }));
     }
@@ -97,7 +101,7 @@ public class DatadogUrlUptimeSynchonizer {
             return true;
         } else {
             SyntheticsAPITestResultFull detailedResult = datadogSyntheticsTestResultService.getDetailedTestResult(publicId, result.getResultId());
-            return isErrorIgnorable(detailedResult.getResult().getFailure().getCode());
+            return detailedResult != null && isErrorIgnorable(detailedResult.getResult().getFailure().getCode());
         }
     }
 
@@ -199,7 +203,7 @@ public class DatadogUrlUptimeSynchonizer {
         existing.stream()
                 .filter(uum -> !contains(expected, uum))
                 .forEach(urlMonitor -> {
-                        LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
+                        LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId(), urlMonitor.getDatadogPublicId());
                         urlUptimeMonitorDAO.delete(urlMonitor);
                 });
     }
