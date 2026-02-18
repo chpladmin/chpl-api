@@ -67,6 +67,9 @@ public class AttestationCheckinReportDAO extends BaseDAOImpl {
                     .realWorldTestingValidation(report.getRealWorldTestingValidation())
                     .apiValidation(report.getApiValidation())
                     .warnings(report.getWarnings())
+                    .attestsG7(report.getAttestsG7())
+                    .attestsG9(report.getAttestsG9())
+                    .attestsG10(report.getAttestsG10())
                     .build();
             create(entity);
         });
