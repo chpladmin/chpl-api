@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,12 +31,15 @@ import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.ValidationException;
+import io.github.bucket4j.Bucket;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
 public class DatadogUrlUptimeSynchonizer {
     private static final Long DAYS_TO_LOOK_BACK_FOR_RESULTS = 7L;
+    private static final long DATADOG_REQUESTS_PER_MINUTE = 90; //the actual limit is 100 but I don't feel like we need to cut it that close
+    private static final long DATADOG_REQUESTS_BURST_LIMIT = 5;
 
     // VARIABLE NAMING CONVENTION
     // ServiceBaseUrlList - these are service base url lists collected from the listings in CHPL, grouped by developer
@@ -48,6 +52,7 @@ public class DatadogUrlUptimeSynchonizer {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
     private DeveloperSearchService developerSearchService;
+    private Bucket bucket;
 
     private List<String> errorsToIgnore;
 
@@ -61,7 +66,16 @@ public class DatadogUrlUptimeSynchonizer {
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
         this.developerSearchService = developerSearchService;
-
+        this.bucket = Bucket.builder()
+                // 1. Sustained Limit: 90 requests per 1 minute
+                .addLimit(limit -> limit
+                    .capacity(DATADOG_REQUESTS_PER_MINUTE)
+                    .refillGreedy(DATADOG_REQUESTS_PER_MINUTE, Duration.ofMinutes(1)))
+                // 2. Burst Limit: Maximum 5 requests per 1 second
+                .addLimit(limit -> limit
+                    .capacity(DATADOG_REQUESTS_BURST_LIMIT)
+                    .refillGreedy(DATADOG_REQUESTS_BURST_LIMIT, Duration.ofSeconds(1)))
+                .build();
         errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");
     }
 
@@ -83,6 +97,8 @@ public class DatadogUrlUptimeSynchonizer {
                         String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
                         datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
                             try {
+                                //Blocks until tokens for BOTH limits are available
+                                bucket.asBlocking().consumeUninterruptibly(1);
                                 urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                         .urlUptimeMonitorId(urlUptimeMonitor.getId())
                                         .datadogTestKey(syntheticsTestResult.getResultId())
