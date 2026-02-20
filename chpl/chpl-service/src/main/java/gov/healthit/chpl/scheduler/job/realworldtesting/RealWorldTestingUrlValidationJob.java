@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.realworldtesting;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
@@ -242,12 +241,6 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             }
             if (!StringUtils.isEmpty(results.getValidation().getSummary())) {
                 buf.append("<li>Validation Summary: " + results.getValidation().getSummary() + "</li>");
-            }
-            if (!CollectionUtils.isEmpty(results.getValidation().getRecommendations())) {
-                buf.append("<li>Recommendations: <ul>");
-                results.getValidation().getRecommendations().stream()
-                    .forEach(rec -> buf.append("<li>" + rec + "</li>"));
-                buf.append("</ul></li>");
             }
             buf.append("</ul>");
         }

@@ -1,7 +1,5 @@
 package gov.healthit.chpl.astpai;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -36,8 +34,6 @@ public class UrlValidationResponse {
     public static final class Validation {
         @JsonProperty("completeness_score")
         private String completenessScore;
-        private List<String> recommendations;
         private String summary;
-        //TODO critical failures, warnings
     }
 }
