@@ -54,7 +54,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                     .map(acb -> acb.getId())
                     .toList();
 
-            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER);
+            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER).stream()
+                    .filter(report -> report.getAttestsG7() || report.getAttestsG9() || report.getAttestsG10())
+                    .collect(Collectors.toList());
 
             TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
                     new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
