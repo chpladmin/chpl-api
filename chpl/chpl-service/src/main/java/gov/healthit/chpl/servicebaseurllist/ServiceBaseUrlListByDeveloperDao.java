@@ -14,8 +14,7 @@ public class ServiceBaseUrlListByDeveloperDao extends BaseDAOImpl {
     public List<ServiceBaseUrlListByDeveloper> getSbulUrls(Long developerId) {
         Query query = entityManager.createQuery("SELECT urls "
                 + "FROM ServiceBaseUrlListUrlsByDeveloperEntity urls "
-                + "WHERE urls.developerId = :developerId "
-                + "AND urls.sbulUrl IS NOT NULL ",
+                + "WHERE urls.developerId = :developerId ",
                 ServiceBaseUrlListUrlsByDeveloperEntity.class);
         query.setParameter("developerId", developerId);
 
