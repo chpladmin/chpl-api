@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import tools.jackson.core.JacksonException;
-
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
@@ -49,6 +47,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
+import gov.healthit.chpl.servicebaseurllist.ServiceBaseUrlListByDeveloper;
+import gov.healthit.chpl.servicebaseurllist.ServiceBaseUrlListManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
@@ -58,6 +58,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Tag(name = "developers", description = "Allows management of developers, their users, and retrieval of their direct reviews.")
 @RestController
@@ -71,6 +72,7 @@ public class DeveloperController {
     private InsightService insightsService;
     private DirectReviewCachingService directReviewService;
     private RealWorldTestingManager rwtManager;
+    private ServiceBaseUrlListManager sbulManager;
     private FF4j ff4j;
 
     @Autowired
@@ -81,6 +83,7 @@ public class DeveloperController {
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
             RealWorldTestingManager rwtManager,
+            ServiceBaseUrlListManager sbulManager,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.attestationManager = attestationManager;
@@ -88,6 +91,7 @@ public class DeveloperController {
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
         this.rwtManager = rwtManager;
+        this.sbulManager = sbulManager;
         this.ff4j = ff4j;
     }
 
@@ -151,6 +155,15 @@ public class DeveloperController {
             throw new NotImplementedException("This method has not been implemented");
         }
         return new ResponseEntity<List<InsightSubmission>>(insightsService.getInsightSubmissions(developerId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "List all Service Base URL List URLs from active certificates for a developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{developerId}/sbul-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ServiceBaseUrlListByDeveloper> getSbulUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        return sbulManager.getUrls(developerId);
     }
 
     @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
