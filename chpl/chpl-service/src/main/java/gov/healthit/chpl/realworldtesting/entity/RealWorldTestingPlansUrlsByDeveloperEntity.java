@@ -2,15 +2,14 @@ package gov.healthit.chpl.realworldtesting.entity;
 
 import java.io.Serializable;
 
+import org.hibernate.annotations.Immutable;
+
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import lombok.Data;
 
 @Entity
@@ -28,6 +27,8 @@ public class RealWorldTestingPlansUrlsByDeveloperEntity {
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
 
+    @Deprecated
+    //TODO: Remember to remove this column from the view when the field is removed.
     @Column(name = " active_certificate_count", insertable = false, updatable = false)
     private Long activeCertificateCount;
 

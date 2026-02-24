@@ -51,6 +51,7 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -157,6 +158,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{developerId}/rwt-plans-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/rwt-plans-urls", httpMethod = "GET", responseClass = RealWorldTestingUrlByDeveloper.class)
     public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtPlansUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         return rwtManager.getPlansUrls(developerId);
     }
@@ -166,6 +168,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{developerId}/rwt-results-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/rwt-results-urls", httpMethod = "GET", responseClass = RealWorldTestingUrlByDeveloper.class)
     public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtResultsUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         return rwtManager.getResultsUrls(developerId);
     }
