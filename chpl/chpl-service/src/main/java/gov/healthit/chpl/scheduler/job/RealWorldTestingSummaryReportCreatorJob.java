@@ -54,15 +54,19 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                     .map(acb -> acb.getId())
                     .toList();
 
-            List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER).stream()
+            List<RealWorldTestingReport> rwtPlansReports = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER).stream()
+                    .collect(Collectors.toList());
+
+            //RWT Results requirement is only enforced for listings with g7, g9, or g10 so we only want to report on those
+            List<RealWorldTestingReport> rwtResultReports = rwtPlansReports.stream()
                     .filter(report -> report.getAttestsG7() || report.getAttestsG9() || report.getAttestsG10())
                     .collect(Collectors.toList());
 
             TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
                     new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
             transactionOperations.executeWithoutResult(status -> {
-                    processRwtPlanCounts(reportRows);
-                    processRwtResultsCounts(reportRows);
+                    processRwtPlanCounts(rwtPlansReports);
+                    processRwtResultsCounts(rwtResultReports);
             });
         } catch (Exception e) {
             LOGGER.catching(e);
