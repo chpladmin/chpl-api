@@ -70,7 +70,8 @@ public class DatadogSyntheticsTestResultService {
         try {
             return apiProvider.getApiInstance().getAPITestResult(publicTestKey, resultId);
         } catch (ApiException e) {
-            LOGGER.error("Could not retrieve test result details for: {} | {}", publicTestKey, resultId);
+            LOGGER.error("Could not retrieve test result details for: {} | {}", publicTestKey, resultId, e);
+            LOGGER.error("Datadog API error response: " + e.getResponseBody());
             return null;
         }
     }

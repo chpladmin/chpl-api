@@ -181,17 +181,6 @@
               </exclusion>
             </exclusions>
         </dependency>
-        <!--dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${commons.fileupload.version}</version>
-            <exclusions>
-              <exclusion>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -360,6 +349,14 @@
             <groupId>com.datadoghq</groupId>
             <artifactId>datadog-api-client</artifactId>
             <version>2.48.0</version>
+        </dependency>
+        <!-- Provides throttling and rate-limiting behavior-->
+        <!-- Specifically being used to slow down our requests to the Datadog API to avoid being rate-limited -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.16.1</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- jars provided by the system and not included in the packaged jar -->
