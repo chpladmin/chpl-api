@@ -1,6 +1,9 @@
 package gov.healthit.chpl.scheduler.job.realworldtesting;
 
 import org.apache.commons.lang3.StringUtils;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -240,11 +243,19 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
                 buf.append("<li>Completeness Score: " + results.getValidation().getCompletenessScore() + "%</li>");
             }
             if (!StringUtils.isEmpty(results.getValidation().getSummary())) {
-                buf.append("<li>Validation Summary: " + results.getValidation().getSummary() + "</li>");
+                buf.append("<li>Validation Summary: " + convertMarkdownToHtml(results.getValidation().getSummary()) + "</li>");
             }
             buf.append("</ul>");
         }
         return buf.toString();
+    }
+
+    private String convertMarkdownToHtml(String toConvert) {
+        Parser parser  = Parser.builder().build();
+        Node document = parser.parse(toConvert);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        String converted = renderer.render(document);
+        return converted;
     }
 
     private void sendErrorEmail(String recipientEmail, String errorMessage)  {
