@@ -6,18 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -66,10 +63,12 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
 
     private Bucket getBucketForApiKey(String apiKey) {
         if (!rateLimitingBuckets.containsKey(apiKey)) {
+
             rateLimitingBuckets.put(apiKey, Bucket.builder()
-                    .addLimit(Bandwidth.classic(rateLimitRequestCount,
-                            Refill.intervally(rateLimitRequestCount, Duration.ofSeconds(rateLimitTimePeriod))))
-            .build());
+                    .addLimit(limit -> limit
+                            .capacity(rateLimitRequestCount)
+                            .refillIntervally(rateLimitRequestCount, Duration.ofSeconds(rateLimitTimePeriod)))
+                            .build());
         }
         return rateLimitingBuckets.get(apiKey);
     }

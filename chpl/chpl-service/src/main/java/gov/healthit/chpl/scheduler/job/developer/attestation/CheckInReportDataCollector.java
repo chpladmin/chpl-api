@@ -11,6 +11,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
@@ -24,6 +25,7 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
@@ -41,6 +43,7 @@ public class CheckInReportDataCollector {
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
     private AttestationCertificationBodyService attestationCertificationBodyService;
+    private CertificationCriterion g7, g9, g10;
 
     private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
@@ -63,6 +66,9 @@ public class CheckInReportDataCollector {
         this.checkInReportSourceService = checkInReportSourceService;
         this.checkInReportValidation = checkInReportValidation;
         this.attestationCertificationBodyService = attestationCertificationBodyService;
+        this.g7 = certificationCriterionService.get(Criteria2015.G_7);
+        this.g9 = certificationCriterionService.get(Criteria2015.G_9_CURES);
+        this.g10 = certificationCriterionService.get(Criteria2015.G_10);
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
@@ -163,11 +169,14 @@ public class CheckInReportDataCollector {
     }
 
     private CheckInReport addComplianceInformation(CheckInReport checkInReport, Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper) {
-        checkInReport.setTotalSurveillances(getTotalSurveillances(developer, allActiveListingsForDeveloper, LOGGER));
-        checkInReport.setTotalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER));
-        checkInReport.setOpenSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER));
+        checkInReport.setTotalSurveillances(getTotalSurveillances(allActiveListingsForDeveloper));
+        checkInReport.setTotalSurveillanceNonconformities(getTotalSurveillanceNonconformities(allActiveListingsForDeveloper));
+        checkInReport.setOpenSurveillanceNonconformities(getOpenSurveillanceNonconformities(allActiveListingsForDeveloper));
         checkInReport.setTotalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER));
         checkInReport.setOpenDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER));
+        checkInReport.setAttestsG7(getAnyListingForDeveloperAttestsCriterion(allActiveListingsForDeveloper, g7));
+        checkInReport.setAttestsG9(getAnyListingForDeveloperAttestsCriterion(allActiveListingsForDeveloper, g9));
+        checkInReport.setAttestsG10(getAnyListingForDeveloperAttestsCriterion(allActiveListingsForDeveloper, g10));
         return checkInReport;
     }
 
@@ -197,22 +206,30 @@ public class CheckInReportDataCollector {
         return form.formatOptionalResponsesForCondition(conditionId);
     }
 
-    private Long getTotalSurveillances(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+    private Long getTotalSurveillances(List<ListingSearchResult> allActiveListingsForDeveloper) {
         return allActiveListingsForDeveloper.stream()
                 .map(listing -> addSurveillanceCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getTotalSurveillanceNonconformities(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+    private Long getTotalSurveillanceNonconformities(List<ListingSearchResult> allActiveListingsForDeveloper) {
         return allActiveListingsForDeveloper.stream()
                 .map(listing -> addOpenAndClosedNonconformityCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getOpenSurveillanceNonconformities(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+    private Long getOpenSurveillanceNonconformities(List<ListingSearchResult> allActiveListingsForDeveloper) {
         return allActiveListingsForDeveloper.stream()
                 .map(listing -> listing.getOpenSurveillanceNonConformityCount())
                 .collect(Collectors.summingLong(Long::longValue));
+    }
+
+    private Boolean getAnyListingForDeveloperAttestsCriterion(List<ListingSearchResult> allActiveListingsForDeveloper, CertificationCriterion criterionToCheck) {
+        return allActiveListingsForDeveloper.stream()
+                .flatMap(listing -> listing.getCriteriaMet().stream())
+                .filter(criterion -> criterion.getId().equals(criterionToCheck.getId()))
+                .findAny()
+                .isPresent();
     }
 
     private Long getTotalDirectReviewNonconformities(Developer developer, Logger logger) {

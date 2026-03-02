@@ -129,6 +129,14 @@ public class AttestationCheckinReportEntity extends EntityAudit {
     @Column(name = "warnings")
     private String warnings;
 
+    @Column(name = "attests_g7")
+    private Boolean attestsG7;
+
+    @Column(name = "attests_g9")
+    private Boolean attestsG9;
+
+    @Column(name = "attests_g10")
+    private Boolean attestsG10;
 
     public CheckInReport toDomain() {
         return CheckInReport.builder()
@@ -162,7 +170,9 @@ public class AttestationCheckinReportEntity extends EntityAudit {
                 .realWorldTestingValidation(this.getRealWorldTestingValidation())
                 .apiValidation(this.getApiValidation())
                 .warnings(this.getWarnings())
+                .attestsG7(this.getAttestsG7())
+                .attestsG9(this.getAttestsG9())
+                .attestsG10(this.getAttestsG10())
                 .build();
-
     }
 }
