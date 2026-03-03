@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 53.1.0
+_2 March 2026_
+
+### Features
+* Stay under Datadog's rate limits when getting synthetics tests
+* Show g7, g9, and g10 columns within Attestation Check-In Report
+
+---
+
 ## Version 53.0.0
 _17 February 2026_
 
