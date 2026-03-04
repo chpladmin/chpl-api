@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -82,6 +83,7 @@ public class CqmNormalizer {
 
         int maxAttestedVersion = cqmResult.getSuccessVersions().stream()
                 .map(successVer -> successVer.substring(1))
+                .filter(successVer -> NumberUtils.isCreatable(successVer))
                 .mapToInt(Integer::valueOf)
                 .max()
                 .orElse(0);
