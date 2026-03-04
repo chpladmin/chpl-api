@@ -19,6 +19,7 @@ import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
 import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
+import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingUrlValidationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 
@@ -44,6 +45,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(ChangeRequestReportEmailJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(UpdateCurrentCertificationStatusJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(CognitoUserCacheRefreshJob.JOB_NAME);
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(RealWorldTestingUrlValidationJob.JOB_NAME);
 
         BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.add(CertificationIdEmailJob.JOB_NAME);
 
