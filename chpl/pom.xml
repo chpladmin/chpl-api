@@ -79,7 +79,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-enforcer-plugin</artifactId>
-              <version>3.0.0</version>
+              <version>3.6.2</version>
             </plugin>
             <!-- The below few plugins are implicitly used by maven and do not need to be declared,
                  but it is best practice to put them here with the versions we want to use to ensure
