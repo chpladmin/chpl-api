@@ -27,7 +27,7 @@
         <lombok.version>1.18.42</lombok.version>
         <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
         <mvn.jar.plugin.version>3.2.1</mvn.jar.plugin.version>
-        <mvn.jxr.plugin.version>3.1.1</mvn.jxr.plugin.version>
+        <mvn.jxr.plugin.version>3.6.0</mvn.jxr.plugin.version>
         <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
         <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
         <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
