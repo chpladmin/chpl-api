@@ -232,7 +232,7 @@ public class CHPLServiceConfig implements EnvironmentAware {
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
                         .setDefaultSocketConfig(SocketConfig.custom()
-                                .setSoTimeout(getRequestTimeout(), TimeUnit.MILLISECONDS)
+                                .setSoTimeout(getJiraRequestTimeout(), TimeUnit.MILLISECONDS)
                                 .build())
                         .setTlsSocketStrategy(new DefaultClientTlsStrategy(
                                 SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
@@ -242,7 +242,7 @@ public class CHPLServiceConfig implements EnvironmentAware {
 
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
-        requestFactory.setConnectionRequestTimeout(getRequestTimeout());
+        requestFactory.setConnectionRequestTimeout(getJiraRequestTimeout());
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
@@ -277,9 +277,44 @@ public class CHPLServiceConfig implements EnvironmentAware {
         return restTemplate;
     }
 
-    private int getRequestTimeout() {
+    private int getJiraRequestTimeout() {
         int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
         String requestTimeoutProperty = env.getProperty("jira.requestTimeoutMillis");
+        if (!StringUtils.isEmpty(requestTimeoutProperty)) {
+            try {
+                requestTimeout = Integer.parseInt(requestTimeoutProperty);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
+                        + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
+            }
+        }
+        return requestTimeout;
+    }
+
+    @Bean
+    public RestTemplate httpsRestTemplate()
+            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+                        .setDefaultSocketConfig(SocketConfig.custom()
+                                .setSoTimeout(getAstpAiRequestTimeout(), TimeUnit.MILLISECONDS)
+                                .build())
+                        .setTlsSocketStrategy(new DefaultClientTlsStrategy(
+                                SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
+                                NoopHostnameVerifier.INSTANCE))
+                        .build())
+                .build();
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setHttpClient(httpClient);
+        requestFactory.setConnectionRequestTimeout(getJiraRequestTimeout());
+
+        return new RestTemplate(requestFactory);
+    }
+
+    private int getAstpAiRequestTimeout() {
+        int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        String requestTimeoutProperty = env.getProperty("astpai.requestTimeoutMillis");
         if (!StringUtils.isEmpty(requestTimeoutProperty)) {
             try {
                 requestTimeout = Integer.parseInt(requestTimeoutProperty);

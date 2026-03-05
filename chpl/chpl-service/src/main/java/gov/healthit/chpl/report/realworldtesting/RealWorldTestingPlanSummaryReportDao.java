@@ -51,22 +51,6 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
                 .toList();
     }
 
-    private RealWorldTestingPlanSummaryReportEntity getEntity(Long id) throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from RealWorldTestingPlanSummaryReportEntity where (NOT deleted = true) and id = :id", RealWorldTestingPlanSummaryReportEntity.class);
-        query.setParameter("id", id);
-        List<RealWorldTestingPlanSummaryReportEntity> result = query.getResultList();
-
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate id in real_world_testing_plan_summary_report table.");
-        }
-
-        if (result.size() > 0) {
-            return result.get(0);
-        }
-        return null;
-    }
-
     private RealWorldTestingPlanSummaryReportEntity getEntityByCheckedDateAndAcb(LocalDate checkedDate, Long certificationBodyId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
                 "from RealWorldTestingPlanSummaryReportEntity rwtps "
