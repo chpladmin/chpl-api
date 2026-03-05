@@ -4,6 +4,10 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/"
+    directories: 
+      - "/chpl"
+      - "/chpl/chpl-api"
+      - "/chpl/chpl-resources"
+      - "/chpl/chpl-service"
     schedule:
       interval: "monthly"
