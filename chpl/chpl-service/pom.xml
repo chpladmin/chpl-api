@@ -341,7 +341,7 @@
         <dependency>
             <groupId>org.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>4.20.0</version>
+            <version>4.21.0</version>
         </dependency>
 
         <!-- Provides Java interface to Datdog API -->
