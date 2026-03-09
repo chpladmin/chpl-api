@@ -44,7 +44,6 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private ActivityManager activityManager;
     private CertificationCriterionService certificationCriterionService;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
