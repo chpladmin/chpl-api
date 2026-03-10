@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -77,7 +78,7 @@ public class CqmUploadHandler {
             }
             List<String> splitTrimmedVersions = Arrays.stream(splitVersions)
                     .map(String::trim)
-                    .map(ver -> !ver.startsWith(CQMCriterion.VERSION_PREPEND_CHAR) ? (CQMCriterion.VERSION_PREPEND_CHAR + ver) : ver)
+                    .map(ver -> getFormattedCqmVersion(ver))
                     .collect(Collectors.toList());
             versions.addAll(splitTrimmedVersions);
         }
@@ -107,6 +108,12 @@ public class CqmUploadHandler {
         return cqm;
     }
 
+    private String getFormattedCqmVersion(String ver) {
+        if (!ver.startsWith(CQMCriterion.VERSION_PREPEND_CHAR) && NumberUtils.isCreatable(ver)) {
+            return CQMCriterion.VERSION_PREPEND_CHAR + ver;
+        }
+        return ver;
+    }
 
     private List<String> parseCqmNumbers(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(

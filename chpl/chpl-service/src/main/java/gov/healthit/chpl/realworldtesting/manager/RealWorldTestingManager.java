@@ -29,11 +29,14 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.dao.RealWorldTestingByDeveloperDao;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingResultsUrlValidationRequest;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlType;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
+import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingUrlValidationJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -83,6 +86,41 @@ public class RealWorldTestingManager {
         response.setFileName(file.getName());
         response.setRecordsToBeProcessed(rwts.size());
         return response;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REAL_WORLD_TESTING, "
+            + "T(gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions).VALIDATE_URL)")
+    public ChplOneTimeTrigger validateResultsUrlAsBackgroundJob(RealWorldTestingResultsUrlValidationRequest request)
+            throws ValidationException, SchedulerException, UserRetrievalException {
+        validateResultsUrlRequest(request);
+
+        ChplOneTimeTrigger validateUrlReportTrigger = new ChplOneTimeTrigger();
+        ChplJob validateUrlReportJob = new ChplJob();
+        validateUrlReportJob.setName(RealWorldTestingUrlValidationJob.JOB_NAME);
+        validateUrlReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(RealWorldTestingUrlValidationJob.LISTING_ID_KEY, request.getListingId());
+        jobDataMap.put(RealWorldTestingUrlValidationJob.URL_KEY, request.getUrl());
+        jobDataMap.put(RealWorldTestingUrlValidationJob.URL_TYPE_KEY, RealWorldTestingUrlType.RESULTS.name());
+        //default to last year for now if year is not provided
+        jobDataMap.put(RealWorldTestingUrlValidationJob.YEAR_KEY, request.getYear() == null ? LocalDate.now().minusYears(1).getYear() : request.getYear());
+        jobDataMap.put(RealWorldTestingUrlValidationJob.USER_KEY, AuthUtil.getCurrentUser());
+        validateUrlReportJob.setJobDataMap(jobDataMap);
+        validateUrlReportTrigger.setJob(validateUrlReportJob);
+        validateUrlReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        validateUrlReportTrigger = schedulerManager.createBackgroundJobTrigger(validateUrlReportTrigger);
+
+        return validateUrlReportTrigger;
+    }
+
+    private void validateResultsUrlRequest(RealWorldTestingResultsUrlValidationRequest request) throws ValidationException {
+        if (StringUtils.isEmpty(request.getUrl())) {
+            throw new ValidationException(List.of("A url must be provided."));
+        }
+        if (request.getListingId() == null || request.getListingId() < 0) {
+            throw new ValidationException(List.of("A valid CHPL listing ID must be provided."));
+        }
     }
 
     private ChplOneTimeTrigger startRwtUploadJob(List<RealWorldTestingUpload> rwts)
