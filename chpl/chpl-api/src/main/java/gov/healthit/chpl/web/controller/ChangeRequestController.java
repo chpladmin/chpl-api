@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import tools.jackson.core.JacksonException;
-
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -32,9 +30,12 @@ import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Tag(name = "change-requests", description = "Management of change requests.")
 @RestController
+@Log4j2
 @RequestMapping("/change-requests")
 public class ChangeRequestController {
 
@@ -96,7 +97,25 @@ public class ChangeRequestController {
         return changeRequestManager.triggerChangeRequestsReport(searchRequest);
     }
 
-    @Operation(summary = "Create a new change request.",
+//    @Operation(summary = "Create a new change request.",
+//            description = "Security Restrictions: Users with role chpl-developer can create change requests where they "
+//                    + "have administrative authority based on the developer.",
+//            security = {
+//                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+//                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+//            })
+//    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+//            produces = "application/json; charset=utf-8")
+//    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
+//            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
+//
+//        List<ChangeRequest> createdCrs = List.of(changeRequestManager.createChangeRequest(cr));
+//        ChangeRequestResults results = new ChangeRequestResults();
+//        results.getResults().addAll(createdCrs);
+//        return results;
+//    }
+
+    @Operation(summary = "Create one or more new change requests This endpoint is beta and may possibly change without notice.",
             description = "Security Restrictions: Users with role chpl-developer can create change requests where they "
                     + "have administrative authority based on the developer.",
             security = {
@@ -105,10 +124,9 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
+    public ChangeRequestResults createChangeRequests(@RequestBody List<ChangeRequest> crs)
             throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
-
-        List<ChangeRequest> createdCrs = List.of(changeRequestManager.createChangeRequest(cr));
+        List<ChangeRequest> createdCrs = changeRequestManager.createChangeRequests(crs);
         ChangeRequestResults results = new ChangeRequestResults();
         results.getResults().addAll(createdCrs);
         return results;

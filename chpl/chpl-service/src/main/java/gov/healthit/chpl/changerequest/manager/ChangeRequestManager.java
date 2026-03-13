@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -201,6 +202,27 @@ public class ChangeRequestManager {
             activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
         }
         return newCr;
+    }
+
+    @Transactional(rollbackFor = {InvalidArgumentsException.class, EntityRetrievalException.class,
+            ValidationException.class, ActivityException.class, NullPointerException.class,
+            RuntimeException.class, Exception.class})
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE_MULTIPLE, #changeRequests)")
+    @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
+    public List<ChangeRequest> createChangeRequests(List<ChangeRequest> changeRequests)
+            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
+        List<ChangeRequest> createdChangeRequests = new ArrayList<ChangeRequest>();
+        createdChangeRequests = changeRequests.stream()
+            .map(cr -> {
+                try {
+                    return createChangeRequest(cr);
+                } catch (InvalidArgumentsException | EntityRetrievalException | ValidationException | ActivityException ex) {
+                    throw new RuntimeException(ex);
+                }
+            })
+            .collect(Collectors.toList());
+        return createdChangeRequests;
     }
 
     private boolean isRwtChangeRequestType(ChangeRequestType changeRequestType) {
