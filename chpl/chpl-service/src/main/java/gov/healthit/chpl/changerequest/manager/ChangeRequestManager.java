@@ -222,6 +222,8 @@ public class ChangeRequestManager {
                 }
             })
             .collect(Collectors.toList());
+        //only send emails if we got to this point meaning every change request was successfully created
+        sendChangeRequestCreatedEmails(createdChangeRequests);
         return createdChangeRequests;
     }
 
@@ -355,6 +357,16 @@ public class ChangeRequestManager {
     private Long createChangeRequestDetails(Long changeRequestId, Long changeRequestTypeId, Object changeRequestDetails) {
         ChangeRequestDetailsService<?> crDetailsService = crDetailsFactory.get(changeRequestTypeId);
         return crDetailsService.create(changeRequestId, changeRequestDetails);
+    }
+
+    private void sendChangeRequestCreatedEmails(List<ChangeRequest> changeRequestsWithDetails) {
+        changeRequestsWithDetails.stream()
+            .forEach(cr -> sendChangeRequestCreatedEmail(cr));
+    }
+
+    private void sendChangeRequestCreatedEmail(ChangeRequest changeRequestWithDetails) {
+        ChangeRequestDetailsService<?> crDetailsService = crDetailsFactory.get(changeRequestWithDetails.getChangeRequestType().getId());
+        crDetailsService.sendSubmittedEmail(changeRequestWithDetails);
     }
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {

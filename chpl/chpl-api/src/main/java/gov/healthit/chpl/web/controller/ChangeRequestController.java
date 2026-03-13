@@ -97,24 +97,6 @@ public class ChangeRequestController {
         return changeRequestManager.triggerChangeRequestsReport(searchRequest);
     }
 
-//    @Operation(summary = "Create a new change request.",
-//            description = "Security Restrictions: Users with role chpl-developer can create change requests where they "
-//                    + "have administrative authority based on the developer.",
-//            security = {
-//                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-//                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-//            })
-//    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-//            produces = "application/json; charset=utf-8")
-//    public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
-//            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
-//
-//        List<ChangeRequest> createdCrs = List.of(changeRequestManager.createChangeRequest(cr));
-//        ChangeRequestResults results = new ChangeRequestResults();
-//        results.getResults().addAll(createdCrs);
-//        return results;
-//    }
-
     @Operation(summary = "Create one or more new change requests This endpoint is beta and may possibly change without notice.",
             description = "Security Restrictions: Users with role chpl-developer can create change requests where they "
                     + "have administrative authority based on the developer.",

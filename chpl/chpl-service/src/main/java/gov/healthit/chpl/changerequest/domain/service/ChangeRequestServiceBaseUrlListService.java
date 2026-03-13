@@ -40,7 +40,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListingUrlService {
-    private ChangeRequestDAO crDAO;
     private ChangeRequestListingUrlDAO crListingUrlDAO;
     private CertifiedProductManager certifiedProductManager;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -97,7 +96,6 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         super(crDAO, crListingUrlDAO, certifiedProductDetailsManager, activityManager, developerCertificationBodyMapDAO);
-        this.crDAO = crDAO;
         this.crListingUrlDAO = crListingUrlDAO;
         this.certifiedProductManager = certifiedProductManager;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
@@ -112,14 +110,6 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
         try {
             ChangeRequestListingUrl details = (ChangeRequestListingUrl) changeRequestDetails;
             Long newCrId = crListingUrlDAO.create(changeRequestId, details);
-
-            try {
-                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
-                sendSubmittedEmail(changeRequestWithDetails);
-            } catch (EmailNotSentException ex) {
-                LOGGER.error("Email about Service Base URL List Change Request was not sent for change request " + changeRequestId, ex);
-            }
-
             return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -151,14 +141,18 @@ public class ChangeRequestServiceBaseUrlListService extends ChangeRequestListing
     }
 
     @Override
-    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
+    public void sendSubmittedEmail(ChangeRequest cr) {
+        try {
+            chplEmailFactory.emailBuilder()
                 .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(submissionEmailSubject)
                 .htmlMessage(createSubmissionHtmlMessage(cr))
                 .sendEmail();
+        } catch (EmailNotSentException ex) {
+            LOGGER.error("Email about Service Base URL List Change Request was not sent for change request " + cr.getId(), ex);
+        }
     }
 
     private String createSubmissionHtmlMessage(ChangeRequest cr) {
