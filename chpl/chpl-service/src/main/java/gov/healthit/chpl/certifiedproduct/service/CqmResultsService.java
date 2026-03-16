@@ -162,7 +162,7 @@ public class CqmResultsService {
                 .max()
                 .orElse(0);
         return cqmResultsForCmsId.stream()
-                    .filter(cqmResult -> cqmResult.getSuccessVersions().contains("v" + maxVersion))
+                    .filter(cqmResult -> cqmResult.getSuccessVersions().contains(CQMCriterion.VERSION_PREPEND_CHAR + maxVersion))
                     .findAny()
                     .orElse(cqmResultsForCmsId.get(cqmResultsForCmsId.size() - 1));
     }
