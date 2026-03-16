@@ -14,6 +14,7 @@ import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,7 @@ public class ChangeRequestValidationContext {
     private CertificationCriterionService criteriaService;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil msgUtil;
     private ChangeRequestStatusIds changeRequestStatusIds;
 
     public ChangeRequestValidationContext(JWTAuthenticatedUser user,
@@ -56,6 +58,7 @@ public class ChangeRequestValidationContext {
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             AttestationManager attestationManager,
+            ErrorMessageUtil msgUtil,
             Long cancelledStatus,
             Long acceptedStatus,
             Long rejectedStatus,
@@ -73,6 +76,7 @@ public class ChangeRequestValidationContext {
         this.criteriaService = criteriaService;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.validationUtils = validationUtils;
+        this.msgUtil = msgUtil;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);
         this.domainManagers = new DomainManagers(attestationManager);
         this.changeRequestStatusIds = new ChangeRequestStatusIds(cancelledStatus, acceptedStatus, rejectedStatus, pendingAcbActionStatus, pendingDeveloperActionStatus);

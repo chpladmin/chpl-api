@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -15,14 +16,16 @@ public class ListingUrlChangeRequestTypeAndListingInProcessValidation extends Va
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         try {
+            Long listingId = getListingId(context.getNewChangeRequest());
+            CertifiedProductSearchDetails existingListing = context.getCpdManager().getCertifiedProductDetails(listingId);
             List<ChangeRequest> crs = context.getValidationDAOs().getChangeRequestDAO().getByDeveloper(context.getNewChangeRequest().getDeveloper().getId(), true).stream()
                     .filter(cr -> cr.getChangeRequestType().getId().equals(context.getNewChangeRequest().getChangeRequestType().getId()))
-                    .filter(cr -> getListingId(cr).equals(getListingId(context.getNewChangeRequest())))
+                    .filter(cr -> getListingId(cr).equals(existingListing.getId()))
                     .filter(cr -> getInProcessStatuses(context).stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(status)))
                     .collect(Collectors.toList());
             if (crs.size() > 0) {
-                getMessages().add(getErrorMessage("changeRequest.listingInProcess"));
+                getMessages().add(context.getMsgUtil().getMessage("changeRequest.listingInProcess", existingListing.getChplProductNumber()));
                 return false;
             }
         } catch (EntityRetrievalException e) {

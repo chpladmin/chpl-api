@@ -22,7 +22,7 @@ public class SbulChangeRequestValidation extends ValidationRule<ChangeRequestVal
         //sbul must have a different url than the listing currently has
         ChangeRequestListingUrl crDetails = (ChangeRequestListingUrl) context.getNewChangeRequest().getDetails();
         if (crDetails == null || crDetails.getListing() == null || crDetails.getListing().getId() == null) {
-            getMessages().add(getErrorMessage("changeRequest.missingDetails"));
+            getMessages().add(context.getMsgUtil().getMessage("changeRequest.missingDetails"));
             return false;
         }
 
@@ -34,15 +34,15 @@ public class SbulChangeRequestValidation extends ValidationRule<ChangeRequestVal
                     .findAny()
                     .orElse(null);
             if (g10Result == null) {
-                getMessages().add(getErrorMessage("changeRequest.listingUrl.serviceBaseUrlList.noG10"));
+                getMessages().add(context.getMsgUtil().getMessage("changeRequest.listingUrl.serviceBaseUrlList.noG10", existingListing.getChplProductNumber()));
                 return false;
             }
             if (StringUtils.isEmpty(crDetails.getUrl())) {
-                getMessages().add(getErrorMessage("changeRequest.listingUrl.serviceBaseUrlList.missing"));
+                getMessages().add(context.getMsgUtil().getMessage("changeRequest.listingUrl.serviceBaseUrlList.missing", existingListing.getChplProductNumber()));
                 return false;
             }
             if (Strings.CS.equals(g10Result.getServiceBaseUrlList(), crDetails.getUrl())) {
-                getMessages().add(getErrorMessage("changeRequest.listingUrl.serviceBaseUrlList.sameUrl"));
+                getMessages().add(context.getMsgUtil().getMessage("changeRequest.listingUrl.serviceBaseUrlList.sameUrl", existingListing.getChplProductNumber()));
                 return false;
             }
         } catch (EntityRetrievalException ex) {

@@ -399,6 +399,7 @@ public class ChangeRequestManager {
                 changeRequestStatusTypeDAO,
                 changeRequestTypeDAO,
                 attestationManager,
+                msgUtil,
                 cancelledStatus,
                 acceptedStatus,
                 rejectedStatus,
