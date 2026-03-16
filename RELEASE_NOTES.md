@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 53.2.0
+_16 March 2026_
+
+### Features
+* RWT Power BI Report Data only includes listings with g7, g9, and g10
+* Create endpoint to kick off RWT results validation
+
+### Bug Fixes
+* Give better error for invalid CQM version text
+
+---
+
 ## Version 53.1.0
 _2 March 2026_
 
