@@ -1,11 +1,13 @@
 package gov.healthit.chpl.certificationId;
 
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.util.DateUtil;
@@ -19,12 +21,19 @@ public class CertificationIdYearCalculator {
     private static final String DEFAULT_CERTID_YEAR = "2015";
     private static final int ANNUAL_CERTID_INITIAL_TRANSITION_YEAR = 2025;
     private String annualCertIdChangeMmDd;
+    private Pair<MonthDay, MonthDay> cmsIdOverlapRange;
     private DateTimeFormatter dtFormatter;
 
     @Autowired
-    public CertificationIdYearCalculator(Environment env) {
-        annualCertIdChangeMmDd = env.getProperty("cmsIdStartDayOfYear");
+    public CertificationIdYearCalculator(@Value("${cmsIdStartDayOfYear}") String cmsIdStartDayOfYear,
+            @Value("${cmsIdStartDayOfOverlap}") String cmsIdStartDayOfOverlap,
+            @Value("${cmsIdEndDayOfOverlap}") String cmsIdEndDayOfOverlap) {
+        annualCertIdChangeMmDd = cmsIdStartDayOfYear;
         dtFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+        DateTimeFormatter monthDayFormatter = DateTimeFormatter.ofPattern("MM/dd");
+        cmsIdOverlapRange = Pair.of(MonthDay.parse(cmsIdStartDayOfOverlap, monthDayFormatter),
+                MonthDay.parse(cmsIdEndDayOfOverlap, monthDayFormatter));
     }
 
     public String getCurrentCertIdYear() {
@@ -54,6 +63,34 @@ public class CertificationIdYearCalculator {
             }
             return Math.min(nextCertIdYearDateRange.getStart().getYear(), nextCertIdYearDateRange.getEnd().getYear()) + "";
         }
+    }
+
+    public String getPreviousCertIdYear() {
+        // Before 9/1/2025 return null, there was no concept of previous year
+        // Between 9/1/2025 and 8/31/2026 inclusive return "2015"
+        // Between 9/1/2026 and 8/31/2027 inclusive return "2025"
+        // and so on, forever
+        String currentCertIdYear = getCurrentCertIdYear();
+        if (currentCertIdYear.equals(DEFAULT_CERTID_YEAR)) {
+            return null;
+        } else if (currentCertIdYear.equals(ANNUAL_CERTID_INITIAL_TRANSITION_YEAR + "")) {
+            return DEFAULT_CERTID_YEAR;
+        }
+        Integer currentCertIdYearIntValue = Integer.valueOf(currentCertIdYear);
+        return (currentCertIdYearIntValue - 1) + "";
+    }
+
+    public List<String> getValidCertIdYearsToday() {
+        MonthDay today = MonthDay.now();
+        if (isDayDuringOverlap(today)) {
+            return List.of(getCurrentCertIdYear(), getPreviousCertIdYear());
+        }
+        return List.of(getCurrentCertIdYear());
+    }
+
+    private boolean isDayDuringOverlap(MonthDay day) {
+        return (day.equals(cmsIdOverlapRange.getLeft()) || day.isAfter(cmsIdOverlapRange.getLeft()))
+                && (day.equals(cmsIdOverlapRange.getRight()) || day.isBefore(cmsIdOverlapRange.getRight()));
     }
 
     //TODO: Remove with OCD-4928 ???
