@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class CertificationIdVerificationBody {
+@Deprecated
+public class CertificationIdVerificationBodyDeprecated {
 
-    private List<String> certificationIds;
+    private List<String> ids;
 }

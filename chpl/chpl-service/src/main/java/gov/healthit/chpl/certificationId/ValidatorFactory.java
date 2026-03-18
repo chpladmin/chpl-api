@@ -47,6 +47,9 @@ public class ValidatorFactory {
         //TODO: we will need to create 2026, 2027, etc validators before the cmsIdStartDayOfYear
         //day comes for the current year (so before 9/1/2026 we need a 2026 validator)
         //OCD-4928
+        //Added the below line to be able to test CMS IDs during the overlap window, but in reality
+        //we will need a new Validator2026 class.
+        this.certIdYearToValidatorClassMap.put("2026", Validator2025.class);
     }
 
     public Validator getValidator(String certIdYear) throws InvalidArgumentsException {

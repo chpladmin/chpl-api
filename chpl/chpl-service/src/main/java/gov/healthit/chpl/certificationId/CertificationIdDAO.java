@@ -162,36 +162,36 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return queryResult;
     }
 
-    public List<CertificationCriterion> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
-        List<CertificationCriterionEntity> entities = new ArrayList<CertificationCriterionEntity>();
-        if ((null != productIds) && (productIds.size() > 0)) {
+    public List<CertificationCriterion> getCriteriaMetByListingIds(List<Long> listingIds) {
+        List<CertificationCriterionEntity> criterionEntities = new ArrayList<CertificationCriterionEntity>();
+        if (!CollectionUtils.isEmpty(listingIds)) {
             Query query = entityManager.createQuery(
                     "SELECT crd.certificationCriterion FROM CertificationResultDetailsEntity crd "
                             + "WHERE crd.success = TRUE "
                             + "AND crd.deleted = FALSE "
-                            + "AND crd.certifiedProductId IN (:productIds)",
+                            + "AND crd.certifiedProductId IN (:listingIds)",
                             CertificationCriterionEntity.class);
-            query.setParameter("productIds", productIds);
-            entities = query.getResultList();
+            query.setParameter("listingIds", listingIds);
+            criterionEntities = query.getResultList();
         }
-        return entities.stream()
+        return criterionEntities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
-        List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
-        if ((null != productIds) && (productIds.size() > 0)) {
+    public List<CQMMetDTO> getCqmsMetByListingIds(List<Long> listingIds) {
+        List<CQMMetDTO> cmqsMet = new ArrayList<CQMMetDTO>();
+        if (!CollectionUtils.isEmpty(listingIds)) {
             Query query = entityManager.createQuery(
                     "SELECT new gov.healthit.chpl.certificationId.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
                             + "FROM CQMResultDetailsEntity AS crde"
-                            + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
+                            + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :listingIds "
                             + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
-            query.setParameter("productIds", productIds);
-            dtos = query.getResultList();
+            query.setParameter("listingIds", listingIds);
+            cmqsMet = query.getResultList();
         }
 
-        return dtos;
+        return cmqsMet;
     }
 
     private List<CertificationIdEntity> getAllEntities() {
