@@ -114,7 +114,7 @@ public class CertificationIdController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody List<CertificationIdResults> searchCertificationId(
-            @RequestParam(required = false) List<Long> listingIds)  throws InvalidArgumentsException,
+            @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException,
             CertificationIdException {
         List<String> certificationYears = certIdYearCalculator.getValidCertIdYearsToday();
         return certificationYears.stream()
