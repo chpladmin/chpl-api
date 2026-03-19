@@ -100,8 +100,8 @@ public class ReportDataManager {
 
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REPORTS, "
             + "T(gov.healthit.chpl.permissions.domains.ReportDomainPermissions).GET_REPORT_METADATA, filterObject)")
-    public List<ReportMetadata> getReportMetadata() {
-        return reportMetadataDao.getReportMetadata();
+    public List<ReportMetadata> getReportMetadata(String reportGroup) {
+        return reportMetadataDao.getReportMetadata(reportGroup);
     }
 
     @Synchronized("lock")
