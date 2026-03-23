@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -36,13 +35,12 @@ import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.ServerEnvironment;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class CognitoUserManager {
-    private static final String NON_PROD_ENVIRONMENT = "non-production";
-
     private CognitoUserCreationValidator userCreationValidator;
     private CognitoUpdateUserValidator userUpdateValidator;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
@@ -52,7 +50,7 @@ public class CognitoUserManager {
     private Long invitationLengthDays;
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
-    private boolean isProdEnvironment = true;
+    private ServerEnvironment serverEnvironment = ServerEnvironment.PRODUCTION;
 
     @Autowired
     public CognitoUserManager(CognitoUserCreationValidator userCreationValidator,
@@ -76,9 +74,7 @@ public class CognitoUserManager {
         this.invitationLengthDays = invitationLengthDays;
         this.activityManager = activityManager;
         this.groupNameForEnvironment = groupNameForEnvironment;
-        if (Strings.CS.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
-            isProdEnvironment = false;
-        }
+        this.serverEnvironment = ServerEnvironment.getByName(serverEnvironment);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -267,7 +263,7 @@ public class CognitoUserManager {
             userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
         }
         CognitoCredentials credentials = cognitoApiWrapper.createUser(userInfo.getUser(), invitation.getGroupName());
-        if (isProdEnvironment) {
+        if (this.serverEnvironment.equals(ServerEnvironment.PRODUCTION)) {
             addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
         } else {
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
