@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -29,7 +27,6 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationCheckinReportDAO;
 import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReport;
 import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportDataCollector;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "attestationReportCreatorJobLogger")
@@ -37,9 +34,6 @@ public class AttestationReportCreatorJob extends QuartzJob {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private CheckInReportDataCollector checkInReportDataCollection;
@@ -89,7 +83,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                     //The rest of the data can all be derived using the data from the checkin report, so
                     //use the checkin report data to create the attestation report.
 
-                    if (inSubmissionPlusApprovalPeriod()) {
+                    if (attestationPeriodService.isTodayDuringSubmissionPlusApprovalPeriod()) {
                         if (!CollectionUtils.isEmpty(attestationReportDAO.getAttestationReportByDate(LocalDate.now()))) {
                             attestationReportDAO.deleteAttestationReportByDate(LocalDate.now());
                         }
@@ -190,21 +184,10 @@ public class AttestationReportCreatorJob extends QuartzJob {
         return attestationReportForAllAcbs;
     }
 
-    private boolean inSubmissionPlusApprovalPeriod() {
-        AttestationPeriod attestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        return DateUtil.isDateBetweenInclusive(
-                Pair.of(attestationPeriod.getSubmissionStart(), attestationPeriod.getSubmissionEnd().plusDays(getDaysInApprovalPeriod())),
-                LocalDate.now());
-    }
-
     private Boolean isDeveloperManagedByAcb(CheckInReport checkInReport, CertificationBody certificationBody) {
         return checkInReport.getCertificationBodies().stream()
                 .filter(acb -> acb.getId().equals(certificationBody.getId()))
                 .findAny()
                 .isPresent();
-    }
-
-    private Integer getDaysInApprovalPeriod() {
-        return Integer.valueOf(env.getProperty("attestationApprovalWindowInDays"));
     }
 }
