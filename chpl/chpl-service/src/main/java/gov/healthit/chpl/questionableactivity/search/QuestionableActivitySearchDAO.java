@@ -3,8 +3,6 @@ package gov.healthit.chpl.questionableactivity.search;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
@@ -15,6 +13,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivitySearchResultEntity;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -30,10 +29,12 @@ public class QuestionableActivitySearchDAO extends BaseDAOImpl {
     @Transactional
     @Cacheable(cacheNames = CacheNames.QUESTIONABLE_ACTIVITIES)
     public List<QuestionableActivitySearchResult> getAll() {
+        LOGGER.info("Getting all questionable activities from db");
         Query query = entityManager.createQuery("SELECT qa FROM QuestionableActivitySearchResultEntity qa ",
                 QuestionableActivitySearchResultEntity.class);
         List<QuestionableActivitySearchResultEntity> queryResults = query.getResultList();
-        return queryResults.stream()
+        LOGGER.info("Completed getting all questionable activities from db, filling in user details");
+        List<QuestionableActivitySearchResult> results = queryResults.stream()
                 .map(entity -> {
                     QuestionableActivitySearchResult qasr = entity.toDomain();
                     User user = chplUserToCognitoUserUtil.getUser(entity.getUserId(), entity.getSsoUserId());
@@ -44,6 +45,8 @@ public class QuestionableActivitySearchDAO extends BaseDAOImpl {
                     return qasr;
                 })
                 .collect(Collectors.toList());
+        LOGGER.info("Completed getting user details for all questionable activities");
+        return results;
     }
 
 
