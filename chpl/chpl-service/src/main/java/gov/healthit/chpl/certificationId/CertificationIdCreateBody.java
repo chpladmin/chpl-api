@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CertificationIdCreateBody {
     private List<Long> listingIds;
-    private String certificationYear;
+    private String year;
 }

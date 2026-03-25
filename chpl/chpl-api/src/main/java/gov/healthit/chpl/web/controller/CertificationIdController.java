@@ -163,7 +163,7 @@ public class CertificationIdController {
     public @ResponseBody CertificationIdResults createCertificationId(
             @RequestBody CertificationIdCreateBody createBody) throws InvalidArgumentsException,
             CertificationIdException {
-        return certIdSearchService.findCertificationByListingIds(createBody.getListingIds(), createBody.getCertificationYear(), true);
+        return certIdSearchService.findCertificationByListingIds(createBody.getListingIds(), createBody.getYear(), true);
     }
 
     @Operation(summary = "Get information about a specific EHR Certification ID.",
