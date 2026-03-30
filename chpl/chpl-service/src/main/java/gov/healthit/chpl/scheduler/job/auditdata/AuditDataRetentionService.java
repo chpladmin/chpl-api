@@ -31,7 +31,7 @@ public abstract class AuditDataRetentionService extends BaseDAOImpl {
     @SuppressWarnings({"resource"})
     public PGConnection getPgConnection() throws SQLException {
         if (pgConnection == null) {
-            SessionImplementor sessImpl = (SessionImplementor) getSession();
+            SessionImplementor sessImpl = getSession().unwrap(SessionImplementor.class);
             Connection conn = sessImpl.getJdbcConnectionAccess().obtainConnection();
             pgConnection = conn.unwrap(PGConnection.class);
         }
