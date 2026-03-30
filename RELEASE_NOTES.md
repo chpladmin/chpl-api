@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 53.3.0
+_30 March 2026_
+
+### Features
+* Detect repeated ICS with ONC-ACB changes for ICS Report
+
+### Bug Fixes
+* Use correct db session object in audit data job
+
+---
+
 ## Version 53.2.0
 _16 March 2026_
 
