@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -213,15 +214,27 @@ public class ChangeRequestManager {
     public List<ChangeRequest> createChangeRequests(List<ChangeRequest> changeRequests)
             throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
         List<ChangeRequest> createdChangeRequests = new ArrayList<ChangeRequest>();
+        List<String> validationErrorMessages = new ArrayList<String>();
         createdChangeRequests = changeRequests.stream()
             .map(cr -> {
                 try {
                     return createChangeRequest(cr);
-                } catch (InvalidArgumentsException | EntityRetrievalException | ValidationException | ActivityException ex) {
+                } catch (ValidationException ex) {
+                    validationErrorMessages.addAll(ex.getErrorMessages().castToCollection());
+                    validationErrorMessages.addAll(ex.getBusinessErrorMessages().castToCollection());
+                    validationErrorMessages.addAll(ex.getDataErrorMessages().castToCollection());
+                    return null;
+                } catch (InvalidArgumentsException ex) {
+                    validationErrorMessages.add(ex.getMessage());
+                    return null;
+                } catch (EntityRetrievalException | ActivityException ex) {
                     throw new RuntimeException(ex);
                 }
             })
             .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(validationErrorMessages)) {
+            throw new ValidationException(validationErrorMessages);
+        }
         //only send emails if we got to this point meaning every change request was successfully created
         sendChangeRequestCreatedEmails(createdChangeRequests);
         return createdChangeRequests;
@@ -343,7 +356,7 @@ public class ChangeRequestManager {
         }
 
         Long newCrId = createBaseChangeRequest(cr);
-        Long crDetailsId = createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
+        createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
         return newCrId;
     }
 
