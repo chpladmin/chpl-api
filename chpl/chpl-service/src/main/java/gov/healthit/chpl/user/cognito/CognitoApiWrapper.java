@@ -209,6 +209,12 @@ public class CognitoApiWrapper {
         });
     }
 
+    public User getUserInfoIfCached(UUID cognitoId) throws UserRetrievalException {
+        return sharedUserStoreProvider.get(cognitoId.toString(), () -> {
+            return null;
+        });
+    }
+
     public User getUserInfoNoCache(UUID cognitoId) throws UserRetrievalException {
         return getUserInfoNoCache(cognitoId.toString());
     }

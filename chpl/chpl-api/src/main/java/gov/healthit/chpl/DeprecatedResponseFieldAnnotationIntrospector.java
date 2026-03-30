@@ -23,7 +23,6 @@ public class DeprecatedResponseFieldAnnotationIntrospector extends JacksonAnnota
     @Override
     public boolean hasIgnoreMarker(MapperConfig<?> config, AnnotatedMember m) {
         Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
-        LOGGER.debug("Return deprecated fields?: " + returnDeprecatedFields);
         if (_findAnnotation(m, JsonIgnore.class) != null) {
             return true;
         } else {
