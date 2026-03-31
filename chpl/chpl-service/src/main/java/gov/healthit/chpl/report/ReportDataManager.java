@@ -27,6 +27,7 @@ import gov.healthit.chpl.report.questionableurl.QuestionableUrlReportService;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
 import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
+import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorSummary;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -292,6 +293,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    }
+
+    @Synchronized("lock")
+    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgo) {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitorsSummaries(numDaysAgo);
     }
 
     @Synchronized("lock")

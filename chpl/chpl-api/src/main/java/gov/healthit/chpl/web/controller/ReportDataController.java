@@ -19,7 +19,6 @@ import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.UniqueProductCount;
-import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -430,18 +429,6 @@ public class ReportDataController {
     public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
         return reportDataManager.getDirectReviewCounts();
     }
-
-    @Operation(summary = "Retrieves the data used to generate the Service Base Url List report.",
-            description = "Retrieves the data used to generate the Service Base Url List report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/service-base-url-list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
-        return reportDataManager.getUrlUptimeMonitors();
-    }
-
 
     @Operation(summary = "Retrieves the data used to generate the Attestations report.",
             description = "Retrieves the data used to generate the Attestations report.",
