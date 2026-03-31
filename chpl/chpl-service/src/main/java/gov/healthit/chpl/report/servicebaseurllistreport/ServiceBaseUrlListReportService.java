@@ -1,6 +1,7 @@
 package gov.healthit.chpl.report.servicebaseurllistreport;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,12 +51,12 @@ public class ServiceBaseUrlListReportService {
     }
 
     public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgo) {
-        LocalDateTime minTestCheckTime = LocalDateTime.now().minusDays(numDaysAgo);
+        LocalDateTime minTestCheckTime = LocalDateTime.now().minusDays(numDaysAgo).truncatedTo(ChronoUnit.DAYS);
+        LOGGER.info("Finding URL Uptime Monitor Tests that happened on or after " + minTestCheckTime);
         return (List<UrlUptimeMonitorSummary>) urlUptimeMonitorDAO.getAll().stream()
                 .map(monitor -> UrlUptimeMonitorSummary.builder()
                         .developer(monitor.getDeveloper())
                         .url(monitor.getUrl())
-                        .acbs(getAssocatedAcbs(monitor))
                         .percentPassed(calculatePercentPassedSince(monitor.getId(), minTestCheckTime))
                         .build())
                 .toList();
@@ -82,7 +83,7 @@ public class ServiceBaseUrlListReportService {
 
     private Double calculatePercentPassedSince(Long monitorId, LocalDateTime minTestCheckTime) {
         List<UrlUptimeMonitorTest> uptimeTestsWithinTimeWindow = urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitorId).stream()
-                .filter(test -> test.getCheckTime().isAfter(minTestCheckTime))
+                .filter(test -> test.getCheckTime().isEqual(minTestCheckTime) || test.getCheckTime().isAfter(minTestCheckTime))
                 .toList();
         long totalTests = uptimeTestsWithinTimeWindow.size();
         long passedTests = uptimeTestsWithinTimeWindow.stream()
@@ -92,6 +93,6 @@ public class ServiceBaseUrlListReportService {
         if (passedTests == 0 || totalTests == 0) {
             return 0.0;
         }
-        return (passedTests / totalTests) * CONVERT_TO_PERCENT;
+        return ((double) passedTests / totalTests) * CONVERT_TO_PERCENT;
     }
 }
