@@ -149,7 +149,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
                 + "In your description be sure to discuss the extent to which the developer followed its internal complaints "
                 + "process and any deficiencies with its process. Please also indicate the frequency of complaints that the "
                 + "developer received that are associated with each of the prioritized elements as specified by "
-                + "ONC/ASTP. Additional insights on individual findings can be included in the Surveillance Activities "
+                + "ONC. Additional insights on individual findings can be included in the Surveillance Activities "
                 + "and Outcomes under \"Surveillance Findings\". ";
     }
 
