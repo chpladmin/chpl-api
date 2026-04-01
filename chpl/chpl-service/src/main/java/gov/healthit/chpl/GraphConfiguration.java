@@ -1,10 +1,8 @@
 package gov.healthit.chpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 
 import com.azure.identity.ClientSecretCredential;
@@ -21,11 +19,6 @@ public class GraphConfiguration {
     @Autowired
     private Environment env;
 
-    //When the feature ONC_TO_ASTP_EMAIL is removed the @Scope annotation is no longer needed.
-    //It is here so that each time the GraphServiceClient bean is requested the flag will be checked
-    //to get the correct email configuration. When that no longer needs to be able to be switched between
-    //ONC and ASTP then we can remove the Prototype Scope.
-    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     public GraphServiceClient getGraphServiceClient() {
         ClientSecretCredential clientSecretCredential = null;
