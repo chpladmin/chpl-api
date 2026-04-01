@@ -1,6 +1,5 @@
 package gov.healthit.chpl;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +20,6 @@ public class GraphConfiguration {
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private FF4j ff4j;
 
     //When the feature ONC_TO_ASTP_EMAIL is removed the @Scope annotation is no longer needed.
     //It is here so that each time the GraphServiceClient bean is requested the flag will be checked
@@ -48,32 +44,14 @@ public class GraphConfiguration {
     }
 
     private String getClientId() {
-        if (ff4j.check(FeatureList.ONC_TO_ASTP_EMAIL)) {
-            LOGGER.info("Getting ASTP client ID");
-            return env.getProperty("azure.clientId");
-        } else {
-            LOGGER.info("Getting ONC client ID");
-            return env.getProperty("azure.clientId.onc");
-        }
+        return env.getProperty("azure.clientId.onc");
     }
 
     private String getTenantId() {
-        if (ff4j.check(FeatureList.ONC_TO_ASTP_EMAIL)) {
-            LOGGER.info("Getting ASTP tenant ID");
-            return env.getProperty("azure.tenantId");
-        } else {
-            LOGGER.info("Getting ONC tenant ID");
-            return env.getProperty("azure.tenantId.onc");
-        }
+        return env.getProperty("azure.tenantId.onc");
     }
 
     private String getClientSecret() {
-        if (ff4j.check(FeatureList.ONC_TO_ASTP_EMAIL)) {
-            LOGGER.info("Getting ASTP client secret");
-            return env.getProperty("azure.clientSecret");
-        } else {
-            LOGGER.info("Getting ONC client secret");
-            return env.getProperty("azure.clientSecret.onc");
-        }
+        return env.getProperty("azure.clientSecret.onc");
     }
 }
