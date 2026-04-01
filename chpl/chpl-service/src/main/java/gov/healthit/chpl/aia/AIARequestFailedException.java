@@ -1,4 +1,4 @@
-package gov.healthit.chpl.astpai;
+package gov.healthit.chpl.aia;
 
 import java.io.IOException;
 
@@ -7,37 +7,37 @@ import org.springframework.http.HttpStatusCode;
 import lombok.Data;
 
 @Data
-public class AstpAiRequestFailedException extends IOException {
+public class AIARequestFailedException extends IOException {
     private static final long serialVersionUID = 3861221517156321545L;
     private HttpStatusCode statusCode;
 
-    public AstpAiRequestFailedException() {
+    public AIARequestFailedException() {
         super();
     }
 
-    public AstpAiRequestFailedException(String message) {
+    public AIARequestFailedException(String message) {
         super(message);
     }
 
-    public AstpAiRequestFailedException(String message, HttpStatusCode statusCode) {
+    public AIARequestFailedException(String message, HttpStatusCode statusCode) {
         super(message);
         this.statusCode = statusCode;
     }
 
-    public AstpAiRequestFailedException(String message, Throwable cause) {
+    public AIARequestFailedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public AstpAiRequestFailedException(String message, Throwable cause, HttpStatusCode statusCode) {
+    public AIARequestFailedException(String message, Throwable cause, HttpStatusCode statusCode) {
         super(message, cause);
         this.statusCode = statusCode;
     }
 
-    public AstpAiRequestFailedException(Throwable cause) {
+    public AIARequestFailedException(Throwable cause) {
         super(cause);
     }
 
-    public AstpAiRequestFailedException(Throwable cause, HttpStatusCode statusCode) {
+    public AIARequestFailedException(Throwable cause, HttpStatusCode statusCode) {
         super(cause);
         this.statusCode = statusCode;
     }
