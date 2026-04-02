@@ -50,14 +50,16 @@ public class ServiceBaseUrlListReportService {
                 .toList();
     }
 
-    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgo) {
-        LocalDateTime minTestCheckTime = LocalDateTime.now().minusDays(numDaysAgo).truncatedTo(ChronoUnit.DAYS);
-        LOGGER.info("Finding URL Uptime Monitor Tests that happened on or after " + minTestCheckTime);
+    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgoMin, Integer numDaysAgoMax) {
+        LocalDateTime minTestCheckTime = LocalDateTime.now().minusDays(numDaysAgoMax).truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime maxTestCheckTime = LocalDateTime.now().minusDays(numDaysAgoMin).truncatedTo(ChronoUnit.DAYS);
+
+        LOGGER.info("Finding URL Uptime Monitor Tests that happened between " + minTestCheckTime + " and " + maxTestCheckTime);
         return (List<UrlUptimeMonitorSummary>) urlUptimeMonitorDAO.getAll().stream()
                 .map(monitor -> UrlUptimeMonitorSummary.builder()
                         .developer(monitor.getDeveloper())
                         .url(monitor.getUrl())
-                        .percentPassed(calculatePercentPassedSince(monitor.getId(), minTestCheckTime))
+                        .percentPassed(calculatePercentPassedBetween(monitor.getId(), minTestCheckTime, maxTestCheckTime))
                         .build())
                 .toList();
     }
@@ -81,9 +83,11 @@ public class ServiceBaseUrlListReportService {
                 .toList();
     }
 
-    private Double calculatePercentPassedSince(Long monitorId, LocalDateTime minTestCheckTime) {
+    private Double calculatePercentPassedBetween(Long monitorId, LocalDateTime minTestCheckTime, LocalDateTime maxTestCheckTime) {
         List<UrlUptimeMonitorTest> uptimeTestsWithinTimeWindow = urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitorId).stream()
-                .filter(test -> test.getCheckTime().isEqual(minTestCheckTime) || test.getCheckTime().isAfter(minTestCheckTime))
+                .filter(test ->
+                    (test.getCheckTime().isEqual(minTestCheckTime) || test.getCheckTime().isAfter(minTestCheckTime))
+                    && (test.getCheckTime().isEqual(maxTestCheckTime) || test.getCheckTime().isBefore(maxTestCheckTime)))
                 .toList();
         long totalTests = uptimeTestsWithinTimeWindow.size();
         long passedTests = uptimeTestsWithinTimeWindow.stream()

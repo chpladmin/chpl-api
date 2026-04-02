@@ -43,15 +43,17 @@ public class ServiceBaseUrlListReportController {
     }
 
     @Operation(summary = "Retrieves the data used to generate the Service Base Url List uptime summaries by Developer and URL.",
-            description = "Retrieves the data used to generate the Service Base Url List uptime summaries by Developer and URL.",
+            description = "Retrieves the data used to generate the Service Base Url List uptime summaries by Developer and URL. "
+                    + "Returns uptime summaries for the last 30 days by default, which can be adjusted using the parameters.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
     @LogMethodUsage
-    @RequestMapping(value = "/summary", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/uptime-summary", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(
-            @RequestParam(name = "numDaysAgo", required = false, defaultValue = "30") Integer numDaysAgo) {
-        return reportDataManager.getUrlUptimeMonitorsSummaries(numDaysAgo);
+            @RequestParam(name = "numDaysAgoMin", required = false, defaultValue = "0") Integer numDaysAgoMin,
+            @RequestParam(name = "numDaysAgoMin", required = false, defaultValue = "30") Integer numDaysAgoMax) {
+        return reportDataManager.getUrlUptimeMonitorsSummaries(numDaysAgoMin, numDaysAgoMax);
     }
 
 }

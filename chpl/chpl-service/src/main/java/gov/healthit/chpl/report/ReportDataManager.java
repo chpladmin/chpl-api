@@ -296,8 +296,8 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgo) {
-        return serviceBaseUrlListReportService.getUrlUptimeMonitorsSummaries(numDaysAgo);
+    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgoMin, Integer numDaysAgoMax) {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitorsSummaries(numDaysAgoMin, numDaysAgoMax);
     }
 
     @Synchronized("lock")
