@@ -52,7 +52,7 @@ public class ServiceBaseUrlListReportController {
     @RequestMapping(value = "/uptime-summary", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(
             @RequestParam(name = "numDaysAgoMin", required = false, defaultValue = "0") Integer numDaysAgoMin,
-            @RequestParam(name = "numDaysAgoMin", required = false, defaultValue = "30") Integer numDaysAgoMax) {
+            @RequestParam(name = "numDaysAgoMax", required = false, defaultValue = "30") Integer numDaysAgoMax) {
         return reportDataManager.getUrlUptimeMonitorsSummaries(numDaysAgoMin, numDaysAgoMax);
     }
 
