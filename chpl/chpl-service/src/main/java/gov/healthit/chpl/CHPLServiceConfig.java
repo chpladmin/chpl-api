@@ -297,7 +297,7 @@ public class CHPLServiceConfig implements EnvironmentAware {
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
                         .setDefaultSocketConfig(SocketConfig.custom()
-                                .setSoTimeout(getAstpAiRequestTimeout(), TimeUnit.MILLISECONDS)
+                                .setSoTimeout(getAiaRequestTimeout(), TimeUnit.MILLISECONDS)
                                 .build())
                         .setTlsSocketStrategy(new DefaultClientTlsStrategy(
                                 SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
@@ -312,9 +312,9 @@ public class CHPLServiceConfig implements EnvironmentAware {
         return new RestTemplate(requestFactory);
     }
 
-    private int getAstpAiRequestTimeout() {
+    private int getAiaRequestTimeout() {
         int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-        String requestTimeoutProperty = env.getProperty("astpai.requestTimeoutMillis");
+        String requestTimeoutProperty = env.getProperty("aia.requestTimeoutMillis");
         if (!StringUtils.isEmpty(requestTimeoutProperty)) {
             try {
                 requestTimeout = Integer.parseInt(requestTimeoutProperty);

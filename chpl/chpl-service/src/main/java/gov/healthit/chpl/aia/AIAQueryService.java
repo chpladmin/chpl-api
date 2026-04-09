@@ -1,4 +1,4 @@
-package gov.healthit.chpl.astpai;
+package gov.healthit.chpl.aia;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,24 +18,24 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Service
-public class AstpAiQueryService {
+public class AIAQueryService {
 
     private RestTemplate httpsRestTemplate;
     private String rwtResultsValidationUrl;
     private JsonMapper jsonMapper;
 
     @Autowired
-    public AstpAiQueryService(RestTemplate httpsRestTemplate,
+    public AIAQueryService(RestTemplate httpsRestTemplate,
             JsonMapper jsonMapper,
-            @Value("${astpai.domain}") String astpAiDomain,
-            @Value("${astpai.rwtResultUrlValidation.endpoint}") String astpAiRwtResultValidationApi) {
+            @Value("${aia.domain}") String aiaDomain,
+            @Value("${aia.rwtResultUrlValidation.endpoint}") String aiaRwtResultValidationApi) {
         this.httpsRestTemplate = httpsRestTemplate;
         this.jsonMapper = jsonMapper;
-        this.rwtResultsValidationUrl = astpAiDomain + astpAiRwtResultValidationApi;
+        this.rwtResultsValidationUrl = aiaDomain + aiaRwtResultValidationApi;
     }
 
     public UrlValidationResponse getRwtResultsUrlValidationResponse(String accessToken, UrlValidationRequest requestBody)
-            throws AstpAiRequestFailedException {
+            throws AIARequestFailedException {
         LOGGER.info("Making request to " + rwtResultsValidationUrl + " with access token " + accessToken);
         ResponseEntity<String> response = null;
         try {
@@ -48,12 +48,12 @@ public class AstpAiQueryService {
             LOGGER.debug("Response: " + response.getBody());
         } catch (HttpClientErrorException httpEx) {
             LOGGER.error("Unable to query the URL " + rwtResultsValidationUrl + ". Message: " + httpEx.getMessage() + "; response status code " + httpEx.getStatusCode());
-            throw new AstpAiRequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
+            throw new AIARequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
         } catch (Exception ex) {
             HttpStatusCode statusCode =  (response != null && response.getStatusCode() != null
                     ? response.getStatusCode() : HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
             LOGGER.error("Unable to query the URL " + rwtResultsValidationUrl + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
-            throw new AstpAiRequestFailedException(ex.getMessage(), ex, statusCode);
+            throw new AIARequestFailedException(ex.getMessage(), ex, statusCode);
         }
 
         String responseBody = response == null ? "" : response.getBody();
@@ -62,7 +62,7 @@ public class AstpAiQueryService {
             aiQueryResponse = jsonMapper.readValue(responseBody, UrlValidationResponse.class);
         } catch (JacksonException ex) {
             LOGGER.error("Unable to read the response body as our custom AmazonTokenResponse", ex);
-            throw new AstpAiRequestFailedException(ex.getMessage(), ex);
+            throw new AIARequestFailedException(ex.getMessage(), ex);
         }
         return aiQueryResponse;
     }
