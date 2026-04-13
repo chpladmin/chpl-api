@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -21,10 +22,14 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 public class SvapReportDao extends BaseDAOImpl {
     private CertificationCriterionService certificationCriterionService;
+    private String unformattedListingDetailsUrl;
 
     @Autowired
-    public SvapReportDao(CertificationCriterionService certificationCriterionService) {
+    public SvapReportDao(CertificationCriterionService certificationCriterionService,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
         this.certificationCriterionService = certificationCriterionService;
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
     }
 
     public List<SvapReport> getSvapReports() {
@@ -96,7 +101,7 @@ public class SvapReportDao extends BaseDAOImpl {
     }
 
     public List<SvapListingReport> getSvapListingReports() {
-        String hql = "SELECT cc, s, cpd.chplProductNumber, cpd.certificationStatusName "
+        String hql = "SELECT cc, s, cpd.id, cpd.chplProductNumber, cpd.certificationStatusName "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -120,8 +125,9 @@ public class SvapReportDao extends BaseDAOImpl {
                 .map(result -> SvapListingReport.builder()
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .svap(((SvapEntity) result[1]).toDomain())
-                        .chplProductNumber((String) result[2])
-                        .certificationStatus((String) result[3])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[2]))
+                        .chplProductNumber((String) result[3])
+                        .certificationStatus((String) result[4])
                         .build())
                 .toList();
     }

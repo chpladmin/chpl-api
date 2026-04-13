@@ -8,5 +8,6 @@ import lombok.Data;
 @Builder
 public class AccessibilityStandardListingReport {
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private AccessibilityStandard accessibilityStandard;
 }
