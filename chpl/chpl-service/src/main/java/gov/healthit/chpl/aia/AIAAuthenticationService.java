@@ -1,4 +1,4 @@
-package gov.healthit.chpl.astpai;
+package gov.healthit.chpl.aia;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2
 @Service
-public class AstpAiAuthenticationService {
+public class AIAAuthenticationService {
 
     private RestTemplate httpsRestTemplate;
     private String authenticationUrl;
@@ -26,18 +26,18 @@ public class AstpAiAuthenticationService {
     private JsonMapper jsonMapper;
 
     @Autowired
-    public AstpAiAuthenticationService(RestTemplate httpsRestTemplate,
+    public AIAAuthenticationService(RestTemplate httpsRestTemplate,
             JsonMapper jsonMapper,
-            @Value("${astpai.authenticate.url}") String authenticationUrl,
-            @Value("${astpai.authenticate.clientSecret}") String authenticationClientSecret,
-            @Value("${astpai.authenticate.clientId}") String authenticationClientId) {
+            @Value("${aia.authenticate.url}") String authenticationUrl,
+            @Value("${aia.authenticate.clientSecret}") String authenticationClientSecret,
+            @Value("${aia.authenticate.clientId}") String authenticationClientId) {
         this.httpsRestTemplate = httpsRestTemplate;
         this.jsonMapper = jsonMapper;
         this.authenticationUrl = authenticationUrl;
         this.authenticationRequestBody = String.format("grant_type=client_credentials&scope=default-m2m-resource-server-p3thsy/read&client_id=%s&client_secret=%s", authenticationClientId, authenticationClientSecret);
     }
 
-    public AmazonTokenResponse authenticate() throws AstpAiRequestFailedException {
+    public AmazonTokenResponse authenticate() throws AIARequestFailedException {
         LOGGER.info("Making request to " + authenticationUrl);
         ResponseEntity<String> response = null;
         try {
@@ -52,12 +52,12 @@ public class AstpAiAuthenticationService {
             LOGGER.debug("Response: " + response.getBody());
         } catch (HttpClientErrorException httpEx) {
             LOGGER.error("Unable to authenticate with the URL " + authenticationUrl + ". Message: " + httpEx.getMessage() + "; response status code " + httpEx.getStatusCode());
-            throw new AstpAiRequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
+            throw new AIARequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
         } catch (Exception ex) {
             HttpStatusCode statusCode =  (response != null && response.getStatusCode() != null
                     ? response.getStatusCode() : HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
             LOGGER.error("Unable to authenticate with the URL " + authenticationUrl + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
-            throw new AstpAiRequestFailedException(ex.getMessage(), ex, statusCode);
+            throw new AIARequestFailedException(ex.getMessage(), ex, statusCode);
         }
 
         String responseBody = response == null ? "" : response.getBody();
@@ -66,7 +66,7 @@ public class AstpAiAuthenticationService {
             token = jsonMapper.readValue(responseBody, AmazonTokenResponse.class);
         } catch (JacksonException ex) {
             LOGGER.error("Unable to read the response body as our custom AmazonTokenResponse", ex);
-            throw new AstpAiRequestFailedException(ex.getMessage(), ex);
+            throw new AIARequestFailedException(ex.getMessage(), ex);
         }
         return token;
     }

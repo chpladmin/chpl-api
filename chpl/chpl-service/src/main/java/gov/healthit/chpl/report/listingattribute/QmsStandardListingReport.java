@@ -8,5 +8,6 @@ import lombok.Data;
 @Builder
 public class QmsStandardListingReport {
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private QmsStandard qmsStandard;
 }
