@@ -2,6 +2,8 @@ package gov.healthit.chpl.report.criteriaattribute;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
@@ -11,6 +13,15 @@ import jakarta.persistence.Query;
 
 @Repository
 public class OptionalStandardReportDao extends BaseDAOImpl {
+
+    private String unformattedListingDetailsUrl;
+
+    @Autowired
+    public OptionalStandardReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
+
     public List<OptionalStandardReport> getOptionalStandardReports() {
         String hql = "SELECT cc, os, count(*) as optionalStandardCount "
                 + "FROM CertificationCriterionEntity cc, "
@@ -44,7 +55,7 @@ public class OptionalStandardReportDao extends BaseDAOImpl {
     }
 
     public List<OptionalStandardListingReport> getOptionalStandardListingReports() {
-        String hql = "SELECT cc, os, cpd.chplProductNumber "
+        String hql = "SELECT cc, os, cpd.id, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -68,7 +79,8 @@ public class OptionalStandardReportDao extends BaseDAOImpl {
                 .map(result -> OptionalStandardListingReport.builder()
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .optionalStandard(((OptionalStandardEntity) result[1]).toDomain())
-                        .chplProductNumber((String) result[2])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[2]))
+                        .chplProductNumber((String) result[3])
                         .build())
                 .toList();
     }

@@ -2,6 +2,8 @@ package gov.healthit.chpl.report.criteriaattribute;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
@@ -11,6 +13,14 @@ import jakarta.persistence.Query;
 
 @Repository
 public class ConformanceMethodReportDao extends BaseDAOImpl {
+    private String unformattedListingDetailsUrl;
+
+    @Autowired
+    public ConformanceMethodReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
+
     public List<ConformanceMethodReport> getConformanceMethodReports() {
         String hql = "SELECT cc, cm, count(*) as conrmfanceMethodCount "
                 + "FROM CertificationCriterionEntity cc, "
@@ -44,7 +54,7 @@ public class ConformanceMethodReportDao extends BaseDAOImpl {
     }
 
     public List<ConformanceMethodListingReport> getConformanceMethodListingReports() {
-        String hql = "SELECT cc, cm, cpd.chplProductNumber "
+        String hql = "SELECT cc, cm, cpd.id, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -68,7 +78,8 @@ public class ConformanceMethodReportDao extends BaseDAOImpl {
                 .map(result -> ConformanceMethodListingReport.builder()
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .conformanceMethod(((ConformanceMethodEntity) result[1]).toDomain())
-                        .chplProductNumber((String) result[2])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[2]))
+                        .chplProductNumber((String) result[3])
                         .build())
                 .toList();
     }
