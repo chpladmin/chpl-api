@@ -9,9 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
-
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -21,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @Getter
 @Setter
@@ -37,6 +36,7 @@ public class DeveloperSearchResult implements Serializable {
     private Boolean selfDeveloper;
     private Address address;
     private PointOfContact contact;
+    private String developerDetailsUrl;
     private IdNamePair status;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
