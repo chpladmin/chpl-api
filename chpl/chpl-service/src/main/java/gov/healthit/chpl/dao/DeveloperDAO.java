@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,15 +63,22 @@ public class DeveloperDAO extends BaseDAOImpl {
     private DeveloperStatusDAO statusDao;
     private AttestationDAO attestationDAO;
     private ErrorMessageUtil msgUtil;
+    private String unformattedDeveloperDetalisUrl;
 
     @Autowired
-    public DeveloperDAO(AddressDAO addressDao, ContactDAO contactDao, DeveloperStatusDAO statusDao,
-            AttestationDAO attestationDAO, ErrorMessageUtil msgUtil) {
+    public DeveloperDAO(AddressDAO addressDao,
+            ContactDAO contactDao,
+            DeveloperStatusDAO statusDao,
+            AttestationDAO attestationDAO,
+            ErrorMessageUtil msgUtil,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${developerUrlPart}") String developerUrlPart) {
        this.addressDao = addressDao;
        this.contactDao = contactDao;
        this.statusDao = statusDao;
        this.attestationDAO = attestationDAO;
        this.msgUtil = msgUtil;
+       this.unformattedDeveloperDetalisUrl = chplUrlBegin + developerUrlPart;
     }
 
     public Long create(Developer developer) throws EntityCreationException {
@@ -192,6 +200,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         LOGGER.info("Got all developers from db. Converting to Domain..");
         return entities.stream()
                 .map(entity -> entity.toDomain())
+                .peek(dev -> dev.setDeveloperDetailsUrl(String.format(unformattedDeveloperDetalisUrl, dev.getId())))
                 .collect(Collectors.toList());
     }
 
