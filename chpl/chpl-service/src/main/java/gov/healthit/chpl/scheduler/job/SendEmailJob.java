@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -52,7 +51,6 @@ import com.microsoft.graph.serviceclient.GraphServiceClient;
 import com.microsoft.graph.users.item.messages.MessagesRequestBuilder;
 import com.microsoft.graph.users.item.messages.item.attachments.createuploadsession.CreateUploadSessionPostRequestBody;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
@@ -91,9 +89,6 @@ public class SendEmailJob implements Job {
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -162,11 +157,7 @@ public class SendEmailJob implements Job {
     }
 
     private String getAzureUser() {
-        if (ff4j.check(FeatureList.ONC_TO_ASTP_EMAIL)) {
-            return env.getProperty("azure.user");
-        } else {
-            return env.getProperty("azure.user.onc");
-        }
+        return env.getProperty("azure.user.onc");
     }
 
     private Message getDraftMessage(ChplEmailMessage message) {
