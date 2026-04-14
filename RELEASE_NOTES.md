@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 53.4.0
+_13 April 2026_
+
+### Features
+* Remove onc-to-astp-email flag and related code
+* Add listingDetailsUrl, developerDetailsUrl to some report data
+
+---
+
+## Version 53.3.0
+_30 March 2026_
+
+### Features
+* Detect repeated ICS with ONC-ACB changes for ICS Report
+
+### Bug Fixes
+* Use correct db session object in audit data job
+
+---
+
 ## Version 53.2.0
 _16 March 2026_
 

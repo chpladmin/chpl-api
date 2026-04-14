@@ -2,6 +2,8 @@ package gov.healthit.chpl.report.listingattribute;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardEntity;
@@ -10,6 +12,13 @@ import jakarta.persistence.Query;
 
 @Repository
 public class AccessibilityStandardReportDao extends BaseDAOImpl {
+    private String unformattedListingDetailsUrl;
+
+    @Autowired
+    public AccessibilityStandardReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
 
     public List<AccessibilityStandardReport> getAccessibilityStandardReports() {
         String hql = "SELECT accStd, count(*) as accStandardCount "
@@ -36,7 +45,7 @@ public class AccessibilityStandardReportDao extends BaseDAOImpl {
     }
 
     public List<AccessibilityStandardListingReport> getAccessibilityStandardListingReports() {
-        String hql = "SELECT accStd, cpd.chplProductNumber "
+        String hql = "SELECT accStd, cpd.id, cpd.chplProductNumber "
                 + "FROM CertifiedProductDetailsEntity cpd, "
                 + "CertifiedProductAccessibilityStandardEntity cpAccStd, "
                 + "AccessibilityStandardEntity accStd "
@@ -53,7 +62,8 @@ public class AccessibilityStandardReportDao extends BaseDAOImpl {
         return results.stream()
                 .map(result -> AccessibilityStandardListingReport.builder()
                         .accessibilityStandard(((AccessibilityStandardEntity) result[0]).toDomain())
-                        .chplProductNumber((String) result[1])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[1]))
+                        .chplProductNumber((String) result[2])
                         .build())
                 .toList();
     }

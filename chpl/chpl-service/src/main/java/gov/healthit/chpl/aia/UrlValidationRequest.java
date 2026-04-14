@@ -1,4 +1,4 @@
-package gov.healthit.chpl.astpai;
+package gov.healthit.chpl.aia;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

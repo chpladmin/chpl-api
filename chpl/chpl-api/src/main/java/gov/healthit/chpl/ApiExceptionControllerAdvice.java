@@ -19,7 +19,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import com.datadog.api.client.ApiException;
 
-import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
+import gov.healthit.chpl.aia.AIARequestFailedException;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
@@ -78,11 +78,11 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.NO_CONTENT);
     }
 
-    @ExceptionHandler(AstpAiRequestFailedException.class)
-    public ResponseEntity<ErrorResponse> exception(AstpAiRequestFailedException e) {
+    @ExceptionHandler(AIARequestFailedException.class)
+    public ResponseEntity<ErrorResponse> exception(AIARequestFailedException e) {
         LOGGER.error(e.getMessage());
         return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse("ASTP-AI information is not currently available, please check back later."),
+                new ErrorResponse("AIA information is not currently available, please check back later."),
                 HttpStatus.NO_CONTENT);
     }
 
@@ -292,5 +292,37 @@ public class ApiExceptionControllerAdvice {
                 .status(ChplHttpStatus.COGNITO_FORCE_PASSWORD_CHANGE.value())
                 .body(new ErrorResponse(ChplHttpStatus.COGNITO_FORCE_PASSWORD_CHANGE.getReasonPhrase()));
 
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> exception(RuntimeException e) {
+        if (e.getCause() != null && e.getCause() instanceof ValidationException) {
+            ValidationException validationException = (ValidationException) e.getCause();
+            return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                    .errorMessages(validationException.getErrorMessages())
+                    .businessErrorMessages(validationException.getBusinessErrorMessages())
+                    .dataErrorMessages(validationException.getDataErrorMessages())
+                    .warningMessages(validationException.getWarningMessages())
+                    .build(), HttpStatus.BAD_REQUEST);
+        } else if (e.getCause() != null) {
+            return new ResponseEntity<ErrorResponse>(
+                    new ErrorResponse(e.getCause().getMessage() != null ? e.getCause().getMessage()
+                            : "The server encountered an error completing the request."), getStatus(e.getCause()));
+        }
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse(e.getMessage() != null ? e.getMessage()
+                        : "The server encountered an error completing the request."),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
+    private HttpStatus getStatus(Throwable e) {
+        if (e instanceof InvalidArgumentsException
+                || e instanceof ValidationException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (e instanceof EntityRetrievalException) {
+            return HttpStatus.NOT_FOUND;
+        }
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }

@@ -28,7 +28,6 @@
       <zxcvbn.version>1.7.0</zxcvbn.version>
       <spring.data.redis.version>4.0.1</spring.data.redis.version>
       <redisson.version>4.0.0</redisson.version>
-      <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
     </properties>
 
     <dependencyManagement>
@@ -264,7 +263,7 @@
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-store-redis</artifactId>
-            <version>${ff4j.store.redis.version}</version>
+            <version>${ff4j.version}</version>
         </dependency>
 
         <!-- @Build annotation for generation of builder pattern -->

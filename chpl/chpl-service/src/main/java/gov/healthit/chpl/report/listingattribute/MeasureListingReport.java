@@ -9,4 +9,5 @@ import lombok.Data;
 public class MeasureListingReport {
     private SimpleMeasure measure;
     private String chplProductNumber;
+    private String listingDetailsUrl;
 }

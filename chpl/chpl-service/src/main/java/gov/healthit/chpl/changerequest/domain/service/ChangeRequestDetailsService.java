@@ -49,13 +49,13 @@ public abstract class ChangeRequestDetailsService<T> {
     public abstract T getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException;
 
     public abstract Long create(Long changeRequestId, Object changeRequestDetails);
+    public abstract void sendSubmittedEmail(ChangeRequest cr);
 
     public abstract boolean update(ChangeRequest cr) throws InvalidArgumentsException;
 
     public abstract List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr);
 
     protected abstract ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
-    protected abstract void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException;
