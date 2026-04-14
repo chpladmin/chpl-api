@@ -106,15 +106,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
             List<FormItem> rolledUpFormItems = attestation.getForm().extractFlatFormItems();
             crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestationSubmissionId, rolledUpFormItems);
-
-            //now get with details to send an appropriate email
-            ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
-            try {
-                sendSubmittedEmail(changeRequestWithDetails);
-            } catch (EmailNotSentException e) {
-                LOGGER.error(e);
-            }
-
             return createdAttestationSubmissionId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -193,8 +184,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
-    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
-        attestationEmails.getSubmittedEmail().send(cr);
+    public void sendSubmittedEmail(ChangeRequest cr) {
+        try {
+            attestationEmails.getSubmittedEmail().send(cr);
+        } catch (EmailNotSentException e) {
+            LOGGER.error(e);
+        }
     }
 
     @Override
