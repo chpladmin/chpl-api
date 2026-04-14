@@ -2,6 +2,8 @@ package gov.healthit.chpl.report.listingattribute;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -10,6 +12,13 @@ import jakarta.persistence.Query;
 
 @Repository
 public class QmsStandardReportDao extends BaseDAOImpl {
+    private String unformattedListingDetailsUrl;
+
+    @Autowired
+    public QmsStandardReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
 
     public List<QmsStandardReport> getQmsStandardReports() {
         String hql = "SELECT qms, count(*) as qmsStandardCount "
@@ -36,7 +45,7 @@ public class QmsStandardReportDao extends BaseDAOImpl {
     }
 
     public List<QmsStandardListingReport> getQmsStandardListingReports() {
-        String hql = "SELECT qms, cpd.chplProductNumber "
+        String hql = "SELECT qms, cpd.id, cpd.chplProductNumber "
                 + "FROM CertifiedProductDetailsEntity cpd, "
                 + "CertifiedProductQmsStandardEntity cpqms, "
                 + "QmsStandardEntity qms "
@@ -53,7 +62,8 @@ public class QmsStandardReportDao extends BaseDAOImpl {
         return results.stream()
                 .map(result -> QmsStandardListingReport.builder()
                         .qmsStandard(((QmsStandardEntity) result[0]).toDomain())
-                        .chplProductNumber((String) result[1])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[1]))
+                        .chplProductNumber((String) result[2])
                         .build())
                 .toList();
     }

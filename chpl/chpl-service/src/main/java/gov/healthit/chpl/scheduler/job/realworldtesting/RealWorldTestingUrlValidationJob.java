@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.astpai.AmazonTokenResponse;
-import gov.healthit.chpl.astpai.AstpAiAuthenticationService;
-import gov.healthit.chpl.astpai.AstpAiQueryService;
-import gov.healthit.chpl.astpai.AstpAiRequestFailedException;
-import gov.healthit.chpl.astpai.UrlValidationRequest;
-import gov.healthit.chpl.astpai.UrlValidationResponse;
+import gov.healthit.chpl.aia.AIAAuthenticationService;
+import gov.healthit.chpl.aia.AIAQueryService;
+import gov.healthit.chpl.aia.AIARequestFailedException;
+import gov.healthit.chpl.aia.AmazonTokenResponse;
+import gov.healthit.chpl.aia.UrlValidationRequest;
+import gov.healthit.chpl.aia.UrlValidationResponse;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -63,10 +63,10 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
     private String failureEmailBody;
 
     @Autowired
-    private AstpAiAuthenticationService aiAuthService;
+    private AIAAuthenticationService aiAuthService;
 
     @Autowired
-    private AstpAiQueryService aiQueryService;
+    private AIAQueryService aiQueryService;
 
     @Autowired
     private ListingSearchService listingSearchService;
@@ -95,35 +95,35 @@ public class RealWorldTestingUrlValidationJob extends QuartzJob {
             AmazonTokenResponse token = null;
             try {
                 token = aiAuthService.authenticate();
-            } catch (AstpAiRequestFailedException ex) {
-                LOGGER.error("Unable to authenticate with ASTP-AI", ex);
-                sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
+            } catch (AIARequestFailedException ex) {
+                LOGGER.error("Unable to authenticate with AIA", ex);
+                sendErrorEmail(user.getEmail(), "Unable to authenticate with AIA");
                 return;
             }
-            LOGGER.info("Successfully authenticated with the ASTP-AI application");
+            LOGGER.info("Successfully authenticated with the AIA application");
             //call AI endpoint, get response or handle error
             UrlValidationResponse aiResponse = null;
             if (token != null) {
                 try {
-                    LOGGER.info("Requesting RWT URL Validation from the ASTP-AI application");
+                    LOGGER.info("Requesting RWT URL Validation from the AIA application");
                     aiResponse = aiQueryService.getRwtResultsUrlValidationResponse(token.getAccessToken(), UrlValidationRequest.builder()
                         .chplProductNumber(getChplProductNumber())
                         .url(url)
                         .maxDepth(MAX_SEARCH_DEPTH)
                         .targetYear(year)
                         .build());
-                } catch (AstpAiRequestFailedException ex) {
-                    LOGGER.error("Unable to query ASTP-AI endpoint", ex);
-                    sendErrorEmail(user.getEmail(), "Unable to query ASTP-AI endpoint: " + ex.getMessage());
+                } catch (AIARequestFailedException ex) {
+                    LOGGER.error("Unable to query AIA endpoint", ex);
+                    sendErrorEmail(user.getEmail(), "Unable to query AIA endpoint: " + ex.getMessage());
                     return;
                 } catch (Exception ex) {
-                    LOGGER.error("Unexpected error querying ASTP-AI endpoint", ex);
-                    sendErrorEmail(user.getEmail(), "Unexpected error querying ASTP-AI endpoint: " + ex.getMessage());
+                    LOGGER.error("Unexpected error querying AIA endpoint", ex);
+                    sendErrorEmail(user.getEmail(), "Unexpected error querying AIA endpoint: " + ex.getMessage());
                     return;
                 }
             } else {
-                LOGGER.error("Unable to authenticate with ASTP-AI");
-                sendErrorEmail(user.getEmail(), "Unable to authenticate with ASTP-AI");
+                LOGGER.error("Unable to authenticate with AIA");
+                sendErrorEmail(user.getEmail(), "Unable to authenticate with AIA");
                 return;
             }
             LOGGER.info("Received validation results. Emailing " + user.getEmail());
