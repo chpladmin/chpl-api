@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 53.4.0
+_13 April 2026_
+
+### Features
+* Remove onc-to-astp-email flag and related code
+* Add listingDetailsUrl, developerDetailsUrl to some report data
+
+---
+
 ## Version 53.3.0
 _30 March 2026_
 
