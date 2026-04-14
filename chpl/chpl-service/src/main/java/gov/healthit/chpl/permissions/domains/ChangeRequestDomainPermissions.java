@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.changerequest.CreateActionPermissions;
+import gov.healthit.chpl.permissions.domains.changerequest.CreateMultipleActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.GetByIdActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.SearchActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.UpdateActionPermissions;
@@ -15,16 +16,19 @@ public class ChangeRequestDomainPermissions extends DomainPermissions {
     public static final String SEARCH = "SEARCH";
     public static final String UPDATE = "UPDATE";
     public static final String CREATE = "CREATE";
+    public static final String CREATE_MULTIPLE = "CREATE_MULTIPLE";
 
     @Autowired
     public ChangeRequestDomainPermissions(
             @Qualifier("changeRequestGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
             @Qualifier("changeRequestSearchActionPermissions") SearchActionPermissions searchActionPermissions,
             @Qualifier("changeRequestUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
-            @Qualifier("changeRequestCreateActionPermissions") CreateActionPermissions createActionPermissions) {
+            @Qualifier("changeRequestCreateActionPermissions") CreateActionPermissions createActionPermissions,
+            @Qualifier("changeRequestCreateMultipleActionPermissions") CreateMultipleActionPermissions createMultipleActionPermissions) {
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
         getActionPermissions().put(SEARCH, searchActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
+        getActionPermissions().put(CREATE_MULTIPLE, createMultipleActionPermissions);
     }
 }

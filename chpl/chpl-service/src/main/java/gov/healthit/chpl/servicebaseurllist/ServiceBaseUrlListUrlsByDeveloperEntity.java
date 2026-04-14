@@ -1,10 +1,9 @@
-package gov.healthit.chpl.realworldtesting.entity;
+package gov.healthit.chpl.servicebaseurllist;
 
 import java.io.Serializable;
 
 import org.hibernate.annotations.Immutable;
 
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
@@ -15,38 +14,32 @@ import lombok.Data;
 @Entity
 @Data
 @Immutable
-@Table(name = "rwt_plans_by_developer")
-public class RealWorldTestingPlansUrlsByDeveloperEntity {
+@Table(name = "service_base_url_list_by_developer")
+public class ServiceBaseUrlListUrlsByDeveloperEntity {
 
     @EmbeddedId
-    private RealWorldTestingPlansUrlsId id;
+    private ServiceBaseUrlListUrlsId id;
 
-    @Column(name = "rwt_plans_url", insertable = false, updatable = false)
-    private String rwtPlansUrl;
+    @Column(name = "service_base_url_list", insertable = false, updatable = false)
+    private String sbulUrl;
 
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
 
-    @Deprecated
-    //TODO: Remember to remove this column from the view when the field is removed.
-    @Column(name = " active_certificate_count", insertable = false, updatable = false)
-    private Long activeCertificateCount;
-
-    public RealWorldTestingUrlByDeveloper toDomain() {
-        return RealWorldTestingUrlByDeveloper.builder()
-                .url(rwtPlansUrl)
-                .activeCertificateCount(activeCertificateCount)
+    public ServiceBaseUrlListByDeveloper toDomain() {
+        return ServiceBaseUrlListByDeveloper.builder()
+                .url(sbulUrl)
                 .build();
     }
 }
 
 @Embeddable
 @Data
-class RealWorldTestingPlansUrlsId implements Serializable {
-    private static final long serialVersionUID = 377917248713498861L;
+class ServiceBaseUrlListUrlsId implements Serializable {
+    private static final long serialVersionUID = 377917248715518861L;
 
-    @Column(name = "rwt_plans_url", insertable = false, updatable = false)
-    private String rwtPlansUrl;
+    @Column(name = "service_base_url_list", insertable = false, updatable = false)
+    private String sbulUrl;
 
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
@@ -55,7 +48,7 @@ class RealWorldTestingPlansUrlsId implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((rwtPlansUrl == null) ? 0 : rwtPlansUrl.hashCode());
+        result = prime * result + ((sbulUrl == null) ? 0 : sbulUrl.hashCode());
         result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
         return result;
     }
@@ -71,12 +64,12 @@ class RealWorldTestingPlansUrlsId implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RealWorldTestingPlansUrlsId other = (RealWorldTestingPlansUrlsId) obj;
-        if (rwtPlansUrl == null) {
-            if (other.rwtPlansUrl != null) {
+        ServiceBaseUrlListUrlsId other = (ServiceBaseUrlListUrlsId) obj;
+        if (sbulUrl == null) {
+            if (other.sbulUrl != null) {
                 return false;
             }
-        } else if (!rwtPlansUrl.equals(other.rwtPlansUrl)) {
+        } else if (!sbulUrl.equals(other.sbulUrl)) {
             return false;
         }
         if (developerId == null) {
