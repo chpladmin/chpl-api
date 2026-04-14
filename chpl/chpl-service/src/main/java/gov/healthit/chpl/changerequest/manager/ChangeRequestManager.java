@@ -1,8 +1,10 @@
 package gov.healthit.chpl.changerequest.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -203,6 +205,41 @@ public class ChangeRequestManager {
         return newCr;
     }
 
+    @Transactional(rollbackFor = {InvalidArgumentsException.class, EntityRetrievalException.class,
+            ValidationException.class, ActivityException.class, NullPointerException.class,
+            RuntimeException.class, Exception.class})
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE_MULTIPLE, #changeRequests)")
+    @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
+    public List<ChangeRequest> createChangeRequests(List<ChangeRequest> changeRequests)
+            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
+        List<ChangeRequest> createdChangeRequests = new ArrayList<ChangeRequest>();
+        List<String> validationErrorMessages = new ArrayList<String>();
+        createdChangeRequests = changeRequests.stream()
+            .map(cr -> {
+                try {
+                    return createChangeRequest(cr);
+                } catch (ValidationException ex) {
+                    validationErrorMessages.addAll(ex.getErrorMessages().castToCollection());
+                    validationErrorMessages.addAll(ex.getBusinessErrorMessages().castToCollection());
+                    validationErrorMessages.addAll(ex.getDataErrorMessages().castToCollection());
+                    return null;
+                } catch (InvalidArgumentsException ex) {
+                    validationErrorMessages.add(ex.getMessage());
+                    return null;
+                } catch (EntityRetrievalException | ActivityException ex) {
+                    throw new RuntimeException(ex);
+                }
+            })
+            .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(validationErrorMessages)) {
+            throw new ValidationException(validationErrorMessages);
+        }
+        //only send emails if we got to this point meaning every change request was successfully created
+        sendChangeRequestCreatedEmails(createdChangeRequests);
+        return createdChangeRequests;
+    }
+
     private boolean isRwtChangeRequestType(ChangeRequestType changeRequestType) {
         return changeRequestType.isRwtPlans() || changeRequestType.isRwtResults();
     }
@@ -319,7 +356,7 @@ public class ChangeRequestManager {
         }
 
         Long newCrId = createBaseChangeRequest(cr);
-        Long crDetailsId = createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
+        createChangeRequestDetails(newCrId, cr.getChangeRequestType().getId(), cr.getDetails());
         return newCrId;
     }
 
@@ -333,6 +370,16 @@ public class ChangeRequestManager {
     private Long createChangeRequestDetails(Long changeRequestId, Long changeRequestTypeId, Object changeRequestDetails) {
         ChangeRequestDetailsService<?> crDetailsService = crDetailsFactory.get(changeRequestTypeId);
         return crDetailsService.create(changeRequestId, changeRequestDetails);
+    }
+
+    private void sendChangeRequestCreatedEmails(List<ChangeRequest> changeRequestsWithDetails) {
+        changeRequestsWithDetails.stream()
+            .forEach(cr -> sendChangeRequestCreatedEmail(cr));
+    }
+
+    private void sendChangeRequestCreatedEmail(ChangeRequest changeRequestWithDetails) {
+        ChangeRequestDetailsService<?> crDetailsService = crDetailsFactory.get(changeRequestWithDetails.getChangeRequestType().getId());
+        crDetailsService.sendSubmittedEmail(changeRequestWithDetails);
     }
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {
@@ -365,6 +412,7 @@ public class ChangeRequestManager {
                 changeRequestStatusTypeDAO,
                 changeRequestTypeDAO,
                 attestationManager,
+                msgUtil,
                 cancelledStatus,
                 acceptedStatus,
                 rejectedStatus,
