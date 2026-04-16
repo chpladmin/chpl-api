@@ -18,7 +18,7 @@ public class CertificationIdYearCalculatorTest {
         MonthDay today = MonthDay.now();
         CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(
                 toPropertyValueFormatter.format(today),
-                "09/01", "12/31");
+                "12/31");
         assertEquals(thisYear + "", certIdYearCalculator.getCurrentCertIdYear());
         assertEquals(thisYear + "", certIdYearCalculator.getCurrentCertIdYear("2016"));
     }
@@ -31,7 +31,7 @@ public class CertificationIdYearCalculatorTest {
 
         CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(
                 toPropertyValueFormatter.format(yesterdayMonthDay),
-                "09/01", "12/31");
+                "12/31");
         Integer expectedYear = Math.min(today.getYear(), yesterday.getYear());
         assertEquals(expectedYear + "", certIdYearCalculator.getCurrentCertIdYear());
         assertEquals(expectedYear + "", certIdYearCalculator.getCurrentCertIdYear("2016"));
