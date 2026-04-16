@@ -26,13 +26,12 @@ public class CertificationIdYearCalculator {
 
     @Autowired
     public CertificationIdYearCalculator(@Value("${cmsIdStartDayOfYear}") String cmsIdStartDayOfYear,
-            @Value("${cmsIdStartDayOfOverlap}") String cmsIdStartDayOfOverlap,
             @Value("${cmsIdEndDayOfOverlap}") String cmsIdEndDayOfOverlap) {
         annualCertIdChangeMmDd = cmsIdStartDayOfYear;
         dtFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
         DateTimeFormatter monthDayFormatter = DateTimeFormatter.ofPattern("MM/dd");
-        cmsIdOverlapRange = Pair.of(MonthDay.parse(cmsIdStartDayOfOverlap, monthDayFormatter),
+        cmsIdOverlapRange = Pair.of(MonthDay.parse(cmsIdStartDayOfYear, monthDayFormatter),
                 MonthDay.parse(cmsIdEndDayOfOverlap, monthDayFormatter));
     }
 
