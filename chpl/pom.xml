@@ -28,7 +28,7 @@
         <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
         <mvn.jar.plugin.version>3.5.0</mvn.jar.plugin.version>
         <mvn.jxr.plugin.version>3.6.0</mvn.jxr.plugin.version>
-        <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
+        <mvn.resources.plugin.version>3.5.0</mvn.resources.plugin.version>
         <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
         <mvn.war.plugin.version>3.5.1</mvn.war.plugin.version>
         <org.springboot.version>4.0.1</org.springboot.version>
