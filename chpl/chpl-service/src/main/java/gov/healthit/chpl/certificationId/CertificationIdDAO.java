@@ -342,6 +342,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         if (now.isBefore(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay())) {
             return "00" + year.substring(year.length() - 2);
         }
-        return certIdYearCalculator.getCurrentCertIdYear();
+        return year;
     }
 }
