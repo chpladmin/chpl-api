@@ -32,8 +32,6 @@ import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
 import gov.healthit.chpl.report.svap.SvapReportService;
-import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
-import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.Synchronized;
@@ -100,8 +98,8 @@ public class ReportDataManager {
 
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REPORTS, "
             + "T(gov.healthit.chpl.permissions.domains.ReportDomainPermissions).GET_REPORT_METADATA, filterObject)")
-    public List<ReportMetadata> getReportMetadata() {
-        return reportMetadataDao.getReportMetadata();
+    public List<ReportMetadata> getReportMetadata(String reportGroup) {
+        return reportMetadataDao.getReportMetadata(reportGroup);
     }
 
     @Synchronized("lock")
@@ -300,13 +298,8 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<AttestationReport> getAttestationReports() {
-        return attestationReportService.getAttestationReports();
-    }
-
-    @Synchronized("lock")
-    public List<AttestationReportDeveloper> getAttestationReportDevelopers() {
-        return attestationReportService.getAttestationReportDevelopers();
+    public AttestationReportService getAttestationReportService() {
+        return attestationReportService;
     }
 
     @Synchronized("lock")

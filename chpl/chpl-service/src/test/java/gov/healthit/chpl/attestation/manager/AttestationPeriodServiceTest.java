@@ -27,7 +27,7 @@ public class AttestationPeriodServiceTest {
     public void setup() {
         attestationDAO = Mockito.mock(AttestationDAO.class);
 
-        service = new AttestationPeriodService(attestationDAO);
+        service = new AttestationPeriodService(attestationDAO, 30);
     }
 
     @Test

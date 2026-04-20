@@ -23,8 +23,6 @@ import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
-import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
-import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportDeveloper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
@@ -440,29 +438,6 @@ public class ReportDataController {
     @RequestMapping(value = "/service-base-url-list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return reportDataManager.getUrlUptimeMonitors();
-    }
-
-
-    @Operation(summary = "Retrieves the data used to generate the Attestations report.",
-            description = "Retrieves the data used to generate the Attestations report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<AttestationReport> getAttestationReports() {
-        return reportDataManager.getAttestationReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Attestations report.",
-            description = "Retrieves the data used to generate the Attestations report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @LogMethodUsage
-    @RequestMapping(value = "/attestations/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<AttestationReportDeveloper> getAttestationReportDevelopers() {
-        return reportDataManager.getAttestationReportDevelopers();
     }
 
     @Operation(summary = "Get count of Criteria certified to by unique Product.",

@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,6 +39,18 @@ public class ReportMetadataController {
     @LogMethodUsage
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ReportMetadata> getReportMetadataForUser() {
-        return reportDataManager.getReportMetadata();
+        return reportDataManager.getReportMetadata(null);
+    }
+
+    @Operation(summary = "Retrieves the report metadata for all reports this user is allowed to see.",
+            description = "Retrieves the report metadata for all reports this user is alloewd to see.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/{reportGroup:^[a-zA-Z0-9\\-]+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ReportMetadata> getReportMetadataForUserAndGroup(
+            @PathVariable(name = "reportGroup", required = true) String reportGroup) {
+        return reportDataManager.getReportMetadata(reportGroup);
     }
 }
