@@ -3,12 +3,10 @@ package gov.healthit.chpl.certificationId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
 
 public class CertificationIdYearCalculatorTest {
 
@@ -16,26 +14,25 @@ public class CertificationIdYearCalculatorTest {
 
     @Test
     public void todayEqualsCmsIdAnnualFormatSwitch_yearIsThisYear() {
-        LocalDate now = LocalDate.now();
-
-        Environment env = Mockito.mock(Environment.class);
-        Mockito.when(env.getProperty(ArgumentMatchers.eq("cmsIdStartDayOfYear")))
-            .thenReturn(toPropertyValueFormatter.format(now));
-        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(env);
-        assertEquals(now.getYear() + "", certIdYearCalculator.getCurrentCertIdYear());
-        assertEquals(now.getYear() + "", certIdYearCalculator.getCurrentCertIdYear("2016"));
+        int thisYear = LocalDate.now().getYear();
+        MonthDay today = MonthDay.now();
+        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(
+                toPropertyValueFormatter.format(today),
+                "12/31");
+        assertEquals(thisYear + "", certIdYearCalculator.getCurrentCertIdYear());
+        assertEquals(thisYear + "", certIdYearCalculator.getCurrentCertIdYear("2016"));
     }
 
     @Test
     public void todayAfterCmsIdAnnualFormatSwitch_yearIsMinOfYesterdayAndToday() {
-        LocalDate now = LocalDate.now();
-        LocalDate yesterday = now.minusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        MonthDay yesterdayMonthDay = MonthDay.of(yesterday.getMonth(), yesterday.getDayOfMonth());
 
-        Environment env = Mockito.mock(Environment.class);
-        Mockito.when(env.getProperty(ArgumentMatchers.eq("cmsIdStartDayOfYear")))
-            .thenReturn(toPropertyValueFormatter.format(yesterday));
-        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(env);
-        Integer expectedYear = Math.min(now.getYear(), yesterday.getYear());
+        CertificationIdYearCalculator certIdYearCalculator = new CertificationIdYearCalculator(
+                toPropertyValueFormatter.format(yesterdayMonthDay),
+                "12/31");
+        Integer expectedYear = Math.min(today.getYear(), yesterday.getYear());
         assertEquals(expectedYear + "", certIdYearCalculator.getCurrentCertIdYear());
         assertEquals(expectedYear + "", certIdYearCalculator.getCurrentCertIdYear("2016"));
     }

@@ -57,13 +57,13 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationCriterion> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
-        return certificationIdDao.getCriteriaMetByCertifiedProductIds(productIds);
+    public List<CertificationCriterion> getCriteriaMetByListingIds(List<Long> listingIds) {
+        return certificationIdDao.getCriteriaMetByListingIds(listingIds);
     }
 
     @Transactional(readOnly = true)
-    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
-        return certificationIdDao.getCqmsMetByCertifiedProductIds(productIds);
+    public List<CQMMetDTO> getCqmsMetByListingIds(List<Long> listingIds) {
+        return certificationIdDao.getCqmsMetByListingIds(listingIds);
     }
 
     @Transactional(readOnly = true)
