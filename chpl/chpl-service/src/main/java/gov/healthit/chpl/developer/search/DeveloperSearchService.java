@@ -91,6 +91,16 @@ public class DeveloperSearchService {
         return response;
     }
 
+    public Integer getCount(DeveloperSearchRequest searchRequest, Logger logger) {
+        DeveloperSearchResponse searchResults = null;
+        try {
+            searchResults = findDevelopers(searchRequest);
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve developers from search request.", ex);
+        }
+        return searchResults != null ? searchResults.getRecordCount() : 0;
+    }
+
     public List<DeveloperSearchResult> getAllPagesOfSearchResults(DeveloperSearchRequest searchRequest, Logger logger) {
         List<DeveloperSearchResult> searchResults = new ArrayList<DeveloperSearchResult>();
         try {
