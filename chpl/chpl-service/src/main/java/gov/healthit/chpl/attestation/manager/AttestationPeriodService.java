@@ -4,24 +4,45 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
+import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class AttestationPeriodService {
     private AttestationDAO attestationDAO;
+    private Integer attestationApprovalWindowInDays;
 
     @Autowired
-    public AttestationPeriodService(AttestationDAO attestationDAO) {
+    public AttestationPeriodService(AttestationDAO attestationDAO,
+            @Value("${attestationApprovalWindowInDays}") Integer attestationApprovalWindowInDays) {
         this.attestationDAO = attestationDAO;
+        this.attestationApprovalWindowInDays = attestationApprovalWindowInDays;
     }
 
     public List<AttestationPeriod> getAllPeriods() {
         return attestationDAO.getAllPeriods();
+    }
+
+    public boolean isTodayDuringAnySubmissionWindow() {
+        LocalDate today = LocalDate.now();
+        AttestationPeriod attestationPeriod = getMostRecentPastAttestationPeriod();
+        return (attestationPeriod.getSubmissionStart().equals(today) || attestationPeriod.getSubmissionStart().isBefore(today))
+                && (attestationPeriod.getSubmissionEnd().equals(today) || attestationPeriod.getSubmissionEnd().isAfter(today));
+    }
+
+    public boolean isTodayDuringSubmissionPlusApprovalPeriod() {
+        AttestationPeriod attestationPeriod = getMostRecentPastAttestationPeriod();
+        return DateUtil.isDateBetweenInclusive(
+                Pair.of(attestationPeriod.getSubmissionStart(),
+                        attestationPeriod.getSubmissionEnd().plusDays(attestationApprovalWindowInDays)),
+                LocalDate.now());
     }
 
     public Boolean isDateWithinSubmissionPeriodForDeveloper(Long developerId, LocalDate dateToCheck) {
