@@ -3,7 +3,6 @@ package gov.healthit.chpl.certificationId;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -14,8 +13,8 @@ public class CertificationIdResults implements Serializable {
     private static final long serialVersionUID = 4350936762994127624L;
     private List<Product> products;
     private String ehrCertificationId;
-    private Map<String, Integer> metCounts;
-    private Map<String, Integer> metPercentages;
+    private CertificationIdRequirements metCounts;
+    private CertificationIdMetPercentages metPercentages;
     private ArrayList<String> missingAnd = new ArrayList<String>();
     private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();

@@ -10,28 +10,28 @@ import java.util.TreeMap;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 
 public abstract class Validator {
-    protected Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>(100);
-    protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
-    protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
+    private Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>();
+    private Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
+    private Map<String, Integer> domainsMet = new HashMap<String, Integer>();
 
     // missing criteria where all in the set are required
-    protected ArrayList<String> missingAnd = new ArrayList<String>();
+    private ArrayList<String> missingAnd = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
-    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     // missing at least one of the following combinations of criteria
-    protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     // missing X criteria from the OR list of criteria
-    protected List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
+    private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
 
-    protected Map<String, Integer> percents = new HashMap<String, Integer>();
-    protected Map<String, Integer> counts = new HashMap<String, Integer>();
-    protected boolean valid = false;
+    private CertificationIdMetPercentages percents = new CertificationIdMetPercentages();
+    private CertificationIdRequirements counts = new CertificationIdRequirements();
+    private boolean valid = false;
 
-    public Map<String, Integer> getCounts() {
+    public CertificationIdRequirements getCounts() {
         return this.counts;
     }
 
-    public Map<String, Integer> getPercents() {
+    public CertificationIdMetPercentages getPercents() {
         return this.percents;
     }
 
@@ -75,10 +75,6 @@ public abstract class Validator {
 
     protected abstract boolean isDomainsValid();
 
-    // **********************************************************************
-    // validate
-    //
-    // **********************************************************************
     public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
         this.collectMetData(certDtos, cqmDtos);
         this.valid = this.onValidate();
@@ -86,10 +82,6 @@ public abstract class Validator {
         return this.isValid();
     }
 
-    // **********************************************************************
-    // collectMetData
-    //
-    // **********************************************************************
     protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
 
         // Collect criteria met
@@ -124,41 +116,25 @@ public abstract class Validator {
 
     }
 
-    // **********************************************************************
-    // calculatePercentages
-    //
-    // **********************************************************************
     protected void calculatePercentages() {
-        this.percents.put(
-                "criteriaMet",
-                (0 == this.counts.get("criteriaRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("criteriaRequiredMet") * 100.0)
-                                / this.counts.get("criteriaRequired")), 100));
-        this.percents.put(
-                "cqmDomains",
-                (0 == this.counts.get("domainsRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("domainsRequiredMet") * 100.0)
-                                / this.counts.get("domainsRequired")), 100));
-        this.percents.put(
-                "cqmsInpatient",
-                (0 == this.counts.get("cqmsInpatientRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("cqmsInpatientRequiredMet") * 100.0)
-                                / this.counts.get("cqmsInpatientRequired")), 100));
-        this.percents
-                .put("cqmsAmbulatory",
-                        (0 == this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")) ? 0
-                                : Math.min(
-                                        (int) Math.floor(((this.counts.get("cqmsAmbulatoryCoreRequiredMet") + Math.min(
-                                                this.counts.get("cqmsAmbulatoryRequiredMet"),
-                                                this.counts.get("cqmsAmbulatoryRequired"))) / (double) (this.counts
-                                                .get("cqmsAmbulatoryRequired") + this.counts
-                                                .get("cqmsAmbulatoryCoreRequired"))) * 100.0), 100));
+        this.percents.setCriteriaMet(this.counts.getCriteriaRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getCriteriaRequiredMet() * 100.0) / this.counts.getCriteriaRequired()), 100));
+        this.percents.setCqmDomains(this.counts.getDomainsRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getDomainsRequiredMet() * 100.0) / this.counts.getDomainsRequired()), 100));
+        this.percents.setCqmsInpatient(this.counts.getCqmsInpatientRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getCqmsInpatientRequiredMet() * 100.0) / this.counts.getCqmsInpatientRequired()), 100));
+
+        this.percents.setCqmsAmbulatory(this.counts.getCqmsAmbulatoryRequired() + this.counts.getCqmsAmbulatoryCoreRequired() == 0
+                ? 0
+                : Math.min(
+                        (int) Math.floor((this.counts.getCqmsAmbulatoryCoreRequiredMet()
+                                        + Math.min(this.counts.getCqmsAmbulatoryRequiredMet(), (this.counts.getCqmsAmbulatoryRequired()))
+                                / (double) (this.counts.getCqmsAmbulatoryRequired() + this.counts.getCqmsAmbulatoryCoreRequired())) * 100.0), 100));
     }
 
-    // **********************************************************************
-    // calculateAttestationYear
-    //
-    // **********************************************************************
     public static String calculateAttestationYear(SortedSet<Integer> editionYears) {
         String attYearString = null;
 
