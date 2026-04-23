@@ -44,12 +44,10 @@ public class ValidatorFactory {
         this.certIdYearToValidatorClassMap.put("2014/2015", Validator20142015.class);
         this.certIdYearToValidatorClassMap.put("2015", Validator2015.class);
         this.certIdYearToValidatorClassMap.put("2025", Validator2025.class);
-        //TODO: we will need to create 2026, 2027, etc validators before the cmsIdStartDayOfYear
-        //day comes for the current year (so before 9/1/2026 we need a 2026 validator)
-        //OCD-4928
-        //Added the below line to be able to test CMS IDs during the overlap window, but in reality
-        //we will need a new Validator2026 class.
-        this.certIdYearToValidatorClassMap.put("2026", Validator2025.class);
+        this.certIdYearToValidatorClassMap.put("2026", Validator2026.class);
+        //TODO: we will need to create 2027, 2028, etc validators before the cmsIdStartDayOfYear
+        //day comes for the current year (so before 9/1/20XX)
+        this.certIdYearToValidatorClassMap.put("2027", Validator2026.class);
     }
 
     public Validator getValidator(String certIdYear) throws InvalidArgumentsException {
@@ -84,7 +82,8 @@ public class ValidatorFactory {
                 LOGGER.error("Could not instantiate validator " + validatorClazz, ex);
             }
         } else if (validatorClazz.equals(Validator2015.class)
-                || validatorClazz.equals(Validator2025.class)) {
+                || validatorClazz.equals(Validator2025.class)
+                || validatorClazz.equals(Validator2026.class)) {
             try {
                 result =  (Validator) validatorClazz.getDeclaredConstructors()[0].newInstance(certificationCriterionService);
             } catch (Exception ex) {
