@@ -11,9 +11,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Validator for CMS EHR ID generation for the year 2025
- */
 public class Validator2026 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;
@@ -46,8 +43,6 @@ public class Validator2026 extends Validator {
         this.getCounts().setCriteriaCpoeRequiredMet(0);
         this.getCounts().setCriteriaDpRequired(1);
         this.getCounts().setCriteriaDpRequiredMet(0);
-        //Decision support criteria (or "ds") was the a9 or b11 that was required before 2025.
-        //Starting with the 2025 calendar year cert ids, b11 is just a required criteria
         this.getCounts().setCriteriaDsRequired(0);
         this.getCounts().setCriteriaDsRequiredMet(0);
         this.getCounts().setCqmsInpatientRequired(0);

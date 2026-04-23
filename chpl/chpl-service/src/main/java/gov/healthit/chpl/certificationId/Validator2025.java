@@ -11,9 +11,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Validator for CMS EHR ID generation for the year 2025
- */
 public class Validator2025 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;

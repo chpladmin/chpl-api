@@ -11,11 +11,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
- * @author alarned
- *
- */
 public class Validator2015 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;
