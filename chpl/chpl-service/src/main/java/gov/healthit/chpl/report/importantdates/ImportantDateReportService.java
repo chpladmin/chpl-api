@@ -67,6 +67,7 @@ public class ImportantDateReportService {
     private List<ImportantDate> getCriteriaDates() {
         List<CertificationCriterion> allCriteria = criteriaDao.findAll();
         List<ImportantDate> expiringCriteria = allCriteria.stream()
+            .filter(criterion -> isDateImportant(criterion.getEndDay()))
             .map(criterion -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.CRITERIA_EXPIRING.getUnformattedDisplay(), Util.formatCriteriaNumber(criterion)))
                                 .date(criterion.getEndDay())
@@ -74,6 +75,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> availableCriteria = allCriteria.stream()
+            .filter(criterion -> isDateImportant(criterion.getStartDay()))
             .map(criterion -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.CRITERIA_AVAILABLE.getUnformattedDisplay(), Util.formatCriteriaNumber(criterion)))
                                 .date(criterion.getStartDay())
@@ -86,6 +88,7 @@ public class ImportantDateReportService {
         List<Standard> allStandards = standardDao.findAll();
 
         List<ImportantDate> availableStandards = allStandards.stream()
+                .filter(std -> isDateImportant(std.getStartDay()))
                 .map(std -> ImportantDate.builder()
                                     .eventDescription(String.format(ImportantDateType.ATTRIBUTE_AVAILABLE.getUnformattedDisplay(), "Standard", std.getValue()))
                                     .date(std.getStartDay())
@@ -93,6 +96,7 @@ public class ImportantDateReportService {
                 .collect(Collectors.toList());
 
         List<ImportantDate> expiringStandards = allStandards.stream()
+            .filter(std -> isDateImportant(std.getEndDay()))
             .map(std -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_EXPIRING.getUnformattedDisplay(), "Standard", std.getValue()))
                                 .date(std.getEndDay())
@@ -100,6 +104,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> requiredStandards = allStandards.stream()
+            .filter(std -> isDateImportant(std.getRequiredDay()))
             .map(std -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_REQUIRED.getUnformattedDisplay(), "Standard", std.getValue()))
                                 .date(std.getRequiredDay())
@@ -107,6 +112,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> extensionEndingStandards = allStandards.stream()
+                .filter(std -> isDateImportant(std.getExtensionEndDay()))
                 .map(std -> ImportantDate.builder()
                                     .eventDescription(String.format(ImportantDateType.ATTRIBUTE_EXTENSION_ENDS.getUnformattedDisplay(), "Standard", std.getValue()))
                                     .date(std.getExtensionEndDay())
@@ -118,6 +124,7 @@ public class ImportantDateReportService {
     private List<ImportantDate> getCodeSetDates() {
         List<CodeSet> allCodeSets = codeSetDao.findAll();
         List<ImportantDate> availableCodeSets = allCodeSets.stream()
+            .filter(codeSet -> isDateImportant(codeSet.getStartDay()))
             .map(codeSet -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_AVAILABLE.getUnformattedDisplay(), "Code Set", codeSet.getName()))
                                 .date(codeSet.getStartDay())
@@ -125,6 +132,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> requiredCodeSets = allCodeSets.stream()
+            .filter(codeSet -> isDateImportant(codeSet.getRequiredDay()))
             .map(codeSet -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_REQUIRED.getUnformattedDisplay(), "Code Set", codeSet.getName()))
                                 .date(codeSet.getRequiredDay())
@@ -132,6 +140,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> extensionEndingCodeSets = allCodeSets.stream()
+                .filter(codeSet -> isDateImportant(codeSet.getExtensionEndDay()))
                 .map(codeSet -> ImportantDate.builder()
                                     .eventDescription(String.format(ImportantDateType.ATTRIBUTE_EXTENSION_ENDS.getUnformattedDisplay(), "Code Set", codeSet.getName()))
                                     .date(codeSet.getExtensionEndDay())
@@ -144,6 +153,7 @@ public class ImportantDateReportService {
         List<FunctionalityTested> allFunctionalityTested = functionalityTestedDao.findAll();
 
         List<ImportantDate> availableFunctionalityTested = allFunctionalityTested.stream()
+                .filter(ft -> isDateImportant(ft.getStartDay()))
                 .map(ft -> ImportantDate.builder()
                                     .eventDescription(String.format(ImportantDateType.ATTRIBUTE_AVAILABLE.getUnformattedDisplay(), "Functionality Tested", ft.getValue()))
                                     .date(ft.getStartDay())
@@ -151,6 +161,7 @@ public class ImportantDateReportService {
                 .collect(Collectors.toList());
 
         List<ImportantDate> expiringFunctionalityTested = allFunctionalityTested.stream()
+            .filter(ft -> isDateImportant(ft.getEndDay()))
             .map(ft -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_EXPIRING.getUnformattedDisplay(), "Functionality Tested", ft.getValue()))
                                 .date(ft.getEndDay())
@@ -158,6 +169,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> requiredFunctionalityTested = allFunctionalityTested.stream()
+            .filter(ft -> isDateImportant(ft.getRequiredDay()))
             .map(ft -> ImportantDate.builder()
                                 .eventDescription(String.format(ImportantDateType.ATTRIBUTE_REQUIRED.getUnformattedDisplay(), "Functionality Tested", ft.getValue()))
                                 .date(ft.getRequiredDay())
@@ -165,6 +177,7 @@ public class ImportantDateReportService {
             .collect(Collectors.toList());
 
         List<ImportantDate> extensionEndingFunctionalityTested = allFunctionalityTested.stream()
+                .filter(ft -> isDateImportant(ft.getExtensionEndDay()))
                 .map(ft -> ImportantDate.builder()
                                     .eventDescription(String.format(ImportantDateType.ATTRIBUTE_EXTENSION_ENDS.getUnformattedDisplay(), "Functionality Tested", ft.getValue()))
                                     .date(ft.getExtensionEndDay())
@@ -195,6 +208,7 @@ public class ImportantDateReportService {
         List<AttestationPeriod> attestationPeriods = attestationDao.getAllPeriods();
 
         List<ImportantDate> attestationSubmissionsOpening = attestationPeriods.stream()
+                .filter(period -> isDateImportant(period.getSubmissionStart()))
                 .map(period -> ImportantDate.builder()
                                     .eventDescription(ImportantDateType.ATTESTATION_SUBMISSIONS_OPEN.getUnformattedDisplay())
                                     .date(period.getSubmissionStart())
@@ -202,6 +216,7 @@ public class ImportantDateReportService {
                 .collect(Collectors.toList());
 
         List<ImportantDate> attestationSubmissionsClosing = attestationPeriods.stream()
+                .filter(period -> isDateImportant(period.getSubmissionEnd()))
                 .map(period -> ImportantDate.builder()
                                     .eventDescription(ImportantDateType.ATTESTATION_SUBMISSIONS_CLOSE.getUnformattedDisplay())
                                     .date(period.getSubmissionEnd())
@@ -222,6 +237,7 @@ public class ImportantDateReportService {
                 .date(rwtReportService.getResultsLateDate(today.getYear()))
                 .build();
         return Stream.of(rwtResultsStart, rwtResultsEnd)
+                .filter(item -> isDateImportant(item.getDate()))
                 .toList();
     }
 
@@ -235,6 +251,11 @@ public class ImportantDateReportService {
                 .date(certIdYearCalculator.getEndDateOfThisCmsIdYearOverlap())
                 .build();
         return Stream.of(nextCmsIdYearStart, nextCmsIdOverlapEnd)
+                .filter(item -> isDateImportant(item.getDate()))
                 .toList();
+    }
+
+    private boolean isDateImportant(LocalDate eventDay) {
+        return eventDay != null;
     }
 }
