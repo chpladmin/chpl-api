@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 53.5.0
+_27 April 2026_
+
+### Features
+* Add GET for report-metadata by group name
+* Deprecate /certification_ids APIs in favor of /certification-ids
+* Create CMS ID Overlap period for flexible certification id creation
+* Support creating multiple change requests with one endpoint
+* Add /developers/sbul-urls endpoint
+* Deprecate activeCertificateCount field of developer RWT response
+
+---
+
 ## Version 53.4.0
 _13 April 2026_
 
