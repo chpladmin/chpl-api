@@ -115,13 +115,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     public Long create(Long changeRequestId, Object changeRequestDetails) {
         try {
             Long newCrId = crDeveloperDemographicsDAO.create(changeRequestId, (ChangeRequestDeveloperDemographics) changeRequestDetails);
-            try {
-                ChangeRequest changeRequestWithDetails = crDAO.get(changeRequestId);
-                sendSubmittedEmail(changeRequestWithDetails);
-            } catch (EmailNotSentException ex) {
-                LOGGER.error("Email about Developer Demographics was not sent for change request " + changeRequestId, ex);
-            }
-
             return newCrId;
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -196,14 +189,18 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
-    protected void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
+    public void sendSubmittedEmail(ChangeRequest cr) {
+        try {
+            chplEmailFactory.emailBuilder()
                 .recipients(resourcePermissionsFactory.get().getAllUsersOnDeveloper(cr.getDeveloper()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(submissionEmailSubject)
                 .htmlMessage(createSubmissionHtmlMessage(cr))
                 .sendEmail();
+        } catch (EmailNotSentException ex) {
+            LOGGER.error("Email about Developer Demographics was not sent for change request " + cr.getId(), ex);
+        }
     }
 
     private String createSubmissionHtmlMessage(ChangeRequest cr) {

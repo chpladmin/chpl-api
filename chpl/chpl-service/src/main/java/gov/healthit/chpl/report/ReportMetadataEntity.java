@@ -51,6 +51,9 @@ public class ReportMetadataEntity extends EntityAudit {
     @Column(name = "report_key")
     private String reportKey;
 
+    @Column(name = "report_group")
+    private String reportGroup;
+
     @Column(name = "url")
     private String url;
 

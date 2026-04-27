@@ -67,10 +67,10 @@ public class CertificationIdSearchService {
                     Validator validator = this.validatorFactory.getValidator(certId.getYear());
 
                     // Lookup Criteria for Validating
-                    List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(listingIds);
+                    List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByListingIds(listingIds);
 
                     // Lookup CQMs for Validating
-                    List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(listingIds);
+                    List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByListingIds(listingIds);
 
                     boolean isValid = validator.validate(criteria, cqmDtos);
                     if (isValid) {
@@ -93,21 +93,21 @@ public class CertificationIdSearchService {
         return results;
     }
 
-    public CertificationIdResults findCertificationByProductIds(List<Long> listingIds, Boolean create)
+    public CertificationIdResults findCertificationByListingIds(List<Long> listingIds, String certificationYear, Boolean create)
             throws InvalidArgumentsException, CertificationIdException {
         if (CollectionUtils.isEmpty(listingIds)) {
             return null;
         }
 
-        List<CertifiedProductDetailsDTO> listingDtos = new ArrayList<CertifiedProductDetailsDTO>();
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
         try {
-            listingDtos = certifiedProductManager.getDetailsByIds(listingIds);
+            listings = certifiedProductManager.getDetailsByIds(listingIds);
         } catch (EntityRetrievalException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
 
         if (create) {
-            Optional<CertifiedProductDetailsDTO> invalidListing = listingDtos.stream()
+            Optional<CertifiedProductDetailsDTO> invalidListing = listings.stream()
                 .filter(listing -> !isEditionlessOrCuresUpdate(listing))
                 .findAny();
             if (invalidListing.isPresent()) {
@@ -117,22 +117,23 @@ public class CertificationIdSearchService {
 
         // Add products to results
         CertificationIdResults results = new CertificationIdResults();
-        results.setProducts(listingDtos.stream()
+        results.setProducts(listings.stream()
                 .map(listing -> new CertificationIdResults.Product(listing))
                 .collect(Collectors.toList()));
         //get the "year" for this cms id
-        results.setYear(certIdYearCalculator.getCurrentCertIdYear());
+        results.setYear(!StringUtils.isEmpty(certificationYear) ? certificationYear : certIdYearCalculator.getCurrentCertIdYear());
 
         // Validate the collection
+        //this will throw an error if an invalid year is passed in
         Validator validator = this.validatorFactory.getValidator(results.getYear());
 
         // Lookup Criteria for Validating
-        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(listingIds);
+        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByListingIds(listingIds);
 
         // Lookup CQMs for Validating
-        List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(listingIds);
+        List<CQMMetDTO> cqms = certificationIdManager.getCqmsMetByListingIds(listingIds);
 
-        boolean isValid = validator.validate(criteria, cqmDtos);
+        boolean isValid = validator.validate(criteria, cqms);
         results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());
@@ -145,7 +146,7 @@ public class CertificationIdSearchService {
         if (validator.isValid()) {
             CertificationIdDTO existingCertId = null;
             try {
-                existingCertId = certificationIdManager.getByListings(listingDtos, results.getYear());
+                existingCertId = certificationIdManager.getByListings(listings, results.getYear());
                 if (existingCertId != null) {
                     results.setEhrCertificationId(existingCertId.getCertificationId());
                 } else {

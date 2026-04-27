@@ -27,18 +27,18 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SbulChangeRequestValidationTest {
     private static final long G10_ID = 1L;
 
+    private static final String NO_G10 = "The criterion 170.315 (g)(10) was not found on %s the Service Base URL List cannot be changed.";
+    private static final String NO_URL_CHANGE = "No change to the Service Base URL List was found for %s.";
+    private static final String SBUL_MISSING = "The Service Base URL List may not be blank for %s.";
+
     @Test
     public void validateValidSbulChangeRequest_returnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com");
         CertifiedProductDetailsManager cpdManager = Mockito.mock(CertifiedProductDetailsManager.class);
         Mockito.when(cpdManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
             .thenReturn(getListingWithG10("http://www.def.com"));
@@ -56,12 +56,7 @@ public class SbulChangeRequestValidationTest {
 
     @Test
     public void validateSbulChangeRequestWithNullDetails_returnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com");
         CertifiedProductDetailsManager cpdManager = Mockito.mock(CertifiedProductDetailsManager.class);
         Mockito.when(cpdManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
             .thenReturn(getListingWithG10("http://www.def.com"));
@@ -80,12 +75,7 @@ public class SbulChangeRequestValidationTest {
 
     @Test
     public void validateSbulChangeRequestWithNullUrl_returnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com");
         CertifiedProductDetailsManager cpdManager = Mockito.mock(CertifiedProductDetailsManager.class);
         Mockito.when(cpdManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
             .thenReturn(getListingWithG10("http://www.def.com"));
@@ -106,12 +96,7 @@ public class SbulChangeRequestValidationTest {
 
     @Test
     public void validateSbulChangeRequestWithNullListing_returnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com");
         CertifiedProductDetailsManager cpdManager = Mockito.mock(CertifiedProductDetailsManager.class);
         Mockito.when(cpdManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
             .thenReturn(getListingWithG10("http://www.def.com"));
@@ -132,12 +117,7 @@ public class SbulChangeRequestValidationTest {
 
     @Test
     public void validateSbulChangeRequestWithUrlNotChanged_returnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
-        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
-
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com");
         CertifiedProductDetailsManager cpdManager = Mockito.mock(CertifiedProductDetailsManager.class);
         Mockito.when(cpdManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
             .thenReturn(getListingWithG10("http://www.def.com"));
@@ -195,6 +175,7 @@ public class SbulChangeRequestValidationTest {
     private CertifiedProductSearchDetails getListingWithG10(String sbul) {
         return CertifiedProductSearchDetails.builder()
             .id(1L)
+            .chplProductNumber("15.02.05.1026.ASPM.01.01.0.220203")
             .certificationResults(Stream.of(CertificationResult.builder()
                     .id(1L)
                     .criterion(getG10Criterion())
@@ -211,7 +192,23 @@ public class SbulChangeRequestValidationTest {
                 .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(String sbul, ResourcePermissionsFactory resourcePermissionsFactory) {
+    private ChangeRequestValidationContext getValidationContext(String sbul) {
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("changeRequest.listingUrl.serviceBaseUrlList.noG10"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(NO_G10, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("changeRequest.listingUrl.serviceBaseUrlList.sameUrl"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(NO_URL_CHANGE, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("changeRequest.listingUrl.serviceBaseUrlList.missing"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(SBUL_MISSING, i.getArgument(1), ""));
+
         return new ChangeRequestValidationContext(null,
                         getChangeRequest(sbul),
                         null,
@@ -228,6 +225,7 @@ public class SbulChangeRequestValidationTest {
                         null,
                         null,
                         null,
+                        msgUtil,
                         null,
                         null,
                         null,

@@ -6,11 +6,11 @@ The CHPL api
 
 ## Install required software
 
-* Java 17
-* Postgres 14.8
-* Redis 6.0
-* mvn 3.6.3 or higher
-* Tomcat 8.5.x -- latest version
+* Java 21
+* Postgres 15.x
+* Redis 7.x
+* mvn 3.9.x
+* Tomcat 11.0.x -- latest version
 * Eclipse (latest)
 
 ## Clone the repository
