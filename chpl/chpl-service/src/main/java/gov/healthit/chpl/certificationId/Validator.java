@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.cqm.CQMResultDetails;
@@ -21,6 +22,7 @@ public abstract class Validator {
     private Set<CertificationCriterion> criteriaMet = new LinkedHashSet<CertificationCriterion>();
     private Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
     private Map<String, Integer> domainsMet = new HashMap<String, Integer>();
+    private List<CertifiedProductSearchDetails> listings = new ArrayList<CertifiedProductSearchDetails>();
 
     // missing criteria where all in the set are required
     private ArrayList<String> missingAnd = new ArrayList<String>();
@@ -47,6 +49,10 @@ public abstract class Validator {
 
     public Set<CertificationCriterion> getCriteriaMet() {
         return this.criteriaMet;
+    }
+
+    public List<CertifiedProductSearchDetails> getListings() {
+        return this.listings;
     }
 
     public Map<String, Integer> getCqmsMet() {
@@ -89,14 +95,14 @@ public abstract class Validator {
 
     protected abstract boolean isDomainsValid();
 
-    public boolean validate(List<CertifiedProductSearchDetails> listings) {
-        this.collectMetData(listings);
+    public boolean validate() {
+        this.collectMetData();
         this.valid = this.onValidate();
         this.calculatePercentages();
         return this.isValid();
     }
 
-    protected void collectMetData(List<CertifiedProductSearchDetails> listings) {
+    protected void collectMetData() {
         // Collect criteria met
         if (!CollectionUtils.isEmpty(listings)) {
             criteriaMet = listings.stream()
@@ -115,20 +121,15 @@ public abstract class Validator {
 
             cqmsMet = new HashMap<String, Integer>(attestedCqms.size());
             for (CQMResultDetails cqmDetail : attestedCqms) {
-                // See what version we've already met...
-                Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
-                if (null == verMet) {
-                    verMet = Integer.valueOf(0);
-                }
+                // Store the attested versions
+                Integer highestVersion = cqmDetail.getSuccessVersions().stream()
+                    .map(ver -> Integer.parseInt(ver.substring(1)))
+                    .max(Integer::compareTo)
+                    .orElse(null);
 
-                // ...store the version that's higher.
+                cqmsMet.put(cqmDetail.getCmsId(), highestVersion);
 
-                Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
-                if (ver > verMet) {
-                    cqmsMet.put(cqmDetail.getCmsId(), ver);
-                }
-
-                if (null != cqmDetail.getDomain()) {
+                if (!StringUtils.isEmpty(cqmDetail.getDomain())) {
                     domainsMet.put(cqmDetail.getDomain(), 1);
                 }
             }

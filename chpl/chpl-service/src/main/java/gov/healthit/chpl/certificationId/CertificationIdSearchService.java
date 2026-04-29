@@ -67,7 +67,8 @@ public class CertificationIdSearchService {
                 // Add criteria and cqms met to results
                 if (includeCriteria || includeCqms) {
                     Validator validator = this.validatorFactory.getValidator(certId.getYear());
-                    boolean isValid = validator.validate(listings);
+                    validator.getListings().addAll(listings);
+                    boolean isValid = validator.validate();
                     if (isValid) {
                         if (includeCriteria) {
                             results.setCriteria(validator.getCriteriaMet());
@@ -118,8 +119,9 @@ public class CertificationIdSearchService {
         // Validate the collection
         //this will throw an error if an invalid year is passed in
         Validator validator = this.validatorFactory.getValidator(results.getYear());
+        validator.getListings().addAll(listings);
 
-        boolean isValid = validator.validate(listings);
+        boolean isValid = validator.validate();
         results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());

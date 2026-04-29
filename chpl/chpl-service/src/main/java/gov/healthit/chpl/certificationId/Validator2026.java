@@ -8,13 +8,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import gov.healthit.chpl.attribute.CodeSetsUpToDateService;
 import gov.healthit.chpl.attribute.GroupedStandardsUpToDateService;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.standard.BaselineStandardService;
+import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
@@ -159,11 +162,18 @@ public class Validator2026 extends Validator {
         List<CertificationCriterion> criteriaNotUpToDate = new ArrayList<CertificationCriterion>();
         criteriaToCheckForUpdates.stream()
             .forEach(criterion -> {
-                boolean upToDate = true;
-                upToDate = upToDate && areBaselineStandardsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
-                upToDate = upToDate && areGroupedStandardsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
-                upToDate = upToDate && areCodeSetsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
-                if (!upToDate) {
+                //any one cert result for the criterion being checked must be fully up-to-date
+                List<CertificationResult> certResultsForCriterion = this.getListings().stream()
+                        .flatMap(listing -> listing.getCertificationResults().stream())
+                        .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()) && BooleanUtils.isTrue(certResult.getSuccess()))
+                        .collect(Collectors.toList());
+
+                CertificationResult fullyUpToDateCertResultForCriterion = certResultsForCriterion.stream()
+                    .filter(certResult -> isCertResultFullyUpToDate(certResult, dayToCalculateRequiredAttributes))
+                    .findAny()
+                    .orElse(null);
+
+                if (fullyUpToDateCertResultForCriterion == null) {
                     criteriaNotUpToDate.add(criterion);
                 } else {
                     this.getCounts().setCriteriaUpToDateMet(this.getCounts().getCriteriaUpToDateMet() + 1);
@@ -172,17 +182,28 @@ public class Validator2026 extends Validator {
         return CollectionUtils.isEmpty(criteriaNotUpToDate);
     }
 
-    private boolean areBaselineStandardsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
+    private boolean isCertResultFullyUpToDate(CertificationResult certResult, LocalDate asOfDate) {
+        return areBaselineStandardsUpToDate(certResult, asOfDate)
+                && areGroupedStandardsUpToDate(certResult, asOfDate)
+                && areCodeSetsUpToDate(certResult, asOfDate);
+    }
+
+    private boolean areBaselineStandardsUpToDate(CertificationResult certResult, LocalDate asOfDate) {
+        List<Standard> baselineStandardsRequiredAsOfDate = baselineStandardService.getBaselineStandards(certResult.getCriterion(), asOfDate, asOfDate);
+
+        boolean doesAnyCertResultHaveAllBaselineStandards = certResultsForCriterion.stream()
+            .filter(certResult -> doesCertResultHaveAllStandards(certResult, baselineStandardsRequiredAsOfDate))
+            .findAny()
+            .orElse(null);
+    }
+
+    private boolean areGroupedStandardsUpToDate(CertificationResult certResult, LocalDate asOfDate) {
 
     }
 
-    private boolean areGroupedStandardsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
-
-    }
-
-    private boolean areCodeSetsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
+    private boolean areCodeSetsUpToDate(CertificationResult certResult, LocalDate asOfDate) {
         //what code sets were required on the date
-        codeSetse
+        codeSetService.getAttributeUpToDate(null, null)
     }
 
     protected boolean isCqmsValid() {
