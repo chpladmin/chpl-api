@@ -35,6 +35,11 @@ public class CertificationIdYearCalculator {
                 MonthDay.parse(cmsIdEndDayOfOverlap, monthDayFormatter));
     }
 
+    public LocalDate getCmsIdStartDayOfCurrentYear() {
+        String currentCertIdYear = getCurrentCertIdYear();
+        return LocalDate.parse(annualCertIdChangeMmDd + "/" + currentCertIdYear, dtFormatter);
+    }
+
     public String getCurrentCertIdYear() {
         return getCurrentCertIdYear(DEFAULT_CERTID_YEAR);
     }

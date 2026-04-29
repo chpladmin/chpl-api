@@ -1,32 +1,61 @@
 package gov.healthit.chpl.certificationId;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import gov.healthit.chpl.attribute.CodeSetsUpToDateService;
+import gov.healthit.chpl.attribute.GroupedStandardsUpToDateService;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
+    private static final int NUM_CRITERIA_REQUIRING_UPDATES = 4; //a5, b1, g9, g10
+    private CertificationCriterionService certificationCriterionService;
+    private CertificationIdYearCalculator certIdYearCalculator;
+    private BaselineStandardService baselineStandardService;
+    private GroupedStandardsUpToDateService groupedStandardService;
+    private CodeSetsUpToDateService codeSetService;
 
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
+    private List<CertificationCriterion> criteriaToCheckForUpdates;
+    private CertificationCriterion a5, b1, g9, g10;
 
-    public Validator2026(CertificationCriterionService certificationCriterionService) {
+    public Validator2026(CertificationCriterionService certificationCriterionService,
+            CertificationIdYearCalculator certIdYearCalculator,
+            BaselineStandardService baselineStandardService,
+            GroupedStandardsUpToDateService groupedStandardService,
+            CodeSetsUpToDateService codeSetService) {
+        this.certificationCriterionService = certificationCriterionService;
+        this.certIdYearCalculator = certIdYearCalculator;
+        this.baselineStandardService = baselineStandardService;
+        this.groupedStandardService = groupedStandardService;
+        this.codeSetService = codeSetService;
 
-        requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
+        a5 = certificationCriterionService.get(Criteria2015.A_5);
+        b1 = certificationCriterionService.get(Criteria2015.B_1_CURES);
+        g9 = certificationCriterionService.get(Criteria2015.G_9_CURES);
+        g10 = certificationCriterionService.get(Criteria2015.G_10);
+        criteriaToCheckForUpdates = Stream.of(a5, b1, g9, g10).toList();
+
+        requiredCriteria = Stream.of(a5,
                 certificationCriterionService.get(Criteria2015.A_14),
-                certificationCriterionService.get(Criteria2015.B_1_CURES),
+                b1,
                 certificationCriterionService.get(Criteria2015.B_11),
                 certificationCriterionService.get(Criteria2015.C_1),
                 certificationCriterionService.get(Criteria2015.G_7),
-                certificationCriterionService.get(Criteria2015.G_9_CURES),
-                certificationCriterionService.get(Criteria2015.G_10)).collect(Collectors.toCollection(ArrayList::new));
+                g9,
+                g10).collect(Collectors.toCollection(ArrayList::new));
 
         cpoeCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.A_1),
                 certificationCriterionService.get(Criteria2015.A_2),
@@ -39,6 +68,8 @@ public class Validator2026 extends Validator {
 
         this.getCounts().setCriteriaRequired(requiredCriteria.size());
         this.getCounts().setCriteriaRequiredMet(0);
+        this.getCounts().setCriteriaUpToDateRequired(NUM_CRITERIA_REQUIRING_UPDATES);
+        this.getCounts().setCriteriaUpToDateMet(0);
         this.getCounts().setCriteriaCpoeRequired(1);
         this.getCounts().setCriteriaCpoeRequiredMet(0);
         this.getCounts().setCriteriaDpRequired(1);
@@ -56,14 +87,14 @@ public class Validator2026 extends Validator {
     }
 
     public boolean onValidate() {
-        return isCriteriaValid();
+        return isCriteriaValid() && areAttributesUpToDate();
     }
 
     protected boolean isCriteriaValid() {
         this.getCounts().setCriteriaRequired(requiredCriteria.size());
         boolean requiredCriteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
-            Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().keySet().stream()
+            Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().stream()
                     .filter(criterionMet -> criterionMet.getId().equals(crit.getId()))
                     .findAny();
 
@@ -116,6 +147,42 @@ public class Validator2026 extends Validator {
                 .map(dpCrit -> Util.formatCriteriaNumber(dpCrit))
                 .collect(Collectors.toCollection(ArrayList::new)));
         return false;
+    }
+
+    private boolean areAttributesUpToDate() {
+        //Get the date on which to determine which attributes are required.
+        //Ex: on 9/1/2026 see whichever standards and code sets were required
+        //and then we need to confirm the listings being used for cert id creation
+        //have those attributes today.
+        LocalDate dayToCalculateRequiredAttributes = certIdYearCalculator.getCmsIdStartDayOfCurrentYear();
+
+        List<CertificationCriterion> criteriaNotUpToDate = new ArrayList<CertificationCriterion>();
+        criteriaToCheckForUpdates.stream()
+            .forEach(criterion -> {
+                boolean upToDate = true;
+                upToDate = upToDate && areBaselineStandardsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
+                upToDate = upToDate && areGroupedStandardsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
+                upToDate = upToDate && areCodeSetsUpToDateForCriterion(criterion, dayToCalculateRequiredAttributes);
+                if (!upToDate) {
+                    criteriaNotUpToDate.add(criterion);
+                } else {
+                    this.getCounts().setCriteriaUpToDateMet(this.getCounts().getCriteriaUpToDateMet() + 1);
+                }
+            });
+        return CollectionUtils.isEmpty(criteriaNotUpToDate);
+    }
+
+    private boolean areBaselineStandardsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
+
+    }
+
+    private boolean areGroupedStandardsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
+
+    }
+
+    private boolean areCodeSetsUpToDateForCriterion(CertificationCriterion criterion, LocalDate asOfDate) {
+        //what code sets were required on the date
+        codeSetse
     }
 
     protected boolean isCqmsValid() {

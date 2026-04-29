@@ -17,6 +17,8 @@ public class CertificationIdRequirements {
     private int criteriaDpRequiredMet = 0;
     private int criteriaDsRequired = 0;
     private int criteriaDsRequiredMet = 0;
+    private int criteriaUpToDateRequired = 0;
+    private int criteriaUpToDateMet = 0;
     private int cqmsInpatientRequired = 0;
     private int cqmsInpatientRequiredMet = 0;
     private int cqmsAmbulatoryRequired = 0;

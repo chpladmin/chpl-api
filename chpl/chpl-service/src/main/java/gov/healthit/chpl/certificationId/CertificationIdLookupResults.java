@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import lombok.Data;
 import lombok.Singular;
 
@@ -42,32 +40,24 @@ public class CertificationIdLookupResults implements Serializable {
         private String classification;
         private String additionalSoftware;
 
-        /** Constructor.
-         *
-         * @param dto object to construct from
-         */
-        public Product(CertifiedProductDetailsDTO dto) {
-            this.id = dto.getId();
-            this.name = dto.getProduct().getName();
-            this.version = dto.getVersion().getVersion();
-            if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
-                this.setChplProductNumber(dto.getChplProductNumber());
-            } else {
-                this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "."
-                        + dto.getCertificationBodyCode() + "." + dto.getDeveloper().getDeveloperCode() + "."
-                        + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
-                        + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
-            }
-            this.year = dto.getYear();
-            this.curesUpdate = dto.getCuresUpdate();
-            this.practiceType = dto.getPracticeTypeName();
-            this.acb = dto.getCertificationBodyName();
-            this.vendor = dto.getDeveloper().getName();
-            this.classification = dto.getProductClassificationName();
+        public Product(CertifiedProductSearchDetails listing) {
+            this.id = listing.getId();
+            this.name = listing.getProduct().getName();
+            this.version = listing.getVersion().getVersion();
+            this.setChplProductNumber(listing.getChplProductNumber());
+            this.year = listing.getEdition().getName();
+            this.curesUpdate = listing.getCuresUpdate();
+            this.practiceType = listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY) != null
+                    ? listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY).toString() : null;
+            this.acb = listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null
+                    ? listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString() : null;
+            this.vendor = listing.getDeveloper().getName();
+            this.classification = listing.getClassificationType().get(CertifiedProductSearchDetails.CLASSIFICATION_TYPE_NAME_KEY) != null
+                    ? listing.getClassificationType().get(CertifiedProductSearchDetails.CLASSIFICATION_TYPE_NAME_KEY).toString() : null;
             this.additionalSoftware = "";
             try {
-                if (null != dto.getProductAdditionalSoftware()) {
-                    this.additionalSoftware = URLEncoder.encode(dto.getProductAdditionalSoftware(), "UTF-8");
+                if (null != listing.getProductAdditionalSoftware()) {
+                    this.additionalSoftware = URLEncoder.encode(listing.getProductAdditionalSoftware(), "UTF-8");
                 }
             } catch (final UnsupportedEncodingException ex) {
                 // Do nothing

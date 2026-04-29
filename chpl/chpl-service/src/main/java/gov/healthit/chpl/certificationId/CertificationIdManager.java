@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -38,8 +37,8 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year) throws EntityRetrievalException {
-        return certificationIdDao.getByListings(listings, year);
+    public CertificationIdDTO getByListings(List<Long> listingIds, String year) throws EntityRetrievalException {
+        return certificationIdDao.getByListings(listingIds, year);
     }
 
     @Transactional(readOnly = true)

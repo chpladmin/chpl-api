@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowFunction;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -98,8 +100,7 @@ public class CertificationIdController {
         message = "This endpoint is deprecated and will be removed. Please use certification-ids/search",
         removalDate = "2026-10-01")
     public @ResponseBody CertificationIdResults searchCertificationIdDeprecated(
-            @RequestParam(required = false) List<Long> ids) throws InvalidArgumentsException,
-            CertificationIdException {
+            @RequestParam(required = false) List<Long> ids) throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         return certIdSearchService.findCertificationByListingIds(ids, null, false);
     }
 
@@ -114,17 +115,11 @@ public class CertificationIdController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody List<CertificationIdResults> searchCertificationId(
-            @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException,
-            CertificationIdException {
+            @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException, EntityRetrievalException,
+        CertificationIdException, Exception {
         List<String> certificationYears = certIdYearCalculator.getValidCertIdYearsToday();
         return certificationYears.stream()
-            .map(certYear -> {
-                try {
-                    return certIdSearchService.findCertificationByListingIds(listingIds, certYear, false);
-                } catch (InvalidArgumentsException | CertificationIdException ex) {
-                    throw new RuntimeException(ex);
-                }
-            })
+            .map(rethrowFunction(certYear -> certIdSearchService.findCertificationByListingIds(listingIds, certYear, false)))
             .collect(Collectors.toList());
     }
 
@@ -143,9 +138,8 @@ public class CertificationIdController {
     @DeprecatedApi(friendlyUrl = "/certification_ids", httpMethod = "POST",
         message = "This endpoint is deprecated and will be removed. Please POST to /certification-ids",
         removalDate = "2026-10-01")
-    public @ResponseBody CertificationIdResults createCertificationIdDeprecated(
-            @RequestParam(required = true) List<Long> ids) throws InvalidArgumentsException,
-            CertificationIdException {
+    public @ResponseBody CertificationIdResults createCertificationIdDeprecated(@RequestParam(required = true) List<Long> ids)
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         return certIdSearchService.findCertificationByListingIds(ids, null, true);
     }
 
@@ -160,9 +154,8 @@ public class CertificationIdController {
     @RequestMapping(value = "/certification-ids", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
-    public @ResponseBody CertificationIdResults createCertificationId(
-            @RequestBody CertificationIdCreateBody createBody) throws InvalidArgumentsException,
-            CertificationIdException {
+    public @ResponseBody CertificationIdResults createCertificationId(@RequestBody CertificationIdCreateBody createBody)
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         return certIdSearchService.findCertificationByListingIds(createBody.getListingIds(), createBody.getYear(), true);
     }
 

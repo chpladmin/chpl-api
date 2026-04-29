@@ -67,7 +67,7 @@ public class Validator2015 extends Validator {
         this.getCounts().setCriteriaRequired(requiredCriteria.size());
         boolean requiredCriteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
-            Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().keySet().stream()
+            Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().stream()
                     .filter(criterionMet -> criterionMet.getId().equals(crit.getId()))
                     .findAny();
 

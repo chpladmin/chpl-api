@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import lombok.Data;
 
 @Data
@@ -16,6 +16,7 @@ public class CertificationIdResults implements Serializable {
     private CertificationIdRequirements metCounts;
     private CertificationIdMetPercentages metPercentages;
     private ArrayList<String> missingAnd = new ArrayList<String>();
+    private ArrayList<String> missingUpToDate = new ArrayList<String>();
     private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
@@ -35,11 +36,11 @@ public class CertificationIdResults implements Serializable {
         private String version;
         private String chplProductNumber;
 
-        public Product(CertifiedProductDetailsDTO dto) {
-            this.name = dto.getProduct().getName();
-            this.productId = dto.getId();
-            this.version = dto.getVersion().getVersion();
-            this.chplProductNumber = dto.getChplProductNumber();
+        public Product(CertifiedProductSearchDetails listing) {
+            this.name = listing.getProduct().getName();
+            this.productId = listing.getId();
+            this.version = listing.getVersion().getVersion();
+            this.chplProductNumber = listing.getChplProductNumber();
         }
     }
 }

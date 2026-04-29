@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
@@ -117,9 +116,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return results;
     }
 
-    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year)
+    public CertificationIdDTO getByListings(List<Long> listingIds, String year)
             throws EntityRetrievalException {
-        CertificationIdEntity entity = getEntityByListings(listings, year);
+        CertificationIdEntity entity = getEntityByListings(listingIds, year);
         if (entity == null) {
             return null;
         }
@@ -240,11 +239,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private CertificationIdEntity getEntityByListings(List<CertifiedProductDetailsDTO> listings, String year)
+    private CertificationIdEntity getEntityByListings(List<Long> listingIds, String year)
             throws EntityRetrievalException {
-        List<Long> productIds = listings.stream()
-                .map(listing -> listing.getId())
-                .toList();
         CertificationIdEntity entity = null;
 
         // Lookup the EHR Certification ID record by:
@@ -275,8 +271,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
                 + "ORDER BY creationDate DESC ",
                 CertificationIdEntity.class);
 
-        query.setParameter("productIds", productIds);
-        query.setParameter("productCount", Long.valueOf(productIds.size()));
+        query.setParameter("productIds", listingIds);
+        query.setParameter("productCount", Long.valueOf(listingIds.size()));
         query.setParameter("year", year);
         List<CertificationIdEntity> results = query.getResultList();
         if (!CollectionUtils.isEmpty(results) && results.size() > 1) {

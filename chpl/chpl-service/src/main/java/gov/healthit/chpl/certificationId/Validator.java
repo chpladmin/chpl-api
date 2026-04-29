@@ -2,20 +2,30 @@ package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public abstract class Validator {
-    private Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>();
+    private Set<CertificationCriterion> criteriaMet = new LinkedHashSet<CertificationCriterion>();
     private Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
     private Map<String, Integer> domainsMet = new HashMap<String, Integer>();
 
     // missing criteria where all in the set are required
     private ArrayList<String> missingAnd = new ArrayList<String>();
+    // criteria are present but not up-to-date
+    private ArrayList<String> missingUpToDate = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
     private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     // missing at least one of the following combinations of criteria
@@ -35,7 +45,7 @@ public abstract class Validator {
         return this.percents;
     }
 
-    public Map<CertificationCriterion, Integer> getCriteriaMet() {
+    public Set<CertificationCriterion> getCriteriaMet() {
         return this.criteriaMet;
     }
 
@@ -45,6 +55,10 @@ public abstract class Validator {
 
     public ArrayList<String> getMissingAnd() {
         return missingAnd;
+    }
+
+    public ArrayList<String> getMissingUpToDate() {
+        return missingUpToDate;
     }
 
     public List<ArrayList<String>> getMissingOr() {
@@ -75,27 +89,32 @@ public abstract class Validator {
 
     protected abstract boolean isDomainsValid();
 
-    public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
-        this.collectMetData(certDtos, cqmDtos);
+    public boolean validate(List<CertifiedProductSearchDetails> listings) {
+        this.collectMetData(listings);
         this.valid = this.onValidate();
         this.calculatePercentages();
         return this.isValid();
     }
 
-    protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
-
+    protected void collectMetData(List<CertifiedProductSearchDetails> listings) {
         // Collect criteria met
-        if (null != certDtos) {
-            criteriaMet = new HashMap<CertificationCriterion, Integer>(certDtos.size());
-            for (CertificationCriterion certDetail : certDtos) {
-                criteriaMet.put(certDetail, 1);
-            }
+        if (!CollectionUtils.isEmpty(listings)) {
+            criteriaMet = listings.stream()
+                    .flatMap(listing -> listing.getCertificationResults().stream())
+                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
+                    .map(certResult -> certResult.getCriterion())
+                    .collect(Collectors.toSet());
         }
 
         // Collect cqms and domains met
-        if (null != cqmDtos) {
-            cqmsMet = new HashMap<String, Integer>(cqmDtos.size());
-            for (CQMMetDTO cqmDetail : cqmDtos) {
+        if (!CollectionUtils.isEmpty(listings)) {
+            List<CQMResultDetails> attestedCqms = listings.stream()
+                .flatMap(listing -> listing.getCqmResults().stream())
+                .filter(cqmResult -> cqmResult.getSuccess() || !CollectionUtils.isEmpty(cqmResult.getSuccessVersions()))
+                .collect(Collectors.toList());
+
+            cqmsMet = new HashMap<String, Integer>(attestedCqms.size());
+            for (CQMResultDetails cqmDetail : attestedCqms) {
                 // See what version we've already met...
                 Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
                 if (null == verMet) {
@@ -103,6 +122,7 @@ public abstract class Validator {
                 }
 
                 // ...store the version that's higher.
+
                 Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
                 if (ver > verMet) {
                     cqmsMet.put(cqmDetail.getCmsId(), ver);
@@ -113,13 +133,15 @@ public abstract class Validator {
                 }
             }
         }
-
     }
 
     protected void calculatePercentages() {
         this.percents.setCriteriaMet(this.counts.getCriteriaRequired() == 0
                 ? 0
                 : Math.min((int) Math.floor((this.counts.getCriteriaRequiredMet() * 100.0) / this.counts.getCriteriaRequired()), 100));
+        this.percents.setCriteriaUpToDate(this.counts.getCriteriaUpToDateRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getCriteriaUpToDateMet() * 100.0) / this.counts.getCriteriaUpToDateRequired()), 100));
         this.percents.setCqmDomains(this.counts.getDomainsRequired() == 0
                 ? 0
                 : Math.min((int) Math.floor((this.counts.getDomainsRequiredMet() * 100.0) / this.counts.getDomainsRequired()), 100));
@@ -137,7 +159,6 @@ public abstract class Validator {
 
     public static String calculateAttestationYear(SortedSet<Integer> editionYears) {
         String attYearString = null;
-
         if ((null != editionYears) && (editionYears.size() > 0)) {
 
             // Get the lowest year...
@@ -149,22 +170,17 @@ public abstract class Validator {
                 attYearString += "/" + editionYears.last().toString();
             }
         }
-
         return attYearString;
     }
 
     protected Boolean criteriaMetContainsCriterion(String criterion) {
-        Boolean found = false;
-        for (CertificationCriterion cert : criteriaMet.keySet()) {
-            if (cert.getNumber().equalsIgnoreCase(criterion)) {
-                found = true;
-            }
-        }
-        return found;
+        return criteriaMet.stream()
+                .filter(cert -> cert.getNumber().equals(criterion))
+                .findAny().isPresent();
     }
 
     protected Boolean criteriaMetContainsCriterion(CertificationCriterion criterion) {
-        return criteriaMet.keySet().stream()
+        return criteriaMet.stream()
             .filter(cert -> cert.getId().equals(criterion.getId()))
             .findAny().isPresent();
     }
