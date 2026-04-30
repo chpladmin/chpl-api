@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -104,14 +103,9 @@ public class BaselineStandardsUpToDateService {
     }
 
     private boolean doesCriterionHaveAnyStandards(CertificationCriterion criterion, Logger logger) {
-        try {
-            return standardDao.getAllStandardCriteriaMap().stream()
-                    .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
-                    .findAny()
-                    .isPresent();
-        } catch (EntityRetrievalException e) {
-            logger.error("Could not retrieve Standards for Criterion.", e);
-            return false;
-        }
+        return standardDao.getAllStandardCriteriaMap().stream()
+                .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
+                .findAny()
+                .isPresent();
     }
 }

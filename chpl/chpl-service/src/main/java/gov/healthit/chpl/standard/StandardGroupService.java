@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,21 +26,16 @@ public class StandardGroupService {
     }
 
     public Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion, LocalDate validAsOfDateRangeStart, LocalDate validAsOfDateRangeEnd) {
-        try {
-            Map<String, List<Standard>> groupedStandardsForCriteria = standardDAO.getAllStandardCriteriaMap().stream()
-                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
-                            && StringUtils.isNotEmpty(stdCriteriaMap.getStandard().getGroupName())
-                            && DateUtil.datesOverlap(Pair.of(stdCriteriaMap.getStandard().getStartDay(), stdCriteriaMap.getStandard().getEndDay()),
-                                    Pair.of(validAsOfDateRangeStart, validAsOfDateRangeEnd)))
-                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
+        Map<String, List<Standard>> groupedStandardsForCriteria = standardDAO.getAllStandardCriteriaMap().stream()
+                .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
+                        && StringUtils.isNotEmpty(stdCriteriaMap.getStandard().getGroupName())
+                        && DateUtil.datesOverlap(Pair.of(stdCriteriaMap.getStandard().getStartDay(), stdCriteriaMap.getStandard().getEndDay()),
+                                Pair.of(validAsOfDateRangeStart, validAsOfDateRangeEnd)))
+                .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
 
-            //Remove any entries where the group only has 1 standard in the list
-            groupedStandardsForCriteria.entrySet().removeIf(entry -> entry.getValue().size() < 2);
+        //Remove any entries where the group only has 1 standard in the list
+        groupedStandardsForCriteria.entrySet().removeIf(entry -> entry.getValue().size() < 2);
 
-            return groupedStandardsForCriteria;
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
-            throw new RuntimeException(e);
-        }
+        return groupedStandardsForCriteria;
     }
 }

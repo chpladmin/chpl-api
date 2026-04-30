@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupService;
@@ -189,14 +188,9 @@ public class GroupedStandardsUpToDateService {
     }
 
     private List<Standard> getAllStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
-        try {
-            return standardDao.getAllStandardCriteriaMap().stream()
-                    .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
-                    .map(map -> map.getStandard())
-                    .toList();
-        } catch (EntityRetrievalException e) {
-            logger.error("Could not retrieve Standards for Criterion.", e);
-            return List.of();
-        }
+        return standardDao.getAllStandardCriteriaMap().stream()
+                .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
+                .map(map -> map.getStandard())
+                .toList();
     }
 }

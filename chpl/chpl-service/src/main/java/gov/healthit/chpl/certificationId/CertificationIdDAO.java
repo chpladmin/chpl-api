@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certificationId;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -302,7 +303,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
 
     private String generateCertificationIdString(String year) throws EntityCreationException {
         StringBuffer newId = new StringBuffer();
-        newId.append(year);
+        newId.append(getYearPartOfNewCertIdString(year));
         newId.append("C");
 
         int suffixLength = (CERT_ID_LENGTH - newId.length());
@@ -329,5 +330,13 @@ public class CertificationIdDAO extends BaseDAOImpl {
         }
 
         return newId.toString();
+    }
+
+    private String getYearPartOfNewCertIdString(String year) {
+        LocalDate now = LocalDate.now();
+        if (now.isBefore(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay())) {
+            return "00" + year.substring(year.length() - 2);
+        }
+        return year;
     }
 }

@@ -154,7 +154,7 @@ public class StandardDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<StandardCriteriaMap> getAllStandardCriteriaMap() throws EntityRetrievalException {
+    public List<StandardCriteriaMap> getAllStandardCriteriaMap() {
         return getAllStandardCriteriaMapEntities().stream()
                 .map(e -> e.toDomain(criterionComparator))
                 .collect(Collectors.toList());
@@ -212,7 +212,7 @@ public class StandardDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<StandardCriteriaMapEntity> getAllStandardCriteriaMapEntities() throws EntityRetrievalException {
+    private List<StandardCriteriaMapEntity> getAllStandardCriteriaMapEntities() {
         return entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM StandardCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criterion c "
