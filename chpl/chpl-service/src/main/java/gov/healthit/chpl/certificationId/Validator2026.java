@@ -221,17 +221,19 @@ public class Validator2026 extends Validator {
             codeSetsRequiredForCriterion = codeSetMaps.get(certResult.getCriterion().getId()).stream()
                     .filter(codeSet -> DateUtil.isOnOrBefore(codeSet.getRequiredDay(), asOfDate))
                     .collect(Collectors.toList());
-            return !codeSetsRequiredForCriterion.stream()
-                    .filter(requiredCodeSet -> !isCodeSetOnCertResult(requiredCodeSet, certResult))
-                    .findAny()
-                    .isPresent();
+            if (!CollectionUtils.isEmpty(codeSetsRequiredForCriterion)) {
+                return !codeSetsRequiredForCriterion.stream()
+                        .filter(requiredCodeSet -> !isCodeSetOnCertResult(requiredCodeSet, certResult))
+                        .findAny()
+                        .isPresent();
+            }
         }
         return true;
     }
 
     private Boolean isCodeSetOnCertResult(CodeSet codeSet, CertificationResult certResult) {
         return certResult.getCodeSets().stream()
-                .filter(cs -> cs.getId().equals(codeSet.getId()))
+                .filter(cs -> cs.getCodeSet().getId().equals(codeSet.getId()))
                 .findAny()
                 .isPresent();
     }
