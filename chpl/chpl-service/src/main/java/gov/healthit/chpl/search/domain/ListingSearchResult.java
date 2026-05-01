@@ -12,8 +12,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
@@ -26,6 +24,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @Getter
 @Setter
@@ -39,6 +39,7 @@ public class ListingSearchResult implements Serializable {
 
     private Long id;
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private Set<String> previousChplProductNumbers;
     private IdNamePair edition;
     private IdNamePair certificationBody;
@@ -145,6 +146,7 @@ public class ListingSearchResult implements Serializable {
         private Long id;
         private String name;
         private IdNamePair status;
+        private String developerDetailsUrl;
     }
 
     @Getter

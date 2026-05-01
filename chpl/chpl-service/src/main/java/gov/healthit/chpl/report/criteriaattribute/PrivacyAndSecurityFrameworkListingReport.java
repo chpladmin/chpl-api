@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class PrivacyAndSecurityFrameworkListingReport {
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private CertificationCriterion criterion;
     private String privacyAndSecurityFramework;
 }
