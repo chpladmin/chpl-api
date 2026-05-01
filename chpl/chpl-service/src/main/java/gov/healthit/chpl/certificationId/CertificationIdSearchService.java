@@ -1,9 +1,11 @@
 package gov.healthit.chpl.certificationId;
 
-import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowFunction;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -56,9 +58,7 @@ public class CertificationIdSearchService {
 
                 // Find the listings associated with the Cert ID
                 List<Long> listingIds = certificationIdManager.getListingIdsByCertificationId(certId.getId());
-                List<CertifiedProductSearchDetails> listings = listingIds.stream()
-                        .map(rethrowFunction(id -> cpdManager.getCertifiedProductDetails(id)))
-                        .toList();
+                List<CertifiedProductSearchDetails> listings = getAllListingDetails(listingIds);
                 // Add product data to results
                 results.setProducts(listings.stream()
                         .map(listing -> new CertificationIdLookupResults.Product(listing))
@@ -95,9 +95,7 @@ public class CertificationIdSearchService {
             return null;
         }
 
-        List<CertifiedProductSearchDetails> listings = listingIds.stream()
-                .map(rethrowFunction(id -> cpdManager.getCertifiedProductDetails(id)))
-                .toList();
+        List<CertifiedProductSearchDetails> listings = getAllListingDetails(listingIds);
 
         if (create) {
             Optional<CertifiedProductSearchDetails> invalidListing = listings.stream()
@@ -151,6 +149,37 @@ public class CertificationIdSearchService {
             }
         }
         return results;
+    }
+
+    private List<CertifiedProductSearchDetails> getAllListingDetails(List<Long> listingIds) {
+        ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
+        listingIds.stream()
+            .forEach(listingId -> futures.add(CompletableFuture
+                    .supplyAsync(() -> getCertifiedProductSearchDetails(listingId), executorService)));
+
+        CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
+        CompletableFuture<List<Optional<CertifiedProductSearchDetails>>> listFuture = CompletableFuture.allOf(futuresArray)
+                .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+        List<CertifiedProductSearchDetails> listings = listFuture.join().stream()
+                .filter(opt -> opt.isPresent())
+                .map(opt -> opt.get())
+                .collect(Collectors.toList());
+        try {
+            executorService.close();
+        } catch (Exception ex) {
+            LOGGER.error("Executor service did not properly close", ex);
+        }
+        return listings;
+    }
+
+    protected Optional<CertifiedProductSearchDetails> getCertifiedProductSearchDetails(Long listingId) {
+        try {
+            return Optional.of(cpdManager.getCertifiedProductDetails(listingId));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+            return Optional.empty();
+        }
     }
 
     private boolean isEditionlessOrCuresUpdate(CertifiedProductSearchDetails listing) {
