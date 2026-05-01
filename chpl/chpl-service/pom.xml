@@ -14,7 +14,7 @@
     <name>chpl-service library</name>
 
     <properties>
-      <azure.version>1.3.5</azure.version>
+      <azure.version>1.3.6</azure.version>
       <commonmark.version>0.27.1</commonmark.version>
       <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
       <itext.version>9.4.0</itext.version>
