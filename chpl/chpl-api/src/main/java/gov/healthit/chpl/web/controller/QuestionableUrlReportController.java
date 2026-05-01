@@ -40,7 +40,7 @@ public class QuestionableUrlReportController {
         return reportDataManager.getQuestionableUrlService().getQuestionableUrlReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Questionable URL Listings report.",
+    @Operation(summary = "Retrieves the data used to generate the Questionable URL Detailed report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })

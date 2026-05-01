@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,18 +36,23 @@ public class CriteriaUpToDateReportService {
     private UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao;
     private SummaryStatisticsDAO summaryStatisticsDao;
     private List<CertificationStatus> allCertificationStatuses;
+    private String unformattedListingDetailsUrl;
 
     @Autowired
     public CriteriaUpToDateReportService(CriteriaUpToDateStatusReportDateService reportDateService,
             CertificationCriteriaManager criteriaManager,
             UpdatedCriterionStatusReportDao updatedCriteriaStatusReportDao,
             SummaryStatisticsDAO summaryStatisticsDao,
-            CertificationStatusDAO certificationStatusDao) {
+            CertificationStatusDAO certificationStatusDao,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
         this.reportDateService = reportDateService;
         this.criteriaManager = criteriaManager;
         this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
         this.summaryStatisticsDao = summaryStatisticsDao;
         this.allCertificationStatuses = certificationStatusDao.findAll();
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+
     }
 
     @Transactional(readOnly = true)
@@ -103,6 +109,7 @@ public class CriteriaUpToDateReportService {
                     .criterion(report.getCertificationCriterion())
                     .chplProductNumber(report.getChplProductNumber())
                     .certifiedProductId(report.getCertifiedProductId())
+                    .listingDetailsUrl(String.format(unformattedListingDetailsUrl, report.getCertifiedProductId()))
                     .build())
             .collect(Collectors.toSet());
         return results.stream().collect(Collectors.toList());
