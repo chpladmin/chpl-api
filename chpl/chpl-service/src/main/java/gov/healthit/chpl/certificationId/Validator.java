@@ -140,9 +140,6 @@ public abstract class Validator {
         this.percents.setCriteriaMet(this.counts.getCriteriaRequired() == 0
                 ? 0
                 : Math.min((int) Math.floor((this.counts.getCriteriaRequiredMet() * 100.0) / this.counts.getCriteriaRequired()), 100));
-        this.percents.setCriteriaUpToDate(this.counts.getCriteriaUpToDateRequired() == 0
-                ? 0
-                : Math.min((int) Math.floor((this.counts.getCriteriaUpToDateMet() * 100.0) / this.counts.getCriteriaUpToDateRequired()), 100));
         this.percents.setCqmDomains(this.counts.getDomainsRequired() == 0
                 ? 0
                 : Math.min((int) Math.floor((this.counts.getDomainsRequiredMet() * 100.0) / this.counts.getDomainsRequired()), 100));

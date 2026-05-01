@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class CertificationIdMetPercentages {
 
     private int criteriaMet;
-    private int criteriaUpToDate;
     private int cqmDomains;
     private int cqmsInpatient;
     private int cqmsAmbulatory;

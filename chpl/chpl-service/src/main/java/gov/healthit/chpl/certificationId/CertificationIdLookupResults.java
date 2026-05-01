@@ -45,7 +45,7 @@ public class CertificationIdLookupResults implements Serializable {
             this.name = listing.getProduct().getName();
             this.version = listing.getVersion().getVersion();
             this.setChplProductNumber(listing.getChplProductNumber());
-            this.year = listing.getEdition().getName();
+            this.year = listing.getEdition() == null ? null : listing.getEdition().getName();
             this.curesUpdate = listing.getCuresUpdate();
             this.practiceType = listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY) != null
                     ? listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY).toString() : null;

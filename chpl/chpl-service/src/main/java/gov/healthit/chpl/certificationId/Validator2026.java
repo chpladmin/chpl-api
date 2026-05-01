@@ -153,6 +153,17 @@ public class Validator2026 extends Validator {
         return false;
     }
 
+    @Override
+    protected void calculatePercentages() {
+        getPercents().setCriteriaMet((getCounts().getCriteriaRequired() + getCounts().getCriteriaUpToDateRequired())== 0
+                ? 0
+                : Math.min((int) Math.floor(((getCounts().getCriteriaRequiredMet() + getCounts().getCriteriaUpToDateMet()) * 100.0)
+                        / (getCounts().getCriteriaRequired() + getCounts().getCriteriaUpToDateRequired())), 100));
+        getPercents().setCqmDomains(0);
+        getPercents().setCqmsInpatient(0);
+        getPercents().setCqmsAmbulatory(0);
+    }
+
     private boolean areAttributesUpToDate() {
         //Get the date on which to determine which attributes are required.
         //Ex: on 9/1/2026 see whichever standards and code sets were required
