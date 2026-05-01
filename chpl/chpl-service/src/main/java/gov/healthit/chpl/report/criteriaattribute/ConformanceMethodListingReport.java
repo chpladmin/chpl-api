@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 public class ConformanceMethodListingReport {
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private CertificationCriterion criterion;
     private ConformanceMethod conformanceMethod;
 }
