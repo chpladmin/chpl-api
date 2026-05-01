@@ -2,7 +2,9 @@ package gov.healthit.chpl.report.importantdates;
 
 import java.time.LocalDate;
 import java.time.MonthDay;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,9 +58,13 @@ public class ImportantDateReportService {
 
     @Transactional
     public List<ImportantDate> getAll() {
-        return Stream.of(getCriteriaDates(), getStandardDates(), getCodeSetDates(),
-                getFunctionalityTestedDates(), Stream.of(getNextQuarterEndingDate()).toList(),
-                getAttestationSubmissionDates(), getRwtResultsDates(),
+        return Stream.of(getCriteriaDates(),
+                getStandardDates(),
+                getCodeSetDates(),
+                getFunctionalityTestedDates(),
+                getOneYearOfQuarterEndingDates(),
+                getAttestationSubmissionDates(),
+                getRwtResultsDates(),
                 getCmsIdDates())
             .flatMap(List::stream)
             .collect(Collectors.toList());
@@ -186,22 +192,26 @@ public class ImportantDateReportService {
         return Stream.of(availableFunctionalityTested, expiringFunctionalityTested, requiredFunctionalityTested, extensionEndingFunctionalityTested).flatMap(List::stream).toList();
     }
 
-    private ImportantDate getNextQuarterEndingDate() {
-        //return only which quarter ends next
+    private List<ImportantDate> getOneYearOfQuarterEndingDates() {
+        //get the next 1 year of quarter endings
         List<Quarter> quarters = quarterDao.getAll();
         MonthDay today = MonthDay.from(LocalDate.now());
-        Quarter currentQuarter = quarters.stream()
-            .filter(quarter -> (quarter.getStart().equals(today) || quarter.getStart().isBefore(today))
-                    && (quarter.getEnd().isAfter(today) || quarter.getEnd().equals(today)))
-            .findAny() // there should only be 1 match
-            .orElse(null);
-        if (currentQuarter != null) {
-            return ImportantDate.builder()
-                    .eventDescription(String.format(ImportantDateType.QUARTER_END.getUnformattedDisplay(), currentQuarter.getName()))
-                    .date(currentQuarter.getEnd().atYear(LocalDate.now().getYear()))
-                    .build();
-        }
-        return null;
+        Map<Quarter, LocalDate> oneYearOfQuarterEndings = new LinkedHashMap<Quarter, LocalDate>();
+        quarters.stream()
+                .forEach(quarter -> {
+                    if (quarter.getEnd().isBefore(today)) {
+                        //needs to go on the next year
+                        oneYearOfQuarterEndings.put(quarter, quarter.getEnd().atYear(LocalDate.now().plusYears(1).getYear()));
+                    } else {
+                        oneYearOfQuarterEndings.put(quarter, quarter.getEnd().atYear(LocalDate.now().getYear()));
+                    }
+                });
+        return oneYearOfQuarterEndings.keySet().stream()
+                .map(quarter -> ImportantDate.builder()
+                    .eventDescription(String.format(ImportantDateType.QUARTER_END.getUnformattedDisplay(), quarter.getName()))
+                    .date(oneYearOfQuarterEndings.get(quarter))
+                    .build())
+                .collect(Collectors.toList());
     }
 
     private List<ImportantDate> getAttestationSubmissionDates() {
