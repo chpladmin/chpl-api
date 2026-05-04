@@ -27,4 +27,8 @@ public class NonconformityReportService {
     private Boolean isNonconformityTypeRetired(NonconformityType nonconformityType) {
         return nonconformityType.getStatus() == CriterionStatus.RETIRED;
     }
+
+    public List<NonconformitiesByDeveloperAndType> getNonconformitiesByDeveloperAndType() {
+        return nonconformityReportDao.getNonconformitiesByDeveloperAndType();
+    }
 }
