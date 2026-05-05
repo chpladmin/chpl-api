@@ -2,6 +2,7 @@ package gov.healthit.chpl.certificationId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +25,6 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
-    private static final int NUM_CRITERIA_REQUIRING_UPDATES = 4; //a5, b1, g9, g10
     private CertificationIdYearCalculator certIdYearCalculator;
     private StandardDAO standardDao;
     private CodeSetDAO codeSetDao;
@@ -32,8 +32,7 @@ public class Validator2026 extends Validator {
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
-    private List<CertificationCriterion> criteriaToCheckForUpdates;
-    private CertificationCriterion a5, b1, g9, g10;
+    private List<CertificationCriterion> upToDateCriteriaFound;
 
     public Validator2026(CertificationCriterionService certificationCriterionService,
             CertificationIdYearCalculator certIdYearCalculator,
@@ -43,20 +42,16 @@ public class Validator2026 extends Validator {
         this.standardDao = standardDao;
         this.codeSetDao = codeSetDao;
 
-        a5 = certificationCriterionService.get(Criteria2015.A_5);
-        b1 = certificationCriterionService.get(Criteria2015.B_1_CURES);
-        g9 = certificationCriterionService.get(Criteria2015.G_9_CURES);
-        g10 = certificationCriterionService.get(Criteria2015.G_10);
-        criteriaToCheckForUpdates = Stream.of(a5, b1, g9, g10).toList();
-
-        requiredCriteria = Stream.of(a5,
+        upToDateCriteriaFound = new ArrayList<CertificationCriterion>();
+        requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
-                b1,
+                certificationCriterionService.get(Criteria2015.B_1_CURES),
                 certificationCriterionService.get(Criteria2015.B_11),
                 certificationCriterionService.get(Criteria2015.C_1),
                 certificationCriterionService.get(Criteria2015.G_7),
-                g9,
-                g10).collect(Collectors.toCollection(ArrayList::new));
+                certificationCriterionService.get(Criteria2015.G_9_CURES),
+                certificationCriterionService.get(Criteria2015.G_10))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         cpoeCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.A_1),
                 certificationCriterionService.get(Criteria2015.A_2),
@@ -67,45 +62,35 @@ public class Validator2026 extends Validator {
                 certificationCriterionService.get(Criteria2015.H_2))
                 .collect(Collectors.toList());
 
-        this.getCounts().setCriteriaRequired(requiredCriteria.size());
-        this.getCounts().setCriteriaRequiredMet(0);
-        this.getCounts().setCriteriaUpToDateRequired(NUM_CRITERIA_REQUIRING_UPDATES);
-        this.getCounts().setCriteriaUpToDateMet(0);
         this.getCounts().setCriteriaCpoeRequired(1);
         this.getCounts().setCriteriaCpoeRequiredMet(0);
         this.getCounts().setCriteriaDpRequired(1);
         this.getCounts().setCriteriaDpRequiredMet(0);
-        this.getCounts().setCriteriaDsRequired(0);
-        this.getCounts().setCriteriaDsRequiredMet(0);
-        this.getCounts().setCqmsInpatientRequired(0);
-        this.getCounts().setCqmsInpatientRequiredMet(0);
-        this.getCounts().setCqmsAmbulatoryRequired(0);
-        this.getCounts().setCqmsAmbulatoryRequiredMet(0);
-        this.getCounts().setCqmsAmbulatoryCoreRequired(0);
-        this.getCounts().setCqmsAmbulatoryCoreRequiredMet(0);
-        this.getCounts().setDomainsRequired(0);
-        this.getCounts().setDomainsRequiredMet(0);
+        this.getCounts().setCriteriaRequired(requiredCriteria.size() + this.getCounts().getCriteriaDpRequired() + this.getCounts().getCriteriaCpoeRequired());
+        this.getCounts().setCriteriaRequiredMet(0);
     }
 
     public boolean onValidate() {
         //written this way so both validation checks get called and we have all missing info at once
-        boolean isCriteriaValid = isCriteriaValid();
         boolean areAttributesUpToDate = areAttributesUpToDate();
+        boolean isCriteriaValid = isCriteriaValid();
         return isCriteriaValid && areAttributesUpToDate;
     }
 
     protected boolean isCriteriaValid() {
-        this.getCounts().setCriteriaRequired(requiredCriteria.size());
         boolean requiredCriteriaValid = true;
+        int requiredCriteriaMet = 0;
         for (CertificationCriterion crit : requiredCriteria) {
             Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().stream()
                     .filter(criterionMet -> criterionMet.getId().equals(crit.getId()))
                     .findAny();
 
-            if (metRequiredCriterion.isPresent()) {
-                this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
-            } else {
+            if (metRequiredCriterion.isPresent() && upToDateCriteriaFound.contains(crit)) {
+                requiredCriteriaMet++;
+            } else if (!metRequiredCriterion.isPresent()) {
                 this.getMissingAnd().add(Util.formatCriteriaNumber(crit));
+                requiredCriteriaValid = false;
+            } else {
                 requiredCriteriaValid = false;
             }
         }
@@ -113,52 +98,65 @@ public class Validator2026 extends Validator {
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();
 
-        this.getCounts().setCriteriaRequired(
-                this.getCounts().getCriteriaRequired()
-                + this.getCounts().getCriteriaCpoeRequired()
-                + this.getCounts().getCriteriaDsRequired()
-                + this.getCounts().getCriteriaDpRequired());
         this.getCounts().setCriteriaRequiredMet(
-                this.getCounts().getCriteriaRequiredMet()
+                requiredCriteriaMet
                 + this.getCounts().getCriteriaCpoeRequiredMet()
-                + this.getCounts().getCriteriaDsRequiredMet()
                 + this.getCounts().getCriteriaDpRequiredMet());
 
         return (requiredCriteriaValid && cpoeValid && dpValid);
     }
 
     protected boolean isCPOEValid() {
-        for (CertificationCriterion crit : cpoeCriteriaOr) {
-            if (criteriaMetContainsCriterion(crit)) {
-                this.getCounts().setCriteriaCpoeRequiredMet(1);
-                return true;
-            }
+        //they could have both "or" criteria, only 1 has to be up-to-date
+        List<CertificationCriterion> metCpoeCriteriaOr = cpoeCriteriaOr.stream()
+                .filter(orCriterion -> criteriaMetContainsCriterion(orCriterion))
+                .collect(Collectors.toList());
+
+        Optional<CertificationCriterion> upToDateMetCpoeCriterionOr = metCpoeCriteriaOr.stream()
+            .filter(metOrCriterion -> upToDateCriteriaFound.contains(metOrCriterion))
+            .findAny();
+
+        if (!CollectionUtils.isEmpty(metCpoeCriteriaOr) && upToDateMetCpoeCriterionOr.isPresent()) {
+            this.getCounts().setCriteriaCpoeRequiredMet(1);
+            return true;
+        } else if (CollectionUtils.isEmpty(metCpoeCriteriaOr)) {
+            getMissingOr().add(cpoeCriteriaOr.stream()
+                    .map(cpoeCrit -> Util.formatCriteriaNumber(cpoeCrit))
+                    .collect(Collectors.toCollection(ArrayList::new)));
+            return false;
+        } else {
+            return false;
         }
-        getMissingOr().add(cpoeCriteriaOr.stream()
-                .map(cpoeCrit -> Util.formatCriteriaNumber(cpoeCrit))
-                .collect(Collectors.toCollection(ArrayList::new)));
-        return false;
     }
 
     protected boolean isDPValid() {
-        for (CertificationCriterion crit : dpCriteriaOr) {
-            if (criteriaMetContainsCriterion(crit)) {
-                this.getCounts().setCriteriaDpRequiredMet(1);
-                return true;
-            }
+        List<CertificationCriterion> metDpCriteriaOr = dpCriteriaOr.stream()
+                .filter(orCriterion -> criteriaMetContainsCriterion(orCriterion))
+                .collect(Collectors.toList());
+
+        Optional<CertificationCriterion> upToDateMetDpCriterionOr = metDpCriteriaOr.stream()
+            .filter(metOrCriterion -> upToDateCriteriaFound.contains(metOrCriterion))
+            .findAny();
+
+        if (!CollectionUtils.isEmpty(metDpCriteriaOr) && upToDateMetDpCriterionOr.isPresent()) {
+            this.getCounts().setCriteriaDpRequiredMet(1);
+            return true;
+        } else if (CollectionUtils.isEmpty(metDpCriteriaOr)) {
+            getMissingOr().add(dpCriteriaOr.stream()
+                    .map(dpCrit -> Util.formatCriteriaNumber(dpCrit))
+                    .collect(Collectors.toCollection(ArrayList::new)));
+            return false;
+        } else {
+            return false;
         }
-        getMissingOr().add(dpCriteriaOr.stream()
-                .map(dpCrit -> Util.formatCriteriaNumber(dpCrit))
-                .collect(Collectors.toCollection(ArrayList::new)));
-        return false;
     }
 
     @Override
     protected void calculatePercentages() {
-        getPercents().setCriteriaMet((getCounts().getCriteriaRequired() + getCounts().getCriteriaUpToDateRequired())== 0
+        getPercents().setCriteriaMet(getCounts().getCriteriaRequired() == 0
                 ? 0
-                : Math.min((int) Math.floor(((getCounts().getCriteriaRequiredMet() + getCounts().getCriteriaUpToDateMet()) * 100.0)
-                        / (getCounts().getCriteriaRequired() + getCounts().getCriteriaUpToDateRequired())), 100));
+                : Math.min((int) Math.floor((getCounts().getCriteriaRequiredMet() * 100.0)
+                        / getCounts().getCriteriaRequired()), 100));
         getPercents().setCqmDomains(0);
         getPercents().setCqmsInpatient(0);
         getPercents().setCqmsAmbulatory(0);
@@ -170,6 +168,10 @@ public class Validator2026 extends Validator {
         //and then we need to confirm the listings being used for cert id creation
         //have those attributes today.
         LocalDate dayToCalculateRequiredAttributes = certIdYearCalculator.getCmsIdStartDayOfCurrentYear();
+
+        List<CertificationCriterion> criteriaToCheckForUpdates = Stream.of(requiredCriteria, cpoeCriteriaOr, dpCriteriaOr)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
         criteriaToCheckForUpdates.stream()
             .forEach(criterion -> {
@@ -189,6 +191,7 @@ public class Validator2026 extends Validator {
                         getMissingUpToDate().add(Util.formatCriteriaNumber(criterion));
                     } else {
                         this.getCounts().setCriteriaUpToDateMet(this.getCounts().getCriteriaUpToDateMet() + 1);
+                        upToDateCriteriaFound.add(criterion);
                     }
                 }
             });
