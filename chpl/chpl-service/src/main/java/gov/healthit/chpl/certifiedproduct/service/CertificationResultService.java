@@ -74,7 +74,7 @@ public class CertificationResultService {
                     if (newTestTask.matches(currTestTask)) {
                         alreadyExists = true;
                         if (!currTestTask.getCriteria().add(criteria)) {
-                            LOGGER.warn("Cannot add criteria " + criteria.getNumber() + " to test task " + currTestTask.getId() + " for listing " + searchDetails.getId() + " because it already exists.");
+                            LOGGER.debug("Cannot add criteria " + criteria.getNumber() + " to test task " + currTestTask.getId() + " for listing " + searchDetails.getId() + " because it already exists.");
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public class CertificationResultService {
                     newTestTask.getCriteria().add(criteria);
                     searchDetails.getSed().getTestTasks().add(newTestTask);
                 } else {
-                    LOGGER.warn("Not adding test task " + newTestTask.getId() + " to the listing " + searchDetails.getId() + " because one with the same data has already been found.");
+                    LOGGER.debug("Not adding test task " + newTestTask.getId() + " to the listing " + searchDetails.getId() + " because one with the same data has already been found.");
                 }
             }
         }
