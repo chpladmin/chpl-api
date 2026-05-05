@@ -28,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CertificationIdSearchService {
+    private static final int THREAD_POOL_SIZE = 2;
     private CertificationIdManager certificationIdManager;
     private CertifiedProductDetailsManager cpdManager;
     private CertificationIdYearCalculator certIdYearCalculator;
@@ -153,7 +154,7 @@ public class CertificationIdSearchService {
 
     private List<CertifiedProductSearchDetails> getAllListingDetails(List<Long> listingIds) {
         LOGGER.info("Getting all listing details for cert id search");
-        ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
         listingIds.stream()
             .forEach(listingId -> futures.add(CompletableFuture
