@@ -22,20 +22,40 @@ public class RealWorldTestingReportDataService {
     }
 
     @Transactional
-    public List<RealWorldTestingSummaryReport> getRealWorldTestingPlanSummaryReports() {
-        Optional<Long> rwtYear =  realWorldTestingPlanSummaryReportDao.getMaxRealWorldTestingYear();
+    public List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingPlanSummaryByAcbReports() {
+        Optional<Long> rwtYear =  realWorldTestingPlanSummaryReportDao.getMaxRealWorldTestingYearForAcbSummary();
         if (rwtYear.isPresent()) {
-            return realWorldTestingPlanSummaryReportDao.getRealWorldTestingReportsByTestingYear(rwtYear.get());
+            return realWorldTestingPlanSummaryReportDao.getRealWorldTestingSummaryByAcbReportsByTestingYear(rwtYear.get());
         } else {
             return List.of();
         }
     }
 
     @Transactional
-    public List<RealWorldTestingSummaryReport> getRealWorldTestingResultsSummaryReports() {
-        Optional<Long> rwtYear =  realWorldTestingResultsSummaryReportDao.getMaxRealWorldTestingYear();
+    public List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingResultsSummaryByAcbReports() {
+        Optional<Long> rwtYear =  realWorldTestingResultsSummaryReportDao.getMaxRealWorldTestingYearForAcbSummary();
         if (rwtYear.isPresent()) {
-            return realWorldTestingResultsSummaryReportDao.getRealWorldTestingReportsByTestingYear(rwtYear.get());
+            return realWorldTestingResultsSummaryReportDao.getRealWorldTestingSummaryByAcbReportsByTestingYear(rwtYear.get());
+        } else {
+            return List.of();
+        }
+    }
+
+    @Transactional
+    public List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingPlanSummaryByDeveloperReports() {
+        Optional<Long> rwtYear =  realWorldTestingPlanSummaryReportDao.getMaxRealWorldTestingYearForDeveloperSummary();
+        if (rwtYear.isPresent()) {
+            return realWorldTestingPlanSummaryReportDao.getRealWorldTestingSummaryByDeveloperReportsByTestingYear(rwtYear.get());
+        } else {
+            return List.of();
+        }
+    }
+
+    @Transactional
+    public List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingResultsSummaryByDeveloperReports() {
+        Optional<Long> rwtYear =  realWorldTestingResultsSummaryReportDao.getMaxRealWorldTestingYearForDeveloperSummary();
+        if (rwtYear.isPresent()) {
+            return realWorldTestingResultsSummaryReportDao.getRealWorldTestingSummaryByDeveloperReportsByTestingYear(rwtYear.get());
         } else {
             return List.of();
         }
