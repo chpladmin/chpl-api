@@ -124,7 +124,7 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
                 + "JOIN FETCH rwtps.developer dev "
                 + "where (NOT rwtps.deleted = true) "
                 + "and rwtps.checkedDate = :checkedDate "
-                + "and dev.id = :developerId", RealWorldTestingPlanSummaryByAcbReportEntity.class);
+                + "and dev.id = :developerId", RealWorldTestingPlanSummaryByDeveloperReportEntity.class);
         query.setParameter("checkedDate", checkedDate);
         query.setParameter("developerId", developerId);
         List<RealWorldTestingPlanSummaryByDeveloperReportEntity> result = query.getResultList();
