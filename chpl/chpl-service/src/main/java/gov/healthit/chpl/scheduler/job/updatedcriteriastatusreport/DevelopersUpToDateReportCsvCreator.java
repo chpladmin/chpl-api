@@ -21,6 +21,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.developer.search.ActiveListingSearchOptions;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.report.criteriauptodate.UpdatedDeveloperStatusReport;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -77,6 +79,8 @@ public class DevelopersUpToDateReportCsvCreator {
                         .filter(acb -> acbIds.contains(acb.getId()))
                         .map(acb -> acb.getName())
                         .collect(Collectors.toSet()))
+                .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE).collect(Collectors.toSet()))
+                .activeListingsOptionsOperator(SearchSetOperator.AND)
                 .build(), LOGGER).stream()
                 .map(dev -> dev.getId())
                 .collect(Collectors.toList());
