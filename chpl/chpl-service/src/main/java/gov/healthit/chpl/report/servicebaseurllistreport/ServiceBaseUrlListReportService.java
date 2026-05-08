@@ -55,11 +55,14 @@ public class ServiceBaseUrlListReportService {
         LocalDateTime maxTestCheckTime = LocalDateTime.now().minusDays(numDaysAgoMin).truncatedTo(ChronoUnit.DAYS);
 
         LOGGER.info("Finding URL Uptime Monitor Tests that happened between " + minTestCheckTime + " and " + maxTestCheckTime);
+        List<UrlUptimeMonitorTest> testsBetweenDates = urlUptimeMonitorTestDAO.getChplUptimeMonitorTestsBetweenDates(minTestCheckTime, maxTestCheckTime);
+        LOGGER.info("Got " + testsBetweenDates.size() + " tests between " + minTestCheckTime + " and " + maxTestCheckTime);
+
         return (List<UrlUptimeMonitorSummary>) urlUptimeMonitorDAO.getAll().stream()
                 .map(monitor -> UrlUptimeMonitorSummary.builder()
                         .developer(monitor.getDeveloper())
                         .url(monitor.getUrl())
-                        .percentPassed(calculatePercentPassedBetween(monitor.getId(), minTestCheckTime, maxTestCheckTime))
+                        .percentPassed(calculatePercentPassedBetween(monitor.getId(), testsBetweenDates))
                         .build())
                 .toList();
     }
@@ -83,14 +86,12 @@ public class ServiceBaseUrlListReportService {
                 .toList();
     }
 
-    private Double calculatePercentPassedBetween(Long monitorId, LocalDateTime minTestCheckTime, LocalDateTime maxTestCheckTime) {
-        List<UrlUptimeMonitorTest> uptimeTestsWithinTimeWindow = urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitorId).stream()
-                .filter(test ->
-                    (test.getCheckTime().isEqual(minTestCheckTime) || test.getCheckTime().isAfter(minTestCheckTime))
-                    && (test.getCheckTime().isEqual(maxTestCheckTime) || test.getCheckTime().isBefore(maxTestCheckTime)))
+    private Double calculatePercentPassedBetween(Long monitorId, List<UrlUptimeMonitorTest> uptimeTestsWithinTimeWindow) {
+        List<UrlUptimeMonitorTest> testsForMonitor = uptimeTestsWithinTimeWindow.stream()
+                .filter(test -> test.getUrlUptimeMonitorId().equals(monitorId))
                 .toList();
-        long totalTests = uptimeTestsWithinTimeWindow.size();
-        long passedTests = uptimeTestsWithinTimeWindow.stream()
+        long totalTests = testsForMonitor.size();
+        long passedTests = testsForMonitor.stream()
             .filter(test -> test.getPassed())
             .count();
 
