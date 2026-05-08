@@ -78,7 +78,8 @@ public class NonconformityReportDao extends BaseDAOImpl {
                                 .chplProductNumber(((ListingSearchEntity) result[3]).getChplProductNumber())
                                 .nonconformityClassification(((NonconformityTypeEntity) result[2]).getClassification())
                                 .nonconformityTypeName(((NonconformityTypeEntity) result[2]).toDomain().getFormattedTitleForReport())
-                                .nonconformityClosed(((SurveillanceNonconformityEntity) result[1]).getNonconformityCloseDate() != null)
+                                .nonconformityCloseDay(((SurveillanceNonconformityEntity) result[1]).getNonconformityCloseDate())
+                                .nonconformityOpenDay(((SurveillanceNonconformityEntity) result[1]).getDateOfDetermination())
                                 .build())
                         .toList();
     }
