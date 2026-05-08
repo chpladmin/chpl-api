@@ -57,7 +57,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Real World Report Creator job for " + context.getMergedJobDataMap().getString("email") + " *********");
+        LOGGER.info("********* Starting the Real World Testing Summary Report Creator job *********");
         try {
             List<Long> activeAcbIds = certificationBodyManager.getAllActive().stream()
                     .map(acb -> acb.getId())
@@ -82,7 +82,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {
-            LOGGER.info("********* Completed the Real World Report Creator job. *********");
+            LOGGER.info("********* Completed the Real World Testing Summary Report Creator job. *********");
         }
 
     }
