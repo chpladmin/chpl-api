@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>com.microsoft.kiota</groupId>
                 <artifactId>microsoft-kiota-abstractions</artifactId>
-                <version>1.9.0</version>
+                <version>1.9.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
