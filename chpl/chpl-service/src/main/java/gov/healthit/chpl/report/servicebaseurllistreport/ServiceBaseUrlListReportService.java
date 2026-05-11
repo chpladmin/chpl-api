@@ -1,35 +1,37 @@
 package gov.healthit.chpl.report.servicebaseurllistreport;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitor;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorDAO;
+import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorTest;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorTestDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class ServiceBaseUrlListReportService {
+    private static final Double CONVERT_TO_PERCENT = 100.0;
+
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
-    private DeveloperSearchService developerSearchService;
     private CertificationBodyManager certificationBodyManager;
 
     @Autowired
-    public ServiceBaseUrlListReportService(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO, DeveloperSearchService developerSearchService,
+    public ServiceBaseUrlListReportService(UrlUptimeMonitorDAO urlUptimeMonitorDAO,
+            UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO,
             CertificationBodyManager certificationBodyManager) {
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
-        this.developerSearchService = developerSearchService;
         this.certificationBodyManager = certificationBodyManager;
     }
 
@@ -44,6 +46,23 @@ public class ServiceBaseUrlListReportService {
                         .tests(urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitor.getId()).stream()
                                 .filter(test -> test.getCheckTime().isAfter(LocalDateTime.now().minusYears(1)))
                                 .toList())
+                        .build())
+                .toList();
+    }
+
+    public List<UrlUptimeMonitorSummary> getUrlUptimeMonitorsSummaries(Integer numDaysAgoMin, Integer numDaysAgoMax) {
+        LocalDateTime minTestCheckTime = LocalDateTime.now().minusDays(numDaysAgoMax).truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime maxTestCheckTime = LocalDateTime.now().minusDays(numDaysAgoMin).truncatedTo(ChronoUnit.DAYS);
+
+        LOGGER.info("Finding URL Uptime Monitor Tests that happened between " + minTestCheckTime + " and " + maxTestCheckTime);
+        List<UrlUptimeMonitorTest> testsBetweenDates = urlUptimeMonitorTestDAO.getChplUptimeMonitorTestsBetweenDates(minTestCheckTime, maxTestCheckTime);
+        LOGGER.info("Got " + testsBetweenDates.size() + " tests between " + minTestCheckTime + " and " + maxTestCheckTime);
+
+        return (List<UrlUptimeMonitorSummary>) urlUptimeMonitorDAO.getAll().stream()
+                .map(monitor -> UrlUptimeMonitorSummary.builder()
+                        .developer(monitor.getDeveloper())
+                        .url(monitor.getUrl())
+                        .percentPassed(calculatePercentPassedBetween(monitor.getId(), testsBetweenDates))
                         .build())
                 .toList();
     }
@@ -65,5 +84,20 @@ public class ServiceBaseUrlListReportService {
                 .filter(acb -> acb != null && !acb.isRetired())
                 .map(acb -> new IdNamePair(acb.getId(), acb.getName()))
                 .toList();
+    }
+
+    private Double calculatePercentPassedBetween(Long monitorId, List<UrlUptimeMonitorTest> uptimeTestsWithinTimeWindow) {
+        List<UrlUptimeMonitorTest> testsForMonitor = uptimeTestsWithinTimeWindow.stream()
+                .filter(test -> test.getUrlUptimeMonitorId().equals(monitorId))
+                .toList();
+        long totalTests = testsForMonitor.size();
+        long passedTests = testsForMonitor.stream()
+            .filter(test -> test.getPassed())
+            .count();
+
+        if (passedTests == 0 || totalTests == 0) {
+            return 0.0;
+        }
+        return ((double) passedTests / totalTests) * CONVERT_TO_PERCENT;
     }
 }

@@ -57,6 +57,7 @@ public class QuestionableUrlDetailEntity {
         return QuestionableUrlDetailReport.builder()
                 .lastChecked(lastChecked)
                 .relatedItem(itemName)
+                .relatedItemId(itemId)
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .url(url)

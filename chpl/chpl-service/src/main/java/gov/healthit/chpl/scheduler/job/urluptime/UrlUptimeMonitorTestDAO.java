@@ -1,14 +1,14 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
-import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import jakarta.persistence.Query;
 
 @Repository
 public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
@@ -30,6 +30,20 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
 
     public List<UrlUptimeMonitorTest> getChplUptimeMonitorTests(Long datadogMonitorId) {
         return getDatadogMonitorTestEntities(datadogMonitorId).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    public List<UrlUptimeMonitorTest> getChplUptimeMonitorTestsBetweenDates(LocalDateTime start, LocalDateTime end) {
+        List<UrlUptimeMonitorTestEntity> entities = entityManager.createQuery("FROM UrlUptimeMonitorTestEntity uumt "
+                + "WHERE uumt.deleted = false "
+                + "AND uumt.checkTime >= :start "
+                + "AND uumt.checkTime <= :end", UrlUptimeMonitorTestEntity.class)
+                .setParameter("start", start)
+                .setParameter("end", end)
+                .getResultList();
+
+        return entities.stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }

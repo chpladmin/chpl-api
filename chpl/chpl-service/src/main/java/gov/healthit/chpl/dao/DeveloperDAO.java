@@ -63,7 +63,7 @@ public class DeveloperDAO extends BaseDAOImpl {
     private DeveloperStatusDAO statusDao;
     private AttestationDAO attestationDAO;
     private ErrorMessageUtil msgUtil;
-    private String unformattedDeveloperDetalisUrl;
+    private String unformattedDeveloperDetailsUrl;
 
     @Autowired
     public DeveloperDAO(AddressDAO addressDao,
@@ -78,7 +78,7 @@ public class DeveloperDAO extends BaseDAOImpl {
        this.statusDao = statusDao;
        this.attestationDAO = attestationDAO;
        this.msgUtil = msgUtil;
-       this.unformattedDeveloperDetalisUrl = chplUrlBegin + developerUrlPart;
+       this.unformattedDeveloperDetailsUrl = chplUrlBegin + developerUrlPart;
     }
 
     public Long create(Developer developer) throws EntityCreationException {
@@ -200,7 +200,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         LOGGER.info("Got all developers from db. Converting to Domain..");
         return entities.stream()
                 .map(entity -> entity.toDomain())
-                .peek(dev -> dev.setDeveloperDetailsUrl(String.format(unformattedDeveloperDetalisUrl, dev.getId())))
+                .peek(dev -> dev.setDeveloperDetailsUrl(String.format(unformattedDeveloperDetailsUrl, dev.getId())))
                 .collect(Collectors.toList());
     }
 
