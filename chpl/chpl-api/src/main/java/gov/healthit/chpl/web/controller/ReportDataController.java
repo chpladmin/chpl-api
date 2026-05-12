@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.manager.StatisticsManager;
@@ -214,9 +213,7 @@ public class ReportDataController {
     @LogMethodUsage
     @RequestMapping(value = "/developers-with-active-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithActiveListingsByAcb() {
-        return developerSearchService.getAllPagesOfSearchResults(
-                DeveloperSearchRequest.builder().build(),
-                LOGGER);
+        return reportDataManager.getDevelopersWithActiveListingsByAcb();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Developer Counts with Withdrawn Listings by ACB report.",
