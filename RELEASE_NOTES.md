@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 53.6.0
+_11 May 2026_
+
+### Features
+* Add listingDetailsUrl and developerDetailsUrl to report data responses
+* Add summary endpoint for Service Base URL List report showing passing rates by developer
+
+---
+
 ## Version 53.5.0
 _27 April 2026_
 
