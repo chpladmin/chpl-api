@@ -59,7 +59,7 @@ public class DeveloperReportsService extends SummaryStatisticsReportBaseService 
 
         return developerSearchService.getAllPagesOfSearchResults(request, LOGGER).stream()
                 .map(result -> result.toBuilder()
-                        .acbsForActiveListings(result.getAcbsForWithdrawnListings().stream()
+                        .acbsForActiveListings(result.getAcbsForActiveListings().stream()
                                 .map(idNamePair -> updateAcbNameBasedOnRetired(idNamePair))
                                 .collect(Collectors.toSet()))
                         .build())
