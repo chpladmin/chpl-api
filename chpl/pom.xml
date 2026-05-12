@@ -35,7 +35,7 @@
 		<!-- This cannot be updated to 3.0.x until the react api documentation component can be updated -->
 		<org.springdoc.version>2.7.0</org.springdoc.version>
         <org.springframework.version>7.0.6</org.springframework.version>
-        <org.springsecurity.version>7.0.4</org.springsecurity.version>
+        <org.springsecurity.version>7.0.5</org.springsecurity.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
