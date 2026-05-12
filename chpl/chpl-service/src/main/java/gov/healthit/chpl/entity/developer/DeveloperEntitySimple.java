@@ -1,5 +1,10 @@
 package gov.healthit.chpl.entity.developer;
 
+import org.hibernate.annotations.Immutable;
+
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,12 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,7 +47,7 @@ public class DeveloperEntitySimple extends EntityAudit {
     @Column(length = 300, nullable = true)
     private String website;
 
-    @Column(name="self_developer")
+    @Column(name = "self_developer")
     private Boolean selfDeveloper;
 
     @Basic(optional = true)

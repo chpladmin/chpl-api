@@ -12,5 +12,6 @@ public class ListingNotUpToDateReport {
 
     private CertificationCriterion criterion;
     private Long certifiedProductId;
+    private String listingDetailsUrl;
     private String chplProductNumber;
 }

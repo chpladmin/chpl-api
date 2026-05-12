@@ -2,6 +2,8 @@ package gov.healthit.chpl.report.criteriaattribute;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
@@ -13,6 +15,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository
 public class TestToolReportDao extends BaseDAOImpl {
+
+    private String unformattedListingDetailsUrl;
+
+    @Autowired
+    public TestToolReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+        this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
 
     public List<TestToolReport> getTestToolReports() {
         String hql = "SELECT cc, tt, count(*) as testToolCount "
@@ -47,7 +57,7 @@ public class TestToolReportDao extends BaseDAOImpl {
     }
 
     public List<TestToolListingReport> getTestToolListingReports() {
-        String hql = "SELECT cc, tt, cpd.chplProductNumber "
+        String hql = "SELECT cc, tt, cpd.id, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -70,7 +80,8 @@ public class TestToolReportDao extends BaseDAOImpl {
                 .map(result -> TestToolListingReport.builder()
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .testTool(((TestToolEntity) result[1]).toDomain())
-                        .chplProductNumber((String) result[2])
+                        .listingDetailsUrl(String.format(unformattedListingDetailsUrl, (Long) result[2]))
+                        .chplProductNumber((String) result[3])
                         .build())
                 .toList();
     }

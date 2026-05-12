@@ -18,4 +18,6 @@ public class QuestionableUrlDetailReport {
      * The CHPL Product Number, developer name, ONC-ACB name, etc depending on the "type" of the url
      */
     private String relatedItem;
+    private Long relatedItemId;
+    private String relatedItemUrl;
 }

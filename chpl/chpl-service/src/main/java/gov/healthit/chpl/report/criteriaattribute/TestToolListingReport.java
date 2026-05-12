@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 public class TestToolListingReport {
     private String chplProductNumber;
+    private String listingDetailsUrl;
     private CertificationCriterion criterion;
     private TestTool testTool;
 }
