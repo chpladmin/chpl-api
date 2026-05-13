@@ -35,6 +35,22 @@ public class CertificationIdYearCalculator {
                 MonthDay.parse(cmsIdEndDayOfOverlap, monthDayFormatter));
     }
 
+    public LocalDate getStartDateOfNextCmsIdYear() {
+        LocalDate nextCmsIdYear = cmsIdOverlapRange.getLeft().atYear(LocalDate.now().getYear());
+        if (nextCmsIdYear.isBefore(LocalDate.now())) {
+            return nextCmsIdYear.plusYears(1);
+        }
+        return nextCmsIdYear;
+    }
+
+    public LocalDate getEndDateOfThisCmsIdYearOverlap() {
+        LocalDate thisCmsIdYearOverlapEnd = cmsIdOverlapRange.getRight().atYear(LocalDate.now().getYear());
+        if (thisCmsIdYearOverlapEnd.isBefore(LocalDate.now())) {
+            return thisCmsIdYearOverlapEnd.plusYears(1);
+        }
+        return thisCmsIdYearOverlapEnd;
+    }
+
     public String getCurrentCertIdYear() {
         return getCurrentCertIdYear(DEFAULT_CERTID_YEAR);
     }
@@ -77,6 +93,15 @@ public class CertificationIdYearCalculator {
         }
         Integer currentCertIdYearIntValue = Integer.valueOf(currentCertIdYear);
         return (currentCertIdYearIntValue - 1) + "";
+    }
+
+    public String getNextCertIdYear() {
+        String currentCertIdYear = getCurrentCertIdYear();
+        if (currentCertIdYear.equals(DEFAULT_CERTID_YEAR)) {
+            return ANNUAL_CERTID_INITIAL_TRANSITION_YEAR + "";
+        }
+        Integer currentCertIdYearIntValue = Integer.valueOf(currentCertIdYear);
+        return (currentCertIdYearIntValue + 1) + "";
     }
 
     public List<String> getValidCertIdYearsToday() {

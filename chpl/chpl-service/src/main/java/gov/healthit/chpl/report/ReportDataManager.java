@@ -16,6 +16,7 @@ import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
+import gov.healthit.chpl.report.importantdates.ImportantDateReportService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.listingattribute.ListingAttributeReportService;
@@ -59,6 +60,7 @@ public class ReportDataManager {
     private SvapReportService svapReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
     private NonconformityReportService nonconformityReportService;
+    private ImportantDateReportService importantDateReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
@@ -76,7 +78,8 @@ public class ReportDataManager {
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService,
-            NonconformityReportService nonconformityReportService) {
+            NonconformityReportService nonconformityReportService,
+            ImportantDateReportService importantDateReportService) {
 
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
@@ -95,6 +98,7 @@ public class ReportDataManager {
         this.svapReportService = svapReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
         this.nonconformityReportService = nonconformityReportService;
+        this.importantDateReportService = importantDateReportService;
     }
 
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).REPORTS, "
@@ -316,5 +320,10 @@ public class ReportDataManager {
     @Synchronized("lock")
     public NonconformityReportService getNonconformityReportService() {
         return nonconformityReportService;
+    }
+
+    @Synchronized("lock")
+    public ImportantDateReportService getImportantDateReportService() {
+        return importantDateReportService;
     }
 }
