@@ -1,16 +1,17 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
+import java.time.MonthDay;
+
+import org.hibernate.annotations.Immutable;
+
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,6 +59,8 @@ public class QuarterEntity extends EntityAudit {
                 .name(this.getName())
                 .startDay(this.getQuarterBeginDay())
                 .startMonth(this.getQuarterBeginMonth())
+                .start(MonthDay.of(this.getQuarterBeginMonth(), this.getQuarterBeginDay()))
+                .end(MonthDay.of(this.getQuarterEndMonth(), this.getQuarterEndDay()))
                 .build();
     }
 }
