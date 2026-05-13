@@ -16,6 +16,7 @@ import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
+import gov.healthit.chpl.report.importantdates.ImportantDate;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -441,5 +442,17 @@ public class ReportDataController {
         CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
         response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
         return response;
+    }
+
+    @Operation(summary = "Gets a set of upcoming important compliance deadlines",
+            description = "Gets a set of upcoming important compliance deadlines",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/important-dates", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ImportantDate> getUpcomingImportantDates() {
+        return reportDataManager.getImportantDateReportService().getAll();
     }
 }
