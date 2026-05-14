@@ -33,7 +33,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -121,9 +120,6 @@ public class CertificationIdController {
             @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException, EntityRetrievalException,
         CertificationIdException, Exception {
         List<String> certificationYears = certIdYearCalculator.getValidCertIdYearsToday();
-        LOGGER.info("Searching for certification ID for listings: "
-                + Util.joinListGrammatically(listingIds.stream().map(id -> id.toString()).toList(), "and")
-                + " for year(s) " + Util.joinListGrammatically(certificationYears, "and"));
         return certificationYears.stream()
             .map(rethrowFunction(certYear -> certIdSearchService.findCertificationByListingIds(listingIds, certYear, false)))
             .collect(Collectors.toList());

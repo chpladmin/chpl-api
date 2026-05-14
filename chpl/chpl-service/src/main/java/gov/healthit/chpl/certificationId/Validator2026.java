@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,21 +12,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codeset.CodeSet;
-import gov.healthit.chpl.codeset.CodeSetDAO;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
-import gov.healthit.chpl.standard.Standard;
-import gov.healthit.chpl.standard.StandardCriteriaMap;
-import gov.healthit.chpl.standard.StandardDAO;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
     private CertificationIdYearCalculator certIdYearCalculator;
-    private StandardDAO standardDao;
-    private CodeSetDAO codeSetDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
 
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
@@ -36,11 +29,9 @@ public class Validator2026 extends Validator {
 
     public Validator2026(CertificationCriterionService certificationCriterionService,
             CertificationIdYearCalculator certIdYearCalculator,
-            StandardDAO standardDao,
-            CodeSetDAO codeSetDao) {
+            CertificationResultUpToDateService certResultUpToDateService) {
         this.certIdYearCalculator = certIdYearCalculator;
-        this.standardDao = standardDao;
-        this.codeSetDao = codeSetDao;
+        this.certResultUpToDateService = certResultUpToDateService;
 
         upToDateCriteriaFound = new ArrayList<CertificationCriterion>();
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
@@ -183,7 +174,10 @@ public class Validator2026 extends Validator {
 
                 if (!CollectionUtils.isEmpty(certResultsForCriterion)) {
                     CertificationResult fullyUpToDateCertResultForCriterion = certResultsForCriterion.stream()
-                        .filter(certResult -> isCertResultFullyUpToDate(certResult, dayToCalculateRequiredAttributes))
+                            //the below filter is saying "if the cert result is up-to-date with today's attributes then we don't need to check if it is up-to-date with past attributes"
+                            //but if it's NOT currently up-to-date, the check runs to see if it is at least up-to-date with the attributes
+                            //that were required at the beginning of the CMS ID creation window (9/1) because then it counts towards CMS ID
+                        .filter(certResult -> certResult.isUpToDate() || areAttributesFullyUpToDateAsOf(certResult, dayToCalculateRequiredAttributes))
                         .findAny()
                         .orElse(null);
 
@@ -198,58 +192,8 @@ public class Validator2026 extends Validator {
         return CollectionUtils.isEmpty(getMissingUpToDate());
     }
 
-    private boolean isCertResultFullyUpToDate(CertificationResult certResult, LocalDate asOfDate) {
-        return areStandardsUpToDate(certResult, asOfDate)
-                && areCodeSetsUpToDate(certResult, asOfDate);
-    }
-
-    private boolean areStandardsUpToDate(CertificationResult certResult, LocalDate asOfDate) {
-        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
-        stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(certResult.getCriterion().getId()));
-        List<Standard> requiredStandardsForCriterionAsOfDate = stdCriteriaMaps.stream()
-                .map(map -> map.getStandard())
-                .filter(std -> std.getStartDay().isBefore(asOfDate)
-                        && (std.getRequiredDay() != null && DateUtil.isOnOrBefore(std.getRequiredDay(), asOfDate))
-                        && (std.getEndDay() == null || std.getEndDay().isAfter(asOfDate)))
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(requiredStandardsForCriterionAsOfDate)) {
-            return !requiredStandardsForCriterionAsOfDate.stream()
-                    .filter(requiredStandard -> !isStandardOnCertResult(requiredStandard, certResult))
-                    .findAny()
-                    .isPresent();
-        }
-        return true;
-    }
-
-    private boolean isStandardOnCertResult(Standard standard, CertificationResult certResult) {
-        return certResult.getStandards().stream()
-                .filter(certResultStd -> certResultStd.getStandard().getId().equals(standard.getId()))
-                .findAny()
-                .isPresent();
-    }
-
-    private boolean areCodeSetsUpToDate(CertificationResult certResult, LocalDate asOfDate) {
-        List<CodeSet> codeSetsRequiredForCriterion = null;
-        Map<Long, List<CodeSet>> codeSetMaps = codeSetDao.getCodeSetCriteriaMaps();
-        if (codeSetMaps.containsKey(certResult.getCriterion().getId())) {
-            codeSetsRequiredForCriterion = codeSetMaps.get(certResult.getCriterion().getId()).stream()
-                    .filter(codeSet -> DateUtil.isOnOrBefore(codeSet.getRequiredDay(), asOfDate))
-                    .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(codeSetsRequiredForCriterion)) {
-                return !codeSetsRequiredForCriterion.stream()
-                        .filter(requiredCodeSet -> !isCodeSetOnCertResult(requiredCodeSet, certResult))
-                        .findAny()
-                        .isPresent();
-            }
-        }
-        return true;
-    }
-
-    private Boolean isCodeSetOnCertResult(CodeSet codeSet, CertificationResult certResult) {
-        return certResult.getCodeSets().stream()
-                .filter(cs -> cs.getCodeSet().getId().equals(codeSet.getId()))
-                .findAny()
-                .isPresent();
+    private boolean areAttributesFullyUpToDateAsOf(CertificationResult certResult, LocalDate asOfDate) {
+        return certResultUpToDateService.isUpToDate(certResult, asOfDate);
     }
 
     protected boolean isCqmsValid() {

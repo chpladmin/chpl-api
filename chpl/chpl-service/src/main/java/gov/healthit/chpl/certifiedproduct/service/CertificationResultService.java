@@ -26,16 +26,20 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private CertificationResultDetailsDAO certificationResultDetailsDAO;
+    private CertificationResultDetailsDAO certificationResultDetailsDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private CertificationResultComparator certResultComparator;
 
     @Autowired
-    public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            CertificationResultDetailsDAO certificationResultDetailsDAO,
+    public CertificationResultService(CertificationResultRules certRules,
+            CertificationResultManager certResultManager,
+            CertificationResultDetailsDAO certificationResultDetailsDao,
+            CertificationResultUpToDateService certResultUpToDateService,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.certificationResultDetailsDAO = certificationResultDetailsDAO;
+        this.certificationResultDetailsDao = certificationResultDetailsDao;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.certResultComparator = certResultComparator;
     }
 
@@ -48,19 +52,19 @@ public class CertificationResultService {
 
     private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
-        certificationResultDetailsDTOs = certificationResultDetailsDAO.getAllCertResultsForListing(id);
+        certificationResultDetailsDTOs = certificationResultDetailsDao.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;
     }
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
-            CertifiedProductSearchDetails searchDetails) {
+            CertifiedProductSearchDetails listing) {
 
         CertificationResult result = new CertificationResult(certResult, certRules);
 
         CertificationCriterion criteria = result.getCriterion();
-        populateSed(certResult, searchDetails, result, criteria);
-        populateTestTasks(certResult, searchDetails, criteria);
-
+        populateSed(certResult, listing, result, criteria);
+        populateTestTasks(certResult, listing, criteria);
+        populateUpToDate(listing, result);
         return result;
     }
 
@@ -108,5 +112,9 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
+
+    private void populateUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 }

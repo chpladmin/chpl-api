@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.codeset.CodeSetDAO;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.notifier.InvalidCertificationIdYearMessage;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,8 +24,7 @@ public class ValidatorFactory {
     private Map<String, Class<?>> certIdYearToValidatorClassMap;
     private CertificationCriterionService certificationCriterionService;
     private CertificationIdYearCalculator certIdYearCalculator;
-    private StandardDAO standardDao;
-    private CodeSetDAO codeSetDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private ChplTeamNotifier chplTeamNotifier;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private Environment env;
@@ -35,16 +33,14 @@ public class ValidatorFactory {
     @Autowired
     public ValidatorFactory(CertificationCriterionService certificationCriterionService,
             CertificationIdYearCalculator certIdYearCalculator,
-            StandardDAO standardDao,
-            CodeSetDAO codeSetDao,
+            CertificationResultUpToDateService certResultUpToDateService,
             ChplTeamNotifier chplTeamNotifier,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             Environment env,
             ErrorMessageUtil msgUtil) {
         this.certificationCriterionService = certificationCriterionService;
         this.certIdYearCalculator = certIdYearCalculator;
-        this.standardDao = standardDao;
-        this.codeSetDao = codeSetDao;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.chplTeamNotifier = chplTeamNotifier;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.env = env;
@@ -102,7 +98,7 @@ public class ValidatorFactory {
         } else if (validatorClazz.equals(Validator2026.class)) {
             try {
                 result =  (Validator) validatorClazz.getDeclaredConstructors()[0].newInstance(
-                        certificationCriterionService, certIdYearCalculator, standardDao, codeSetDao);
+                        certificationCriterionService, certIdYearCalculator, certResultUpToDateService);
             } catch (Exception ex) {
                 LOGGER.error("Could not instantiate validator " + validatorClazz, ex);
             }

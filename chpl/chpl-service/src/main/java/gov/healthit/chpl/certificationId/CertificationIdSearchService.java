@@ -153,7 +153,6 @@ public class CertificationIdSearchService {
     }
 
     private List<CertifiedProductSearchDetails> getAllListingDetails(List<Long> listingIds) {
-        LOGGER.info("Getting all listing details for cert id search");
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
         listingIds.stream()
@@ -172,7 +171,6 @@ public class CertificationIdSearchService {
         } catch (Exception ex) {
             LOGGER.error("Executor service did not properly close", ex);
         }
-        LOGGER.info("Got all listing details for cert id search");
         return listings;
     }
 
