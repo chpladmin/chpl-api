@@ -178,6 +178,11 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
+    public List<DeveloperSearchResult> getDevelopersWithActiveListingsByAcb() {
+        return developerReportsService.getDevelopersWithActiveListingsByAcb();
+    }
+
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getDeveloperCountsWithWithdrawnListingsByAcb() {
         return developerReportsService.getDeveloperCountsWithWithdrawnListingsByAcb();
     }
