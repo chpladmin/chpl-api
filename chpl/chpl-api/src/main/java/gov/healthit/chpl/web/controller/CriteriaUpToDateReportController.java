@@ -103,7 +103,7 @@ public class CriteriaUpToDateReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ListingNotUpToDateReport> getCriteriaUpToDateListings() {
+    public @ResponseBody List<ListingNotUpToDateReport> getCriteriaNotUpToDateByListing() {
         return reportDataManager.getCriteriaAttributeUpToDateService().getAllListingNotUpToDateReports();
     }
 

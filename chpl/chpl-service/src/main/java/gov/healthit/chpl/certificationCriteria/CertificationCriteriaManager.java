@@ -45,18 +45,20 @@ public class CertificationCriteriaManager {
     public List<CertificationCriterionWithAttributes> getAllWithAttributes() {
         LOGGER.debug("Getting all criterion with attributes from the database (not cached).");
         List<CertificationCriterion> allCriteria = getAll();
-        return allCriteria.stream()
+        List<CertificationCriterionWithAttributes> allCriteriaWithAttributes = allCriteria.stream()
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
-                .sorted(criterionComparator)
                 .collect(Collectors.toList());
+        setSortOrder(allCriteriaWithAttributes);
+        return allCriteriaWithAttributes;
     }
 
     public List<CertificationCriterionWithAttributes> getActiveWithAttributes(String certificationEdition,
             LocalDate startDay, LocalDate endDay) {
-        return  getActive(certificationEdition, startDay, endDay).stream()
+        List<CertificationCriterionWithAttributes> activeCriteriaWithAttributes = getActive(certificationEdition, startDay, endDay).stream()
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
-                .sorted(criterionComparator)
                 .collect(Collectors.toList());
+        setSortOrder(activeCriteriaWithAttributes);
+        return activeCriteriaWithAttributes;
     }
 
     public List<CertificationCriterion> getActive(String certificationEdition, LocalDate startDay, LocalDate endDay) {
@@ -65,24 +67,23 @@ public class CertificationCriteriaManager {
                 .filter(criterion -> StringUtils.isEmpty(certificationEdition)
                         ? true
                         : criterion.getCertificationEdition() == null || criterion.getCertificationEdition().equals(certificationEdition))
-                .sorted(criterionComparator)
                 .collect(Collectors.toList());
     }
 
     public List<CertificationCriterion> getCriteriaAvailableToListingAndUser(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> allCriteriaAvailableToListing = Stream.concat(
+        return Stream.concat(
                 getAttestedCriteria(listing).stream(),
                 getEditableCriteria(listing).stream())
             .distinct()
             .sorted(criterionComparator)
             .collect(Collectors.toList());
-        return allCriteriaAvailableToListing;
     }
 
     private List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getSuccess())
                 .map(certResult -> certResult.getCriterion())
+                .sorted(criterionComparator)
                 .collect(Collectors.toList());
     }
 
@@ -95,6 +96,7 @@ public class CertificationCriteriaManager {
                 && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             return allActiveCriteria.stream()
                     .filter(criterion -> criterion.isEditable())
+                    .sorted(criterionComparator)
                     .collect(Collectors.toList());
         }
         return allActiveCriteria;
@@ -113,6 +115,7 @@ public class CertificationCriteriaManager {
                 .filter(criterion -> DateUtil.datesOverlap(
                         Pair.of(criterion.getStartDay(), criterion.getEndDay()),
                         Pair.of(startDay, endDay)))
+                .sorted(criterionComparator)
                 .collect(Collectors.toList());
     }
 
@@ -123,6 +126,7 @@ public class CertificationCriteriaManager {
                 .filter(criterion -> DateUtil.datesOverlap(
                         Pair.of(criterion.getStartDay(), criterion.getEndDay()),
                         Pair.of(today, today)))
+                .sorted(criterionComparator)
                 .collect(Collectors.toList());
     }
 
@@ -163,5 +167,11 @@ public class CertificationCriteriaManager {
                         .codeSet(rules.hasCertOption(criterion.getId(), CertificationResultRules.CODE_SET))
                         .build())
                 .build();
+    }
+
+    private void setSortOrder(List<CertificationCriterionWithAttributes> criteria) {
+        for (int i = 0; i < criteria.size(); i++) {
+            criteria.get(i).setSortOrder(i);
+        }
     }
 }
