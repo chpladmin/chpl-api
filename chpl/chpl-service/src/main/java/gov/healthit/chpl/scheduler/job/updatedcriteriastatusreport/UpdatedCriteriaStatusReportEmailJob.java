@@ -45,6 +45,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
     private UpdatedListingStatusReportCsvCreator updatedListingStatusReportCsvCreator;
 
     @Autowired
+    private DevelopersUpToDateReportCsvCreator developersUpToDateReportCsvCreator;
+
+    @Autowired
     private UpdatedCriteriaStatusReportWorkbook updatedCriteriaStatusReportWorkbookCreator;
 
     @Autowired
@@ -125,6 +128,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
                 .fileAttachments(Arrays.asList(
                         updatedCriteriaStatusReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
                         updatedListingStatusReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
+                        developersUpToDateReportCsvCreator.createCsvFile(acbIds, requiredByDateRange),
                         updatedCriteriaStatusReportWorkbookCreator.generateSpreadsheet(acbIds, requiredByDateRange),
                         criteriaUpToDateChartWorkbookCreator.generateSpreadsheet(acbIds, requiredByDateRange)
                         ))
