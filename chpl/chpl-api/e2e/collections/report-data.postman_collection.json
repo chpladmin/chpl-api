@@ -773,6 +773,54 @@
 				"description": "GET /report-data/real-world-testing/results - 200 status and valid response\r\n"
 			},
 			"response": []
-		}
-	]
+    },
+    {
+      "name": "GET /report-data/important-dates - 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/important-dates should return status 200 and valid response\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(pm.response.text()).to.include(\"date\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"eventDescription\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/important-dates",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "important-dates"
+          ]
+        },
+        "description": "GET /report-data/important-dates - 200 status and valid response\r\n"
+      },
+      "response": []
+    }
+  ]
 }

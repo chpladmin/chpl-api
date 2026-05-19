@@ -1,5 +1,7 @@
 package gov.healthit.chpl.surveillance.report.domain;
 
+import java.time.MonthDay;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +19,6 @@ public class Quarter {
     private Integer startDay;
     private Integer endMonth;
     private Integer endDay;
+    private MonthDay start;
+    private MonthDay end;
 }
