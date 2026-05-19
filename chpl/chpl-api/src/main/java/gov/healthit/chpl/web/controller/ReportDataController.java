@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.manager.StatisticsManager;
@@ -16,6 +15,7 @@ import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
+import gov.healthit.chpl.report.importantdates.ImportantDate;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -214,9 +214,7 @@ public class ReportDataController {
     @LogMethodUsage
     @RequestMapping(value = "/developers-with-active-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithActiveListingsByAcb() {
-        return developerSearchService.getAllPagesOfSearchResults(
-                DeveloperSearchRequest.builder().build(),
-                LOGGER);
+        return reportDataManager.getDevelopersWithActiveListingsByAcb();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Developer Counts with Withdrawn Listings by ACB report.",
@@ -441,5 +439,17 @@ public class ReportDataController {
         CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
         response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
         return response;
+    }
+
+    @Operation(summary = "Gets a set of upcoming important compliance deadlines",
+            description = "Gets a set of upcoming important compliance deadlines",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/important-dates", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ImportantDate> getUpcomingImportantDates() {
+        return reportDataManager.getImportantDateReportService().getAll();
     }
 }
