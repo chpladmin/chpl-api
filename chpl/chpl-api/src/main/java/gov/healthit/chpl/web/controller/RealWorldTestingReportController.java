@@ -31,8 +31,8 @@ public class RealWorldTestingReportController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by ACB report.",
-            description = "Retrieves the data used to generate the Real World Testing Plans summary by ACB report.",
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
+            description = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -42,8 +42,8 @@ public class RealWorldTestingReportController {
         return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryByAcbReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by ACB report.",
-            description = "Retrieves the data used to generate the Real World Testing Results summary by ACB report.",
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
+            description = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
