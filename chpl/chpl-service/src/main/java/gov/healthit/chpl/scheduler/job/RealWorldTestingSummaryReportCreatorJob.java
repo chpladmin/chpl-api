@@ -75,7 +75,6 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                     new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
             transactionOperations.executeWithoutResult(status -> {
                     processRwtPlanCountsByAcb(rwtPlansReports);
-                    processRwtPlanCountsByDeveloper(rwtPlansReports);
                     processRwtResultsCountsByAcb(rwtResultReports);
                     processRwtResultsCountsByDeveloper(rwtResultReports);
             });
@@ -218,66 +217,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
         LOGGER.info("Completed gathering RWT Plan submissions.");
     }
 
-    private void processRwtPlanCountsByDeveloper(List<RealWorldTestingReport> reportRows) {
-        Integer rwtEligibilityYear = LocalDate.now().getYear() + 1;
-
-        if (!isDateInPlansSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {
-            LOGGER.info("Outside the RWT Plan submission window.  Not collecting data.");
-            return;
-        }
-
-        List<RealWorldTestingSummaryByDeveloperReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByDeveloperReport>();
-
-        List<DeveloperSearchResult> developersWithActiveListings = developerSearchService.getAllPagesOfSearchResults(DeveloperSearchRequest.builder()
-                .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE).collect(Collectors.toSet()))
-                .build(), LOGGER);
-
-        rwtReportService.getPlansStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
-            developersWithActiveListings.stream().forEach(dev -> {
-                Long eligibleListingCountForDeveloper = reportRows.stream()
-                        .filter(row -> row.getDeveloperId().equals(dev.getId())
-                                && row.getRwtEligibilityYear() != null
-                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
-                        .collect(Collectors.counting());
-
-                rwtSummaryReports.add(RealWorldTestingSummaryByDeveloperReport.builder()
-                        .realWorldTestingYear(rwtEligibilityYear.longValue())
-                        .developerId(dev.getId())
-                        .developerName(dev.getName())
-                        .checkedDate(reportDate)
-                        .checkedCount(calculatePlanCount(reportRows, rwtEligibilityYear, dev, reportDate).longValue())
-                        .requiresCheckCount(eligibleListingCountForDeveloper)
-                        .build());
-            });
-        });
-
-        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByDeveloperReport::getCheckedDate)
-                .thenComparing((o1, o2) -> o1.getDeveloperId().compareTo(o2.getDeveloperId())));
-
-        rwtSummaryReports.forEach(value -> {
-            LOGGER.info("{} - {} - {}", value.getCheckedCount(), value.getCheckedDate(), value.getDeveloperName());
-            try {
-                realWorldTestingPlanSummaryReportDao.save(value);
-            } catch (Exception e) {
-                LOGGER.error("Could not save RealWorldTestingSummaryReport: {}", value.toString(), e);
-            }
-        });
-        LOGGER.info("Completed gathering RWT Plan submissions.");
-    }
-
     private Integer calculatePlanCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
         return reports.stream()
                 .filter(report -> report.getAcbName().equals(acb.getName())
-                        && report.getRwtEligibilityYear() != null
-                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), checkedDate),
-                                report.getRwtPlansCheckDate()))
-                .toList()
-                .size();
-    }
-
-    private Integer calculatePlanCount(List<RealWorldTestingReport> reports, Integer rwtYear, DeveloperSearchResult dev, LocalDate checkedDate) {
-        return reports.stream()
-                .filter(report -> report.getDeveloperId().equals(dev.getId())
                         && report.getRwtEligibilityYear() != null
                         && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), checkedDate),
                                 report.getRwtPlansCheckDate()))

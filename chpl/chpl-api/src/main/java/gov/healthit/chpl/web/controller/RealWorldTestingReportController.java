@@ -53,17 +53,6 @@ public class RealWorldTestingReportController {
         return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByAcbReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by Developer report.",
-            description = "Retrieves the data used to generate the Real World Testing Plans summary by Developer report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @LogMethodUsage
-    @RequestMapping(value = "/plans-summary-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingPlanSummaryByDeveloperReports() {
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryByDeveloperReports();
-    }
-
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             description = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             security = {

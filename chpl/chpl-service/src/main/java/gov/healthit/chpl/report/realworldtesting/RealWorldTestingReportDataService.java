@@ -42,16 +42,6 @@ public class RealWorldTestingReportDataService {
     }
 
     @Transactional
-    public List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingPlanSummaryByDeveloperReports() {
-        Optional<Long> rwtYear =  realWorldTestingPlanSummaryReportDao.getMaxRealWorldTestingYearForDeveloperSummary();
-        if (rwtYear.isPresent()) {
-            return realWorldTestingPlanSummaryReportDao.getRealWorldTestingSummaryByDeveloperReportsByTestingYear(rwtYear.get());
-        } else {
-            return List.of();
-        }
-    }
-
-    @Transactional
     public List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingResultsSummaryByDeveloperReports() {
         Optional<Long> rwtYear =  realWorldTestingResultsSummaryReportDao.getMaxRealWorldTestingYearForDeveloperSummary();
         if (rwtYear.isPresent()) {
