@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "report-data/non-conformities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /report-data/non-conformities/by-developer-and-type - status 200 and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/non-conformities/by-developer-and-type should return valid response and 200 status\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"nonconformityOpenDay\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"nonconformityCloseDay\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"nonconformityTypeName\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"nonconformityClassification\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"developerId\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"developerName\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/non-conformities/by-developer-and-type",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "non-conformities",
+            "by-developer-and-type"
+          ]
+        },
+        "description": "GET /report-data/non-conformities/by-developer-and-type - status 200 and valid response"
+      },
+      "response": []
+    }
+  ]
+}

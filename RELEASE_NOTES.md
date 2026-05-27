@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 53.7.0
+_26 May 2026_
+
+### Features
+* Add "by developer" data to updated criteria status report email
+* Add endpoints for important dates report
+
+### Bug Fixes
+* Correctly get developers with active listings for statistics chart
+
+---
+
 ## Version 53.6.0
 _11 May 2026_
 
