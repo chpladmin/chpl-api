@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.nonconformity.NonconformitiesByDeveloperAndType;
 import gov.healthit.chpl.report.nonconformity.NonconformityTypeCount;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -39,5 +40,16 @@ public class NonconformityReportController {
     @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<NonconformityTypeCount> getNonconformityTypeCounts() {
         return reportDataManager.getNonconformityReportService().getNonconformityCounts();
+    }
+
+    @Operation(summary = "Reporting data that gives open non-conformities by developer and type.",
+            description = "Reporting data that gives open non-conformities by developer and type.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @LogMethodUsage
+    @RequestMapping(value = "/by-developer-and-type", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<NonconformitiesByDeveloperAndType> getNonconformitiesByDeveloperAndType() {
+        return reportDataManager.getNonconformityReportService().getNonconformitiesByDeveloperAndType();
     }
 }
