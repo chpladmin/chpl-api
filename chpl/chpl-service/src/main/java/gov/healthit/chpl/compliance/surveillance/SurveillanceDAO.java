@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
@@ -396,7 +395,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-
     public SurveillanceType findSurveillanceType(Long id) {
         LOGGER.debug("Searchig for surveillance type with id '" + id + "'.");
         if (id == null) {
@@ -415,23 +413,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         SurveillanceType result = convert(resultEntity);
         return result;
     }
-
-
-    @Transactional(readOnly = true)
-    public List<SurveillanceEntity> getAllSurveillance() {
-        Query query = entityManager.createQuery("from SurveillanceEntity where deleted <> true",
-                SurveillanceEntity.class);
-        return query.getResultList();
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities() {
-        Query query = entityManager.createQuery("from SurveillanceNonconformityEntity where deleted <> true",
-                SurveillanceNonconformityEntity.class);
-        return query.getResultList();
-    }
-
 
     public List<RequirementGroupType> getAllRequirementGroupTypes() {
         Query query = entityManager.createQuery("from RequirementGroupTypeEntity where deleted <> true",
