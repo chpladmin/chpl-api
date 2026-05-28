@@ -20,6 +20,7 @@ import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
@@ -67,7 +68,7 @@ public class CertificationResultUpToDateService {
 
         if (!CollectionUtils.isEmpty(baselineStandardsUpToDate)) {
             return !baselineStandardsUpToDate.stream()
-                    .filter(groupUpToDate -> !groupUpToDate)
+                    .filter(baselineUpToDate -> !baselineUpToDate)
                     .findAny()
                     .isPresent();
         }
@@ -103,6 +104,7 @@ public class CertificationResultUpToDateService {
         if (!CollectionUtils.isEmpty(requiredStandards)) {
             return !requiredStandards.stream()
                     .filter(requiredStandard -> !isStandardOnCertResult(requiredStandard, certResult))
+                    .peek(missingRequiredStandard -> LOGGER.debug("Required standard " + missingRequiredStandard.getRegulatoryTextCitation() + " is missing for criterion " + Util.formatCriteriaNumber(certResult.getCriterion())))
                     .findAny()
                     .isPresent();
         }
@@ -127,6 +129,7 @@ public class CertificationResultUpToDateService {
             if (!CollectionUtils.isEmpty(codeSetsRequiredForCriterion)) {
                 return !codeSetsRequiredForCriterion.stream()
                         .filter(requiredCodeSet -> !isCodeSetOnCertResult(requiredCodeSet, certResult))
+                        .peek(missingRequiredCodeSet -> LOGGER.debug("Required Code Set " + missingRequiredCodeSet.getName() + " is missing for criterion " + Util.formatCriteriaNumber(certResult.getCriterion())))
                         .findAny()
                         .isPresent();
             }
@@ -153,6 +156,7 @@ public class CertificationResultUpToDateService {
             if (!CollectionUtils.isEmpty(functionalityTestedRequiredForCriterion)) {
                 return !functionalityTestedRequiredForCriterion.stream()
                         .filter(requiredFt -> !isFunctionalityTestedOnCertResult(requiredFt, certResult))
+                        .peek(missingRequiredFt -> LOGGER.debug("Required Functionality Tested " + missingRequiredFt.getRegulatoryTextCitation() + " is missing for criterion " + Util.formatCriteriaNumber(certResult.getCriterion())))
                         .findAny()
                         .isPresent();
             }
