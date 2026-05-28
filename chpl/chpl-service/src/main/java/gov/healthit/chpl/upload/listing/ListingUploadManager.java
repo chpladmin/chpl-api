@@ -26,12 +26,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import tools.jackson.core.JacksonException;
-
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -62,6 +62,7 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfTodayNormalizer;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Component
 @Log4j2
@@ -81,6 +82,7 @@ public class ListingUploadManager {
     private ErrorMessageUtil msgUtil;
     private BaselineStandardAsOfCertificationDayNormalizer baselineStandardAsOfCertificationDayNormalizer;
     private BaselineStandardAsOfTodayNormalizer baselineStandardAsOfTodayNormalizer;
+    private CertificationResultUpToDateService certResultUpToDateService;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -92,7 +94,8 @@ public class ListingUploadManager {
             ListingConfirmationManager listingConfirmationManager, SchedulerManager schedulerManager,
             ActivityManager activityManager, ErrorMessageUtil msgUtil,
             BaselineStandardAsOfCertificationDayNormalizer baselineStandardAsOfCertificationDayNormalizer,
-            BaselineStandardAsOfTodayNormalizer baselineStandardAsOfTodayNormalizer) {
+            BaselineStandardAsOfTodayNormalizer baselineStandardAsOfTodayNormalizer,
+            CertificationResultUpToDateService certResultUpToDateService) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -108,6 +111,7 @@ public class ListingUploadManager {
         this.msgUtil = msgUtil;
         this.baselineStandardAsOfCertificationDayNormalizer = baselineStandardAsOfCertificationDayNormalizer;
         this.baselineStandardAsOfTodayNormalizer = baselineStandardAsOfTodayNormalizer;
+        this.certResultUpToDateService = certResultUpToDateService;
     }
 
     @Transactional
@@ -200,7 +204,14 @@ public class ListingUploadManager {
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> populateUpToDate(listing.getCertificationDay(), certResult));
+        LOGGER.debug("Populated upToDate for each certification result");
         return listing;
+    }
+
+    private void populateUpToDate(LocalDate asOfDate, CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult, asOfDate));
     }
 
     @Transactional
