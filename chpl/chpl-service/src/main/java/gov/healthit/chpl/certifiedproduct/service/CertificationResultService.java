@@ -64,7 +64,7 @@ public class CertificationResultService {
         CertificationCriterion criteria = result.getCriterion();
         populateSed(certResult, listing, result, criteria);
         populateTestTasks(certResult, listing, criteria);
-        populateUpToDate(listing, result);
+        populateUpToDate(result);
         return result;
     }
 
@@ -114,7 +114,7 @@ public class CertificationResultService {
         }
     }
 
-    private void populateUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void populateUpToDate(CertificationResult certResult) {
         certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 }
