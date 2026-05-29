@@ -89,8 +89,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     private void processRwtResultsCountsByAcb(List<RealWorldTestingReport> reportRows) {
         Integer rwtEligibilityYear = LocalDate.now().getYear() - 1;
 
-        if (!isDateInResultsSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {
-            LOGGER.info("Outside the RWT Results submission window.  Not collecting data.");
+        if (!isDateInResultsDataCollectionWindow(LocalDate.now(), rwtEligibilityYear)) {
+            LOGGER.info("Outside the RWT Results data collection window.  Not collecting data.");
             return;
         }
 
@@ -131,8 +131,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     private void processRwtResultsCountsByDeveloper(List<RealWorldTestingReport> reportRows) {
         Integer rwtEligibilityYear = LocalDate.now().getYear() - 1;
 
-        if (!isDateInResultsSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {
-            LOGGER.info("Outside the RWT Results submission window.  Not collecting data.");
+        if (!isDateInResultsDataCollectionWindow(LocalDate.now(), rwtEligibilityYear)) {
+            LOGGER.info("Outside the RWT Results data collection window.  Not collecting data.");
             return;
         }
 
@@ -251,8 +251,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
         return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), rwtReportService.getPlansLateDate(rwtYear)), dateToTest);
     }
 
-    private boolean isDateInResultsSubmissionWindow(LocalDate dateToTest, Integer rwtYear) {
-        return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), rwtReportService.getResultsLateDate(rwtYear)), dateToTest);
+    private boolean isDateInResultsDataCollectionWindow(LocalDate dateToTest, Integer rwtYear) {
+        return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), rwtReportService.getResultsDataGatheringStopDate(rwtYear)), dateToTest);
     }
 
     private Boolean isListingValidAsOfDate(LocalDate listingCertificationDate, LocalDate date) {
