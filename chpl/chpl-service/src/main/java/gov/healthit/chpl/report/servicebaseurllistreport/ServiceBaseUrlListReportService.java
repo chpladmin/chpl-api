@@ -37,8 +37,8 @@ public class ServiceBaseUrlListReportService {
     }
 
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitorsWithinTheLastYear() {
-        LocalDateTime minTestCheckTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-        LocalDateTime maxTestCheckTime = LocalDateTime.now().minusYears(1).truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime minTestCheckTime = LocalDateTime.now().minusYears(1).truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime maxTestCheckTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
         LOGGER.info("Finding URL Uptime Monitor Tests that happened between " + minTestCheckTime + " and " + maxTestCheckTime);
         List<UrlUptimeMonitorTest> testsBetweenDates = urlUptimeMonitorTestDAO.getChplUptimeMonitorTestsBetweenDates(minTestCheckTime, maxTestCheckTime);
