@@ -22,7 +22,7 @@
         <commons.fileupload.version>2.0.0-M4</commons.fileupload.version>
         <ff4j.version>2.1</ff4j.version>
         <java.version>21</java.version>
-        <junit.version>6.1.0-M1</junit.version>
+        <junit.version>6.1.0</junit.version>
         <log4j2.version>2.25.4</log4j2.version>
         <lombok.version>1.18.42</lombok.version>
         <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
