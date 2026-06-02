@@ -113,7 +113,7 @@ public class CertificationResultUpToDateService {
 
     private boolean isStandardOnCertResult(Standard standard, CertificationResult certResult) {
         return certResult.getStandards().stream()
-                .filter(certResultStd -> certResultStd.getStandard().getId().equals(standard.getId()))
+                .filter(certResultStd -> standard.getId().equals(certResultStd.getStandard().getId()))
                 .findAny()
                 .isPresent();
     }
@@ -139,7 +139,7 @@ public class CertificationResultUpToDateService {
 
     private Boolean isCodeSetOnCertResult(CodeSet codeSet, CertificationResult certResult) {
         return certResult.getCodeSets().stream()
-                .filter(cs -> cs.getCodeSet().getId().equals(codeSet.getId()))
+                .filter(cs -> codeSet.getId().equals(cs.getCodeSet().getId()))
                 .findAny()
                 .isPresent();
     }
@@ -166,7 +166,7 @@ public class CertificationResultUpToDateService {
 
     private Boolean isFunctionalityTestedOnCertResult(FunctionalityTested functionalityTested, CertificationResult certResult) {
         return certResult.getFunctionalitiesTested().stream()
-                .filter(ft -> ft.getFunctionalityTested().getId().equals(functionalityTested.getId()))
+                .filter(ft -> functionalityTested.getId().equals(ft.getFunctionalityTested().getId()))
                 .findAny()
                 .isPresent();
     }
