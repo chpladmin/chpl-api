@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -37,7 +36,7 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public CertificationIdDTO getByListings(List<Long> listingIds, String year) throws EntityRetrievalException {
+    public CertificationIdDTO getByListings(List<Long> listingIds, String year) {
         return certificationIdDao.getByListings(listingIds, year);
     }
 
@@ -58,11 +57,6 @@ public class CertificationIdManager {
     @Transactional(readOnly = true)
     public List<CertificationCriterion> getCriteriaMetByListingIds(List<Long> listingIds) {
         return certificationIdDao.getCriteriaMetByListingIds(listingIds);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CQMMetDTO> getCqmsMetByListingIds(List<Long> listingIds) {
-        return certificationIdDao.getCqmsMetByListingIds(listingIds);
     }
 
     @Transactional(readOnly = true)
@@ -136,7 +130,7 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = false)
-    public CertificationIdDTO create(List<Long> listingIds, String year) throws EntityCreationException, ActivityException {
+    public CertificationIdDTO create(List<Long> listingIds, String year) throws EntityCreationException {
         return certificationIdDao.create(listingIds, year);
     }
 }

@@ -1,14 +1,11 @@
 package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import lombok.Data;
 import lombok.Singular;
 
@@ -40,28 +37,18 @@ public class CertificationIdLookupResults implements Serializable {
         private String classification;
         private String additionalSoftware;
 
-        public Product(CertifiedProductSearchDetails listing) {
+        public Product(CertifiedProductDetailsForCertificationId listing) {
             this.id = listing.getId();
-            this.name = listing.getProduct().getName();
-            this.version = listing.getVersion().getVersion();
+            this.name = listing.getProduct();
+            this.version = listing.getVersion();
             this.setChplProductNumber(listing.getChplProductNumber());
-            this.year = listing.getEdition() == null ? null : listing.getEdition().getName();
+            this.year = listing.getYear();
             this.curesUpdate = listing.getCuresUpdate();
-            this.practiceType = listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY) != null
-                    ? listing.getPracticeType().get(CertifiedProductSearchDetails.PRACTICE_TYPE_NAME_KEY).toString() : null;
-            this.acb = listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null
-                    ? listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString() : null;
-            this.vendor = listing.getDeveloper().getName();
-            this.classification = listing.getClassificationType().get(CertifiedProductSearchDetails.CLASSIFICATION_TYPE_NAME_KEY) != null
-                    ? listing.getClassificationType().get(CertifiedProductSearchDetails.CLASSIFICATION_TYPE_NAME_KEY).toString() : null;
-            this.additionalSoftware = "";
-            try {
-                if (null != listing.getProductAdditionalSoftware()) {
-                    this.additionalSoftware = URLEncoder.encode(listing.getProductAdditionalSoftware(), "UTF-8");
-                }
-            } catch (final UnsupportedEncodingException ex) {
-                // Do nothing
-            }
+            this.practiceType = listing.getPracticeType();
+            this.acb = listing.getAcb();
+            this.vendor = listing.getDeveloper();
+            this.classification = listing.getClassification();
+            this.additionalSoftware = listing.getAdditionalSoftware();
         }
     }
 }

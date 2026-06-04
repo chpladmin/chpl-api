@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -15,11 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertificationIdException;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import jakarta.transaction.Transactional;
@@ -59,7 +57,7 @@ public class CertificationIdSearchService {
 
                 // Find the listings associated with the Cert ID
                 List<Long> listingIds = certificationIdManager.getListingIdsByCertificationId(certId.getId());
-                List<CertifiedProductSearchDetails> listings = getAllListingDetails(listingIds);
+                List<CertifiedProductDetailsForCertificationId> listings = getAllListingDetails(listingIds);
                 // Add product data to results
                 results.setProducts(listings.stream()
                         .map(listing -> new CertificationIdLookupResults.Product(listing))
@@ -75,7 +73,7 @@ public class CertificationIdSearchService {
                             results.setCriteria(validator.getCriteriaMet());
                         }
                         if (includeCqms) {
-                            results.setCqms(validator.getCqmsMet().keySet());
+                            results.setCqms(validator.getCqmsMet());
                         }
                     }
                 }
@@ -90,16 +88,26 @@ public class CertificationIdSearchService {
         return results;
     }
 
-    public CertificationIdResults findCertificationByListingIds(List<Long> listingIds, String certificationYear, Boolean create)
+    public CertificationIdResults createCertificationId(List<Long> listingIds, String certificationYear)
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+        List<CertificationIdResults> certIdResults = findCertificationByListingIds(listingIds, Stream.of(certificationYear).toList(), true);
+        if (!CollectionUtils.isEmpty(certIdResults)) {
+            return certIdResults.get(0);
+        }
+        return null;
+    }
+
+    public List<CertificationIdResults> findCertificationByListingIds(List<Long> listingIds, List<String> certificationYears, Boolean create)
             throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         if (CollectionUtils.isEmpty(listingIds)) {
-            return null;
+            throw new InvalidArgumentsException("At least one listing ID is required.");
+        } else if (CollectionUtils.isEmpty(certificationYears)) {
+            throw new InvalidArgumentsException("At least one certificaiton year is required.");
         }
 
-        List<CertifiedProductSearchDetails> listings = getAllListingDetails(listingIds);
-
+        List<CertifiedProductDetailsForCertificationId> listings = getAllListingDetails(listingIds);
         if (create) {
-            Optional<CertifiedProductSearchDetails> invalidListing = listings.stream()
+            Optional<CertifiedProductDetailsForCertificationId> invalidListing = listings.stream()
                 .filter(listing -> !isEditionlessOrCuresUpdate(listing))
                 .findAny();
             if (invalidListing.isPresent()) {
@@ -107,62 +115,79 @@ public class CertificationIdSearchService {
             }
         }
 
-        // Add products to results
-        CertificationIdResults results = new CertificationIdResults();
-        results.setProducts(listings.stream()
+        List<CertificationIdResults> resultsForAllYears = certificationYears.stream()
+            .map(certYear -> {
+                try {
+                    return findCertificationIdByListings(listings, certYear, create);
+                } catch (Exception ex) {
+                    LOGGER.error("Unable to find certification ID By Listings", ex);
+                    return null;
+                }
+            })
+            .filter(certIdResult -> certIdResult != null)
+            .collect(Collectors.toList());
+
+        return resultsForAllYears;
+    }
+
+    private CertificationIdResults findCertificationIdByListings(List<CertifiedProductDetailsForCertificationId> listings, String certYear, boolean create)
+        throws InvalidArgumentsException, CertificationIdException {
+     // Add products to results
+        CertificationIdResults result = new CertificationIdResults();
+        result.setProducts(listings.stream()
                 .map(listing -> new CertificationIdResults.Product(listing))
                 .collect(Collectors.toList()));
         //get the "year" for this cms id
-        results.setYear(!StringUtils.isEmpty(certificationYear) ? certificationYear : certIdYearCalculator.getCurrentCertIdYear());
+        result.setYear(!StringUtils.isEmpty(certYear) ? certYear : certIdYearCalculator.getCurrentCertIdYear());
 
         // Validate the collection
         //this will throw an error if an invalid year is passed in
-        Validator validator = this.validatorFactory.getValidator(results.getYear());
+        Validator validator = this.validatorFactory.getValidator(result.getYear());
         validator.getListings().addAll(listings);
 
         boolean isValid = validator.validate();
-        results.setValid(isValid);
-        results.setMetPercentages(validator.getPercents());
-        results.setMetCounts(validator.getCounts());
-        results.setMissingCombo(validator.getMissingCombo());
-        results.setMissingOr(validator.getMissingOr());
-        results.setMissingAnd(validator.getMissingAnd());
-        results.setMissingXOr(validator.getMissingXOr());
-        results.setMissingUpToDate(validator.getMissingUpToDate());
+        result.setValid(isValid);
+        result.setMetPercentages(validator.getPercents());
+        result.setMetCounts(validator.getCounts());
+        result.setMissingCombo(validator.getMissingCombo());
+        result.setMissingOr(validator.getMissingOr());
+        result.setMissingAnd(validator.getMissingAnd());
+        result.setMissingXOr(validator.getMissingXOr());
+        result.setMissingUpToDate(validator.getMissingUpToDate());
 
         // Lookup CERT ID
         if (validator.isValid()) {
-            CertificationIdDTO existingCertId = null;
-            try {
-                existingCertId = certificationIdManager.getByListings(listingIds, results.getYear());
-                if (existingCertId != null) {
-                    results.setEhrCertificationId(existingCertId.getCertificationId());
-                } else {
-                    if ((create) && (results.isValid())) {
-                        // Generate a new ID
-                        existingCertId = certificationIdManager.create(listingIds, results.getYear());
-                        results.setEhrCertificationId(existingCertId.getCertificationId());
-                    }
+            List<Long> listingIds = listings.stream()
+                    .map(listing -> listing.getId())
+                    .toList();
+            CertificationIdDTO existingCertId = certificationIdManager.getByListings(listingIds, result.getYear());
+            if (existingCertId != null) {
+                result.setEhrCertificationId(existingCertId.getCertificationId());
+            } else if (create && result.isValid()) {
+                // Generate a new ID
+                try {
+                    existingCertId = certificationIdManager.create(listingIds, result.getYear());
+                    result.setEhrCertificationId(existingCertId.getCertificationId());
+                } catch (Exception ex) {
+                    LOGGER.error("Could not create a CMS ID", ex);
+                    throw new CertificationIdException("There was an error creating the CMS ID.");
                 }
-            } catch (EntityRetrievalException | EntityCreationException | ActivityException ex) {
-                LOGGER.error("Unable to look up cert id by listings", ex);
-                throw new CertificationIdException("Unable to retrieve a Certification ID.");
             }
         }
-        return results;
+        return result;
     }
 
-    private List<CertifiedProductSearchDetails> getAllListingDetails(List<Long> listingIds) {
+    private List<CertifiedProductDetailsForCertificationId> getAllListingDetails(List<Long> listingIds) {
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
+        List<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>>();
         listingIds.stream()
             .forEach(listingId -> futures.add(CompletableFuture
-                    .supplyAsync(() -> getCertifiedProductSearchDetails(listingId), executorService)));
+                    .supplyAsync(() -> getCertifiedProductDetailsForCertificationId(listingId), executorService)));
 
         CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
-        CompletableFuture<List<Optional<CertifiedProductSearchDetails>>> listFuture = CompletableFuture.allOf(futuresArray)
+        CompletableFuture<List<Optional<CertifiedProductDetailsForCertificationId>>> listFuture = CompletableFuture.allOf(futuresArray)
                 .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
-        List<CertifiedProductSearchDetails> listings = listFuture.join().stream()
+        List<CertifiedProductDetailsForCertificationId> listings = listFuture.join().stream()
                 .filter(opt -> opt.isPresent())
                 .map(opt -> opt.get())
                 .collect(Collectors.toList());
@@ -174,20 +199,20 @@ public class CertificationIdSearchService {
         return listings;
     }
 
-    protected Optional<CertifiedProductSearchDetails> getCertifiedProductSearchDetails(Long listingId) {
+    protected Optional<CertifiedProductDetailsForCertificationId> getCertifiedProductDetailsForCertificationId(Long listingId) {
         try {
-            return Optional.of(cpdManager.getCertifiedProductDetails(listingId));
+            return Optional.of(cpdManager.getCertifiedProductDetailsForCertificationId(listingId));
         } catch (EntityRetrievalException e) {
             LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
             return Optional.empty();
         }
     }
 
-    private boolean isEditionlessOrCuresUpdate(CertifiedProductSearchDetails listing) {
-        if (listing.getEdition() == null && listing.getCuresUpdate() == null) {
+    private boolean isEditionlessOrCuresUpdate(CertifiedProductDetailsForCertificationId listing) {
+        if (listing.getYear() == null && listing.getCuresUpdate() == null) {
             return true;
         }
-        return listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+        return listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                 && BooleanUtils.isTrue(listing.getCuresUpdate());
     }
 }
