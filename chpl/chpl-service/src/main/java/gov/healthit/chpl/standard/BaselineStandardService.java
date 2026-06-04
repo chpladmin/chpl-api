@@ -27,7 +27,7 @@ public class BaselineStandardService {
 
     public List<Standard> getBaselineStandards(CertificationCriterion criterion,
         LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
-        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
+        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
         Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
         stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
@@ -43,7 +43,7 @@ public class BaselineStandardService {
 
     public List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion,
         LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
-        List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMap();
+        List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
         Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
         standardCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));

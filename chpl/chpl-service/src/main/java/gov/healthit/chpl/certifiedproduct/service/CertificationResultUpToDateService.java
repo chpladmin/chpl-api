@@ -42,7 +42,7 @@ public class CertificationResultUpToDateService {
 
     @Transactional
     public boolean isUpToDate(CertificationResult certResult, LocalDate asOfDate) {
-        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
+        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
         stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(certResult.getCriterion().getId()));
         List<Standard> standardsForCriterion = stdCriteriaMaps.stream()
                 .map(map -> map.getStandard())
