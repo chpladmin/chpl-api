@@ -328,6 +328,16 @@ const reportDataSvapControllerTests = {
   },
 };
 
+const reportDataNonConformitiesControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-non-conformities.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-non-conformities-controller-tests.xml',
+    },
+  },
+};
+
 const subscriptionsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/search-subscriptions-controller.postman_collection.json',
@@ -459,6 +469,7 @@ const jobs = [
   cb => newman.run(announcementsControllerTests,cb),
   cb => newman.run(questionableUrlsControllerTests,cb),
   cb => newman.run(reportDataCriteriaUpToDateControllerTests,cb),
+  cb => newman.run(reportDataNonConformitiesControllerTests,cb),
   ];
 
 const responseCallback = (err) => {
