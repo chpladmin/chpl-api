@@ -48,9 +48,6 @@ public class ReportMetadataEntity extends EntityAudit {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "report_key")
-    private String reportKey;
-
     @Column(name = "report_group")
     private String reportGroup;
 
@@ -71,7 +68,6 @@ public class ReportMetadataEntity extends EntityAudit {
                 .id(id)
                 .environment(environment)
                 .title(title)
-                .reportKey(reportKey)
                 .url(url)
                 .height(height)
                 .roleNames(!CollectionUtils.isEmpty(roleMaps) ? getRoleNames(roleMaps) : null)
