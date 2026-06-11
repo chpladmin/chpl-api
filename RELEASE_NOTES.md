@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 53.8.0
+_8 June 2026_
+
+### Features
+* Add report-data endpoint to get non-conformities by developer and non-conformity type
+
+---
+
 ## Version 53.7.0
 _26 May 2026_
 
