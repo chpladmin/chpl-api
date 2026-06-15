@@ -32,6 +32,7 @@ import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorSummary
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
 import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -110,6 +111,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return criteriaMigrationReportService.getHtiReportData(CriteriaMigrationReportService.HTI1_REPORT_ID);
+    }
+
+    @Synchronized("lock")
+    public List<SurveillanceByDeveloper> getAllSurveillanceByDeveloper() {
+        return surveillanceReportsService.getAllSurveillanceByDeveloper();
     }
 
     @Synchronized("lock")
