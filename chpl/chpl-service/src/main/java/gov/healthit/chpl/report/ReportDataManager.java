@@ -114,8 +114,8 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<SurveillanceByDeveloper> getAllSurveillanceByDeveloper() {
-        return surveillanceReportsService.getAllSurveillanceByDeveloper();
+    public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
+        return surveillanceReportsService.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
     }
 
     @Synchronized("lock")

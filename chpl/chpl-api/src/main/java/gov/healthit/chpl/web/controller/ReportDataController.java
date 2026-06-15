@@ -68,7 +68,7 @@ public class ReportDataController {
     @LogMethodUsage
     @RequestMapping(value = "/surveillance-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
-        return reportDataManager.getAllSurveillanceByDeveloper();
+        return reportDataManager.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",
