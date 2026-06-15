@@ -13,6 +13,7 @@ import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,6 +38,7 @@ public class ReportMetadataController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
     @LogMethodUsage
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-metadata}", httpMethod = "GET", responseClass = ReportMetadata.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ReportMetadata> getReportMetadataForUser() {
         return reportDataManager.getReportMetadata(null);
@@ -48,6 +50,7 @@ public class ReportMetadataController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
     @LogMethodUsage
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-metadata/{reportGroup}", httpMethod = "GET", responseClass = ReportMetadata.class)
     @RequestMapping(value = "/{reportGroup:^[a-zA-Z0-9\\-]+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ReportMetadata> getReportMetadataForUserAndGroup(
             @PathVariable(name = "reportGroup", required = true) String reportGroup) {
