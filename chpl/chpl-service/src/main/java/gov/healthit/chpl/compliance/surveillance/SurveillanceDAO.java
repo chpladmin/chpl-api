@@ -335,15 +335,19 @@ public class SurveillanceDAO extends BaseDAOImpl {
             return results;
     }
 
-    public List<SurveillanceByDeveloper> getAllSurveillanceByDeveloper() {
+    public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         Query query = entityManager.createQuery("SELECT DISTINCT surv, listing, developer "
                 + "FROM SurveillanceEntity surv, ListingSearchEntity listing, DeveloperSearchResultEntity developer "
-               + "WHERE surv.certifiedProductId = listing.id "
+                + "WHERE (surv.endDate IS NULL OR surv.startDate >= :oneYearAgo) "
+                + "AND surv.certifiedProductId = listing.id "
                 + "AND listing.developerId = developer.id "
+                + "AND developer.currentActiveListingCount > 0 "
                 + "AND surv.deleted <> true ");
 
         List<SurveillanceByDeveloper> results = new ArrayList<SurveillanceByDeveloper>();
-        List<Object[]> entities = query.getResultList();
+        List<Object[]> entities = query
+                .setParameter("oneYearAgo", LocalDate.now().minusYears(1))
+                .getResultList();
         for (Object[] entity : entities) {
             SurveillanceEntity surveillance = (SurveillanceEntity) entity[0];
             ListingSearchEntity listing = (ListingSearchEntity) entity[1];

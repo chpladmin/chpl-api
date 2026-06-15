@@ -67,7 +67,7 @@ public class ReportDataController {
     })
     @LogMethodUsage
     @RequestMapping(value = "/surveillance-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SurveillanceByDeveloper> getAllSurveillanceByDeveloper() {
+    public @ResponseBody List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         return reportDataManager.getAllSurveillanceByDeveloper();
     }
 

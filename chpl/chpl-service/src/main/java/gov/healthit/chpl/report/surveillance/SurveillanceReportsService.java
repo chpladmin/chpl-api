@@ -41,8 +41,8 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
     }
 
     @Transactional
-    public List<SurveillanceByDeveloper> getAllSurveillanceByDeveloper() {
-        return surveillanceDao.getAllSurveillanceByDeveloper();
+    public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
+        return surveillanceDao.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
     }
 
     public SurveillanceActivityCounts getSurveiilanceActivityCounts() {
