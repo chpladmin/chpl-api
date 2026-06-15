@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import jakarta.persistence.Transient;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,8 @@ public class ReportMetadata {
     private Long id;
     private String environment;
     private String title;
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2027-01-01")
     private String reportKey;
     private String url;
     private String height;
