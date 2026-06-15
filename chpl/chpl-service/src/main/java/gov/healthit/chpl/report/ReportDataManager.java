@@ -298,8 +298,8 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
-        return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    public List<UrlUptimeMonitorEx> getUrlUptimeMonitorsWithinTheLastYear() {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitorsWithinTheLastYear();
     }
 
     @Synchronized("lock")
