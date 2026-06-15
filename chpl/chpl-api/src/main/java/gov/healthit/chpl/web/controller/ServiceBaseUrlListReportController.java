@@ -38,8 +38,8 @@ public class ServiceBaseUrlListReportController {
     })
     @LogMethodUsage
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
-        return reportDataManager.getUrlUptimeMonitors();
+    public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitorsWithinTheLastYear() {
+        return reportDataManager.getUrlUptimeMonitorsWithinTheLastYear();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Service Base Url List uptime summaries by Developer and URL.",
