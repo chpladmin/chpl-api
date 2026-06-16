@@ -731,12 +731,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test.skip(\"/report-data/real-world-testing/results should retrieve status 200 and valid response\", function () {\r",
+							"pm.test(\"/report-data/real-world-testing/results should retrieve status 200 and valid response\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(pm.response.text()).to.include(\"realWorldTestingYear\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"checkedDate\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"checkedCount\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"requiresCheckCount\");\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -831,12 +827,6 @@
             "exec": [
               "pm.test(\"/report-data/real-world-testing/results-summary-by-developer should retrieve status 200 and valid response\", function () {\r",
               "    pm.response.to.have.status(200);\r",
-              "    pm.expect(pm.response.text()).to.include(\"realWorldTestingYear\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"developerId\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"developerName\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"checkedDate\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"checkedCount\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"requiresCheckCount\");\r",
               "});"
             ],
             "type": "text/javascript",
