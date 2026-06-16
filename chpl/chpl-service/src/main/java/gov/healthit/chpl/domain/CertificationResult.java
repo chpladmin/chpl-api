@@ -179,6 +179,8 @@ public class CertificationResult implements Serializable {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String number;
 
+    private boolean isUpToDate;
+
     @JsonIgnore
     private CertificationResultStandardComparator standardComparator;
     @JsonIgnore

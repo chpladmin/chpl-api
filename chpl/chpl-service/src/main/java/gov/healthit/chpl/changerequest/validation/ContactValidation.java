@@ -10,24 +10,22 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
-            if (details.getContact() != null) {
-                boolean contactComponentsValid = true;
-                if (!isNameValid(details.getContact())) {
-                    getMessages().add(getErrorMessage("developer.contact.nameRequired"));
-                    contactComponentsValid = false;
-                }
-                if (!isEmailValid(details.getContact())) {
-                    getMessages().add(getErrorMessage("developer.contact.emailRequired"));
-                    contactComponentsValid = false;
-                }
-                if (!isPhoneNumberValid(details.getContact())) {
-                    getMessages().add(getErrorMessage("developer.contact.phoneRequired"));
-                    contactComponentsValid = false;
-                }
-                return contactComponentsValid;
+        ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
+        if (details.getContact() != null) {
+            boolean contactComponentsValid = true;
+            if (!isNameValid(details.getContact())) {
+                getMessages().add(getErrorMessage("developer.contact.nameRequired"));
+                contactComponentsValid = false;
             }
+            if (!isEmailValid(details.getContact())) {
+                getMessages().add(getErrorMessage("developer.contact.emailRequired"));
+                contactComponentsValid = false;
+            }
+            if (!isPhoneNumberValid(details.getContact())) {
+                getMessages().add(getErrorMessage("developer.contact.phoneRequired"));
+                contactComponentsValid = false;
+            }
+            return contactComponentsValid;
         }
         return true;
     }

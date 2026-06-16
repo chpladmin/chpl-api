@@ -45,6 +45,7 @@ import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChalle
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoPasswordResetRequiredException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 
@@ -62,6 +63,12 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<ErrorResponse> exception(NotImplementedException e) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ExceptionHandler(UnavailableException.class)
+    public ResponseEntity<ErrorResponse> exception(UnavailableException e) {
+        //TODO - what is the right response code? Could also do like Unauthorized or "Not Allowed"
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

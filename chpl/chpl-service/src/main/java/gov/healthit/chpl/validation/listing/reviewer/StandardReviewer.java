@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
+import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupReviewer;
 import gov.healthit.chpl.standard.StandardGroupService;
@@ -118,12 +119,16 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         }
     }
 
-    private boolean isStandardCritierionValid(Long criteriaId, Long standardId) {
-        List<Standard> validStandardForCriteria = standardDao.getStandardCriteriaMaps().get(criteriaId);
-        if (validStandardForCriteria == null) {
+    private boolean isStandardCritierionValid(Long criterionId, Long standardId) {
+        List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
+        List<Standard> standardsForCriterion = standardCriteriaMaps.stream()
+                .filter(map -> map.getCriterion().getId().equals(criterionId))
+                .map(map -> map.getStandard())
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(standardsForCriterion)) {
             return false;
         } else {
-            return validStandardForCriteria.stream().filter(validTf -> validTf.getId().equals(standardId)).count() > 0;
+            return standardsForCriterion.stream().filter(validTf -> validTf.getId().equals(standardId)).count() > 0;
         }
     }
 

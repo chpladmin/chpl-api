@@ -27,6 +27,7 @@ public abstract class DownloadableListingUrlPresenter extends ChangeRequestCsvPr
                 DEV_CONTACT_PHONE_HEADING,
                 CR_TYPE_HEADING,
                 CR_STATUS_HEADING,
+                CR_SUBMITTER_EMAIL_HEADING,
                 CR_CREATED_DATE_HEADING,
                 CR_LAST_UPDATED_DATE_HEADING,
                 CR_ACBS_HEADING,
@@ -50,6 +51,7 @@ public abstract class DownloadableListingUrlPresenter extends ChangeRequestCsvPr
         }
         result.add(changeRequest.getChangeRequestType().getName());
         result.add(changeRequest.getCurrentStatus().getChangeRequestStatusType().getName());
+        result.add(getSubmitterEmail(changeRequest));
         result.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDateTime()));
         result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDateTime()));
         result.add(changeRequest.getCertificationBodies().stream()

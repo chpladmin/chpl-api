@@ -1,8 +1,7 @@
 package gov.healthit.chpl.standard;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,11 +129,11 @@ public class StandardManager {
     }
 
     public List<Standard> getStandardsByCriteria(Long criteriaId) {
-        List<Standard> standardsForCriterion = new ArrayList<Standard>();
-        Map<Long, List<Standard>> standardsByCriteria = standardDAO.getStandardCriteriaMaps();
-        if (standardsByCriteria.containsKey(criteriaId)) {
-            standardsForCriterion = standardsByCriteria.get(criteriaId);
-        }
+        List<StandardCriteriaMap> standardCriteriaMaps = standardDAO.getAllStandardCriteriaMaps();
+        List<Standard> standardsForCriterion = standardCriteriaMaps.stream()
+                .filter(map -> map.getCriterion().getId().equals(criteriaId))
+                .map(map -> map.getStandard())
+                .collect(Collectors.toList());
 
         standardsForCriterion.stream()
             .forEach(standard -> standard.setCriteria(standard.getCriteria().stream()
