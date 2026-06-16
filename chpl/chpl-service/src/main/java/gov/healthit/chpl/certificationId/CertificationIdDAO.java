@@ -117,8 +117,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return results;
     }
 
-    public CertificationIdDTO getByListings(List<Long> listingIds, String year)
-            throws EntityRetrievalException {
+    public CertificationIdDTO getByListings(List<Long> listingIds, String year) {
         CertificationIdEntity entity = getEntityByListings(listingIds, year);
         if (entity == null) {
             return null;
@@ -178,21 +177,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<CQMMetDTO> getCqmsMetByListingIds(List<Long> listingIds) {
-        List<CQMMetDTO> cmqsMet = new ArrayList<CQMMetDTO>();
-        if (!CollectionUtils.isEmpty(listingIds)) {
-            Query query = entityManager.createQuery(
-                    "SELECT new gov.healthit.chpl.certificationId.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
-                            + "FROM CQMResultDetailsEntity AS crde"
-                            + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :listingIds "
-                            + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
-            query.setParameter("listingIds", listingIds);
-            cmqsMet = query.getResultList();
-        }
-
-        return cmqsMet;
-    }
-
     private List<CertificationIdEntity> getAllEntities() {
         List<CertificationIdEntity> result = entityManager
                 .createQuery("from CertificationIdEntity ", CertificationIdEntity.class).getResultList();
@@ -240,8 +224,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private CertificationIdEntity getEntityByListings(List<Long> listingIds, String year)
-            throws EntityRetrievalException {
+    private CertificationIdEntity getEntityByListings(List<Long> listingIds, String year) {
         CertificationIdEntity entity = null;
 
         // Lookup the EHR Certification ID record by:

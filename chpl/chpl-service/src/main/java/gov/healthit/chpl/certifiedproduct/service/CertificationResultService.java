@@ -50,6 +50,13 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
+    public List<CertificationResult> getCertificationResultsWithoutSed(Long listingId) throws EntityRetrievalException {
+        return getCertificationResultDetailsDTOs(listingId).stream()
+                .map(dto -> getCertificationResultWithoutSed(dto))
+                .sorted(certResultComparator)
+                .collect(Collectors.toList());
+    }
+
     private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         certificationResultDetailsDTOs = certificationResultDetailsDao.getAllCertResultsForListing(id);
@@ -64,7 +71,13 @@ public class CertificationResultService {
         CertificationCriterion criteria = result.getCriterion();
         populateSed(certResult, listing, result, criteria);
         populateTestTasks(certResult, listing, criteria);
-        populateUpToDate(listing, result);
+        populateUpToDate(result);
+        return result;
+    }
+
+    private CertificationResult getCertificationResultWithoutSed(CertificationResultDetailsDTO certResult) {
+        CertificationResult result = new CertificationResult(certResult, certRules);
+        populateUpToDate(result);
         return result;
     }
 
@@ -114,7 +127,7 @@ public class CertificationResultService {
         }
     }
 
-    private void populateUpToDate(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void populateUpToDate(CertificationResult certResult) {
         certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 }

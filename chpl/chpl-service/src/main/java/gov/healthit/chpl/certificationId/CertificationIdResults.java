@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import lombok.Data;
 
 @Data
@@ -36,10 +35,10 @@ public class CertificationIdResults implements Serializable {
         private String version;
         private String chplProductNumber;
 
-        public Product(CertifiedProductSearchDetails listing) {
-            this.name = listing.getProduct().getName();
+        public Product(CertifiedProductDetailsForCertificationId listing) {
+            this.name = listing.getProduct();
             this.productId = listing.getId();
-            this.version = listing.getVersion().getVersion();
+            this.version = listing.getVersion();
             this.chplProductNumber = listing.getChplProductNumber();
         }
     }

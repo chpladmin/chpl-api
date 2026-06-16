@@ -175,7 +175,7 @@ public class Validator2014 extends Validator {
     // **********************************************************************
     protected boolean isInpatientCqmsValid() {
         for (String cqm : INPATIENT_CQMS) {
-            if (this.getCqmsMet().containsKey(cqm)) {
+            if (this.getCqmsMet().contains(cqm)) {
                 ++inpatientCqmCount;
             }
         }
@@ -194,7 +194,7 @@ public class Validator2014 extends Validator {
         int nonCoreAmbulatory = 0;
         int coreAmbulatory = 0;
 
-        for (String cqm : getCqmsMet().keySet()) {
+        for (String cqm : getCqmsMet()) {
             if (AMBULATORY_CORE_CQMS.contains(cqm)) {
                 ++coreAmbulatory;
             }

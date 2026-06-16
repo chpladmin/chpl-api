@@ -1,9 +1,10 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
+import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
 
 @Component
@@ -64,12 +66,16 @@ public class StandardNormalizer {
     }
 
     private Standard getStandard(String regulatoryTextCitation, Long criterionId) {
-        Map<Long, List<Standard>> standardMappings = standardDao.getStandardCriteriaMaps();
-        if (!standardMappings.containsKey(criterionId)) {
+        List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
+        List<Standard> standardsForCriterion = standardCriteriaMaps.stream()
+                .filter(map -> map.getCriterion().getId().equals(criterionId))
+                .map(map -> map.getStandard())
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(standardsForCriterion)) {
             return null;
         }
-        List<Standard> standardForCriterion = standardMappings.get(criterionId);
-        Optional<Standard> standardOpt = standardForCriterion.stream()
+
+        Optional<Standard> standardOpt = standardsForCriterion.stream()
             .filter(standard -> standard.getRegulatoryTextCitation().equalsIgnoreCase(regulatoryTextCitation))
             .findAny();
         return standardOpt.isPresent() ? standardOpt.get() : null;

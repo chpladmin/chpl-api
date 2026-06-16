@@ -1,9 +1,6 @@
 package gov.healthit.chpl.standard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -145,30 +142,11 @@ public class StandardDAO extends BaseDAOImpl {
     }
 
     @Cacheable(CacheNames.STANDARDS)
-    public Map<Long, List<Standard>> getStandardCriteriaMaps() {
-        List<Standard> allStandards = findAll();
-        Map<Long, List<Standard>> mapping = new HashMap<Long, List<Standard>>();
-        allStandards.stream()
-            .forEach(standard -> updateMapping(mapping, standard));
-        return mapping;
-    }
-
     @Transactional
-    public List<StandardCriteriaMap> getAllStandardCriteriaMap() {
+    public List<StandardCriteriaMap> getAllStandardCriteriaMaps() {
         return getAllStandardCriteriaMapEntities().stream()
                 .map(e -> e.toDomain(criterionComparator))
                 .collect(Collectors.toList());
-    }
-
-
-    private void updateMapping(Map<Long, List<Standard>> mapping, Standard standard) {
-        standard.getCriteria().stream()
-            .forEach(standardCriterion -> {
-                if (!mapping.containsKey(standardCriterion.getId())) {
-                    mapping.put(standardCriterion.getId(), new ArrayList<Standard>());
-                }
-                mapping.get(standardCriterion.getId()).add(standard);
-            });
     }
 
     private List<StandardEntity> getAllEntities() {

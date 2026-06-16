@@ -5,13 +5,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 
 public abstract class ChangeRequestCsvPresenter implements AutoCloseable {
     protected static final String DEV_NAME_HEADING = "Developer Name";
@@ -71,6 +74,14 @@ public abstract class ChangeRequestCsvPresenter implements AutoCloseable {
                 csvPrinter.flush();
             }
         }
+    }
+
+    protected String getSubmitterEmail(ChangeRequest changeRequest) {
+        List<ChangeRequestStatus> orderedStatuses = changeRequest.getStatuses().stream()
+            .sorted(Comparator.comparing(ChangeRequestStatus::getStatusChangeDateTime))
+            .collect(Collectors.toList());
+        //the oldest status is the submitting user
+        return orderedStatuses.get(0).getActingUser() == null ? "" : orderedStatuses.get(0).getActingUser();
     }
 
     public void close() throws IOException {

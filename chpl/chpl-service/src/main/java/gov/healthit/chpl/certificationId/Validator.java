@@ -1,10 +1,8 @@
 package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -16,13 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.cqm.CQMResultDetails;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public abstract class Validator {
     private Set<CertificationCriterion> criteriaMet = new LinkedHashSet<CertificationCriterion>();
-    private Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
-    private Map<String, Integer> domainsMet = new HashMap<String, Integer>();
-    private List<CertifiedProductSearchDetails> listings = new ArrayList<CertifiedProductSearchDetails>();
+    private Set<String> cqmsMet = new LinkedHashSet<String>();
+    private Set<String> domainsMet = new LinkedHashSet<String>();
+    private List<CertifiedProductDetailsForCertificationId> listings = new ArrayList<CertifiedProductDetailsForCertificationId>();
 
     // missing criteria where all in the set are required
     private ArrayList<String> missingAnd = new ArrayList<String>();
@@ -51,11 +48,11 @@ public abstract class Validator {
         return this.criteriaMet;
     }
 
-    public List<CertifiedProductSearchDetails> getListings() {
+    public List<CertifiedProductDetailsForCertificationId> getListings() {
         return this.listings;
     }
 
-    public Map<String, Integer> getCqmsMet() {
+    public Set<String> getCqmsMet() {
         return this.cqmsMet;
     }
 
@@ -79,7 +76,7 @@ public abstract class Validator {
         return missingXOr;
     }
 
-    public Map<String, Integer> getDomainsMet() {
+    public Set<String> getDomainsMet() {
         return this.domainsMet;
     }
 
@@ -119,18 +116,12 @@ public abstract class Validator {
                 .filter(cqmResult -> cqmResult.getSuccess() || !CollectionUtils.isEmpty(cqmResult.getSuccessVersions()))
                 .collect(Collectors.toList());
 
-            cqmsMet = new HashMap<String, Integer>(attestedCqms.size());
+            cqmsMet = new LinkedHashSet<String>(attestedCqms.size());
             for (CQMResultDetails cqmDetail : attestedCqms) {
-                // Store the attested versions
-                Integer highestVersion = cqmDetail.getSuccessVersions().stream()
-                    .map(ver -> Integer.parseInt(ver.substring(1)))
-                    .max(Integer::compareTo)
-                    .orElse(null);
-
-                cqmsMet.put(cqmDetail.getCmsId(), highestVersion);
+                cqmsMet.add(cqmDetail.getCmsId());
 
                 if (!StringUtils.isEmpty(cqmDetail.getDomain())) {
-                    domainsMet.put(cqmDetail.getDomain(), 1);
+                    domainsMet.add(cqmDetail.getDomain());
                 }
             }
         }

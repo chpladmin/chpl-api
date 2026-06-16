@@ -103,7 +103,7 @@ public class BaselineStandardsUpToDateService {
     }
 
     private boolean doesCriterionHaveAnyStandards(CertificationCriterion criterion, Logger logger) {
-        return standardDao.getAllStandardCriteriaMap().stream()
+        return standardDao.getAllStandardCriteriaMaps().stream()
                 .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
                 .findAny()
                 .isPresent();

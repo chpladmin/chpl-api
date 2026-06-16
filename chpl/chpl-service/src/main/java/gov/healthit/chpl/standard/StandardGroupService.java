@@ -26,7 +26,7 @@ public class StandardGroupService {
     }
 
     public Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion, LocalDate validAsOfDateRangeStart, LocalDate validAsOfDateRangeEnd) {
-        Map<String, List<Standard>> groupedStandardsForCriteria = standardDAO.getAllStandardCriteriaMap().stream()
+        Map<String, List<Standard>> groupedStandardsForCriteria = standardDAO.getAllStandardCriteriaMaps().stream()
                 .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
                         && StringUtils.isNotEmpty(stdCriteriaMap.getStandard().getGroupName())
                         && DateUtil.datesOverlap(Pair.of(stdCriteriaMap.getStandard().getStartDay(), stdCriteriaMap.getStandard().getEndDay()),
