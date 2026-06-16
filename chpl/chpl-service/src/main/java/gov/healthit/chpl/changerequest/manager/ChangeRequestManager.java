@@ -193,6 +193,9 @@ public class ChangeRequestManager {
         } else if (!ff4j.check(FeatureList.RWT_CHANGE_REQUEST)
                 && isRwtChangeRequestType(changeRequest.getChangeRequestType())) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtUrl.featureDisabled"));
+        } else if (!ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)
+                && changeRequest.getChangeRequestType().isDemographics()) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.demographics.featureDisabled"));
         }
         Long newCrId = saveChangeRequest(changeRequest);
         ChangeRequest newCr = null;
