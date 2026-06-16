@@ -46,6 +46,7 @@ import lombok.extern.log4j.Log4j2;
 @Tag(name = "certification-ids", description = "All certification ID operations.")
 @RestController
 public class CertificationIdController {
+    private static final String CMS_DISABLED = "Access to the CMS ID Creator has been paused. Please check back periodically for updates.";
 
     private CertificationIdSearchService certIdSearchService;
     private CertificationIdManager certificationIdManager;
@@ -78,7 +79,7 @@ public class CertificationIdController {
     public @ResponseBody ChplOneTimeTrigger triggerCmsIdReportDeprecated()
             throws SchedulerException, ValidationException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         ChplOneTimeTrigger jobTrigger = certificationIdManager.triggerCmsIdReport();
         return jobTrigger;
@@ -94,7 +95,7 @@ public class CertificationIdController {
         method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         ChplOneTimeTrigger jobTrigger = certificationIdManager.triggerCmsIdReport();
         return jobTrigger;
@@ -118,7 +119,7 @@ public class CertificationIdController {
             @RequestParam(required = false) List<Long> ids)
                     throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         return certIdSearchService.findCertificationByListingIds(ids, null, false);
@@ -138,7 +139,7 @@ public class CertificationIdController {
             @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException, EntityRetrievalException,
         CertificationIdException, UnavailableException, Exception {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         List<String> certificationYears = certIdYearCalculator.getValidCertIdYearsToday();
@@ -165,7 +166,7 @@ public class CertificationIdController {
     public @ResponseBody CertificationIdResults createCertificationIdDeprecated(@RequestParam(required = true) List<Long> ids)
             throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         return certIdSearchService.findCertificationByListingIds(ids, null, true);
     }
@@ -184,7 +185,7 @@ public class CertificationIdController {
     public @ResponseBody CertificationIdResults createCertificationId(@RequestBody CertificationIdCreateBody createBody)
             throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         return certIdSearchService.findCertificationByListingIds(createBody.getListingIds(), createBody.getYear(), true);
@@ -212,7 +213,7 @@ public class CertificationIdController {
             throws InvalidArgumentsException,
             EntityRetrievalException, CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         return certIdSearchService.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
@@ -236,7 +237,7 @@ public class CertificationIdController {
             throws InvalidArgumentsException,
             EntityRetrievalException, CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         return certIdSearchService.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
@@ -259,7 +260,7 @@ public class CertificationIdController {
             @RequestBody final CertificationIdVerificationBodyDeprecated body) throws InvalidArgumentsException,
             CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         return this.verify(body.getIds());
     }
@@ -277,7 +278,7 @@ public class CertificationIdController {
             @RequestBody CertificationIdVerificationBody body) throws InvalidArgumentsException,
             CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
 
         return this.verify(body.getCertificationIds());
@@ -299,7 +300,7 @@ public class CertificationIdController {
             @RequestParam("ids") final List<String> certificationIds) throws InvalidArgumentsException,
             CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         return this.verify(certificationIds);
     }
@@ -316,7 +317,7 @@ public class CertificationIdController {
             @RequestParam("certificationIds") List<String> certificationIds) throws InvalidArgumentsException,
             CertificationIdException, UnavailableException {
         if (ff4j.check(FeatureList.CMS_DISABLED)) {
-            throw new UnavailableException("This endpoint is not currently available.");
+            throw new UnavailableException(CMS_DISABLED);
         }
         return this.verify(certificationIds);
     }
