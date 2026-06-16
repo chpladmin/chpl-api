@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.CertificationIdCreateBody;
 import gov.healthit.chpl.certificationId.CertificationIdLookupResults;
 import gov.healthit.chpl.certificationId.CertificationIdManager;
@@ -35,24 +37,29 @@ import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.UnavailableException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Tag(name = "certification-ids", description = "All certification ID operations.")
 @RestController
 public class CertificationIdController {
+    private static final String CMS_DISABLED = "Access to the CMS ID Creator has been paused. Please check back periodically for updates.";
 
     private CertificationIdSearchService certIdSearchService;
     private CertificationIdManager certificationIdManager;
     private CertificationIdYearCalculator certIdYearCalculator;
+    private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(CertificationIdSearchService certIdSearchService,
             CertificationIdManager certificationIdManager,
-            CertificationIdYearCalculator certIdYearCalculator) {
+            CertificationIdYearCalculator certIdYearCalculator,
+            FF4j ff4j) {
         this.certIdSearchService = certIdSearchService;
         this.certificationIdManager = certificationIdManager;
         this.certIdYearCalculator = certIdYearCalculator;
+        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
@@ -66,8 +73,12 @@ public class CertificationIdController {
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/certification_ids/report-request", httpMethod = "POST",
     message = "This endpoint is deprecated and will be removed. Please use certification-ids/report-request",
-    removalDate = "2027-01-01")
-    public @ResponseBody ChplOneTimeTrigger triggerCmsIdReportDeprecated() throws SchedulerException, ValidationException {
+        removalDate = "2027-01-01")
+    public @ResponseBody ChplOneTimeTrigger triggerCmsIdReportDeprecated()
+            throws SchedulerException, ValidationException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         ChplOneTimeTrigger jobTrigger = certificationIdManager.triggerCmsIdReport();
         return jobTrigger;
     }
@@ -80,7 +91,10 @@ public class CertificationIdController {
             })
     @RequestMapping(value = "/certification-ids/report-request",
         method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException {
+    public @ResponseBody ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         ChplOneTimeTrigger jobTrigger = certificationIdManager.triggerCmsIdReport();
         return jobTrigger;
     }
@@ -100,7 +114,12 @@ public class CertificationIdController {
         message = "This endpoint is deprecated and will be removed. Please use certification-ids/search",
         removalDate = "2027-01-01")
     public @ResponseBody CertificationIdResults searchCertificationIdDeprecated(
-            @RequestParam(required = false) List<Long> ids) throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+            @RequestParam(required = false) List<Long> ids)
+                    throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         String currentCertificationYear = certIdYearCalculator.getCurrentCertIdYear();
         List<CertificationIdResults> certIdResults
             = certIdSearchService.findCertificationByListingIds(ids, Stream.of(currentCertificationYear).toList(), false);
@@ -123,7 +142,11 @@ public class CertificationIdController {
     })
     public @ResponseBody List<CertificationIdResults> searchCertificationId(
             @RequestParam(required = true) List<Long> listingIds)  throws InvalidArgumentsException, EntityRetrievalException,
-        CertificationIdException, Exception {
+        CertificationIdException, UnavailableException, Exception {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         List<String> certificationYears = certIdYearCalculator.getValidCertIdYearsToday();
         return certIdSearchService.findCertificationByListingIds(listingIds, certificationYears, false);
     }
@@ -144,7 +167,10 @@ public class CertificationIdController {
         message = "This endpoint is deprecated and will be removed. Please POST to /certification-ids",
         removalDate = "2027-01-01")
     public @ResponseBody CertificationIdResults createCertificationIdDeprecated(@RequestParam(required = true) List<Long> ids)
-            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         return certIdSearchService.createCertificationId(ids, null);
     }
 
@@ -160,7 +186,11 @@ public class CertificationIdController {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdResults createCertificationId(@RequestBody CertificationIdCreateBody createBody)
-            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         return certIdSearchService.createCertificationId(createBody.getListingIds(), createBody.getYear());
     }
 
@@ -184,7 +214,11 @@ public class CertificationIdController {
             @RequestParam(required = false, defaultValue = "false") Boolean includeCriteria,
             @RequestParam(required = false, defaultValue = "false") Boolean includeCqms)
             throws InvalidArgumentsException,
-            EntityRetrievalException, CertificationIdException {
+            EntityRetrievalException, CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         return certIdSearchService.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
@@ -204,7 +238,11 @@ public class CertificationIdController {
             @RequestParam(required = false, defaultValue = "false") Boolean includeCriteria,
             @RequestParam(required = false, defaultValue = "false") Boolean includeCqms)
             throws InvalidArgumentsException,
-            EntityRetrievalException, CertificationIdException {
+            EntityRetrievalException, CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         return certIdSearchService.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
@@ -223,7 +261,10 @@ public class CertificationIdController {
         removalDate = "2027-01-01")
     public @ResponseBody CertificationIdVerifyResults verifyCertificationIdsDeprecated(
             @RequestBody final CertificationIdVerificationBodyDeprecated body) throws InvalidArgumentsException,
-            CertificationIdException {
+            CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         return this.verify(body.getIds());
     }
 
@@ -238,7 +279,11 @@ public class CertificationIdController {
             })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationIds(
             @RequestBody CertificationIdVerificationBody body) throws InvalidArgumentsException,
-            CertificationIdException {
+            CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
+
         return this.verify(body.getCertificationIds());
     }
 
@@ -256,7 +301,10 @@ public class CertificationIdController {
         removalDate = "2027-01-01")
     public @ResponseBody CertificationIdVerifyResults verifyCertificationIdsDeprecated(
             @RequestParam("ids") final List<String> certificationIds) throws InvalidArgumentsException,
-            CertificationIdException {
+            CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         return this.verify(certificationIds);
     }
 
@@ -270,7 +318,10 @@ public class CertificationIdController {
     })
     public @ResponseBody CertificationIdVerifyResults verifyCertificationIds(
             @RequestParam("certificationIds") List<String> certificationIds) throws InvalidArgumentsException,
-            CertificationIdException {
+            CertificationIdException, UnavailableException {
+        if (ff4j.check(FeatureList.CMS_DISABLED)) {
+            throw new UnavailableException(CMS_DISABLED);
+        }
         return this.verify(certificationIds);
     }
 
