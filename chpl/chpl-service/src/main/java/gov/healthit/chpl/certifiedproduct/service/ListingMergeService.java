@@ -47,12 +47,15 @@ import lombok.extern.log4j.Log4j2;
 public class ListingMergeService {
 
     private ChplProductNumberUtil chplProductNumberUtil;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil,
+            CertificationResultUpToDateService certResultUpToDateService,
             ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.msgUtil = msgUtil;
     }
 
@@ -110,7 +113,10 @@ public class ListingMergeService {
         updatedListing.setCountCqms((int) updatedListing.getCqmResults().stream().filter(cqm -> cqm.getSuccess()).count());
         if (!CollectionUtils.isEmpty(updatedListing.getCertificationResults())) {
             updatedListing.getCertificationResults().stream()
-                .forEach(certResultFromFile -> setIdsForCertificationResults(certResultFromFile, currentListing));
+                .forEach(certResultFromFile -> {
+                    setIdsForCertificationResults(certResultFromFile, currentListing);
+                    populateUpToDate(certResultFromFile);
+                });
         }
 
         if (!CollectionUtils.isEmpty(updatedListing.getCqmResults())) {
@@ -507,6 +513,10 @@ public class ListingMergeService {
             if (matchedCurrTestTool != null) {
                 updatedCertTestTool.setId(matchedCurrTestTool.getId());
             }
+    }
+
+    private void populateUpToDate(CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 
     private void setIdsForCqmResults(CQMResultDetails updatedCqmResult, CertifiedProductSearchDetails currListing) {

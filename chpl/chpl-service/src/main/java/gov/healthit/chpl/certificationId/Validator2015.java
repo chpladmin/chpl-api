@@ -11,11 +11,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
- * @author alarned
- *
- */
 public class Validator2015 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;
@@ -46,22 +41,22 @@ public class Validator2015 extends Validator {
                 certificationCriterionService.get(Criteria2015.H_2))
                 .collect(Collectors.toList());
 
-        this.counts.put("criteriaRequired", requiredCriteria.size());
-        this.counts.put("criteriaRequiredMet", 0);
-        this.counts.put("criteriaCpoeRequired", 1);
-        this.counts.put("criteriaCpoeRequiredMet", 0);
-        this.counts.put("criteriaDsRequired", 1);
-        this.counts.put("criteriaDsRequiredMet", 0);
-        this.counts.put("criteriaDpRequired", 1);
-        this.counts.put("criteriaDpRequiredMet", 0);
-        this.counts.put("cqmsInpatientRequired", 0);
-        this.counts.put("cqmsInpatientRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryRequired", 0);
-        this.counts.put("cqmsAmbulatoryRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequired", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequiredMet", 0);
-        this.counts.put("domainsRequired", 0);
-        this.counts.put("domainsRequiredMet", 0);
+        this.getCounts().setCriteriaRequired(requiredCriteria.size());
+        this.getCounts().setCriteriaRequiredMet(0);
+        this.getCounts().setCriteriaCpoeRequired(1);
+        this.getCounts().setCriteriaCpoeRequiredMet(0);
+        this.getCounts().setCriteriaDsRequired(1);
+        this.getCounts().setCriteriaDsRequiredMet(0);
+        this.getCounts().setCriteriaDpRequired(1);
+        this.getCounts().setCriteriaDpRequiredMet(0);
+        this.getCounts().setCqmsInpatientRequired(0);
+        this.getCounts().setCqmsInpatientRequiredMet(0);
+        this.getCounts().setCqmsAmbulatoryRequired(0);
+        this.getCounts().setCqmsAmbulatoryRequiredMet(0);
+        this.getCounts().setCqmsAmbulatoryCoreRequired(0);
+        this.getCounts().setCqmsAmbulatoryCoreRequiredMet(0);
+        this.getCounts().setDomainsRequired(0);
+        this.getCounts().setDomainsRequiredMet(0);
     }
 
     public boolean onValidate() {
@@ -69,17 +64,17 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isCriteriaValid() {
-        this.counts.put("criteriaRequired", requiredCriteria.size());
+        this.getCounts().setCriteriaRequired(requiredCriteria.size());
         boolean requiredCriteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
-            Optional<CertificationCriterion> metRequiredCriterion = criteriaMet.keySet().stream()
+            Optional<CertificationCriterion> metRequiredCriterion = getCriteriaMet().stream()
                     .filter(criterionMet -> criterionMet.getId().equals(crit.getId()))
                     .findAny();
 
             if (metRequiredCriterion.isPresent()) {
-                this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+                this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             } else {
-                missingAnd.add(Util.formatCriteriaNumber(crit));
+                getMissingAnd().add(Util.formatCriteriaNumber(crit));
                 requiredCriteriaValid = false;
             }
         }
@@ -88,16 +83,16 @@ public class Validator2015 extends Validator {
         boolean dsValid = isDecisionSupportValid();
         boolean dpValid = isDPValid();
 
-        this.counts.put("criteriaRequired",
-                this.counts.get("criteriaRequired")
-                + this.counts.get("criteriaCpoeRequired")
-                + this.counts.get("criteriaDsRequired")
-                + this.counts.get("criteriaDpRequired"));
-        this.counts.put("criteriaRequiredMet",
-                this.counts.get("criteriaRequiredMet")
-                + this.counts.get("criteriaCpoeRequiredMet")
-                + this.counts.get("criteriaDsRequiredMet")
-                + this.counts.get("criteriaDpRequiredMet"));
+        this.getCounts().setCriteriaRequired(
+                this.getCounts().getCriteriaRequired()
+                + this.getCounts().getCriteriaCpoeRequired()
+                + this.getCounts().getCriteriaDsRequired()
+                + this.getCounts().getCriteriaDpRequired());
+        this.getCounts().setCriteriaRequiredMet(
+                this.getCounts().getCriteriaRequiredMet()
+                + this.getCounts().getCriteriaCpoeRequiredMet()
+                + this.getCounts().getCriteriaDsRequiredMet()
+                + this.getCounts().getCriteriaDpRequiredMet());
 
         return (requiredCriteriaValid && cpoeValid && dsValid && dpValid);
     }
@@ -105,11 +100,11 @@ public class Validator2015 extends Validator {
     protected boolean isCPOEValid() {
         for (CertificationCriterion crit : cpoeCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
-                this.counts.put("criteriaCpoeRequiredMet", 1);
+                this.getCounts().setCriteriaCpoeRequiredMet(1);
                 return true;
             }
         }
-        missingOr.add(cpoeCriteriaOr.stream()
+        getMissingOr().add(cpoeCriteriaOr.stream()
                 .map(cpoeCrit -> Util.formatCriteriaNumber(cpoeCrit))
                 .collect(Collectors.toCollection(ArrayList::new)));
         return false;
@@ -118,11 +113,11 @@ public class Validator2015 extends Validator {
     protected boolean isDecisionSupportValid() {
         for (CertificationCriterion crit : decisionSupportRequiredCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
-                this.counts.put("criteriaDsRequiredMet", 1);
+                this.getCounts().setCriteriaDsRequiredMet(1);
                 return true;
             }
         }
-        missingOr.add(decisionSupportRequiredCriteriaOr.stream()
+        getMissingOr().add(decisionSupportRequiredCriteriaOr.stream()
                 .map(dsCrit -> Util.formatCriteriaNumber(dsCrit))
                 .collect(Collectors.toCollection(ArrayList::new)));
         return false;
@@ -131,11 +126,11 @@ public class Validator2015 extends Validator {
     protected boolean isDPValid() {
         for (CertificationCriterion crit : dpCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
-                this.counts.put("criteriaDpRequiredMet", 1);
+                this.getCounts().setCriteriaDpRequiredMet(1);
                 return true;
             }
         }
-        missingOr.add(dpCriteriaOr.stream()
+        getMissingOr().add(dpCriteriaOr.stream()
                 .map(dpCrit -> Util.formatCriteriaNumber(dpCrit))
                 .collect(Collectors.toCollection(ArrayList::new)));
         return false;

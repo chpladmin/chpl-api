@@ -56,6 +56,10 @@ public class CertifiedProductSearchDetails implements Serializable {
     public static final String ACB_CODE_KEY = "code";
     public static final String EDITION_ID_KEY = "id";
     public static final String EDITION_NAME_KEY = "name";
+    public static final String PRACTICE_TYPE_ID_KEY = "id";
+    public static final String PRACTICE_TYPE_NAME_KEY = "name";
+    public static final String CLASSIFICATION_TYPE_ID_KEY = "id";
+    public static final String CLASSIFICATION_TYPE_NAME_KEY = "name";
 
     @Schema(description = "The internal ID of the certified product.")
     private Long id;

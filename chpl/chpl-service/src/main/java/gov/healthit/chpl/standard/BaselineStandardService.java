@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,42 +26,32 @@ public class BaselineStandardService {
     }
 
     public List<Standard> getBaselineStandards(CertificationCriterion criterion,
-            LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
-        try {
-            List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMap();
-            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
+        LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
+        List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
+        Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
-            stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
-            return stdCriteriaMaps.stream()
-                    .filter(stdCriteriaMap -> !isStandardInAGroup(standardGroups, stdCriteriaMap.getStandard())
-                            && DateUtil.isDateBetweenInclusive(
-                                    Pair.of(stdCriteriaMap.getStandard().getRequiredDay() != null ? stdCriteriaMap.getStandard().getRequiredDay().plusDays(1) : null,
-                                            stdCriteriaMap.getStandard().getEndDay()),
-                                    standardCheckDateRangeEnd))
-                    .map(map -> map.getStandard())
-                    .toList();
-        } catch (EntityRetrievalException e) {
-            LOGGER.info("Error retrieving Standards for Criterion");
-            throw new RuntimeException(e);
-        }
+        stdCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
+        return stdCriteriaMaps.stream()
+                .filter(stdCriteriaMap -> !isStandardInAGroup(standardGroups, stdCriteriaMap.getStandard())
+                        && DateUtil.isDateBetweenInclusive(
+                                Pair.of(stdCriteriaMap.getStandard().getRequiredDay() != null ? stdCriteriaMap.getStandard().getRequiredDay().plusDays(1) : null,
+                                        stdCriteriaMap.getStandard().getEndDay()),
+                                standardCheckDateRangeEnd))
+                .map(map -> map.getStandard())
+                .toList();
     }
 
     public List<Standard> getActiveBaselineStandardsForCriterion(CertificationCriterion criterion,
-            LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
-        try {
-            List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMap();
-            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
+        LocalDate standardCheckDateRangeStart, LocalDate standardCheckDateRangeEnd) {
+        List<StandardCriteriaMap> standardCriteriaMaps = standardDao.getAllStandardCriteriaMaps();
+        Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, standardCheckDateRangeStart, standardCheckDateRangeEnd);
 
-            standardCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
-            return standardCriteriaMaps.stream()
-                    .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
-                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getStartDay(), map.getStandard().getEndDay()), standardCheckDateRangeStart))
-                    .map(map -> map.getStandard())
-                    .toList();
-        } catch (EntityRetrievalException e) {
-            LOGGER.info("Error retrieving Standards for Criterion");
-            throw new RuntimeException(e);
-        }
+        standardCriteriaMaps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
+        return standardCriteriaMaps.stream()
+                .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
+                        && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getStartDay(), map.getStandard().getEndDay()), standardCheckDateRangeStart))
+                .map(map -> map.getStandard())
+                .toList();
     }
 
     private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {

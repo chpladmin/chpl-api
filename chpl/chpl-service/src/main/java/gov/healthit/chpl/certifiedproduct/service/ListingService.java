@@ -79,6 +79,7 @@ public class ListingService {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertificationCriterionComparator criteriaComparator;
 
+    private List<CertificationEdition> allEditions;
     private CertifiedProductComparator cpComparator;
     private CertifiedProductQmsStandardComparator qmsComparator;
     private CertifiedProductTargetedUserComparator tuComparator;
@@ -128,6 +129,7 @@ public class ListingService {
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.criteriaComparator = criteriaComparator;
+        this.allEditions = editionDao.findAll();
 
         this.cpComparator = new CertifiedProductComparator();
         this.qmsComparator = new CertifiedProductQmsStandardComparator();
@@ -142,16 +144,16 @@ public class ListingService {
 
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
 
-        CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(listingId);
         CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
-        searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
+        searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(searchDetails.getId(),
+                searchDetails.getEdition() != null ? searchDetails.getEdition().getName() : null));
         sortSed(searchDetails);
 
         // get first-level parents and children
-        searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
-        searchDetails.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductChildren(dto.getId())));
+        searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(searchDetails.getId())));
+        searchDetails.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductChildren(searchDetails.getId())));
         return searchDetails;
     }
 
@@ -271,7 +273,6 @@ public class ListingService {
     }
 
     private List<CertifiedProduct> populateRelatedCertifiedProducts(List<CertifiedProductDTO> relatedCertifiedProductDTOs) throws EntityRetrievalException {
-
         return relatedCertifiedProductDTOs.stream()
                 .map(dto -> createCertifiedProductBasedOnDto(dto))
                 .sorted(cpComparator)
@@ -299,7 +300,7 @@ public class ListingService {
         if (editionId == null) {
             return null;
         }
-        Optional<CertificationEdition> certEdition = editionDao.findAll().stream()
+        Optional<CertificationEdition> certEdition = allEditions.stream()
                 .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
 

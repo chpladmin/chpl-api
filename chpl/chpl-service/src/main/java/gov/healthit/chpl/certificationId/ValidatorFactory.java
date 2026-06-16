@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
@@ -22,6 +23,8 @@ public class ValidatorFactory {
 
     private Map<String, Class<?>> certIdYearToValidatorClassMap;
     private CertificationCriterionService certificationCriterionService;
+    private CertificationIdYearCalculator certIdYearCalculator;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private ChplTeamNotifier chplTeamNotifier;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private Environment env;
@@ -29,11 +32,15 @@ public class ValidatorFactory {
 
     @Autowired
     public ValidatorFactory(CertificationCriterionService certificationCriterionService,
+            CertificationIdYearCalculator certIdYearCalculator,
+            CertificationResultUpToDateService certResultUpToDateService,
             ChplTeamNotifier chplTeamNotifier,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             Environment env,
             ErrorMessageUtil msgUtil) {
         this.certificationCriterionService = certificationCriterionService;
+        this.certIdYearCalculator = certIdYearCalculator;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.chplTeamNotifier = chplTeamNotifier;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.env = env;
@@ -44,12 +51,10 @@ public class ValidatorFactory {
         this.certIdYearToValidatorClassMap.put("2014/2015", Validator20142015.class);
         this.certIdYearToValidatorClassMap.put("2015", Validator2015.class);
         this.certIdYearToValidatorClassMap.put("2025", Validator2025.class);
-        //TODO: we will need to create 2026, 2027, etc validators before the cmsIdStartDayOfYear
-        //day comes for the current year (so before 9/1/2026 we need a 2026 validator)
-        //OCD-4928
-        //Added the below line to be able to test CMS IDs during the overlap window, but in reality
-        //we will need a new Validator2026 class.
-        this.certIdYearToValidatorClassMap.put("2026", Validator2025.class);
+        this.certIdYearToValidatorClassMap.put("2026", Validator2026.class);
+        //TODO: we will need to create 2027, 2028, etc validators before the cmsIdStartDayOfYear
+        //day comes for the current year (so before 9/1/20XX)
+        this.certIdYearToValidatorClassMap.put("2027", Validator2026.class);
     }
 
     public Validator getValidator(String certIdYear) throws InvalidArgumentsException {
@@ -87,6 +92,13 @@ public class ValidatorFactory {
                 || validatorClazz.equals(Validator2025.class)) {
             try {
                 result =  (Validator) validatorClazz.getDeclaredConstructors()[0].newInstance(certificationCriterionService);
+            } catch (Exception ex) {
+                LOGGER.error("Could not instantiate validator " + validatorClazz, ex);
+            }
+        } else if (validatorClazz.equals(Validator2026.class)) {
+            try {
+                result =  (Validator) validatorClazz.getDeclaredConstructors()[0].newInstance(
+                        certificationCriterionService, certIdYearCalculator, certResultUpToDateService);
             } catch (Exception ex) {
                 LOGGER.error("Could not instantiate validator " + validatorClazz, ex);
             }

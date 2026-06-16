@@ -6,17 +6,17 @@ import java.util.Arrays;
 public class Validator20142015 extends Validator {
 
     public Validator20142015() {
-        this.counts.put("criteriaRequired", 0); // This number is calculated
+        this.getCounts().setCriteriaRequired(0); // This number is calculated
                                                 // during the checks
-        this.counts.put("criteriaRequiredMet", 0);
-        this.counts.put("cqmsInpatientRequired", 0);
-        this.counts.put("cqmsInpatientRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryRequired", 0);
-        this.counts.put("cqmsAmbulatoryRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequired", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequiredMet", 0);
-        this.counts.put("domainsRequired", 0);
-        this.counts.put("domainsRequiredMet", 0);
+        this.getCounts().setCriteriaRequiredMet(0);
+        this.getCounts().setCqmsInpatientRequired(0);
+        this.getCounts().setCqmsInpatientRequiredMet(0);
+        this.getCounts().setCqmsAmbulatoryRequired(0);
+        this.getCounts().setCqmsAmbulatoryRequiredMet(0);
+        this.getCounts().setCqmsAmbulatoryCoreRequired(0);
+        this.getCounts().setCqmsAmbulatoryCoreRequiredMet(0);
+        this.getCounts().setDomainsRequired(0);
+        this.getCounts().setDomainsRequiredMet(0);
     }
 
     // **********************************************************************
@@ -36,7 +36,7 @@ public class Validator20142015 extends Validator {
     // Must meet all required criteria.
     // **********************************************************************
     protected boolean isCriteriaValid() {
-        this.counts.put("criteriaRequired", 7 + 3 + 8);
+        this.getCounts().setCriteriaRequired(7 + 3 + 8);
         // 7 categories 1 pt per category + 3 pts for cqm category + 8 pts for
         // ps category
 
@@ -53,10 +53,10 @@ public class Validator20142015 extends Validator {
                 || criteriaMetContainsCriterion("170.314 (a)(19)") || criteriaMetContainsCriterion("170.314 (a)(20)"))
                 || (criteriaMetContainsCriterion("170.315 (a)(1)") || criteriaMetContainsCriterion("170.315 (a)(2)")
                         || criteriaMetContainsCriterion("170.315 (a)(3)"))) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             cpoe = true;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(1)", "170.314 (a)(18)", "170.314 (a)(19)",
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(1)", "170.314 (a)(18)", "170.314 (a)(19)",
                     "170.314 (a)(20)", "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)")));
         }
 
@@ -64,45 +64,45 @@ public class Validator20142015 extends Validator {
         // 170.315(a)(5).
         if (criteriaMetContainsCriterion("170.314 (a)(3)") || criteriaMetContainsCriterion("170.315 (a)(5)")) {
             recordDemo = true;
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(3)", "170.315 (a)(5)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(3)", "170.315 (a)(5)")));
         }
 
         // (3)(i) Problem list at 45 CFR 170.314(a)(5); or (ii) 45 CFR
         // 170.315(a)(6).
         if (criteriaMetContainsCriterion("170.314 (a)(5)") || criteriaMetContainsCriterion("170.315 (a)(6)")) {
             problemList = true;
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(5)", "170.315 (a)(6)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(5)", "170.315 (a)(6)")));
         }
 
         // (4)(i) Medication list at 45 CFR 170.314(a)(6); or (ii) 45 CFR
         // 170.315(a)(7).
         if (criteriaMetContainsCriterion("170.314 (a)(6)") || criteriaMetContainsCriterion("170.315 (a)(7)")) {
             medList = true;
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(6)", "170.315 (a)(7)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(6)", "170.315 (a)(7)")));
         }
 
         // (5)(i) Medication allergy list 45 CFR 170.314(a)(7); or (ii) 45 CFR
         // 170.315(a)(8).
         if (criteriaMetContainsCriterion("170.314 (a)(7)") || criteriaMetContainsCriterion("170.315 (a)(8)")) {
             medAllergyList = true;
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(7)", "170.315 (a)(8)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(7)", "170.315 (a)(8)")));
         }
 
         // (6)(i) Clinical decision support at 45 CFR 170.314(a)(8); or (ii) 45
         // CFR 170.315(a)(9).
         if (criteriaMetContainsCriterion("170.314 (a)(8)") || criteriaMetContainsCriterion("170.315 (a)(9)")) {
             clinicalDecision = true;
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (a)(8)", "170.315 (a)(9)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (a)(8)", "170.315 (a)(9)")));
         }
 
         boolean critToc = this.isCriteriaTOCValid();
@@ -129,7 +129,7 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (b)(1)") && criteriaMetContainsCriterion("170.315 (h)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -139,7 +139,7 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (b)(1)") && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -148,7 +148,7 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -157,7 +157,7 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -165,7 +165,7 @@ public class Validator20142015 extends Validator {
         // (iv) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and (h)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -173,7 +173,7 @@ public class Validator20142015 extends Validator {
         // (vii) 45 CFR 170.314(b)(1), (b)(2), (h)(1), and 170.315(h)(2).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (h)(1)") && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -181,7 +181,7 @@ public class Validator20142015 extends Validator {
         // (viii) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and 170.315(h)(2).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -189,7 +189,7 @@ public class Validator20142015 extends Validator {
         // (xii) 45 CFR 170.314(b)(1), (b)(2), (h)(1), and 170.315(b)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (h)(1)") && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -197,7 +197,7 @@ public class Validator20142015 extends Validator {
         // (xiii) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and 170.315(b)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -205,7 +205,7 @@ public class Validator20142015 extends Validator {
         // (ii) 45 CFR 170.314(b)(1), (b)(2), and (h)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (h)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -213,7 +213,7 @@ public class Validator20142015 extends Validator {
         // (iii) 45 CFR 170.314(b)(1), (b)(2), and (b)(8).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.314 (b)(8)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -221,7 +221,7 @@ public class Validator20142015 extends Validator {
         // (vi) 45 CFR 170.314(b)(1), (b)(2), and 170.315(h)(2).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -229,7 +229,7 @@ public class Validator20142015 extends Validator {
         // (x) 45 CFR 170.314(b)(8), (h)(1), and 170.315(h)(2).
         if (criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -237,7 +237,7 @@ public class Validator20142015 extends Validator {
         // (xi) 45 CFR 170.314(b)(1), (b)(2), and 170.315(b)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")
                 && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -245,7 +245,7 @@ public class Validator20142015 extends Validator {
         // (xv) 45 CFR 170.314(b)(8), (h)(1), and 170.315(b)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
@@ -253,72 +253,72 @@ public class Validator20142015 extends Validator {
         // (xxi) 45 CFR 170.315(b)(1), (h)(1), and (h)(2)
         if (criteriaMetContainsCriterion("170.315 (b)(1)") && criteriaMetContainsCriterion("170.315 (h)(1)")
                 && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         // (v) 45 CFR 170.314(b)(8) and (h)(1).
         if (criteriaMetContainsCriterion("170.314 (b)(8)") && criteriaMetContainsCriterion("170.314 (h)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         // (i) 45 CFR 170.314(b)(1) and (2).
         if (criteriaMetContainsCriterion("170.314 (b)(1)") && criteriaMetContainsCriterion("170.314 (b)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         // (xviii) 45 CFR 170.314(h)(1) and 170.315(b)(1).
         if (criteriaMetContainsCriterion("170.314 (h)(1)") && criteriaMetContainsCriterion("170.315 (b)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         // (xix) 45 CFR 170.315(b)(1) and (h)(1).
         if (criteriaMetContainsCriterion("170.315 (b)(1)") && criteriaMetContainsCriterion("170.315 (h)(1)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         // (xx) 45 CFR 170.315(b)(1) and (h)(2).
         if (criteriaMetContainsCriterion("170.315 (b)(1)") && criteriaMetContainsCriterion("170.315 (h)(2)")) {
-            this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
+            this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + 1);
             flag = true;
             return true;
         }
 
         if (!flag) {
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
                     "170.315 (b)(1)", "170.315 (h)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
                     "170.315 (b)(1)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
                     "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)",
                     "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (h)(1)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (h)(1)", "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (h)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)", "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(1)", "170.315 (h)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.314 (h)(1)", "170.315 (b)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(1)")));
-            missingCombo.add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.314 (h)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (h)(1)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (h)(1)", "170.315 (b)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)", "170.315 (b)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (h)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(8)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)", "170.315 (b)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)", "170.315 (b)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(1)", "170.315 (h)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(8)", "170.314 (h)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (b)(1)", "170.314 (b)(2)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.314 (h)(1)", "170.315 (b)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(1)")));
+            getMissingCombo().add(new ArrayList<String>(Arrays.asList("170.315 (b)(1)", "170.315 (h)(2)")));
         }
 
         return false;
@@ -337,24 +337,24 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (c)(1)") || criteriaMetContainsCriterion("170.315 (c)(1)")) {
             ++cqmCritCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(1)", "170.315 (c)(1)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (c)(1)", "170.315 (c)(1)")));
         }
 
         // (2) 45 CFR 170.314(c)(2) or 170.315(c)(2)
         if (criteriaMetContainsCriterion("170.314 (c)(2)") || criteriaMetContainsCriterion("170.315 (c)(2)")) {
             ++cqmCritCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(2)", "170.315 (c)(2)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (c)(2)", "170.315 (c)(2)")));
         }
 
         // (3) 45 CFR 170.314(c)(3) or 170.315(c)(3)
         if (criteriaMetContainsCriterion("170.314 (c)(3)") || criteriaMetContainsCriterion("170.315 (c)(3)")) {
             ++cqmCritCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (c)(3)", "170.315 (c)(3)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (c)(3)", "170.315 (c)(3)")));
         }
 
-        this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + cqmCritCount);
+        this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + cqmCritCount);
 
         return (cqmCritCount == cqmCritRequired);
     }
@@ -373,59 +373,59 @@ public class Validator20142015 extends Validator {
         if (criteriaMetContainsCriterion("170.314 (d)(1)") || criteriaMetContainsCriterion("170.315 (d)(1)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(1)", "170.315 (d)(1)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(1)", "170.315 (d)(1)")));
         }
 
         // (2) 45 CFR 170.314(d)(2) or 170.315(d)(2);
         if (criteriaMetContainsCriterion("170.314 (d)(2)") || criteriaMetContainsCriterion("170.315 (d)(2)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(2)", "170.315 (d)(2)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(2)", "170.315 (d)(2)")));
         }
 
         // (3) 45 CFR 170.314(d)(3) or 170.315(d)(3);
         if (criteriaMetContainsCriterion("170.314 (d)(3)") || criteriaMetContainsCriterion("170.315 (d)(3)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(3)", "170.315 (d)(3)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(3)", "170.315 (d)(3)")));
         }
 
         // (4) 45 CFR 170.314(d)(4) or 170.315(d)(4);
         if (criteriaMetContainsCriterion("170.314 (d)(4)") || criteriaMetContainsCriterion("170.315 (d)(4)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(4)", "170.315 (d)(4)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(4)", "170.315 (d)(4)")));
         }
 
         // (5) 45 CFR 170.314(d)(5) or 170.315(d)(5);
         if (criteriaMetContainsCriterion("170.314 (d)(5)") || criteriaMetContainsCriterion("170.315 (d)(5)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(5)", "170.315 (d)(5)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(5)", "170.315 (d)(5)")));
         }
 
         // (6) 45 CFR 170.314(d)(6) or 170.315(d)(6);
         if (criteriaMetContainsCriterion("170.314 (d)(6)") || criteriaMetContainsCriterion("170.315 (d)(6)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(6)", "170.315 (d)(6)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(6)", "170.315 (d)(6)")));
         }
 
         // (7) 45 CFR 170.314(d)(7) or 170.315(d)(7);
         if (criteriaMetContainsCriterion("170.314 (d)(7)") || criteriaMetContainsCriterion("170.315 (d)(7)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(7)", "170.315 (d)(7)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(7)", "170.315 (d)(7)")));
         }
 
         // (8) 45 CFR 170.314(d)(8) or 170.315(d)(8);
         if (criteriaMetContainsCriterion("170.314 (d)(8)") || criteriaMetContainsCriterion("170.315 (d)(8)")) {
             ++psCritMetCount;
         } else {
-            missingOr.add(new ArrayList<String>(Arrays.asList("170.314 (d)(8)", "170.315 (d)(8)")));
+            getMissingOr().add(new ArrayList<String>(Arrays.asList("170.314 (d)(8)", "170.315 (d)(8)")));
         }
 
-        this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + psCritMetCount);
+        this.getCounts().setCriteriaRequiredMet(this.getCounts().getCriteriaRequiredMet() + psCritMetCount);
 
         return (psCritMetCount == psCritMetRequired);
     }
