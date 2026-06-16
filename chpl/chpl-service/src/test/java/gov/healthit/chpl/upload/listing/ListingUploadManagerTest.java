@@ -24,6 +24,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockMultipartFile;
 
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Address;
@@ -107,7 +108,8 @@ public class ListingUploadManagerTest {
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil,
                 Mockito.mock(BaselineStandardAsOfCertificationDayNormalizer.class),
-                Mockito.mock(BaselineStandardAsOfTodayNormalizer.class));
+                Mockito.mock(BaselineStandardAsOfTodayNormalizer.class),
+                Mockito.mock(CertificationResultUpToDateService.class));
     }
 
     @Test

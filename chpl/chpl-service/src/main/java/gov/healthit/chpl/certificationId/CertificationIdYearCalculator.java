@@ -35,6 +35,11 @@ public class CertificationIdYearCalculator {
                 MonthDay.parse(cmsIdEndDayOfOverlap, monthDayFormatter));
     }
 
+    public LocalDate getCmsIdStartDayOfCurrentYear() {
+        String currentCertIdYear = getCurrentCertIdYear();
+        return LocalDate.parse(annualCertIdChangeMmDd + "/" + currentCertIdYear, dtFormatter);
+    }
+
     public LocalDate getStartDateOfNextCmsIdYear() {
         LocalDate nextCmsIdYear = cmsIdOverlapRange.getLeft().atYear(LocalDate.now().getYear());
         if (nextCmsIdYear.isBefore(LocalDate.now())) {

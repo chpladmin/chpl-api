@@ -26,16 +26,20 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private CertificationResultDetailsDAO certificationResultDetailsDAO;
+    private CertificationResultDetailsDAO certificationResultDetailsDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private CertificationResultComparator certResultComparator;
 
     @Autowired
-    public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            CertificationResultDetailsDAO certificationResultDetailsDAO,
+    public CertificationResultService(CertificationResultRules certRules,
+            CertificationResultManager certResultManager,
+            CertificationResultDetailsDAO certificationResultDetailsDao,
+            CertificationResultUpToDateService certResultUpToDateService,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.certificationResultDetailsDAO = certificationResultDetailsDAO;
+        this.certificationResultDetailsDao = certificationResultDetailsDao;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.certResultComparator = certResultComparator;
     }
 
@@ -46,21 +50,34 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
+    public List<CertificationResult> getCertificationResultsWithoutSed(Long listingId) throws EntityRetrievalException {
+        return getCertificationResultDetailsDTOs(listingId).stream()
+                .map(dto -> getCertificationResultWithoutSed(dto))
+                .sorted(certResultComparator)
+                .collect(Collectors.toList());
+    }
+
     private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
-        certificationResultDetailsDTOs = certificationResultDetailsDAO.getAllCertResultsForListing(id);
+        certificationResultDetailsDTOs = certificationResultDetailsDao.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;
     }
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
-            CertifiedProductSearchDetails searchDetails) {
+            CertifiedProductSearchDetails listing) {
 
         CertificationResult result = new CertificationResult(certResult, certRules);
 
         CertificationCriterion criteria = result.getCriterion();
-        populateSed(certResult, searchDetails, result, criteria);
-        populateTestTasks(certResult, searchDetails, criteria);
+        populateSed(certResult, listing, result, criteria);
+        populateTestTasks(certResult, listing, criteria);
+        populateUpToDate(result);
+        return result;
+    }
 
+    private CertificationResult getCertificationResultWithoutSed(CertificationResultDetailsDTO certResult) {
+        CertificationResult result = new CertificationResult(certResult, certRules);
+        populateUpToDate(result);
         return result;
     }
 
@@ -74,7 +91,7 @@ public class CertificationResultService {
                     if (newTestTask.matches(currTestTask)) {
                         alreadyExists = true;
                         if (!currTestTask.getCriteria().add(criteria)) {
-                            LOGGER.warn("Cannot add criteria " + criteria.getNumber() + " to test task " + currTestTask.getId() + " for listing " + searchDetails.getId() + " because it already exists.");
+                            LOGGER.debug("Cannot add criteria " + criteria.getNumber() + " to test task " + currTestTask.getId() + " for listing " + searchDetails.getId() + " because it already exists.");
                         }
                     }
                 }
@@ -82,7 +99,7 @@ public class CertificationResultService {
                     newTestTask.getCriteria().add(criteria);
                     searchDetails.getSed().getTestTasks().add(newTestTask);
                 } else {
-                    LOGGER.warn("Not adding test task " + newTestTask.getId() + " to the listing " + searchDetails.getId() + " because one with the same data has already been found.");
+                    LOGGER.debug("Not adding test task " + newTestTask.getId() + " to the listing " + searchDetails.getId() + " because one with the same data has already been found.");
                 }
             }
         }
@@ -108,5 +125,9 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
+
+    private void populateUpToDate(CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 }

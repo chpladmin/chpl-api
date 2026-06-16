@@ -155,7 +155,7 @@ public class StandardValidator {
     private boolean isStandardDuplicateOnEdit(Standard standard) throws EntityRetrievalException {
         String updatedCitationText = standard.getRegulatoryTextCitation() != null ? standard.getRegulatoryTextCitation() : "";
 
-        return standardDAO.getAllStandardCriteriaMap().stream()
+        return standardDAO.getAllStandardCriteriaMaps().stream()
                 .filter(map -> {
                         String origCitationText = map.getStandard().getRegulatoryTextCitation() != null ? map.getStandard().getRegulatoryTextCitation() : "";
 
@@ -169,7 +169,7 @@ public class StandardValidator {
     private boolean isStandardDuplicateOnAdd(Standard standard) throws EntityRetrievalException {
         String updatedCitationText = standard.getRegulatoryTextCitation() != null ? standard.getRegulatoryTextCitation() : "";
 
-        return standardDAO.getAllStandardCriteriaMap().stream()
+        return standardDAO.getAllStandardCriteriaMaps().stream()
                 .filter(map -> {
                         String origCitationText = map.getStandard().getRegulatoryTextCitation() != null ? map.getStandard().getRegulatoryTextCitation() : "";
 
