@@ -7,12 +7,10 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
-            if (details.getSelfDeveloper() == null) {
-                getMessages().add(getErrorMessage("changeRequest.demographics.selfDeveloper.invalid"));
-                return false;
-            }
+        ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
+        if (details.getSelfDeveloper() == null) {
+            getMessages().add(getErrorMessage("changeRequest.demographics.selfDeveloper.invalid"));
+            return false;
         }
         return true;
     }

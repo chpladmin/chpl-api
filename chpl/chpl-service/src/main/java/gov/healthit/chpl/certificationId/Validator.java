@@ -1,50 +1,67 @@
 package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 
 public abstract class Validator {
-    protected Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>(100);
-    protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
-    protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
+    private Set<CertificationCriterion> criteriaMet = new LinkedHashSet<CertificationCriterion>();
+    private Set<String> cqmsMet = new LinkedHashSet<String>();
+    private Set<String> domainsMet = new LinkedHashSet<String>();
+    private List<CertifiedProductDetailsForCertificationId> listings = new ArrayList<CertifiedProductDetailsForCertificationId>();
 
     // missing criteria where all in the set are required
-    protected ArrayList<String> missingAnd = new ArrayList<String>();
+    private ArrayList<String> missingAnd = new ArrayList<String>();
+    // criteria are present but not up-to-date
+    private ArrayList<String> missingUpToDate = new ArrayList<String>();
     // missing 1 criteria from each of the following sets
-    protected List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingOr = new ArrayList<ArrayList<String>>();
     // missing at least one of the following combinations of criteria
-    protected List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
+    private List<ArrayList<String>> missingCombo = new ArrayList<ArrayList<String>>();
     // missing X criteria from the OR list of criteria
-    protected List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
+    private List<TreeMap<String, ArrayList<String>>> missingXOr = new ArrayList<TreeMap<String, ArrayList<String>>>();
 
-    protected Map<String, Integer> percents = new HashMap<String, Integer>();
-    protected Map<String, Integer> counts = new HashMap<String, Integer>();
-    protected boolean valid = false;
+    private CertificationIdMetPercentages percents = new CertificationIdMetPercentages();
+    private CertificationIdRequirements counts = new CertificationIdRequirements();
+    private boolean valid = false;
 
-    public Map<String, Integer> getCounts() {
+    public CertificationIdRequirements getCounts() {
         return this.counts;
     }
 
-    public Map<String, Integer> getPercents() {
+    public CertificationIdMetPercentages getPercents() {
         return this.percents;
     }
 
-    public Map<CertificationCriterion, Integer> getCriteriaMet() {
+    public Set<CertificationCriterion> getCriteriaMet() {
         return this.criteriaMet;
     }
 
-    public Map<String, Integer> getCqmsMet() {
+    public List<CertifiedProductDetailsForCertificationId> getListings() {
+        return this.listings;
+    }
+
+    public Set<String> getCqmsMet() {
         return this.cqmsMet;
     }
 
     public ArrayList<String> getMissingAnd() {
         return missingAnd;
+    }
+
+    public ArrayList<String> getMissingUpToDate() {
+        return missingUpToDate;
     }
 
     public List<ArrayList<String>> getMissingOr() {
@@ -59,7 +76,7 @@ public abstract class Validator {
         return missingXOr;
     }
 
-    public Map<String, Integer> getDomainsMet() {
+    public Set<String> getDomainsMet() {
         return this.domainsMet;
     }
 
@@ -75,93 +92,62 @@ public abstract class Validator {
 
     protected abstract boolean isDomainsValid();
 
-    // **********************************************************************
-    // validate
-    //
-    // **********************************************************************
-    public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
-        this.collectMetData(certDtos, cqmDtos);
+    public boolean validate() {
+        this.collectMetData();
         this.valid = this.onValidate();
         this.calculatePercentages();
         return this.isValid();
     }
 
-    // **********************************************************************
-    // collectMetData
-    //
-    // **********************************************************************
-    protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos) {
-
+    protected void collectMetData() {
         // Collect criteria met
-        if (null != certDtos) {
-            criteriaMet = new HashMap<CertificationCriterion, Integer>(certDtos.size());
-            for (CertificationCriterion certDetail : certDtos) {
-                criteriaMet.put(certDetail, 1);
-            }
+        if (!CollectionUtils.isEmpty(listings)) {
+            criteriaMet = listings.stream()
+                    .flatMap(listing -> listing.getCertificationResults().stream())
+                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
+                    .map(certResult -> certResult.getCriterion())
+                    .collect(Collectors.toSet());
         }
 
         // Collect cqms and domains met
-        if (null != cqmDtos) {
-            cqmsMet = new HashMap<String, Integer>(cqmDtos.size());
-            for (CQMMetDTO cqmDetail : cqmDtos) {
-                // See what version we've already met...
-                Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
-                if (null == verMet) {
-                    verMet = Integer.valueOf(0);
-                }
+        if (!CollectionUtils.isEmpty(listings)) {
+            List<CQMResultDetails> attestedCqms = listings.stream()
+                .flatMap(listing -> listing.getCqmResults().stream())
+                .filter(cqmResult -> cqmResult.getSuccess() || !CollectionUtils.isEmpty(cqmResult.getSuccessVersions()))
+                .collect(Collectors.toList());
 
-                // ...store the version that's higher.
-                Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
-                if (ver > verMet) {
-                    cqmsMet.put(cqmDetail.getCmsId(), ver);
-                }
+            cqmsMet = new LinkedHashSet<String>(attestedCqms.size());
+            for (CQMResultDetails cqmDetail : attestedCqms) {
+                cqmsMet.add(cqmDetail.getCmsId());
 
-                if (null != cqmDetail.getDomain()) {
-                    domainsMet.put(cqmDetail.getDomain(), 1);
+                if (!StringUtils.isEmpty(cqmDetail.getDomain())) {
+                    domainsMet.add(cqmDetail.getDomain());
                 }
             }
         }
-
     }
 
-    // **********************************************************************
-    // calculatePercentages
-    //
-    // **********************************************************************
     protected void calculatePercentages() {
-        this.percents.put(
-                "criteriaMet",
-                (0 == this.counts.get("criteriaRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("criteriaRequiredMet") * 100.0)
-                                / this.counts.get("criteriaRequired")), 100));
-        this.percents.put(
-                "cqmDomains",
-                (0 == this.counts.get("domainsRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("domainsRequiredMet") * 100.0)
-                                / this.counts.get("domainsRequired")), 100));
-        this.percents.put(
-                "cqmsInpatient",
-                (0 == this.counts.get("cqmsInpatientRequired")) ? 0 : Math.min(
-                        (int) Math.floor((this.counts.get("cqmsInpatientRequiredMet") * 100.0)
-                                / this.counts.get("cqmsInpatientRequired")), 100));
-        this.percents
-                .put("cqmsAmbulatory",
-                        (0 == this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")) ? 0
-                                : Math.min(
-                                        (int) Math.floor(((this.counts.get("cqmsAmbulatoryCoreRequiredMet") + Math.min(
-                                                this.counts.get("cqmsAmbulatoryRequiredMet"),
-                                                this.counts.get("cqmsAmbulatoryRequired"))) / (double) (this.counts
-                                                .get("cqmsAmbulatoryRequired") + this.counts
-                                                .get("cqmsAmbulatoryCoreRequired"))) * 100.0), 100));
+        this.percents.setCriteriaMet(this.counts.getCriteriaRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getCriteriaRequiredMet() * 100.0) / this.counts.getCriteriaRequired()), 100));
+        this.percents.setCqmDomains(this.counts.getDomainsRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getDomainsRequiredMet() * 100.0) / this.counts.getDomainsRequired()), 100));
+        this.percents.setCqmsInpatient(this.counts.getCqmsInpatientRequired() == 0
+                ? 0
+                : Math.min((int) Math.floor((this.counts.getCqmsInpatientRequiredMet() * 100.0) / this.counts.getCqmsInpatientRequired()), 100));
+
+        this.percents.setCqmsAmbulatory(this.counts.getCqmsAmbulatoryRequired() + this.counts.getCqmsAmbulatoryCoreRequired() == 0
+                ? 0
+                : Math.min(
+                        (int) Math.floor((this.counts.getCqmsAmbulatoryCoreRequiredMet()
+                                        + Math.min(this.counts.getCqmsAmbulatoryRequiredMet(), (this.counts.getCqmsAmbulatoryRequired()))
+                                / (double) (this.counts.getCqmsAmbulatoryRequired() + this.counts.getCqmsAmbulatoryCoreRequired())) * 100.0), 100));
     }
 
-    // **********************************************************************
-    // calculateAttestationYear
-    //
-    // **********************************************************************
     public static String calculateAttestationYear(SortedSet<Integer> editionYears) {
         String attYearString = null;
-
         if ((null != editionYears) && (editionYears.size() > 0)) {
 
             // Get the lowest year...
@@ -173,22 +159,17 @@ public abstract class Validator {
                 attYearString += "/" + editionYears.last().toString();
             }
         }
-
         return attYearString;
     }
 
     protected Boolean criteriaMetContainsCriterion(String criterion) {
-        Boolean found = false;
-        for (CertificationCriterion cert : criteriaMet.keySet()) {
-            if (cert.getNumber().equalsIgnoreCase(criterion)) {
-                found = true;
-            }
-        }
-        return found;
+        return criteriaMet.stream()
+                .filter(cert -> cert.getNumber().equals(criterion))
+                .findAny().isPresent();
     }
 
     protected Boolean criteriaMetContainsCriterion(CertificationCriterion criterion) {
-        return criteriaMet.keySet().stream()
+        return criteriaMet.stream()
             .filter(cert -> cert.getId().equals(criterion.getId()))
             .findAny().isPresent();
     }

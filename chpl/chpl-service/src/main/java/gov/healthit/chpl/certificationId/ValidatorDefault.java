@@ -3,16 +3,6 @@ package gov.healthit.chpl.certificationId;
 public class ValidatorDefault extends Validator {
 
     public ValidatorDefault() {
-        this.counts.put("criteriaRequired", 0);
-        this.counts.put("criteriaRequiredMet", 0);
-        this.counts.put("cqmsInpatientRequired", 0);
-        this.counts.put("cqmsInpatientRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryRequired", 0);
-        this.counts.put("cqmsAmbulatoryRequiredMet", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequired", 0);
-        this.counts.put("cqmsAmbulatoryCoreRequiredMet", 0);
-        this.counts.put("domainsRequired", 0);
-        this.counts.put("domainsRequiredMet", 0);
     }
 
     // **********************************************************************

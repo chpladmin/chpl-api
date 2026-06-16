@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
@@ -118,9 +117,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return results;
     }
 
-    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year)
-            throws EntityRetrievalException {
-        CertificationIdEntity entity = getEntityByListings(listings, year);
+    public CertificationIdDTO getByListings(List<Long> listingIds, String year) {
+        CertificationIdEntity entity = getEntityByListings(listingIds, year);
         if (entity == null) {
             return null;
         }
@@ -179,21 +177,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<CQMMetDTO> getCqmsMetByListingIds(List<Long> listingIds) {
-        List<CQMMetDTO> cmqsMet = new ArrayList<CQMMetDTO>();
-        if (!CollectionUtils.isEmpty(listingIds)) {
-            Query query = entityManager.createQuery(
-                    "SELECT new gov.healthit.chpl.certificationId.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
-                            + "FROM CQMResultDetailsEntity AS crde"
-                            + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :listingIds "
-                            + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
-            query.setParameter("listingIds", listingIds);
-            cmqsMet = query.getResultList();
-        }
-
-        return cmqsMet;
-    }
-
     private List<CertificationIdEntity> getAllEntities() {
         List<CertificationIdEntity> result = entityManager
                 .createQuery("from CertificationIdEntity ", CertificationIdEntity.class).getResultList();
@@ -241,11 +224,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private CertificationIdEntity getEntityByListings(List<CertifiedProductDetailsDTO> listings, String year)
-            throws EntityRetrievalException {
-        List<Long> productIds = listings.stream()
-                .map(listing -> listing.getId())
-                .toList();
+    private CertificationIdEntity getEntityByListings(List<Long> listingIds, String year) {
         CertificationIdEntity entity = null;
 
         // Lookup the EHR Certification ID record by:
@@ -276,8 +255,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
                 + "ORDER BY creationDate DESC ",
                 CertificationIdEntity.class);
 
-        query.setParameter("productIds", productIds);
-        query.setParameter("productCount", Long.valueOf(productIds.size()));
+        query.setParameter("productIds", listingIds);
+        query.setParameter("productCount", Long.valueOf(listingIds.size()));
         query.setParameter("year", year);
         List<CertificationIdEntity> results = query.getResultList();
         if (!CollectionUtils.isEmpty(results) && results.size() > 1) {
@@ -338,7 +317,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
 
     private String getYearPartOfNewCertIdString(String year) {
         LocalDate now = LocalDate.now();
-        //TODO: Remove with //OCD-4928
         if (now.isBefore(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay())) {
             return "00" + year.substring(year.length() - 2);
         }

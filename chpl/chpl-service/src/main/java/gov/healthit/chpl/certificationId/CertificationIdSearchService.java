@@ -3,7 +3,11 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -11,33 +15,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertificationIdException;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
 public class CertificationIdSearchService {
+    private static final int THREAD_POOL_SIZE = 2;
     private CertificationIdManager certificationIdManager;
-    private CertifiedProductManager certifiedProductManager;
+    private CertifiedProductDetailsManager cpdManager;
     private CertificationIdYearCalculator certIdYearCalculator;
     private ValidatorFactory validatorFactory;
 
     @Autowired
     public CertificationIdSearchService(CertificationIdManager certificationIdManager,
-            CertifiedProductManager certifiedProductManager,
+            CertifiedProductDetailsManager cpdManager,
             CertificationIdYearCalculator certIdYearCalculator,
             ValidatorFactory validatorFactory) {
         this.certificationIdManager = certificationIdManager;
-        this.certifiedProductManager = certifiedProductManager;
+        this.cpdManager = cpdManager;
         this.certIdYearCalculator = certIdYearCalculator;
         this.validatorFactory = validatorFactory;
     }
@@ -56,29 +57,23 @@ public class CertificationIdSearchService {
 
                 // Find the listings associated with the Cert ID
                 List<Long> listingIds = certificationIdManager.getListingIdsByCertificationId(certId.getId());
-                List<CertifiedProductDetailsDTO> listingDtos = certifiedProductManager.getDetailsByIds(listingIds);
+                List<CertifiedProductDetailsForCertificationId> listings = getAllListingDetails(listingIds);
                 // Add product data to results
-                results.setProducts(listingDtos.stream()
+                results.setProducts(listings.stream()
                         .map(listing -> new CertificationIdLookupResults.Product(listing))
                         .collect(Collectors.toList()));
 
                 // Add criteria and cqms met to results
                 if (includeCriteria || includeCqms) {
                     Validator validator = this.validatorFactory.getValidator(certId.getYear());
-
-                    // Lookup Criteria for Validating
-                    List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByListingIds(listingIds);
-
-                    // Lookup CQMs for Validating
-                    List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByListingIds(listingIds);
-
-                    boolean isValid = validator.validate(criteria, cqmDtos);
+                    validator.getListings().addAll(listings);
+                    boolean isValid = validator.validate();
                     if (isValid) {
                         if (includeCriteria) {
-                            results.setCriteria(validator.getCriteriaMet().keySet());
+                            results.setCriteria(validator.getCriteriaMet());
                         }
                         if (includeCqms) {
-                            results.setCqms(validator.getCqmsMet().keySet());
+                            results.setCqms(validator.getCqmsMet());
                         }
                     }
                 }
@@ -93,21 +88,26 @@ public class CertificationIdSearchService {
         return results;
     }
 
-    public CertificationIdResults findCertificationByListingIds(List<Long> listingIds, String certificationYear, Boolean create)
-            throws InvalidArgumentsException, CertificationIdException {
+    public CertificationIdResults createCertificationId(List<Long> listingIds, String certificationYear)
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
+        List<CertificationIdResults> certIdResults = findCertificationByListingIds(listingIds, Stream.of(certificationYear).toList(), true);
+        if (!CollectionUtils.isEmpty(certIdResults)) {
+            return certIdResults.get(0);
+        }
+        return null;
+    }
+
+    public List<CertificationIdResults> findCertificationByListingIds(List<Long> listingIds, List<String> certificationYears, Boolean create)
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         if (CollectionUtils.isEmpty(listingIds)) {
-            return null;
+            throw new InvalidArgumentsException("At least one listing ID is required.");
+        } else if (CollectionUtils.isEmpty(certificationYears)) {
+            throw new InvalidArgumentsException("At least one certificaiton year is required.");
         }
 
-        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
-        try {
-            listings = certifiedProductManager.getDetailsByIds(listingIds);
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
-
+        List<CertifiedProductDetailsForCertificationId> listings = getAllListingDetails(listingIds);
         if (create) {
-            Optional<CertifiedProductDetailsDTO> invalidListing = listings.stream()
+            Optional<CertifiedProductDetailsForCertificationId> invalidListing = listings.stream()
                 .filter(listing -> !isEditionlessOrCuresUpdate(listing))
                 .findAny();
             if (invalidListing.isPresent()) {
@@ -115,57 +115,101 @@ public class CertificationIdSearchService {
             }
         }
 
-        // Add products to results
-        CertificationIdResults results = new CertificationIdResults();
-        results.setProducts(listings.stream()
+        List<CertificationIdResults> resultsForAllYears = certificationYears.stream()
+            .map(certYear -> {
+                try {
+                    return findCertificationIdByListings(listings, certYear, create);
+                } catch (Exception ex) {
+                    LOGGER.error("Unable to find certification ID By Listings", ex);
+                    return null;
+                }
+            })
+            .filter(certIdResult -> certIdResult != null)
+            .collect(Collectors.toList());
+
+        return resultsForAllYears;
+    }
+
+    private CertificationIdResults findCertificationIdByListings(List<CertifiedProductDetailsForCertificationId> listings, String certYear, boolean create)
+        throws InvalidArgumentsException, CertificationIdException {
+     // Add products to results
+        CertificationIdResults result = new CertificationIdResults();
+        result.setProducts(listings.stream()
                 .map(listing -> new CertificationIdResults.Product(listing))
                 .collect(Collectors.toList()));
         //get the "year" for this cms id
-        results.setYear(!StringUtils.isEmpty(certificationYear) ? certificationYear : certIdYearCalculator.getCurrentCertIdYear());
+        result.setYear(!StringUtils.isEmpty(certYear) ? certYear : certIdYearCalculator.getCurrentCertIdYear());
 
         // Validate the collection
         //this will throw an error if an invalid year is passed in
-        Validator validator = this.validatorFactory.getValidator(results.getYear());
+        Validator validator = this.validatorFactory.getValidator(result.getYear());
+        validator.getListings().addAll(listings);
 
-        // Lookup Criteria for Validating
-        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByListingIds(listingIds);
-
-        // Lookup CQMs for Validating
-        List<CQMMetDTO> cqms = certificationIdManager.getCqmsMetByListingIds(listingIds);
-
-        boolean isValid = validator.validate(criteria, cqms);
-        results.setValid(isValid);
-        results.setMetPercentages(validator.getPercents());
-        results.setMetCounts(validator.getCounts());
-        results.setMissingCombo(validator.getMissingCombo());
-        results.setMissingOr(validator.getMissingOr());
-        results.setMissingAnd(validator.getMissingAnd());
-        results.setMissingXOr(validator.getMissingXOr());
+        boolean isValid = validator.validate();
+        result.setValid(isValid);
+        result.setMetPercentages(validator.getPercents());
+        result.setMetCounts(validator.getCounts());
+        result.setMissingCombo(validator.getMissingCombo());
+        result.setMissingOr(validator.getMissingOr());
+        result.setMissingAnd(validator.getMissingAnd());
+        result.setMissingXOr(validator.getMissingXOr());
+        result.setMissingUpToDate(validator.getMissingUpToDate());
 
         // Lookup CERT ID
         if (validator.isValid()) {
-            CertificationIdDTO existingCertId = null;
-            try {
-                existingCertId = certificationIdManager.getByListings(listings, results.getYear());
-                if (existingCertId != null) {
-                    results.setEhrCertificationId(existingCertId.getCertificationId());
-                } else {
-                    if ((create) && (results.isValid())) {
-                        // Generate a new ID
-                        existingCertId = certificationIdManager.create(listingIds, results.getYear());
-                        results.setEhrCertificationId(existingCertId.getCertificationId());
-                    }
+            List<Long> listingIds = listings.stream()
+                    .map(listing -> listing.getId())
+                    .toList();
+            CertificationIdDTO existingCertId = certificationIdManager.getByListings(listingIds, result.getYear());
+            if (existingCertId != null) {
+                result.setEhrCertificationId(existingCertId.getCertificationId());
+            } else if (create && result.isValid()) {
+                // Generate a new ID
+                try {
+                    existingCertId = certificationIdManager.create(listingIds, result.getYear());
+                    result.setEhrCertificationId(existingCertId.getCertificationId());
+                } catch (Exception ex) {
+                    LOGGER.error("Could not create a CMS ID", ex);
+                    throw new CertificationIdException("There was an error creating the CMS ID.");
                 }
-            } catch (EntityRetrievalException | EntityCreationException | ActivityException ex) {
-                LOGGER.error("Unable to look up cert id by listings", ex);
-                throw new CertificationIdException("Unable to retrieve a Certification ID.");
             }
         }
-        return results;
+        return result;
     }
 
-    private boolean isEditionlessOrCuresUpdate(CertifiedProductDetailsDTO listing) {
-        if (StringUtils.isEmpty(listing.getYear()) && listing.getCuresUpdate() == null) {
+    private List<CertifiedProductDetailsForCertificationId> getAllListingDetails(List<Long> listingIds) {
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        List<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>>();
+        listingIds.stream()
+            .forEach(listingId -> futures.add(CompletableFuture
+                    .supplyAsync(() -> getCertifiedProductDetailsForCertificationId(listingId), executorService)));
+
+        CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
+        CompletableFuture<List<Optional<CertifiedProductDetailsForCertificationId>>> listFuture = CompletableFuture.allOf(futuresArray)
+                .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+        List<CertifiedProductDetailsForCertificationId> listings = listFuture.join().stream()
+                .filter(opt -> opt.isPresent())
+                .map(opt -> opt.get())
+                .collect(Collectors.toList());
+        try {
+            executorService.close();
+        } catch (Exception ex) {
+            LOGGER.error("Executor service did not properly close", ex);
+        }
+        return listings;
+    }
+
+    protected Optional<CertifiedProductDetailsForCertificationId> getCertifiedProductDetailsForCertificationId(Long listingId) {
+        try {
+            return Optional.of(cpdManager.getCertifiedProductDetailsForCertificationId(listingId));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
+            return Optional.empty();
+        }
+    }
+
+    private boolean isEditionlessOrCuresUpdate(CertifiedProductDetailsForCertificationId listing) {
+        if (listing.getYear() == null && listing.getCuresUpdate() == null) {
             return true;
         }
         return listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())

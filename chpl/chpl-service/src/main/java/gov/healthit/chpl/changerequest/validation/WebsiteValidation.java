@@ -9,20 +9,18 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class WebsiteValidation extends ValidationRule<ChangeRequestValidationContext> {
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
-            boolean websiteComponentsValid = true;
-            if (!isWebsitePopulated(details.getWebsite())) {
-                getMessages().add(getErrorMessage("developer.websiteRequired"));
-                websiteComponentsValid = false;
-            } else if (!isWebsiteFormatValid(context.getValidationUtils(), details.getWebsite())) {
-                getMessages().add(getErrorMessage("developer.websiteIsInvalid"));
-                websiteComponentsValid = false;
-            }
-            return websiteComponentsValid;
+        ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
+        boolean websiteComponentsValid = true;
+        if (!isWebsitePopulated(details.getWebsite())) {
+            getMessages().add(getErrorMessage("developer.websiteRequired"));
+            websiteComponentsValid = false;
+        } else if (!isWebsiteFormatValid(context.getValidationUtils(), details.getWebsite())) {
+            getMessages().add(getErrorMessage("developer.websiteIsInvalid"));
+            websiteComponentsValid = false;
         }
-        return true;
+        return websiteComponentsValid;
     }
+
     private boolean isWebsitePopulated(String website) {
         return StringUtils.isNotEmpty(website);
     }

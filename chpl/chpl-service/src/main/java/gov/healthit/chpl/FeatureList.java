@@ -4,6 +4,7 @@ public final class FeatureList {
     private FeatureList() {
     }
 
+    public static final String CMS_DISABLED = "cms-disabled";
     public static final String DEMOGRAPHIC_CHANGE_REQUEST = "demographic-change-request";
     public static final String INSIGHTS_DISPLAY = "insights-display";
     public static final String SERVICE_BASE_URL_LIST_CHANGE_REQUEST = "sbul-change-request";

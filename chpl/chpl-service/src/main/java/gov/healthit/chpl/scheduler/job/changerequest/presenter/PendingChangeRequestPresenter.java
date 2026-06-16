@@ -42,6 +42,7 @@ public class PendingChangeRequestPresenter extends ChangeRequestCsvPresenter {
                 DEV_CONTACT_PHONE_HEADING,
                 CR_TYPE_HEADING,
                 CR_STATUS_HEADING,
+                CR_SUBMITTER_EMAIL_HEADING,
                 CR_CREATED_DATE_HEADING,
                 CR_DAYS_OPEN_HEADING,
                 CR_LAST_UPDATED_DATE_HEADING,
@@ -68,6 +69,7 @@ public class PendingChangeRequestPresenter extends ChangeRequestCsvPresenter {
         }
         row.add(changeRequest.getChangeRequestType().getName());
         row.add(changeRequest.getCurrentStatus().getChangeRequestStatusType().getName());
+        row.add(getSubmitterEmail(changeRequest));
         row.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDateTime()));
         row.add(calculateDaysOpen(changeRequest));
         row.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDateTime()));
