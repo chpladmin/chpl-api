@@ -338,7 +338,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         Query query = entityManager.createQuery("SELECT DISTINCT surv, listing, developer "
                 + "FROM SurveillanceEntity surv, ListingSearchEntity listing, DeveloperSearchResultEntity developer "
-                + "WHERE (surv.endDate IS NULL OR surv.startDate >= :oneYearAgo) "
+                + "WHERE (surv.endDate IS NULL OR surv.endDate >= :oneYearAgo) "
                 + "AND surv.certifiedProductId = listing.id "
                 + "AND listing.developerId = developer.id "
                 + "AND developer.currentActiveListingCount > 0 "
