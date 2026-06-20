@@ -278,6 +278,11 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
+    public DirectReviewCounts getDirectReviews() {
+        return directReviewReportsService.getDirectReviewCounts();
+    }
+
+    @Synchronized("lock")
     public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
         return criteriaAttributeReportService;
     }

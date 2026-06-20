@@ -426,6 +426,17 @@ public class ReportDataController {
         return reportDataManager.getDirectReviewCounts();
     }
 
+    @Operation(summary = "Retrieves the data used to generate the ONC Direct Review report.",
+            description = "Retrieves the data used to generate the ONC Direct Review report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/direct-reviews", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DirectReviewCounts getDirectReviews() {
+        return reportDataManager.getDirectReviewCounts();
+    }
+
 
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
