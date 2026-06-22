@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.report.attestation.AttestationReportService;
 import gov.healthit.chpl.report.criteriaattribute.CriteriaAttributeReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -278,8 +279,8 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public DirectReviewCounts getDirectReviews() {
-        return directReviewReportsService.getDirectReviewCounts();
+    public List<DirectReview> getDirectReviews() {
+        return directReviewReportsService.getDirectReviews();
     }
 
     @Synchronized("lock")
