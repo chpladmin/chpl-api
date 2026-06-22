@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,14 @@ public class ServiceBaseUrlListReportService {
         this.certificationBodyManager = certificationBodyManager;
     }
 
-    public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
+    public List<UrlUptimeMonitorEx> getUrlUptimeMonitorsWithinTheLastYear() {
+        LocalDateTime minTestCheckTime = LocalDateTime.now().minusYears(1).truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime maxTestCheckTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+
+        LOGGER.info("Finding URL Uptime Monitor Tests that happened between " + minTestCheckTime + " and " + maxTestCheckTime);
+        List<UrlUptimeMonitorTest> testsBetweenDates = urlUptimeMonitorTestDAO.getChplUptimeMonitorTestsBetweenDates(minTestCheckTime, maxTestCheckTime);
+        LOGGER.info("Got " + testsBetweenDates.size() + " tests between " + minTestCheckTime + " and " + maxTestCheckTime);
+
         return (List<UrlUptimeMonitorEx>) urlUptimeMonitorDAO.getAll().stream()
                 .map(monitor -> UrlUptimeMonitorEx.builder()
                         .id(monitor.getId())
@@ -43,9 +51,7 @@ public class ServiceBaseUrlListReportService {
                         .url(monitor.getUrl())
                         .datadogPublicId(monitor.getDatadogPublicId())
                         .acbs(getAssocatedAcbs(monitor))
-                        .tests(urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitor.getId()).stream()
-                                .filter(test -> test.getCheckTime().isAfter(LocalDateTime.now().minusYears(1)))
-                                .toList())
+                        .tests(findTestsForMonitor(monitor.getId(), testsBetweenDates))
                         .build())
                 .toList();
     }
@@ -65,6 +71,12 @@ public class ServiceBaseUrlListReportService {
                         .percentPassed(calculatePercentPassedBetween(monitor.getId(), testsBetweenDates))
                         .build())
                 .toList();
+    }
+
+    private List<UrlUptimeMonitorTest> findTestsForMonitor(Long monitorId, List<UrlUptimeMonitorTest> allTests) {
+        return allTests.stream()
+                .filter(test -> test.getUrlUptimeMonitorId().equals(monitorId))
+                .collect(Collectors.toList());
     }
 
     private List<IdNamePair> getAssocatedAcbs(UrlUptimeMonitor monitor) {
