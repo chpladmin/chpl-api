@@ -37,6 +37,7 @@ public class CriteriaUpToDateReportService {
     private SummaryStatisticsDAO summaryStatisticsDao;
     private List<CertificationStatus> allCertificationStatuses;
     private String unformattedListingDetailsUrl;
+    private String unformattedDeveloperDetailsUrl;
 
     @Autowired
     public CriteriaUpToDateReportService(CriteriaUpToDateStatusReportDateService reportDateService,
@@ -45,13 +46,15 @@ public class CriteriaUpToDateReportService {
             SummaryStatisticsDAO summaryStatisticsDao,
             CertificationStatusDAO certificationStatusDao,
             @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart,
+            @Value("${developerUrlPart}") String developerDetailsUrlPart) {
         this.reportDateService = reportDateService;
         this.criteriaManager = criteriaManager;
         this.updatedCriteriaStatusReportDao = updatedCriteriaStatusReportDao;
         this.summaryStatisticsDao = summaryStatisticsDao;
         this.allCertificationStatuses = certificationStatusDao.findAll();
         this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+        this.unformattedDeveloperDetailsUrl = chplUrlBegin + developerDetailsUrlPart;
 
     }
 
@@ -110,6 +113,9 @@ public class CriteriaUpToDateReportService {
                     .chplProductNumber(report.getChplProductNumber())
                     .certifiedProductId(report.getCertifiedProductId())
                     .listingDetailsUrl(String.format(unformattedListingDetailsUrl, report.getCertifiedProductId()))
+                    .developerName(report.getDeveloper())
+                    .developerDetailsUrl(String.format(unformattedDeveloperDetailsUrl, report.getDeveloperId()))
+                    .requiredDay(report.getRequiredDay())
                     .build())
             .collect(Collectors.toSet());
         return results.stream().collect(Collectors.toList());

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.report.ReportDataManager;
@@ -42,15 +41,12 @@ import lombok.extern.log4j.Log4j2;
 public class ReportDataController {
     private ReportDataManager reportDataManager;
     private StatisticsManager statisticsManager;
-    private DeveloperSearchService developerSearchService;
 
     @Autowired
     public ReportDataController(ReportDataManager reportDataManager,
-            StatisticsManager statisticsManager,
-            DeveloperSearchService developerSearchService) {
+            StatisticsManager statisticsManager) {
         this.reportDataManager = reportDataManager;
         this.statisticsManager = statisticsManager;
-        this.developerSearchService = developerSearchService;
     }
 
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
