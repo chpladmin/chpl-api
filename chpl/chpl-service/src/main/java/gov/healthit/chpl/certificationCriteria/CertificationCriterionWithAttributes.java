@@ -19,6 +19,7 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
     private static final long serialVersionUID = 5732322243571111895L;
 
     private AllowedAttributes attributes;
+    private Integer sortOrder;
 
     @Override
     public int hashCode() {

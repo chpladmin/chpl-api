@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 53.9.0
+_22 June 2026_
+
+### Features
+* Deprecate reportKey field of /report-metadata responses
+* Add submitting user to change request downloads
+* Add 2026 CMS ID Validator
+* Add "up to date" field in Certification Results data
+
+### Flagged Features
+* Indicate CMS ID resources unavailable depending on flag state
+
+### Bug Fixes
+* Reduce time of getting all URL Uptime Monitors for PowerBI timeout
+
+---
+
 ## Version 53.8.0
 _8 June 2026_
 
