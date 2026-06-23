@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.sed.TestParticipant;
 import gov.healthit.chpl.sed.TestTask;
@@ -21,14 +23,17 @@ public class TestParticipantReviewer {
     private static final String DEFAULT_PARTICIPANT_DECRIPTION = "<unknown>";
 
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public TestParticipantReviewer(ErrorMessageUtil msgUtil) {
+    public TestParticipantReviewer(ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+        if (ff4j.check(FeatureList.HTI_5_ERD) || listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             return;
         }
         listing.getSed().getTestTasks().stream()
