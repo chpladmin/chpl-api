@@ -9,25 +9,33 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.sed.TestTask;
+import gov.healthit.chpl.upload.listing.HeadingPreHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testTasksUploadHandler")
 @Log4j2
 public class TestTaskUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public TestTaskUploadHandler(ListingUploadHandlerUtil uploadUtil) {
+    public TestTaskUploadHandler(ListingUploadHandlerUtil uploadUtil,
+            FF4j ff4j) {
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public List<TestTask> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            return new ArrayList<TestTask>();
+        }
         List<TestTask> testTasks = new ArrayList<TestTask>();
         List<String> ids = parseIds(headingRecord, listingRecords);
         List<String> descriptions = parseDescription(headingRecord, listingRecords);
@@ -282,91 +290,91 @@ public class TestTaskUploadHandler {
 
     private List<String> parseIds(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_ID, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_ID, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseDescription(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_DESCRIPTION, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_DESCRIPTION, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskSuccessAvg(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_SUCCESS_MEAN, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_SUCCESS_MEAN, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskSuccessStdDev(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_SUCCESS_STDDEV, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_SUCCESS_STDDEV, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskPathDeviationObserved(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_PATH_DEV_OBS, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_PATH_DEV_OBS, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskPathDeviationOptimal(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_PATH_DEV_OPT, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_PATH_DEV_OPT, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskTimeAvg(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_TIME_MEAN, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_TIME_MEAN, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskTimeStdDev(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_TIME_STDDEV, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_TIME_STDDEV, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskTimeDeviationObserved(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_TIME_DEV_OBS, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_TIME_DEV_OBS, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskTimeDeviationOptimal(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_TIME_DEV_OPT, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_TIME_DEV_OPT, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskErrorsAvg(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_ERRORS_MEAN, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_ERRORS_MEAN, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskErrorsStdDev(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_ERRORS_STDDEV, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_ERRORS_STDDEV, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskRatingScale(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_RATING_SCALE, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_RATING_SCALE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskRating(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_RATING, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_RATING, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseTaskRatingStdDev(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TASK_RATING_STDDEV, headingRecord, listingRecords);
+                HeadingPreHti5.TASK_RATING_STDDEV, headingRecord, listingRecords);
         return values;
     }
 }

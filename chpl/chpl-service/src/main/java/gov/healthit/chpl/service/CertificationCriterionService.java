@@ -2,7 +2,6 @@ package gov.healthit.chpl.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,17 +330,6 @@ public class CertificationCriterionService {
                 .map(idAsString -> StringUtils.trim(idAsString))
                 .map(idAsString -> Long.parseLong(idAsString))
                 .collect(Collectors.toList());
-    }
-
-    public List<CertificationCriterion> getUscdiCriteria() {
-        return Arrays.asList(
-                get(Criteria2015.B_1_CURES),
-                get(Criteria2015.B_2_CURES),
-                get(Criteria2015.E_1_CURES),
-                get(Criteria2015.F_5_CURES),
-                get(Criteria2015.G_6_CURES),
-                get(Criteria2015.G_9_CURES),
-                get(Criteria2015.G_10));
     }
 
     public static class Criteria2015 {

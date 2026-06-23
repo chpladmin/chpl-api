@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -32,8 +34,9 @@ public class ListingCsvDataWriterTest {
         CertificationCriteriaManager criteriaManager = Mockito.mock(CertificationCriteriaManager.class);
         StandardManager standardManager = Mockito.mock(StandardManager.class);
         Mockito.when(standardManager.getStandardsByCriteria(ArgumentMatchers.anyLong())).thenReturn(List.of());
-
-        writer = new ListingCsvDataWriter(criteriaManager, standardManager);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+        writer = new ListingCsvDataWriter(criteriaManager, standardManager, ff4j);
     }
 
     @Test

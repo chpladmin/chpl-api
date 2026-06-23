@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("ucdProcessUploadHandler")
 public class UcdProcessUploadHandler {
@@ -65,13 +65,13 @@ public class UcdProcessUploadHandler {
 
     private List<String> parseUcdNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.UCD_PROCESS, certHeadingRecord, certResultRecords);
+                HeadingPostHti5.UCD_PROCESS, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseUcdDetails(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.UCD_PROCESS_DETAILS, certHeadingRecord, certResultRecords);
+                HeadingPostHti5.UCD_PROCESS_DETAILS, certHeadingRecord, certResultRecords);
         return values;
     }
 }

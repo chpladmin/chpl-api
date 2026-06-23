@@ -29,7 +29,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import jakarta.validation.ValidationException;
@@ -356,8 +355,8 @@ public class ListingUploadHandlerUtil {
             String currHeadingValue = iter.next();
             String normalizedCurrHeading = StringUtils.normalizeSpace(currHeadingValue);
             if (normalizedCurrHeading != null
-                    && ListingUploadHeadingUtil.getHeading(normalizedCurrHeading) != null
-                    && ListingUploadHeadingUtil.getHeading(normalizedCurrHeading).equals(heading)) {
+                    && uploadHeadingUtil.getHeading(normalizedCurrHeading) != null
+                    && uploadHeadingUtil.getHeading(normalizedCurrHeading).equals(heading)) {
                 return index;
             }
             index++;
