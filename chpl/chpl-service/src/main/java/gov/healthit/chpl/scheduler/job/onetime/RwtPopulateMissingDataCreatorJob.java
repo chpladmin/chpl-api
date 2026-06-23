@@ -22,7 +22,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportDao;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -76,7 +76,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
             return;
         }
 
-        List<RealWorldTestingSummaryReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryReport>();
+        List<RealWorldTestingSummaryByAcbReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReport>();
 
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(lastDayOfResultsSubmissionWindow.plusDays(1)).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
@@ -86,7 +86,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
-                rwtSummaryReports.add(RealWorldTestingSummaryReport.builder()
+                rwtSummaryReports.add(RealWorldTestingSummaryByAcbReport.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
                         .certificationBody(acb)
                         .checkedDate(reportDate)
@@ -96,7 +96,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
             });
         });
 
-        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryReport::getCheckedDate)
+        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByAcbReport::getCheckedDate)
                 .thenComparing((o1, o2) -> o1.getCertificationBody().getId().compareTo(o2.getCertificationBody().getId())));
 
         rwtSummaryReports.forEach(value -> {

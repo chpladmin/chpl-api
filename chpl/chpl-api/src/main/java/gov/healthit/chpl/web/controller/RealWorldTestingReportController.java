@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReport;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,25 +31,36 @@ public class RealWorldTestingReportController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans report.",
-            description = "Retrieves the data used to generate the Real World Testing Plans report.",
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
+            description = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingPlanReports() {
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryReports();
+    public @ResponseBody List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingPlanSummaryByAcbReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryByAcbReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results report.",
-            description = "Retrieves the data used to generate the Real World Testing Results report.",
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
+            description = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @LogMethodUsage
     @RequestMapping(value = "/results", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingResultsReports() {
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryReports();
+    public @ResponseBody List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingResultsSummaryByAcbReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByAcbReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
+            description = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @LogMethodUsage
+    @RequestMapping(value = "/results-summary-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingResultsSummaryByDeveloperReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByDeveloperReports();
     }
 }

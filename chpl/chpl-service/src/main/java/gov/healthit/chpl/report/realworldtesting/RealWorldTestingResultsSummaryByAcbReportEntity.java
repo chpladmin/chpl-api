@@ -27,8 +27,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "real_world_testing_results_summary_report")
-public class RealWorldTestingResultsSummaryReportEntity extends EntityAudit {
+@Table(name = "real_world_testing_results_summary_by_acb_report")
+public class RealWorldTestingResultsSummaryByAcbReportEntity extends EntityAudit {
     private static final long serialVersionUID = 4976557989831765742L;
 
     @Id
@@ -52,8 +52,8 @@ public class RealWorldTestingResultsSummaryReportEntity extends EntityAudit {
     @Column(name = "requires_check_count")
     private Long requiresCheckCount;
 
-    public RealWorldTestingSummaryReport toDomain() {
-        return RealWorldTestingSummaryReport.builder()
+    public RealWorldTestingSummaryByAcbReport toDomain() {
+        return RealWorldTestingSummaryByAcbReport.builder()
                 .id(id)
                 .realWorldTestingYear(realWorldTestingYear)
                 .certificationBody(certificationBody.toDomain())
