@@ -2,8 +2,10 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,6 +23,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class CertifiedProductUcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
+    private static final String[] CUSTOM_UCD_PROCESS_NAMES = {"Custom", "Homegrown", "Home grown", "Internal",
+            "Internal Process", "Internal Process Used", "See User Centered Design Document", "See UCD", "See Document"};
 
     private Long id;
 
@@ -33,6 +37,9 @@ public class CertifiedProductUcdProcess implements Serializable {
     @Schema(description = "A description of the UCD process used. "
             + "This is a string variable that does not take any restrictions on formatting or values.")
     private String details;
+
+    @Schema(description = "Either the standardized UCD Process Name or a description of the UCD process used.")
+    private String value;
 
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
@@ -56,5 +63,24 @@ public class CertifiedProductUcdProcess implements Serializable {
             result = true;
         }
         return result;
+    }
+
+    public String getValue() {
+        if (!StringUtils.isBlank(name) && !StringUtils.isBlank(details)) {
+            if (isHomegrownish()) {
+                return details;
+            }
+            return name;
+        } else if (!StringUtils.isBlank(name)) {
+            return name;
+        }
+        return details;
+    }
+
+    private boolean isHomegrownish() {
+        return Stream.of(CUSTOM_UCD_PROCESS_NAMES)
+                .filter(homegrownishName -> homegrownishName.equalsIgnoreCase(name))
+                .findAny()
+                .isPresent();
     }
 }
