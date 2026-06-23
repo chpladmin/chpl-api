@@ -35,7 +35,7 @@ public class TestParticipantsUploadHandler {
     }
 
     public List<TestParticipant> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
             return new ArrayList<TestParticipant>();
         }
 

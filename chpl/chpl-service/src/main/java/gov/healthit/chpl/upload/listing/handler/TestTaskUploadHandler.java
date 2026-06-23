@@ -33,7 +33,7 @@ public class TestTaskUploadHandler {
     }
 
     public List<TestTask> handle(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
             return new ArrayList<TestTask>();
         }
         List<TestTask> testTasks = new ArrayList<TestTask>();

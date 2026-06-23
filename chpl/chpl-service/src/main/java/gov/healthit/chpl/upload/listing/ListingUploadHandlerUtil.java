@@ -356,7 +356,7 @@ public class ListingUploadHandlerUtil {
             String normalizedCurrHeading = StringUtils.normalizeSpace(currHeadingValue);
             if (normalizedCurrHeading != null
                     && uploadHeadingUtil.getHeading(normalizedCurrHeading) != null
-                    && uploadHeadingUtil.getHeading(normalizedCurrHeading).equals(heading)) {
+                    && CollectionUtils.containsAny(uploadHeadingUtil.getHeading(normalizedCurrHeading).getColNames(), heading.getColNames())) {
                 return index;
             }
             index++;
