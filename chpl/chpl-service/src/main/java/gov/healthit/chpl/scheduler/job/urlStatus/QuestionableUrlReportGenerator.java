@@ -20,12 +20,14 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -66,6 +68,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Value("${job.questionableUrlReport.emailSubject}")
     private String emailSubject;
@@ -114,6 +119,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     questionableUrls.addAll(urlLookupDao.getDevelopersWithUrl(questionableUrlResult));
                     break;
                 case FULL_USABILITY_REPORT:
+                    if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                        LOGGER.info("[" + i + "] Getting Listings with bad " + questionableUrlResult.getUrlType().getName()
+                                + " website " + questionableUrlResult.getUrl());
+                        questionableUrls.addAll(urlLookupDao.getListingsWithUrl(questionableUrlResult));
+                    }
+                    break;
                 case MANDATORY_DISCLOSURE:
                 case REAL_WORLD_TESTING_PLANS:
                 case REAL_WORLD_TESTING_RESULTS:
