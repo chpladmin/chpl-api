@@ -14,11 +14,11 @@ import jakarta.persistence.Query;
 @Component
 public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
 
-    public void save(RealWorldTestingSummaryReport realWorldTestingSummaryReport) throws EntityRetrievalException {
-        RealWorldTestingPlanSummaryReportEntity entity = getEntityByCheckedDateAndAcb(realWorldTestingSummaryReport.getCheckedDate(),
+    public void save(RealWorldTestingSummaryByAcbReport realWorldTestingSummaryReport) throws EntityRetrievalException {
+        RealWorldTestingPlanSummaryByAcbReportEntity entity = getEntityByCheckedDateAndAcb(realWorldTestingSummaryReport.getCheckedDate(),
                 realWorldTestingSummaryReport.getCertificationBody().getId());
         if (entity == null) {
-            entity = RealWorldTestingPlanSummaryReportEntity.builder()
+            entity = RealWorldTestingPlanSummaryByAcbReportEntity.builder()
                     .realWorldTestingYear(realWorldTestingSummaryReport.getRealWorldTestingYear())
                     .certificationBody(CertificationBodyEntity.builder()
                             .id(realWorldTestingSummaryReport.getCertificationBody().getId())
@@ -36,33 +36,33 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
         }
     }
 
-    public Optional<Long> getMaxRealWorldTestingYear() {
+    public Optional<Long> getMaxRealWorldTestingYearForAcbSummary() {
         return Optional.ofNullable(entityManager.createQuery(
                 "select MAX(rwtpsr.realWorldTestingYear) "
-                + "from RealWorldTestingPlanSummaryReportEntity rwtpsr "
+                + "from RealWorldTestingPlanSummaryByAcbReportEntity rwtpsr "
                 + "where (NOT deleted = true)", Long.class)
                 .getSingleResult());
 
     }
 
-    public List<RealWorldTestingSummaryReport> getRealWorldTestingReportsByTestingYear(Long realWorldTestingYear) {
-        return getEntitiesByRealWorldTestingYear(realWorldTestingYear).stream()
+    public List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingSummaryByAcbReportsByTestingYear(Long realWorldTestingYear) {
+        return getAcbSummaryEntitiesByRealWorldTestingYear(realWorldTestingYear).stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
 
-    private RealWorldTestingPlanSummaryReportEntity getEntityByCheckedDateAndAcb(LocalDate checkedDate, Long certificationBodyId) throws EntityRetrievalException {
+    private RealWorldTestingPlanSummaryByAcbReportEntity getEntityByCheckedDateAndAcb(LocalDate checkedDate, Long certificationBodyId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "from RealWorldTestingPlanSummaryReportEntity rwtps "
+                "from RealWorldTestingPlanSummaryByAcbReportEntity rwtps "
                 + "where (NOT deleted = true) "
                 + "and checkedDate = :checkedDate "
-                + "and rwtps.certificationBody.id = :certificationBodyId", RealWorldTestingPlanSummaryReportEntity.class);
+                + "and rwtps.certificationBody.id = :certificationBodyId", RealWorldTestingPlanSummaryByAcbReportEntity.class);
         query.setParameter("checkedDate", checkedDate);
         query.setParameter("certificationBodyId", certificationBodyId);
-        List<RealWorldTestingPlanSummaryReportEntity> result = query.getResultList();
+        List<RealWorldTestingPlanSummaryByAcbReportEntity> result = query.getResultList();
 
         if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate checked_date in real_world_testing_plan_summary_report table.");
+            throw new EntityRetrievalException("Data error. Duplicate checked_date in real_world_testing_plan_summary_by_acb_report table.");
         }
 
         if (result.size() > 0) {
@@ -71,13 +71,21 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
         return null;
     }
 
-    private List<RealWorldTestingPlanSummaryReportEntity> getEntitiesByRealWorldTestingYear(Long testingYear) {
+    private List<RealWorldTestingPlanSummaryByAcbReportEntity> getAcbSummaryEntitiesByRealWorldTestingYear(Long testingYear) {
         return entityManager.createQuery(
-                "from RealWorldTestingPlanSummaryReportEntity rwtps "
+                "from RealWorldTestingPlanSummaryByAcbReportEntity rwtps "
                 + "where (NOT deleted = true) "
-                + "and rwtps.realWorldTestingYear = :realWorldTestingYear", RealWorldTestingPlanSummaryReportEntity.class)
+                + "and rwtps.realWorldTestingYear = :realWorldTestingYear", RealWorldTestingPlanSummaryByAcbReportEntity.class)
                 .setParameter("realWorldTestingYear", testingYear)
                 .getResultList();
     }
 
+    public Optional<Long> getMaxRealWorldTestingYearForDeveloperSummary() {
+        return Optional.ofNullable(entityManager.createQuery(
+                "select MAX(rwtpsr.realWorldTestingYear) "
+                + "from RealWorldTestingPlanSummaryByDeveloperReportEntity rwtpsr "
+                + "where (NOT deleted = true)", Long.class)
+                .getSingleResult());
+
+    }
 }
