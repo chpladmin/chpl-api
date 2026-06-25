@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.upload.listing.HeadingPostHti5;
+import gov.healthit.chpl.upload.listing.HeadingPreHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.DateUtil;
 import jakarta.validation.ValidationException;
@@ -250,24 +251,24 @@ public class ListingDetailsUploadHandler {
     }
 
     private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(HeadingPostHti5.SED_REPORT_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_REPORT_URL, headingRecord, listingRecords);
     }
 
     private String parseSedIntendedUserDescription(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(HeadingPostHti5.SED_INTENDED_USERS, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_INTENDED_USERS, headingRecord, listingRecords);
     }
 
     private LocalDate parseSedTestingDay(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         LocalDate sedTestingDate = null;
         try {
             sedTestingDate = uploadUtil.parseSingleRowFieldAsLocalDate(
-                    HeadingPostHti5.SED_TESTING_DATE, headingRecord, listingRecords);
+                    HeadingPreHti5.SED_TESTING_DATE, headingRecord, listingRecords);
         } catch (Exception ex) {
         }
         return sedTestingDate;
     }
 
     private String parseSedTestingDayStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(HeadingPostHti5.SED_TESTING_DATE, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_TESTING_DATE, headingRecord, listingRecords);
     }
 }

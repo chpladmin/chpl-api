@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
 import org.eclipse.collections.impl.factory.SortedSets;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +49,7 @@ import tools.jackson.databind.annotation.JsonSerialize;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonFilter("hti5Filter")
 public class CertifiedProductSearchDetails implements Serializable {
 
     private static final long serialVersionUID = 2903219171127034775L;

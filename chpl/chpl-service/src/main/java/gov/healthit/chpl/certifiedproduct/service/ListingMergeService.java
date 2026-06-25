@@ -108,6 +108,12 @@ public class ListingMergeService {
         updatedListing.setCountOpenSurveillance(currentListing.getCountOpenSurveillance());
         updatedListing.setCountSurveillance(currentListing.getCountSurveillance());
 
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListing.setSedIntendedUserDescription(currentListing.getSedIntendedUserDescription());
+            updatedListing.setSedReportFileLocation(currentListing.getSedReportFileLocation());
+            updatedListing.setSedTestingEndDay(currentListing.getSedTestingEndDay());
+        }
+
         setIcsChildren(updatedListing, currentListing.getIcs());
         setIdsForQmsStandards(updatedListing, currentListing.getQmsStandards());
         setIdsForAccessibilityStandards(updatedListing, currentListing.getAccessibilityStandards());

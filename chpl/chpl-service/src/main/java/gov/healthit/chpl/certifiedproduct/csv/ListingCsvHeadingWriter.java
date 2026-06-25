@@ -81,14 +81,15 @@ public class ListingCsvHeadingWriter {
                 HeadingPostHti5.K_1_URL.getHeading(),
                 HeadingPostHti5.CQM_NUMBER.getHeading(),
                 HeadingPostHti5.CQM_VERSION.getHeading(),
-                HeadingPostHti5.CQM_CRITERIA.getHeading(),
-                HeadingPostHti5.SED_REPORT_URL.getHeading(),
-                HeadingPostHti5.SED_INTENDED_USERS.getHeading(),
-                HeadingPostHti5.SED_TESTING_DATE.getHeading()
+                HeadingPostHti5.CQM_CRITERIA.getHeading()
                 ).collect(Collectors.toList());
 
         if (!ff4j.check(FeatureList.HTI_5_ERD)) {
-            headings.addAll(Stream.of(HeadingPreHti5.PARTICIPANT_ID.getHeading(),
+            headings.addAll(Stream.of(
+                HeadingPreHti5.SED_REPORT_URL.getHeading(),
+                HeadingPreHti5.SED_INTENDED_USERS.getHeading(),
+                HeadingPreHti5.SED_TESTING_DATE.getHeading(),
+                HeadingPreHti5.PARTICIPANT_ID.getHeading(),
                 HeadingPreHti5.PARTICIPANT_GENDER.getHeading(),
                 HeadingPreHti5.PARTICIPANT_AGE.getHeading(),
                 HeadingPreHti5.PARTICIPANT_EDUCATION.getHeading(),

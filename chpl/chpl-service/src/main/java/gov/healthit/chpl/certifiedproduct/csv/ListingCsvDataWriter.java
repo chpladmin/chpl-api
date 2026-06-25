@@ -85,7 +85,7 @@ public class ListingCsvDataWriter {
     private static final int PARTICIPANT_START_COL = 41;
     private static final int TASK_START_COL = 50;
     private static final int CRITERIA_START_COL_PRE_HTI5 = 65;
-    private static final int CRITERIA_START_COL = 41;
+    private static final int CRITERIA_START_COL = 38;
     private static final int ADDITIONAL_SOFTWARE_COL_COUNT = 5;
     private static final int UCD_PROCESS_COL_COUNT = 2;
     private static final int SED_TESTING_COL_COUNT = 2;
@@ -127,10 +127,10 @@ public class ListingCsvDataWriter {
         addAccessibilityStandards(csvDataMatrix, listing.getAccessibilityStandards());
         csvDataMatrix[0][K1_URL_COL] = listing.getMandatoryDisclosures();
         addCqms(csvDataMatrix, listing.getCqmResults());
-        csvDataMatrix[0][SED_REPORT_URL_COL] = listing.getSedReportFileLocation();
-        csvDataMatrix[0][SED_INTENDED_USERS_COL] = listing.getSedIntendedUserDescription();
-        csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
         if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            csvDataMatrix[0][SED_REPORT_URL_COL] = listing.getSedReportFileLocation();
+            csvDataMatrix[0][SED_INTENDED_USERS_COL] = listing.getSedIntendedUserDescription();
+            csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
             addParticipants(csvDataMatrix, listing.getSed());
             addTasks(csvDataMatrix, listing.getSed());
         }
