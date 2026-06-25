@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certifiedproduct.service.SedSynchronizationService;
 import gov.healthit.chpl.codeset.CertificationResultCodeSetService;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -38,7 +38,6 @@ import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStan
 import gov.healthit.chpl.sed.CertificationResultTestTask;
 import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.testdata.CertificationResultTestData;
 import gov.healthit.chpl.testprocedure.CertificationResultTestProcedure;
 import gov.healthit.chpl.teststandard.CertificationResultTestStandard;
 import gov.healthit.chpl.teststandard.TestStandard;
@@ -58,6 +57,7 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationResultFunctionalityTestedService certResultFunctionalityTestedService;
     private CertificationResultStandardService certResultStandardService;
     private CertificationResultCodeSetService certificationResultCodeSetService;
+    private SedSynchronizationService sedSynchronizationService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -67,7 +67,8 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultTestToolService certResultTestToolService,
             CertificationResultFunctionalityTestedService certResultFunctionalityTestedService,
             CertificationResultStandardService certResultStandardService,
-            CertificationResultCodeSetService certificationResultCodeSetService) {
+            CertificationResultCodeSetService certificationResultCodeSetService,
+            SedSynchronizationService sedSynchronizationService) {
         this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
@@ -76,6 +77,7 @@ public class CertificationResultManager extends SecuredManager {
         this.certResultFunctionalityTestedService = certResultFunctionalityTestedService;
         this.certResultStandardService = certResultStandardService;
         this.certificationResultCodeSetService = certificationResultCodeSetService;
+        this.sedSynchronizationService = sedSynchronizationService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -127,40 +129,7 @@ public class CertificationResultManager extends SecuredManager {
         numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), updated.getStandards());
         numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
         numChanges += certificationResultCodeSetService.synchronizeCodeSets(updated,  orig.getCodeSets(), updated.getCodeSets());
-
-        List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
-        List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
-        if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
-                && existingListing.getSed().getUcdProcesses().size() > 0) {
-            for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
-                boolean ucdMeetsCriteria = false;
-                for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                    if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                            && orig.getSed() != null && orig.getSed()) {
-                        ucdMeetsCriteria = true;
-                    }
-                }
-                if (ucdMeetsCriteria) {
-                    origUcdsForCriteria.add(existingUcd);
-                }
-            }
-        }
-        if (updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null
-                && updatedListing.getSed().getUcdProcesses().size() > 0) {
-            for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
-                boolean ucdMeetsCriteria = false;
-                for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
-                    if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                            && updated.getSed() != null && updated.getSed()) {
-                        ucdMeetsCriteria = true;
-                    }
-                }
-                if (ucdMeetsCriteria) {
-                    updatedUcdsForCriteria.add(updatedUcd);
-                }
-            }
-        }
-        numChanges += updateUcdProcesses(updated, origUcdsForCriteria, updatedUcdsForCriteria);
+        numChanges += sedSynchronizationService.synchronizeUcdProcesses(existingListing, updatedListing, orig, updated);
         return numChanges;
     }
 
@@ -289,91 +258,6 @@ public class CertificationResultManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteAdditionalSoftwareMapping(idToRemove);
-        }
-        return numChanges;
-    }
-
-    private int updateUcdProcesses(CertificationResult certResult, List<CertifiedProductUcdProcess> existingUcdProcesses,
-            List<CertifiedProductUcdProcess> updatedUcdProcesses)
-            throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        List<CertifiedProductUcdProcess> ucdToAdd = new ArrayList<CertifiedProductUcdProcess>();
-        List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
-        List<Long> idsToRemove = new ArrayList<Long>();
-
-        // figure out which ucd processes to add
-        if (updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
-            if (existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
-                    ucdToAdd.add(updatedItem);
-                }
-            } else if (existingUcdProcesses.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
-                    boolean inExistingListing = false;
-                    for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
-                        if (updatedItem.matches(existingItem)) {
-                            inExistingListing = true;
-                            ucdToUpdate.add(new CertificationResultUcdProcessPair(existingItem, updatedItem));
-                        }
-                    }
-
-                    if (!inExistingListing) {
-                        ucdToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
-
-        // figure out which ucd processes to remove
-        if (existingUcdProcesses != null && existingUcdProcesses.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedUcdProcesses == null || updatedUcdProcesses.size() == 0) {
-                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedUcdProcesses.size() > 0) {
-                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
-                    boolean inUpdatedListing = false;
-                    for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = ucdToAdd.size() + idsToRemove.size();
-
-        for (CertifiedProductUcdProcess toAdd : ucdToAdd) {
-            CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
-            toAddDto.setCertificationResultId(certResult.getId());
-            toAddDto.setUcdProcessId(toAdd.getId());
-            toAddDto.setUcdProcessDetails(toAdd.getDetails());
-            certResultDAO.addUcdProcessMapping(toAddDto);
-        }
-
-        for (CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getDetails(), toUpdate.getUpdated().getDetails())) {
-                hasChanged = true;
-            }
-            if (hasChanged) {
-                CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
-                toUpdateDto.setId(toUpdate.getOrig().getId());
-                toUpdateDto.setCertificationResultId(certResult.getId());
-                toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getId());
-                toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getDetails());
-                certResultDAO.updateUcdProcessMapping(toUpdateDto);
-            }
-        }
-
-        for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteUcdProcessMapping(certResult.getId(), idToRemove);
         }
         return numChanges;
     }
@@ -702,42 +586,5 @@ public class CertificationResultManager extends SecuredManager {
             return updated;
         }
 
-    }
-
-    private static class CertificationResultUcdProcessPair {
-        private CertifiedProductUcdProcess orig;
-        private CertifiedProductUcdProcess updated;
-
-        CertificationResultUcdProcessPair(final CertifiedProductUcdProcess orig, final CertifiedProductUcdProcess updated) {
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public CertifiedProductUcdProcess getOrig() {
-            return orig;
-        }
-
-        public CertifiedProductUcdProcess getUpdated() {
-            return updated;
-        }
-    }
-
-    private static class CertificationResultTestDataPair {
-        private CertificationResultTestData orig;
-        private CertificationResultTestData updated;
-
-        CertificationResultTestDataPair(final CertificationResultTestData orig,
-                final CertificationResultTestData updated) {
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public CertificationResultTestData getOrig() {
-            return orig;
-        }
-
-        public CertificationResultTestData getUpdated() {
-            return updated;
-        }
     }
 }
