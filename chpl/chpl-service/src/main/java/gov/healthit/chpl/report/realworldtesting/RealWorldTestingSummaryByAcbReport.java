@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class RealWorldTestingSummaryReport {
+public class RealWorldTestingSummaryByAcbReport {
     private Long id;
 
     private Long realWorldTestingYear;
