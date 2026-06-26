@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
 import org.eclipse.collections.impl.factory.SortedSets;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.sed.SedSummaryData;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
@@ -49,7 +49,6 @@ import tools.jackson.databind.annotation.JsonSerialize;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonFilter("hti5Filter")
 public class CertifiedProductSearchDetails implements Serializable {
 
     private static final long serialVersionUID = 2903219171127034775L;
@@ -74,13 +73,16 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
+    @SedSummaryData
     @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. "
             + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String sedReportFileLocation;
 
+    @SedSummaryData
     @Schema(description = "For SED testing, a description of the intended users of the Health IT")
     private String sedIntendedUserDescription;
 
+    @SedSummaryData
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
