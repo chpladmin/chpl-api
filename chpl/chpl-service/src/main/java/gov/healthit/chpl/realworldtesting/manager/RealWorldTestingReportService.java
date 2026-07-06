@@ -294,6 +294,13 @@ public class RealWorldTestingReportService {
         return LocalDate.parse(mmddyyyy, formatter);
     }
 
+    public LocalDate getResultsDataGatheringStopDate(Integer rwtEligYear) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String mmdd = env.getProperty("rwtResultsDataGatheringEndDate");
+        String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
+        return LocalDate.parse(mmddyyyy, formatter);
+    }
+
     private boolean isWithdrawn(RealWorldTestingReport record) {
         String statusName = record.getCurrentStatus();
         return withdrawnStatuses.stream()

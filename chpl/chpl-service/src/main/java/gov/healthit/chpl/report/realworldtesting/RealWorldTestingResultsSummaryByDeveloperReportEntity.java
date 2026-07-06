@@ -2,8 +2,8 @@ package gov.healthit.chpl.report.realworldtesting;
 
 import java.time.LocalDate;
 
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,9 +27,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "real_world_testing_plan_summary_report")
-public class RealWorldTestingPlanSummaryReportEntity extends EntityAudit {
-    private static final long serialVersionUID = -1208758504334058893L;
+@Table(name = "real_world_testing_results_summary_by_developer_report")
+public class RealWorldTestingResultsSummaryByDeveloperReportEntity extends EntityAudit {
+    private static final long serialVersionUID = -1208758504334058121L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +40,8 @@ public class RealWorldTestingPlanSummaryReportEntity extends EntityAudit {
     private Long realWorldTestingYear;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id")
-    private CertificationBodyEntity certificationBody;
+    @JoinColumn(name = "developer_id")
+    private DeveloperEntitySimple developer;
 
     @Column(name = "checked_date")
     private LocalDate checkedDate;
@@ -52,11 +52,12 @@ public class RealWorldTestingPlanSummaryReportEntity extends EntityAudit {
     @Column(name = "requires_check_count")
     private Long requiresCheckCount;
 
-    public RealWorldTestingSummaryReport toDomain() {
-        return RealWorldTestingSummaryReport.builder()
+    public RealWorldTestingSummaryByDeveloperReport toDomain() {
+        return RealWorldTestingSummaryByDeveloperReport.builder()
                 .id(id)
                 .realWorldTestingYear(realWorldTestingYear)
-                .certificationBody(certificationBody.toDomain())
+                .developerId(developer != null ? developer.getId() : null)
+                .developerName(developer != null ? developer.getName() : null)
                 .checkedDate(checkedDate)
                 .checkedCount(checkedCount)
                 .requiresCheckCount(requiresCheckCount)
