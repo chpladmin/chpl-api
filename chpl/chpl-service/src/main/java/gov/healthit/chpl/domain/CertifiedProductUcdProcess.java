@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.sed.DeprecatedUcdData;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,15 +29,20 @@ public class CertifiedProductUcdProcess implements Serializable {
 
     private Long id;
 
+    @DeprecatedUcdData
     @Schema(description = "The UCD Process name")
     private String name;
 
     @JsonIgnore
     private String userEnteredName;
 
+    @DeprecatedUcdData
     @Schema(description = "A description of the UCD process used. "
             + "This is a string variable that does not take any restrictions on formatting or values.")
     private String details;
+
+    @JsonIgnore
+    private String userEnteredDetails;
 
     @Schema(description = "Either the standardized UCD Process Name or a description of the UCD process used.")
     private String value;
@@ -61,11 +67,22 @@ public class CertifiedProductUcdProcess implements Serializable {
         if (ObjectUtils.allNotNull(this.getId(), anotherUcd.getId())
                 && this.getId().equals(anotherUcd.getId())) {
             result = true;
+        } else if (ObjectUtils.allNotNull(this.getValue(), anotherUcd.getValue())
+                && this.getValue().equals(anotherUcd.getValue())) {
+            result = true;
+        } else if (ObjectUtils.allNotNull(this.getName(), this.getDetails(), anotherUcd.getName(), anotherUcd.getDetails())
+                && this.getName().equals(anotherUcd.getName())
+                && this.getDetails().equals(anotherUcd.getDetails())) {
+            result = true;
         }
         return result;
     }
 
     public String getValue() {
+        if (!StringUtils.isEmpty(this.value)) {
+            return this.value;
+        }
+
         if (!StringUtils.isBlank(name) && !StringUtils.isBlank(details)) {
             if (isHomegrownish()) {
                 return details;

@@ -6,8 +6,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.sed.SedSummaryData;
-import gov.healthit.chpl.sed.SedTestTaskData;
+import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
+import gov.healthit.chpl.sed.DeprecatedSedTestTaskData;
+import gov.healthit.chpl.sed.DeprecatedUcdData;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.AnnotatedMember;
@@ -41,8 +42,9 @@ public class IgnorableResponseFieldAnnotationIntrospector extends JacksonAnnotat
 
     private boolean isSedAndIgnorable(AnnotatedMember m) {
         boolean isHti5Erd = ff4j.check(FeatureList.HTI_5_ERD);
-        boolean isSedSummary = _findAnnotation(m, SedSummaryData.class) != null;
-        boolean isSedTestTask = _findAnnotation(m, SedTestTaskData.class) != null;
-        return isHti5Erd && (isSedSummary || isSedTestTask);
+        boolean isSedSummary = _findAnnotation(m, DeprecatedSedSummaryData.class) != null;
+        boolean isSedTestTask = _findAnnotation(m, DeprecatedSedTestTaskData.class) != null;
+        boolean isSedUcdData = _findAnnotation(m, DeprecatedUcdData.class) != null;
+        return isHti5Erd && (isSedSummary || isSedTestTask || isSedUcdData);
     }
 }
