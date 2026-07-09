@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 53.10.0
+_6 July 2026_
+
+### Features
+* Add endpoints & response fields for updated criteria status report
+* Add Real World Testing report summary endpoint for counts by developer
+
+---
+
 ## Version 53.9.0
 _22 June 2026_
 
