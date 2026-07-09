@@ -28,7 +28,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.sed.CertifiedProductSed;
-import gov.healthit.chpl.sed.SedSummaryData;
+import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
@@ -73,16 +73,16 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
-    @SedSummaryData
+    @DeprecatedSedSummaryData
     @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. "
             + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String sedReportFileLocation;
 
-    @SedSummaryData
+    @DeprecatedSedSummaryData
     @Schema(description = "For SED testing, a description of the intended users of the Health IT")
     private String sedIntendedUserDescription;
 
-    @SedSummaryData
+    @DeprecatedSedSummaryData
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

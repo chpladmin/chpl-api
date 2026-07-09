@@ -1,13 +1,14 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -33,7 +34,10 @@ public class UcdProcessNormalizerTest {
     public void setup() {
         ucdProcessDao = Mockito.mock(UcdProcessDAO.class);
         fuzzyChoicesManager = Mockito.mock(FuzzyChoicesManager.class);
-        normalizer = new UcdProcessNormalizer(ucdProcessDao, fuzzyChoicesManager, Mockito.mock(ErrorMessageUtil.class));
+        normalizer = new UcdProcessNormalizer(ucdProcessDao,
+                fuzzyChoicesManager,
+                Mockito.mock(ErrorMessageUtil.class),
+                Mockito.mock(FF4j.class));
     }
 
     @Test
@@ -134,7 +138,7 @@ public class UcdProcessNormalizerTest {
 
         normalizer.normalize(listing);
         assertEquals(1, listing.getSed().getUcdProcesses().size());
-        assertNull(listing.getSed().getUcdProcesses().get(0).getId());
+        assertEquals(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID, listing.getSed().getUcdProcesses().get(0).getId());
         assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getName());
         assertNull(listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
     }

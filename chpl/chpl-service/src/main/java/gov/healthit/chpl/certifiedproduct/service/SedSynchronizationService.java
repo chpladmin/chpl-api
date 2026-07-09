@@ -149,7 +149,7 @@ public class SedSynchronizationService {
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());
-            toAddDto.setUcdProcessDetails(toAdd.getDetails());
+            toAddDto.setUcdProcessDetails(toAdd.getId().equals(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID) ? toAdd.getValue() : toAdd.getDetails());
             certResultDao.addUcdProcessMapping(toAddDto);
         }
 
@@ -163,7 +163,7 @@ public class SedSynchronizationService {
                 toUpdateDto.setId(toUpdate.getOrig().getId());
                 toUpdateDto.setCertificationResultId(certResult.getId());
                 toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getId());
-                toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getDetails());
+                toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getId().equals(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID) ? toUpdate.getUpdated().getValue() : toUpdate.getUpdated().getDetails());
                 certResultDao.updateUcdProcessMapping(toUpdateDto);
             }
         }

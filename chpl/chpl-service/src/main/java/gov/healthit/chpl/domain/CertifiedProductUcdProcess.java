@@ -24,6 +24,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class CertifiedProductUcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
+    public static final Long CUSTOM_UCD_PROCESS_ID = 186L;
     private static final String[] CUSTOM_UCD_PROCESS_NAMES = {"Custom", "Homegrown", "Home grown", "Internal",
             "Internal Process", "Internal Process Used", "See User Centered Design Document", "See UCD", "See Document"};
 
