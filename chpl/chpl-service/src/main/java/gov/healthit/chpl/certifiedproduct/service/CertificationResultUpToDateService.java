@@ -62,7 +62,7 @@ public class CertificationResultUpToDateService {
     private boolean areNonGroupedStandardsUpToDate(List<Standard> standardsForCriterion, CertificationResult certResult, LocalDate asOfDate) {
         List<Boolean> baselineStandardsUpToDate = standardsForCriterion.stream()
                 .filter(std -> StringUtils.isEmpty(std.getGroupName()))
-                .map(std -> areStandardsRequiredAndPresent(Stream.of(std).toList(), certResult, asOfDate))
+                .map(std -> areAllStandardsRequiredAndPresent(Stream.of(std).toList(), certResult, asOfDate))
                 .map(bool -> Boolean.valueOf(bool))
                 .collect(Collectors.toList());
 
@@ -82,7 +82,7 @@ public class CertificationResultUpToDateService {
 
        List<Boolean> groupsUpToDate = standardGroupsForCriterion.keySet().stream()
            .map(groupName -> standardGroupsForCriterion.get(groupName))
-           .map(stdList -> areStandardsRequiredAndPresent(stdList, certResult, asOfDate))
+           .map(stdList -> isAnyStandardRequiredAndPresent(stdList, certResult, asOfDate))
            .map(bool -> Boolean.valueOf(bool))
            .collect(Collectors.toList());
 
@@ -95,7 +95,7 @@ public class CertificationResultUpToDateService {
         return true;
     }
 
-    private boolean areStandardsRequiredAndPresent(List<Standard> standards, CertificationResult certResult, LocalDate asOfDate) {
+    private boolean areAllStandardsRequiredAndPresent(List<Standard> standards, CertificationResult certResult, LocalDate asOfDate) {
         List<Standard> requiredStandards = standards.stream()
                 .filter(std -> DateUtil.isOnOrBefore(std.getStartDay(), asOfDate)
                         && (std.getRequiredDay() != null && std.getRequiredDay().isBefore(asOfDate))
@@ -105,6 +105,21 @@ public class CertificationResultUpToDateService {
             return !requiredStandards.stream()
                     .filter(requiredStandard -> !isStandardOnCertResult(requiredStandard, certResult))
                     .peek(missingRequiredStandard -> LOGGER.debug("Required standard " + missingRequiredStandard.getRegulatoryTextCitation() + " is missing for criterion " + Util.formatCriteriaNumber(certResult.getCriterion())))
+                    .findAny()
+                    .isPresent();
+        }
+        return true;
+    }
+
+    private boolean isAnyStandardRequiredAndPresent(List<Standard> standards, CertificationResult certResult, LocalDate asOfDate) {
+        List<Standard> requiredStandards = standards.stream()
+                .filter(std -> DateUtil.isOnOrBefore(std.getStartDay(), asOfDate)
+                        && (std.getRequiredDay() != null && std.getRequiredDay().isBefore(asOfDate))
+                        && (std.getEndDay() == null || std.getEndDay().isAfter(asOfDate)))
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(requiredStandards)) {
+            return requiredStandards.stream()
+                    .filter(requiredStandard -> isStandardOnCertResult(requiredStandard, certResult))
                     .findAny()
                     .isPresent();
         }
