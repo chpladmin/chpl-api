@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -27,8 +29,11 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.entity.developer.DeveloperSearchResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
+import gov.healthit.chpl.search.entity.ListingSearchEntity;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
@@ -46,6 +51,17 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.type nct "
             + "WHERE surv.deleted <> true ";
+
+    private String unformattedListingDetailsUrl;
+    private String unformattedDeveloperDetailsUrl;
+
+    @Autowired
+    public SurveillanceDAO(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${developerUrlPart}") String developerUrlPart,
+            @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart) {
+       this.unformattedDeveloperDetailsUrl = chplUrlBegin + developerUrlPart;
+       this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
+    }
 
     public Long insertSurveillance(Long certifiedProductId, Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
@@ -268,7 +284,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return updatedSurveillance.getId();
     }
 
-
     public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId,
             String survFriendlyId) {
         Query query = entityManager.createQuery(
@@ -286,7 +301,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
         return null;
     }
-
 
     public SurveillanceEntity getSurveillanceById(Long id) throws EntityRetrievalException {
         SurveillanceEntity result = fetchSurveillanceById(id);
@@ -310,23 +324,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    public SurveillanceEntity getSurveillanceByDocumentId(Long documentId)
-            throws EntityRetrievalException {
-        entityManager.clear();
-        Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
-                + "AND docs.id = :entityid",
-                SurveillanceEntity.class);
-        query.setParameter("entityid", documentId);
-
-        List<SurveillanceEntity> results = query.getResultList();
-        if (results == null || results.size() == 0) {
-            String msg = msgUtil.getMessage("surveillance.notFound");
-            throw new EntityRetrievalException(msg);
-        } else {
-            return results.get(0);
-        }
-    }
-
     public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id) {
             entityManager.clear();
             Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
@@ -338,6 +335,39 @@ public class SurveillanceDAO extends BaseDAOImpl {
             return results;
     }
 
+    public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
+        Query query = entityManager.createQuery("SELECT DISTINCT surv, listing, developer "
+                + "FROM SurveillanceEntity surv, ListingSearchEntity listing, DeveloperSearchResultEntity developer "
+                + "WHERE (surv.endDate IS NULL OR surv.endDate >= :oneYearAgo) "
+                + "AND surv.certifiedProductId = listing.id "
+                + "AND listing.developerId = developer.id "
+                + "AND developer.currentActiveListingCount > 0 "
+                + "AND surv.deleted <> true ");
+
+        List<SurveillanceByDeveloper> results = new ArrayList<SurveillanceByDeveloper>();
+        List<Object[]> entities = query
+                .setParameter("oneYearAgo", LocalDate.now().minusYears(1))
+                .getResultList();
+        for (Object[] entity : entities) {
+            SurveillanceEntity surveillance = (SurveillanceEntity) entity[0];
+            ListingSearchEntity listing = (ListingSearchEntity) entity[1];
+            DeveloperSearchResultEntity developer = (DeveloperSearchResultEntity) entity[2];
+            results.add(SurveillanceByDeveloper.builder()
+                    .developerId(developer.getId())
+                    .developerName(developer.getDeveloperName())
+                    .developerDetailsUrl(String.format(unformattedDeveloperDetailsUrl, developer.getId() + ""))
+                    .developerHasActiveListings(developer.getCurrentActiveListingCount() > 0)
+                    .listingId(listing.getId())
+                    .chplProductNumber(listing.getChplProductNumber())
+                    .listingDetailsUrl(String.format(unformattedListingDetailsUrl, listing.getId() + ""))
+                    .surveillanceId(surveillance.getId())
+                    .surveillanceStartDate(surveillance.getStartDate())
+                    .surveillanceEndDate(surveillance.getEndDate())
+                    .build());
+        }
+        return results;
+
+    }
 
     public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
         LOGGER.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
