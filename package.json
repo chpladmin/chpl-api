@@ -10,7 +10,7 @@
     "e2e:stg": "node ./chpl/chpl-api/e2e/script/newman-run.js stg"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "newman": "^6.2.2"
   }
 }

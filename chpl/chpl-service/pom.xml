@@ -18,7 +18,7 @@
       <commonmark.version>0.27.1</commonmark.version>
       <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
       <itext.version>9.4.0</itext.version>
-      <jackson.version>3.1.4</jackson.version>
+      <jackson.version>3.2.0</jackson.version>
       <jfreechart.version>1.5.6</jfreechart.version>
       <microsoft-graph.version>6.59.0</microsoft-graph.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
@@ -210,7 +210,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0-M2</version>
+            <version>6.2.0-M2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -278,7 +278,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-dbcp</artifactId>
-            <version>11.0.15</version>
+            <version>11.0.23</version>
         </dependency>
 
         <!-- Enhanced stream functions -->
@@ -418,7 +418,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.21.0</version>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
