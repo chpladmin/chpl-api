@@ -72,7 +72,7 @@ public class UcdProcessReviewer implements Reviewer {
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
             List<CertifiedProductUcdProcess> ucdProcessesWithoutFuzzyMatchesOrIds = ucdProcesses.stream()
                     .filter(currUcdProc -> (!ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
-                            || (ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()) && StringUtils.isEmpty(currUcdProc.getValue())))
+                            || (ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()) && StringUtils.isEmpty(currUcdProc.getUserEnteredDetails())))
                     .filter(currUcdProc -> currUcdProc.getId() == null)
                     .collect(Collectors.toList());
 

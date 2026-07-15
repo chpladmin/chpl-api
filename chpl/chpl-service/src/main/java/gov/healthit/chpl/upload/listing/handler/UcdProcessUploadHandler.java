@@ -59,7 +59,9 @@ public class UcdProcessUploadHandler {
 
         return CertifiedProductUcdProcess.builder()
                 .name(ucdName)
+                .userEnteredName(ucdName)
                 .details(ucdDetail)
+                .userEnteredDetails(ucdDetail)
         .build();
     }
 

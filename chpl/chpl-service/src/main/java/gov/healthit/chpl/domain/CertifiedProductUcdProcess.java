@@ -2,7 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.sed.DeprecatedUcdData;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,28 +23,21 @@ import lombok.Data;
 public class CertifiedProductUcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
     public static final Long CUSTOM_UCD_PROCESS_ID = 186L;
-    private static final String[] CUSTOM_UCD_PROCESS_NAMES = {"Custom", "Homegrown", "Home grown", "Internal",
-            "Internal Process", "Internal Process Used", "See User Centered Design Document", "See UCD", "See Document"};
 
     private Long id;
 
-    @DeprecatedUcdData
     @Schema(description = "The UCD Process name")
     private String name;
 
     @JsonIgnore
     private String userEnteredName;
 
-    @DeprecatedUcdData
     @Schema(description = "A description of the UCD process used. "
             + "This is a string variable that does not take any restrictions on formatting or values.")
     private String details;
 
     @JsonIgnore
     private String userEnteredDetails;
-
-    @Schema(description = "Either the standardized UCD Process Name or a description of the UCD process used.")
-    private String value;
 
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
@@ -65,40 +56,17 @@ public class CertifiedProductUcdProcess implements Serializable {
 
     public boolean matches(CertifiedProductUcdProcess anotherUcd) {
         boolean result = false;
-        if (ObjectUtils.allNotNull(this.getId(), anotherUcd.getId())
-                && this.getId().equals(anotherUcd.getId())) {
-            result = true;
-        } else if (ObjectUtils.allNotNull(this.getValue(), anotherUcd.getValue())
-                && this.getValue().equals(anotherUcd.getValue())) {
-            result = true;
-        } else if (ObjectUtils.allNotNull(this.getName(), this.getDetails(), anotherUcd.getName(), anotherUcd.getDetails())
+        if (ObjectUtils.allNotNull(this.getName(), this.getDetails(), anotherUcd.getName(), anotherUcd.getDetails())
                 && this.getName().equals(anotherUcd.getName())
+                && this.getDetails().equals(anotherUcd.getDetails())) {
+            result = true;
+        } else if (StringUtils.isAllBlank(this.getDetails(), anotherUcd.getDetails()) && ObjectUtils.allNotNull(this.getName(), anotherUcd.getName())
+                && this.getName().equals(anotherUcd.getName())) {
+            result = true;
+        } else if (StringUtils.isAllEmpty(this.getName(), anotherUcd.getName()) && ObjectUtils.allNotNull(this.getDetails(), anotherUcd.getDetails())
                 && this.getDetails().equals(anotherUcd.getDetails())) {
             result = true;
         }
         return result;
-    }
-
-    public String getValue() {
-        if (!StringUtils.isEmpty(this.value)) {
-            return this.value;
-        }
-
-        if (!StringUtils.isBlank(name) && !StringUtils.isBlank(details)) {
-            if (isHomegrownish()) {
-                return details;
-            }
-            return name;
-        } else if (!StringUtils.isBlank(name)) {
-            return name;
-        }
-        return details;
-    }
-
-    private boolean isHomegrownish() {
-        return Stream.of(CUSTOM_UCD_PROCESS_NAMES)
-                .filter(homegrownishName -> homegrownishName.equalsIgnoreCase(name))
-                .findAny()
-                .isPresent();
     }
 }

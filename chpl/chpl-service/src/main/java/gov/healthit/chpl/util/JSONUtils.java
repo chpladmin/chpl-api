@@ -12,7 +12,6 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.sed.DeprecatedSedTestTaskData;
-import gov.healthit.chpl.sed.DeprecatedUcdData;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
@@ -52,8 +51,7 @@ public final class JSONUtils {
                         boolean isHti5Erd = ff4j.check(FeatureList.HTI_5_ERD);
                         boolean isSedSummary = _findAnnotation(m, DeprecatedSedSummaryData.class) != null;
                         boolean isSedTestTask = _findAnnotation(m, DeprecatedSedTestTaskData.class) != null;
-                        boolean isSedUcdData = _findAnnotation(m, DeprecatedUcdData.class) != null;
-                        return isHti5Erd && (isSedSummary || isSedTestTask || isSedUcdData);
+                        return isHti5Erd && (isSedSummary || isSedTestTask);
                     }
                   })
                 .build();

@@ -9,10 +9,12 @@ import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
 import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -44,6 +46,7 @@ public class UcdProcessNormalizer {
                     setEmptyStringFieldsToNull(ucdProcess);
                     populateUcdProcessId(ucdProcess);
                 });
+            findFuzzyMatchesForUnknownUcdProcesses(listing);
 
             List<CertifiedProductUcdProcess> ucdProcessesToRemove = getHopelessUcdProcesses(listing.getSed().getUcdProcesses());
             if (!CollectionUtils.isEmpty(ucdProcessesToRemove)) {
@@ -80,10 +83,8 @@ public class UcdProcessNormalizer {
 
     private List<CertifiedProductUcdProcess> getHopelessUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {
         return ucdProcesses.stream()
-                .filter(cpUcd -> cpUcd.getId() == null
-                    && StringUtils.isBlank(cpUcd.getName())
+                .filter(cpUcd -> cpUcd.getId() == null && StringUtils.isBlank(cpUcd.getName())
                     && StringUtils.isBlank(cpUcd.getDetails())
-                    && StringUtils.isBlank(cpUcd.getValue())
                     && StringUtils.isBlank(cpUcd.getUserEnteredName()))
                 .toList();
     }
@@ -95,13 +96,34 @@ public class UcdProcessNormalizer {
     }
 
     private void populateUcdProcessId(CertifiedProductUcdProcess ucdProcess) {
-        if (!StringUtils.isEmpty(ucdProcess.getValue())) {
-            UcdProcess foundUcdProcess = ucdDao.getByName(ucdProcess.getValue());
+        if (!StringUtils.isEmpty(ucdProcess.getName())) {
+            UcdProcess foundUcdProcess = ucdDao.getByName(ucdProcess.getName());
             if (foundUcdProcess != null) {
                 ucdProcess.setId(foundUcdProcess.getId());
-            } else {
-                ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
             }
+        } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
+        }
+    }
+
+    private void findFuzzyMatchesForUnknownUcdProcesses(CertifiedProductSearchDetails listing) {
+        listing.getSed().getUcdProcesses().stream()
+            .filter(ucdProcess -> ucdProcess.getId() == null)
+            .forEach(ucdProcess -> lookForFuzzyMatch(listing, ucdProcess));
+    }
+
+    private void lookForFuzzyMatch(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
+        if (StringUtils.isEmpty(ucdProcess.getName())) {
+            return;
+        }
+
+        String topFuzzyChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucdProcess.getName(), FuzzyType.UCD_PROCESS);
+        if (!StringUtils.isEmpty(topFuzzyChoice)) {
+            ucdProcess.setUserEnteredName(ucdProcess.getName());
+            ucdProcess.setName(topFuzzyChoice);
+            populateUcdProcessId(ucdProcess);
+        } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
         }
     }
 }

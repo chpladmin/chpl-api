@@ -79,7 +79,8 @@ public class Sed2015CsvPresenter extends CertifiedProductPresenter implements Au
         result.add("Version");
         result.add("Certification Criteria");
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            result.add("UCD Process");
+            result.add("UCD Process Name");
+            result.add("UCD Process Details");
         } else {
             result.add("Task Description");
             result.add("Rating Scale");
@@ -129,7 +130,8 @@ public class Sed2015CsvPresenter extends CertifiedProductPresenter implements Au
                         assocCriteriaStr.append(CertificationCriterionService.formatCriteriaNumber(criteria, true));
                     }
                     row.add(assocCriteriaStr.toString());
-                    row.add(ucd.getValue());
+                    row.add(ucd.getName() == null ? "" : ucd.getName());
+                    row.add(ucd.getDetails() == null ? "" : ucd.getDetails());
                     result.add(row);
                 });
         } else {
