@@ -2,10 +2,12 @@ package gov.healthit.chpl.report.questionableurl;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import jakarta.persistence.Query;
@@ -14,11 +16,14 @@ import jakarta.persistence.Query;
 public class QuestionableUrlReportDao extends BaseDAOImpl {
     private String unformattedListingDetailsUrl;
     private String unformattedDeveloperDetailsUrl;
+    private FF4j ff4j;
 
     @Autowired
-    public QuestionableUrlReportDao(@Value("${chplUrlBegin}") String chplUrlBegin,
+    public QuestionableUrlReportDao(FF4j ff4j,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
             @Value("${listingDetailsUrlPart}") String listingDetailsUrlPart,
             @Value("${developerUrlPart}") String developerUrlPart) {
+        this.ff4j = ff4j;
         this.unformattedListingDetailsUrl = chplUrlBegin + listingDetailsUrlPart;
         this.unformattedDeveloperDetailsUrl = chplUrlBegin + developerUrlPart;
     }
@@ -64,7 +69,7 @@ public class QuestionableUrlReportDao extends BaseDAOImpl {
         return report.getUrlType().equals(UrlType.API_DOCUMENTATION.getName())
                 || report.getUrlType().equals(UrlType.DOCUMENTATION.getName())
                 || report.getUrlType().equals(UrlType.EXPORT_DOCUMENTATION.getName())
-                || report.getUrlType().equals(UrlType.FULL_USABILITY_REPORT.getName())
+                || (!ff4j.check(FeatureList.HTI_5_ERD) && report.getUrlType().equals(UrlType.FULL_USABILITY_REPORT.getName()))
                 || report.getUrlType().equals(UrlType.MANDATORY_DISCLOSURE.getName())
                 || report.getUrlType().equals(UrlType.REAL_WORLD_TESTING_PLANS.getName())
                 || report.getUrlType().equals(UrlType.REAL_WORLD_TESTING_RESULTS.getName())

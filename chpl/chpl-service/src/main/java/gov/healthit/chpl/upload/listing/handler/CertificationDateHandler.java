@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
@@ -47,7 +47,7 @@ public class CertificationDateHandler {
     private LocalDate readCertificationDateFromFile(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         LocalDate certificationDate = null;
         try {
-            Date certDateFromFile = uploadUtil.parseSingleRowFieldAsDate(Heading.CERTIFICATION_DATE, headingRecord, listingRecords);
+            Date certDateFromFile = uploadUtil.parseSingleRowFieldAsDate(HeadingPostHti5.CERTIFICATION_DATE, headingRecord, listingRecords);
             if (certDateFromFile != null) {
                 certificationDate = certDateFromFile.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             }
@@ -58,7 +58,7 @@ public class CertificationDateHandler {
     private LocalDate parseCertificationDateFromChplProductNumber(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         LocalDate certificationDate = null;
         try {
-            String chplProductNumber = uploadUtil.parseRequiredSingleRowField(Heading.UNIQUE_ID, headingRecord, listingRecords);
+            String chplProductNumber = uploadUtil.parseRequiredSingleRowField(HeadingPostHti5.UNIQUE_ID, headingRecord, listingRecords);
             if (!StringUtils.isEmpty(chplProductNumber)) {
                 String certDateCode = chplProductNumberUtil.getCertificationDateCode(chplProductNumber);
                 if (!StringUtils.isEmpty(certDateCode) && certDateCode.matches("[0-9]{6}")) {

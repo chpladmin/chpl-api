@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -29,12 +30,14 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.JSONUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 public class CertificationResultContainsSvapActivityExplorerTest {
     private ActivityDAO activityDao;
     private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null,  null, JsonMapperUtil.getJsonMapper());
     private CertificationResultContainsSvapActivityExplorer explorer;
     private SimpleDateFormat formatter;
+    private JSONUtils jsonUtils;
 
     @BeforeEach
     public void setup() {
@@ -42,6 +45,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
+        jsonUtils = new JSONUtils(JsonMapper.builder().build(), Mockito.mock(FF4j.class));
         explorer = new CertificationResultContainsSvapActivityExplorer(activityDao, listingActivityUtil);
     }
 
@@ -78,7 +82,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     @Test
     public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingSvaps_returnsNull() throws ParseException {
         CertificationCriterion criterion = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -114,7 +118,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         CertificationCriterion a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -153,7 +157,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -193,7 +197,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -203,7 +207,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                             .build())
                         .collect(Collectors.toList()))
                 .build());
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -249,7 +253,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -259,7 +263,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                             .build())
                         .collect(Collectors.toList()))
                 .build());
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -305,7 +309,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
 
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -315,7 +319,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                             .build())
                         .collect(Collectors.toList()))
                 .build());
-        String listingUpdateActivity1 = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity1 = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()
@@ -329,7 +333,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                             .build())
                         .collect(Collectors.toList()))
                 .build());
-        String listingUpdateActivity2 = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity2 = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .certificationResults(Stream.of(
                         CertificationResult.builder()

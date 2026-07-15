@@ -14,17 +14,19 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.sed.TestParticipant;
 import gov.healthit.chpl.sed.TestTask;
+import gov.healthit.chpl.upload.listing.HeadingPreHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,18 +38,21 @@ public class SedUploadHandler {
     private TestParticipantsUploadHandler testParticipantHandler;
     private UcdProcessUploadHandler ucdHandler;
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
     public SedUploadHandler(CertificationCriterionUploadHandler criterionHandler,
             TestTaskUploadHandler testTaskHandler,
             TestParticipantsUploadHandler testParticipantHandler,
             UcdProcessUploadHandler ucdHandler,
-            ListingUploadHandlerUtil uploadUtil) {
+            ListingUploadHandlerUtil uploadUtil,
+            FF4j ff4j) {
         this.criterionHandler = criterionHandler;
         this.testTaskHandler = testTaskHandler;
         this.testParticipantHandler = testParticipantHandler;
         this.ucdHandler = ucdHandler;
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public CertifiedProductSed parseAsSed(CSVRecord headingRecord, List<CSVRecord> listingRecords,
@@ -62,8 +67,8 @@ public class SedUploadHandler {
                 .map(part -> part.getFriendlyId())
                 .collect(Collectors.toList());
         List<TestTask> testTasks = new ArrayList<TestTask>();
-        List<CertifiedProductUcdProcess> allUcdProcessesOnListing = new ArrayList<CertifiedProductUcdProcess>();
 
+        List<CertifiedProductUcdProcess> allUcdProcessesOnListing = new ArrayList<CertifiedProductUcdProcess>();
         int prevCertResultIndex = -1;
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0 && prevCertResultIndex != nextCertResultIndex) {
@@ -76,9 +81,11 @@ public class SedUploadHandler {
                         parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
                 updateUcdProcessList(allUcdProcessesOnListing, certResultUcdProcesses, criterion);
 
-                List<TestTask> certResultTestTasks = parseTestTaskIdsWithParticipantIds(
-                        certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-                updateTaskList(testTasks, certResultTestTasks, criterion, availableTestTasks, availableTestParticipants);
+                if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                    List<TestTask> certResultTestTasks = parseTestTaskIdsWithParticipantIds(
+                            certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
+                    updateTaskList(testTasks, certResultTestTasks, criterion, availableTestTasks, availableTestParticipants);
+                }
             }
             prevCertResultIndex = nextCertResultIndex;
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(
@@ -283,10 +290,10 @@ public class SedUploadHandler {
     }
 
     private List<String> parseTaskIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Heading.TASK_ID, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(HeadingPreHti5.TASK_ID, certHeadingRecord, certResultRecords);
     }
 
     private List<String> parseParticipantIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Heading.PARTICIPANT_ID, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(HeadingPreHti5.PARTICIPANT_ID, certHeadingRecord, certResultRecords);
     }
 }

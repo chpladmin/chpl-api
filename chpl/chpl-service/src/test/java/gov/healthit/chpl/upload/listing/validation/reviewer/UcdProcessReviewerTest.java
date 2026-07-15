@@ -1,18 +1,20 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -29,10 +31,12 @@ public class UcdProcessReviewerTest {
     private static final String UCD_NOT_FOUND_AND_REMOVED = "UCD Process '%s' referenced by criteria %s was not found and has been removed.";
     private static final String MISSING_UCD_PROCESS = "Certification %s requires at least one UCD process.";
     private static final String FUZZY_MATCH_REPLACEMENT = "The %s value was changed from %s to %s.";
+    private static final String UCD_BOTH_FIELDS = "Either the UCD Process Name or UCD Process Details must be filled in, but not both for UCD Process %s.";
 
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
+    private FF4j ff4j;
     private CertificationCriterion a1, a2, a3, a6;
     private UcdProcessReviewer reviewer;
 
@@ -40,6 +44,9 @@ public class UcdProcessReviewerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.ucdProcessNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(UCD_NOT_APPLICABLE, i.getArgument(1), ""));
@@ -52,6 +59,9 @@ public class UcdProcessReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.fuzzyMatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.ucdProcess.bothFieldsPresent"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(UCD_BOTH_FIELDS, i.getArgument(1), ""));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         a1 = CertificationCriterion.builder()
@@ -98,7 +108,7 @@ public class UcdProcessReviewerTest {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getId()), ArgumentMatchers.eq(CertificationResultRules.SED)))
             .thenReturn(false);
 
-        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, "1,2");
+        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, ff4j, "1,2");
     }
 
     @Test
@@ -478,6 +488,47 @@ public class UcdProcessReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ucdProcessesBothFieldsFilledInPostHti5_hasError() {
+        Mockito.when(ff4j.check(FeatureList.HTI_5_ERD)).thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a1)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a2)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a3)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
+                                .id(1L)
+                                .criteria(Stream.of(a1, a2).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .name("UCD Name 1")
+                                .details("some details")
+                                .userEnteredName("UCD Name 1")
+                                .build());
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
+                                .id(2L)
+                                .criteria(Stream.of(a2).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .name("UCD Name 2")
+                                .details(null)
+                                .build());
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(UCD_BOTH_FIELDS, "UCD Name 1")));
     }
 
     @Test

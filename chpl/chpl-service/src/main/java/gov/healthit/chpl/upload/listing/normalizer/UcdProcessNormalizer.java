@@ -5,9 +5,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
@@ -23,14 +25,17 @@ public class UcdProcessNormalizer {
     private UcdProcessDAO ucdDao;
     private FuzzyChoicesManager fuzzyChoicesManager;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     public UcdProcessNormalizer(UcdProcessDAO ucdDao,
             FuzzyChoicesManager fuzzyChoicesManager,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.ucdDao = ucdDao;
         this.fuzzyChoicesManager = fuzzyChoicesManager;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -96,6 +101,8 @@ public class UcdProcessNormalizer {
             if (foundUcdProcess != null) {
                 ucdProcess.setId(foundUcdProcess.getId());
             }
+        } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
         }
     }
 
@@ -115,6 +122,8 @@ public class UcdProcessNormalizer {
             ucdProcess.setUserEnteredName(ucdProcess.getName());
             ucdProcess.setName(topFuzzyChoice);
             populateUcdProcessId(ucdProcess);
+        } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
         }
     }
 }

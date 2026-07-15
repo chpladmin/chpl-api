@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -34,7 +36,9 @@ public class CsvHeaderReviewerTest {
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
             .thenReturn(Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C", "CRITERIA_170_315_A_9__C", "CRITERIA_170_315_A_1__C").toList());
-        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService, ff4j);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))

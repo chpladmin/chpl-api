@@ -10,10 +10,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -31,6 +33,7 @@ public class UcdProcessReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
     private List<CertificationCriterion> ucdProcessCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
@@ -38,10 +41,12 @@ public class UcdProcessReviewer implements Reviewer {
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
             ErrorMessageUtil msgUtil,
+            FF4j ff4j,
             @Value("${sedCriteria}") String ucdProcessCriteria) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
 
         this.ucdProcessCriteria = Arrays.asList(ucdProcessCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -56,6 +61,9 @@ public class UcdProcessReviewer implements Reviewer {
         removeUcdProcessesNotFound(listing);
         reviewAllUcdProcessCriteriaAreAllowed(listing);
         reviewCertResultsHaveUcdProcessesIfRequired(listing);
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            reviewOnlyOneUcdProcessFieldFilledIn(listing);
+        }
         addFuzzyMatchWarnings(listing);
     }
 
@@ -63,7 +71,8 @@ public class UcdProcessReviewer implements Reviewer {
         List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
             List<CertifiedProductUcdProcess> ucdProcessesWithoutFuzzyMatchesOrIds = ucdProcesses.stream()
-                    .filter(currUcdProc -> StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
+                    .filter(currUcdProc -> (!ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
+                            || (ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()) && StringUtils.isEmpty(currUcdProc.getUserEnteredDetails())))
                     .filter(currUcdProc -> currUcdProc.getId() == null)
                     .collect(Collectors.toList());
 
@@ -74,7 +83,7 @@ public class UcdProcessReviewer implements Reviewer {
                         .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
                         .forEach(ucdProcWithoutId -> listing.addWarningMessage(
                                 msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
-                                        ucdProcWithoutId.getName(),
+                                        (!StringUtils.isEmpty(ucdProcWithoutId.getName()) ? ucdProcWithoutId.getName() : ucdProcWithoutId.getDetails()),
                                         ucdProcWithoutId.getCriteria().stream()
                                                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                                                 .collect(Collectors.joining(",")))));
@@ -124,6 +133,14 @@ public class UcdProcessReviewer implements Reviewer {
                 .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
                 .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
                 .forEach(certResult -> reviewCertResultHasUcdProcessIfRequired(listing, certResult));
+    }
+
+    private void reviewOnlyOneUcdProcessFieldFilledIn(CertifiedProductSearchDetails listing) {
+        List<CertifiedProductUcdProcess> ucdProcessesWithBothFieldsFilledIn = listing.getSed().getUcdProcesses().stream()
+            .filter(ucd -> !StringUtils.isBlank(ucd.getName()) && !StringUtils.isBlank(ucd.getDetails()))
+            .collect(Collectors.toList());
+        ucdProcessesWithBothFieldsFilledIn.stream()
+            .forEach(ucd -> listing.addBusinessErrorMessage(msgUtil.getMessage("listing.ucdProcess.bothFieldsPresent", ucd.getUserEnteredName())));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
