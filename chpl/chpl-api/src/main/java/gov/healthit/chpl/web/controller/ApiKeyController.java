@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.api.domain.ApiKeyConfirmation;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -57,8 +58,8 @@ public class ApiKeyController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ApiKey confirm(@RequestBody String apiKeyRequestToken) throws ValidationException, EntityCreationException, ActivityException, EmailNotSentException {
-        return apiKeyManager.confirmRequest(apiKeyRequestToken);
+    public ApiKey confirm(@RequestBody ApiKeyConfirmation confirmation) throws ValidationException, EntityCreationException, ActivityException, EmailNotSentException {
+        return apiKeyManager.confirmRequest(confirmation.getRequestKey());
     }
 
     @Operation(summary = "Remove an API key.",
