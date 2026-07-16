@@ -26,6 +26,7 @@ public class UcdProcessNormalizer {
     private FuzzyChoicesManager fuzzyChoicesManager;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
+    private UcdProcess customUcdProcess;
 
     @Autowired
     public UcdProcessNormalizer(UcdProcessDAO ucdDao,
@@ -36,6 +37,7 @@ public class UcdProcessNormalizer {
         this.fuzzyChoicesManager = fuzzyChoicesManager;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
+        this.customUcdProcess = ucdDao.getById(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -102,7 +104,8 @@ public class UcdProcessNormalizer {
                 ucdProcess.setId(foundUcdProcess.getId());
             }
         } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
+            ucdProcess.setId(customUcdProcess.getId());
+            ucdProcess.setName(customUcdProcess.getName());
         }
     }
 
@@ -122,8 +125,6 @@ public class UcdProcessNormalizer {
             ucdProcess.setUserEnteredName(ucdProcess.getName());
             ucdProcess.setName(topFuzzyChoice);
             populateUcdProcessId(ucdProcess);
-        } else if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            ucdProcess.setId(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID);
         }
     }
 }

@@ -35,6 +35,8 @@ public class UcdProcessNormalizerTest {
     @BeforeEach
     public void setup() {
         ucdProcessDao = Mockito.mock(UcdProcessDAO.class);
+        Mockito.when(ucdProcessDao.getById(ArgumentMatchers.eq(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID)))
+            .thenReturn(UcdProcess.builder().id(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID).name("Custom").build());
         fuzzyChoicesManager = Mockito.mock(FuzzyChoicesManager.class);
         ff4j = Mockito.mock(FF4j.class);
 
@@ -149,7 +151,7 @@ public class UcdProcessNormalizerTest {
     }
 
     @Test
-    public void normalize_ucdProcessNameNotFoundAndFuzzyMatchNotFoundAfterHti5_hasCustomId() {
+    public void normalize_ucdProcessNameNotFoundAndFuzzyMatchNotFoundAfterHti5_hasNullId() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
@@ -166,7 +168,7 @@ public class UcdProcessNormalizerTest {
 
         normalizer.normalize(listing);
         assertEquals(1, listing.getSed().getUcdProcesses().size());
-        assertEquals(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID, listing.getSed().getUcdProcesses().get(0).getId());
+        assertNull(listing.getSed().getUcdProcesses().get(0).getId());
         assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getName());
         assertNull(listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
     }
@@ -187,7 +189,7 @@ public class UcdProcessNormalizerTest {
         assertEquals(1, listing.getSed().getUcdProcesses().size());
         assertEquals(CertifiedProductUcdProcess.CUSTOM_UCD_PROCESS_ID, listing.getSed().getUcdProcesses().get(0).getId());
         assertEquals("details", listing.getSed().getUcdProcesses().get(0).getDetails());
-        assertNull(listing.getSed().getUcdProcesses().get(0).getName());
+        assertEquals("Custom", listing.getSed().getUcdProcesses().get(0).getName());
         assertNull(listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
     }
 
