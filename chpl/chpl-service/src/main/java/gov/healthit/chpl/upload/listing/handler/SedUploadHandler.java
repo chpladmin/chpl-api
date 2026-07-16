@@ -122,16 +122,14 @@ public class SedUploadHandler {
 
     private boolean listingContainsUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess) {
         return listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.getName()
-                    .equals(certResultUcdProcess.getName()))
+            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
             .findAny().isPresent();
     }
 
     private void addCriteriaToExistingUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess,
             CertificationCriterion criterion) {
         listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.getName()
-                    .equals(certResultUcdProcess.getName()))
+            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
             .forEach(listingUcdProcess -> {
                 listingUcdProcess.getCriteria().add(criterion);
             });
