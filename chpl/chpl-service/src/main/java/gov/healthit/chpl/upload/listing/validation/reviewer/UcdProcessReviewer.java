@@ -61,9 +61,6 @@ public class UcdProcessReviewer implements Reviewer {
         removeUcdProcessesNotFound(listing);
         reviewAllUcdProcessCriteriaAreAllowed(listing);
         reviewCertResultsHaveUcdProcessesIfRequired(listing);
-        if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            reviewOnlyOneUcdProcessFieldFilledIn(listing);
-        }
         addFuzzyMatchWarnings(listing);
     }
 
@@ -133,14 +130,6 @@ public class UcdProcessReviewer implements Reviewer {
                 .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
                 .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
                 .forEach(certResult -> reviewCertResultHasUcdProcessIfRequired(listing, certResult));
-    }
-
-    private void reviewOnlyOneUcdProcessFieldFilledIn(CertifiedProductSearchDetails listing) {
-        List<CertifiedProductUcdProcess> ucdProcessesWithBothFieldsFilledIn = listing.getSed().getUcdProcesses().stream()
-            .filter(ucd -> !StringUtils.isBlank(ucd.getName()) && !StringUtils.isBlank(ucd.getDetails()))
-            .collect(Collectors.toList());
-        ucdProcessesWithBothFieldsFilledIn.stream()
-            .forEach(ucd -> listing.addBusinessErrorMessage(msgUtil.getMessage("listing.ucdProcess.bothFieldsPresent", ucd.getUserEnteredName())));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
