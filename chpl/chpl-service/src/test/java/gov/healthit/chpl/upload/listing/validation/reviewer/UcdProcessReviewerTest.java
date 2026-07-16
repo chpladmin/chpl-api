@@ -31,7 +31,6 @@ public class UcdProcessReviewerTest {
     private static final String UCD_NOT_FOUND_AND_REMOVED = "UCD Process '%s' referenced by criteria %s was not found and has been removed.";
     private static final String MISSING_UCD_PROCESS = "Certification %s requires at least one UCD process.";
     private static final String FUZZY_MATCH_REPLACEMENT = "The %s value was changed from %s to %s.";
-    private static final String UCD_BOTH_FIELDS = "Either the UCD Process Name or UCD Process Details must be filled in, but not both for UCD Process %s.";
 
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
@@ -59,9 +58,6 @@ public class UcdProcessReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.fuzzyMatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.ucdProcess.bothFieldsPresent"),
-                ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(UCD_BOTH_FIELDS, i.getArgument(1), ""));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         a1 = CertificationCriterion.builder()
@@ -491,7 +487,7 @@ public class UcdProcessReviewerTest {
     }
 
     @Test
-    public void review_ucdProcessesBothFieldsFilledInPostHti5_hasError() {
+    public void review_ucdProcessesBothFieldsFilledInPostHti5_noError() {
         Mockito.when(ff4j.check(FeatureList.HTI_5_ERD)).thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -527,8 +523,7 @@ public class UcdProcessReviewerTest {
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(UCD_BOTH_FIELDS, "UCD Name 1")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
