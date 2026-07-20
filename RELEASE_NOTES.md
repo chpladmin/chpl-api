@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 54.0.0
+_20 July 2026_
+
+### Breaking Changes
+* Use object for API Key confirmation endpoint instead of string
+
+### Features
+* Create endpoint to get surveillance by developer
+
+### Bug Fixes
+* Correctly calculate whether grouped standards are up to date
+
+---
+
 ## Version 53.10.0
 _6 July 2026_
 
