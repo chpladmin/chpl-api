@@ -79,7 +79,8 @@ public class SedUploadHandler {
             if (criterion != null) {
                 List<CertifiedProductUcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
                         parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-                updateUcdProcessList(allUcdProcessesOnListing, certResultUcdProcesses, criterion);
+                certResultUcdProcesses.stream().forEach(ucd -> ucd.getCriteria().add(criterion));
+                allUcdProcessesOnListing.addAll(certResultUcdProcesses);
 
                 if (!ff4j.check(FeatureList.HTI_5_ERD)) {
                     List<TestTask> certResultTestTasks = parseTestTaskIdsWithParticipantIds(
@@ -104,35 +105,6 @@ public class SedUploadHandler {
             .build();
         updateUnusedTaskAndParticipantIds(sed, availableTestTasks, availableTestParticipants);
         return sed;
-    }
-
-    private void updateUcdProcessList(List<CertifiedProductUcdProcess> allUcdProcessesOnListing, List<CertifiedProductUcdProcess> certResultUcdProcesses,
-            CertificationCriterion criterion) {
-        certResultUcdProcesses.stream().forEach(certResultUcdProcess -> {
-            if (listingContainsUcdProcess(allUcdProcessesOnListing, certResultUcdProcess)) {
-                addCriteriaToExistingUcdProcess(allUcdProcessesOnListing, certResultUcdProcess, criterion);
-            } else {
-                LinkedHashSet<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
-                criteriaSet.add(criterion);
-                certResultUcdProcess.setCriteria(criteriaSet);
-                allUcdProcessesOnListing.add(certResultUcdProcess);
-            }
-        });
-    }
-
-    private boolean listingContainsUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess) {
-        return listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
-            .findAny().isPresent();
-    }
-
-    private void addCriteriaToExistingUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess,
-            CertificationCriterion criterion) {
-        listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
-            .forEach(listingUcdProcess -> {
-                listingUcdProcess.getCriteria().add(criterion);
-            });
     }
 
     private void updateTaskList(List<TestTask> tasks, List<TestTask> certResultTasks, CertificationCriterion criterion,

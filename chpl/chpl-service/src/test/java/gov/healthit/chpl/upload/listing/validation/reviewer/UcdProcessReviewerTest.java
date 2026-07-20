@@ -8,13 +8,11 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -35,7 +33,6 @@ public class UcdProcessReviewerTest {
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
-    private FF4j ff4j;
     private CertificationCriterion a1, a2, a3, a6;
     private UcdProcessReviewer reviewer;
 
@@ -43,8 +40,6 @@ public class UcdProcessReviewerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        ff4j = Mockito.mock(FF4j.class);
-        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.ucdProcessNotApplicable"),
                 ArgumentMatchers.anyString()))
@@ -104,7 +99,7 @@ public class UcdProcessReviewerTest {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getId()), ArgumentMatchers.eq(CertificationResultRules.SED)))
             .thenReturn(false);
 
-        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, ff4j, "1,2");
+        reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, "1,2");
     }
 
     @Test
@@ -479,46 +474,6 @@ public class UcdProcessReviewerTest {
                                 .criteria(Stream.of(a2).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name 2")
                                 .details("some details")
-                                .build());
-        reviewer.review(listing);
-
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_ucdProcessesBothFieldsFilledInPostHti5_noError() {
-        Mockito.when(ff4j.check(FeatureList.HTI_5_ERD)).thenReturn(true);
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(a1)
-                        .sed(true)
-                        .build())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(a2)
-                        .sed(true)
-                        .build())
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(a3)
-                        .sed(false)
-                        .build())
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
-                                .id(1L)
-                                .criteria(Stream.of(a1, a2).collect(Collectors.toCollection(LinkedHashSet::new)))
-                                .name("UCD Name 1")
-                                .details("some details")
-                                .userEnteredName("UCD Name 1")
-                                .build());
-        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
-                                .id(2L)
-                                .criteria(Stream.of(a2).collect(Collectors.toCollection(LinkedHashSet::new)))
-                                .name("UCD Name 2")
-                                .details(null)
                                 .build());
         reviewer.review(listing);
 
