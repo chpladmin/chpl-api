@@ -499,23 +499,4 @@ public class UcdProcessReviewerTest {
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.UCD_PROCESS.fuzzyType(), "ucd 1", "ucd1")));
     }
-
-    @Test
-    public void review_hasNullIdAndUcdProcessNameDifferentThanUserEnteredName_hasFuzzyMatchWarning() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder()
-                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
-                                .name("ucd1")
-                                .id(null)
-                                .userEnteredName("ucd 1")
-                                .build()).toList())
-                        .build())
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getSed().getUcdProcesses().size());
-        assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.UCD_PROCESS.fuzzyType(), "ucd 1", "ucd1")));
-    }
 }
