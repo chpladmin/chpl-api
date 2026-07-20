@@ -10,12 +10,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -33,7 +31,6 @@ public class UcdProcessReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
     private List<CertificationCriterion> ucdProcessCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
@@ -41,12 +38,10 @@ public class UcdProcessReviewer implements Reviewer {
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
             ErrorMessageUtil msgUtil,
-            FF4j ff4j,
             @Value("${sedCriteria}") String ucdProcessCriteria) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
 
         this.ucdProcessCriteria = Arrays.asList(ucdProcessCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -68,8 +63,6 @@ public class UcdProcessReviewer implements Reviewer {
         List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
             List<CertifiedProductUcdProcess> ucdProcessesWithoutFuzzyMatchesOrIds = ucdProcesses.stream()
-                    .filter(currUcdProc -> (!ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
-                            || (ff4j.check(FeatureList.HTI_5_ERD) && StringUtils.isEmpty(currUcdProc.getUserEnteredName()) && StringUtils.isEmpty(currUcdProc.getUserEnteredDetails())))
                     .filter(currUcdProc -> currUcdProc.getId() == null)
                     .collect(Collectors.toList());
 

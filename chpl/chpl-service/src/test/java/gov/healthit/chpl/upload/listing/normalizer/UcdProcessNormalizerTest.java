@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
@@ -82,10 +83,14 @@ public class UcdProcessNormalizerTest {
     @Test
     public void normalize_ucdProcessNameFound_fillsInId() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build())
+                        .collect(Collectors.toList()))
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();
@@ -103,10 +108,14 @@ public class UcdProcessNormalizerTest {
     @Test
     public void normalize_ucdProcessNameNotFoundAndFuzzyMatchFound_setsValues() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build())
+                        .collect(Collectors.toList()))
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();
@@ -130,10 +139,14 @@ public class UcdProcessNormalizerTest {
     @Test
     public void normalize_ucdProcessNameNotFoundAndFuzzyMatchNotFoundBeforeHti5_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build())
+                        .collect(Collectors.toList()))
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();
@@ -153,10 +166,14 @@ public class UcdProcessNormalizerTest {
     @Test
     public void normalize_ucdProcessNameNotFoundAndFuzzyMatchNotFoundAfterHti5_hasNullId() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build())
+                        .collect(Collectors.toList()))
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();
@@ -176,10 +193,14 @@ public class UcdProcessNormalizerTest {
     @Test
     public void normalize_ucdProcessNullNameHasDetailsAfterHti5_hasCustomId() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build())
+                        .collect(Collectors.toList()))
                 .sed(CertifiedProductSed.builder()
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name(null)
                                 .details("details")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();
@@ -192,6 +213,76 @@ public class UcdProcessNormalizerTest {
         assertEquals("Custom", listing.getSed().getUcdProcesses().get(0).getName());
         assertNull(listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
     }
+
+    @Test
+    public void normalize_ucdProcessGroupingFromUploadFile_groupsCorrectly() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build(),
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(2L).build()).build(),
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(3L).build()).build())
+                        .collect(Collectors.toList()))
+                .sed(CertifiedProductSed.builder()
+                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
+                                .name("ucd 1")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(1L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .build(),
+                                CertifiedProductUcdProcess.builder()
+                                .name("ucd 1")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(2L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .build(),
+                                CertifiedProductUcdProcess.builder()
+                                .name("ucd 1")
+                                .criteria(Stream.of(CertificationCriterion.builder().id(3L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .build();
+
+        Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.anyString()))
+        .thenReturn(UcdProcess.builder()
+                .id(1L)
+                .name("ucd 1")
+                .build());
+
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getSed().getUcdProcesses().size());
+        assertEquals(1L, listing.getSed().getUcdProcesses().get(0).getId());
+        assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getName());
+        assertEquals(3, listing.getSed().getUcdProcesses().get(0).getCriteria().size());
+    }
+
+    @Test
+    public void normalize_ucdProcessGroupingAlreadyGrouped_groupsCorrectly() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResults(Stream.of(
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(1L).build()).build(),
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(2L).build()).build(),
+                        CertificationResult.builder().success(true).criterion(CertificationCriterion.builder().id(3L).build()).build())
+                        .collect(Collectors.toList()))
+                .sed(CertifiedProductSed.builder()
+                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
+                                .name("ucd 1")
+                                .criteria(Stream.of(
+                                        CertificationCriterion.builder().id(1L).build(),
+                                        CertificationCriterion.builder().id(2L).build(),
+                                        CertificationCriterion.builder().id(3L).build()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .build();
+
+        Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.anyString()))
+        .thenReturn(UcdProcess.builder()
+                .id(1L)
+                .name("ucd 1")
+                .build());
+
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getSed().getUcdProcesses().size());
+        assertEquals(1L, listing.getSed().getUcdProcesses().get(0).getId());
+        assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getName());
+        assertEquals(3, listing.getSed().getUcdProcesses().get(0).getCriteria().size());
+    }
+
 
     @Test
     public void normalize_ucdProcessWithCriteriaButNoOtherFields_ucdProcessIsRemoved() {

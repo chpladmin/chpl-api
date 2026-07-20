@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,8 @@ public class UcdProcessNormalizer {
             if (!CollectionUtils.isEmpty(ucdProcessesToRemove)) {
                 listing.getSed().getUcdProcesses().removeAll(ucdProcessesToRemove);
             }
+
+            groupUcdProcessList(listing, listing.getSed().getUcdProcesses());
         }
     }
 
@@ -127,4 +131,57 @@ public class UcdProcessNormalizer {
             populateUcdProcessId(ucdProcess);
         }
     }
+
+    private void groupUcdProcessList(CertifiedProductSearchDetails listing, List<CertifiedProductUcdProcess> allUcdProcesses) {
+        List<CertifiedProductUcdProcess> groupedUcdProcesses = new ArrayList<CertifiedProductUcdProcess>();
+
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> updateUcdProcessList(groupedUcdProcesses,
+                    allUcdProcesses.stream().filter(ucd -> criterionUsesUcdProcess(certResult.getCriterion(), ucd)).collect(Collectors.toList()),
+                    certResult.getCriterion()));
+        listing.getSed().setUcdProcesses(groupedUcdProcesses);
+    }
+
+    private boolean criterionUsesUcdProcess(CertificationCriterion criterion, CertifiedProductUcdProcess ucdProcess) {
+        return ucdProcess.getCriteria().stream()
+                .map(crit -> crit.getId())
+                .filter(ucdCriterionId -> ucdCriterionId.equals(criterion.getId()))
+                .findAny()
+                .isPresent();
+    }
+
+    private void updateUcdProcessList(List<CertifiedProductUcdProcess> allUcdProcessesOnListing,
+            List<CertifiedProductUcdProcess> certResultUcdProcesses,
+            CertificationCriterion criterion) {
+        certResultUcdProcesses.stream().forEach(certResultUcdProcess -> {
+            if (listingContainsUcdProcess(allUcdProcessesOnListing, certResultUcdProcess)) {
+                addCriteriaToExistingUcdProcess(allUcdProcessesOnListing, certResultUcdProcess, criterion);
+            } else {
+                if (certResultUcdProcess.getCriteria() != null) {
+                    certResultUcdProcess.getCriteria().add(criterion);
+                } else {
+                    LinkedHashSet<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
+                    criteriaSet.add(criterion);
+                    certResultUcdProcess.setCriteria(criteriaSet);
+                }
+                allUcdProcessesOnListing.add(certResultUcdProcess);
+            }
+        });
+    }
+
+    private boolean listingContainsUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess) {
+        return listingUcdProcesses.stream()
+            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
+            .findAny().isPresent();
+    }
+
+    private void addCriteriaToExistingUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess,
+            CertificationCriterion criterion) {
+        listingUcdProcesses.stream()
+            .filter(listingUcdProcess -> listingUcdProcess.matches(certResultUcdProcess))
+            .forEach(listingUcdProcess -> {
+                listingUcdProcess.getCriteria().add(criterion);
+            });
+    }
+
 }
