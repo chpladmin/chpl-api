@@ -22,6 +22,7 @@ import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
@@ -58,6 +59,17 @@ public class ReportDataController {
     @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
+    }
+
+    @Operation(summary = "Retrieves the data about each surveillance including the related developer.",
+            description = "Retrieves the data about each surveillance including the related developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/surveillance-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
+        return reportDataManager.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",

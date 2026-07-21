@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
@@ -19,6 +20,7 @@ import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -26,11 +28,21 @@ import lombok.extern.log4j.Log4j2;
 public class SurveillanceReportsService extends SummaryStatisticsReportBaseService {
 
     private ListingSearchService listingSearchService;
+    private SurveillanceDAO surveillanceDao;
 
     @Autowired
-    public SurveillanceReportsService(SummaryStatisticsDAO summaryStatisticsDAO, ListingSearchService listingSearchService, CertificationBodyManager certificationBodyManager) {
+    public SurveillanceReportsService(SummaryStatisticsDAO summaryStatisticsDAO,
+            ListingSearchService listingSearchService,
+            CertificationBodyManager certificationBodyManager,
+            SurveillanceDAO surveillanceDao) {
         super(summaryStatisticsDAO, certificationBodyManager);
         this.listingSearchService = listingSearchService;
+        this.surveillanceDao = surveillanceDao;
+    }
+
+    @Transactional
+    public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
+        return surveillanceDao.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
     }
 
     public SurveillanceActivityCounts getSurveiilanceActivityCounts() {
