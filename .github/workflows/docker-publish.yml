@@ -53,6 +53,12 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
+          # build-push-action v6 enables these by default, which each push a
+          # separate untagged provenance/SBOM manifest to GHCR alongside the
+          # real image - not needed here, so turned off to keep the package
+          # version list clean.
+          provenance: false
+          sbom: false
           tags: |
             ${{ steps.meta.outputs.image }}:build-${{ github.run_number }}
             ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.sha_short }}
