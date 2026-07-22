@@ -104,7 +104,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     private boolean isRwtResultsRequired(RealWorldTestingReport rwtReport) {
         //RWT Results requirement is only enforced for listings with g7, g9, or g10 pre HTI-5
-        //and listings with any g-criteria after HTI-5 so we only want to report on those
+        //and listings with any g-criteria or non-g-criteria and svap after HTI-5 so we only want to report on those
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
             return rwtReport.getCriterionAndSvapData().stream()
                 .filter(item -> item.isAttested() && (item.isGCriterion() || item.isUsesSvap()))
