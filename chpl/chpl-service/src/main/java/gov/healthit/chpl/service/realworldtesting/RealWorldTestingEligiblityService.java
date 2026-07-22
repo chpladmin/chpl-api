@@ -19,6 +19,7 @@ import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityAc
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -113,9 +114,9 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibility getRwtEligibility(Optional<CertifiedProductSearchDetails> listing,
             RealWorldTestingEligiblityReason reason,
             Integer currentRwtEligYear) {
-        List<CertificationCriterion> attestedCriteria = new ArrayList<CertificationCriterion>();
+        List<CertificationResult> attestedCertificationResults = new ArrayList<CertificationResult>();
         if (listing != null && listing.isPresent()) {
-            attestedCriteria = listing.get().getCertificationResults().stream()
+            attestedCertificationResults = listing.get().getCertificationResults().stream()
                     //We might be getting this listing in it's original state from saved JSON.
                     //For most of CHPL before mid-2023, we saved a certification result on the listing for each criteria
                     //and used the "success" field to determine if that listing attested to that criterion.
@@ -123,13 +124,12 @@ public class RealWorldTestingEligiblityService {
                     //We still have "success" today, but it is always "true" because after mid-2023, we changed our
                     //listing details response to only include certification results for each criterion the listing attests to.
                     .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
-                    .map(certResult -> certResult.getCriterion())
                     .collect(Collectors.toList());
         }
         return RealWorldTestingEligibility.builder()
             .reason(reason)
             .eligibilityYear(currentRwtEligYear)
-            .attestedCriteria(attestedCriteria)
+            .attestedCertificationResults(attestedCertificationResults)
         .build();
     }
 
