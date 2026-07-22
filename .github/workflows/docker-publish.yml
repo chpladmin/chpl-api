@@ -2,6 +2,10 @@ name: Publish Docker Image
 
 on:
   workflow_dispatch: {}
+  # TEMPORARY: workflow_dispatch only shows up in the Actions UI once this file
+  # exists on the default branch, so pull_request lets us test it before that.
+  # Remove this trigger once the workflow has been validated via a PR.
+  pull_request: {}
 
 permissions:
   contents: read
@@ -29,7 +33,7 @@ jobs:
         run: |
           echo "image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-          echo "branch=$(echo '${{ github.ref_name }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
+          echo "branch=$(echo '${{ github.head_ref || github.ref_name }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
 
       # This image contains no secrets - see docker/Dockerfile. Every environment
       # (dev/qa/stage/production) runs the exact same image; secrets are supplied
