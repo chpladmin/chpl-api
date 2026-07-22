@@ -25,6 +25,10 @@
 *.xml           text
 *.yml           text
 
+# Scripts that execute inside Linux containers must keep LF endings on every
+# platform - a CRLF shebang breaks `docker build`/`docker run` on checkout.
+docker/entrypoint.sh eol=lf
+
 # These files are binary and should be left untouched
 # (binary is a macro for -text -diff)
 *.class         binary
