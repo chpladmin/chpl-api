@@ -30,7 +30,7 @@ public class ProductNameValidation extends ValidationRule<ProductValidationConte
         }
 
         boolean currentProductWithSameName = currentProductsForDeveloper.stream()
-            .filter(currProd -> currProd.getName().equalsIgnoreCase(updatedProductName))
+            .filter(currProd -> currProd.getName().equals(updatedProductName))
             .findAny().isPresent();
         if (currentProductWithSameName) {
             getMessages().add(context.getErrorMessageUtil().getMessage("product.duplicateName", updatedProductName));
