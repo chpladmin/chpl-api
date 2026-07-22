@@ -2,6 +2,15 @@ name: Publish Docker Image
 
 on:
   workflow_dispatch: {}
+  # One workflow, shared by every environment branch: a merge into any of
+  # these triggers a build tagged latest-<that-branch>. No per-branch copies
+  # or separate workflow files to keep in sync.
+  push:
+    branches:
+      - development
+      - qa
+      - staging
+      - production
 
 permissions:
   contents: read
