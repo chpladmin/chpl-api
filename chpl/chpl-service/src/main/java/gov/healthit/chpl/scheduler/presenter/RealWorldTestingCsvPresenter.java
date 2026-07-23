@@ -34,6 +34,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
 public class RealWorldTestingCsvPresenter {
+    private CertificationCriterionService criteriaService;
     private List<CertificationCriterion> rwtResultsRequiredCriteria;
 
     @Autowired
@@ -41,6 +42,7 @@ public class RealWorldTestingCsvPresenter {
             CertificationCriterionService criteriaService,
             CertificationCriterionComparator criteriaComparator,
             FF4j ff4j) {
+        this.criteriaService = criteriaService;
         Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
             rwtResultsRequiredCriteria = rwtCriteriaService.getEligibleCriteria(currentYear);
@@ -86,7 +88,13 @@ public class RealWorldTestingCsvPresenter {
         results.add("RWT Plans Message");
         results.add("RWT Results Message");
         rwtResultsRequiredCriteria.stream()
-            .forEach(criterion -> results.add(Util.formatCriteriaNumber(criterion)));
+            .forEach(criterion -> {
+                if (criteriaService.isGCriterion(criterion)) {
+                    results.add(Util.formatCriteriaNumber(criterion) + "SVAP");
+                } else {
+                    results.add(Util.formatCriteriaNumber(criterion));
+                }
+        });
         return results;
     }
 
