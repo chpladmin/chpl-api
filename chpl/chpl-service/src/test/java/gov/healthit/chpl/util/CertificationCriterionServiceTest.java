@@ -136,7 +136,7 @@ public class CertificationCriterionServiceTest {
     public void coerceToCriteriaNumber_MissingSpaceBeforeParen_AddsSpace() {
         String criterionNumber = "170.315(a)(6)";
         String result = service.coerceToCriterionNumberFormat(criterionNumber);
-        assertEquals("170.315 (a)(7)", result); // TEMP: intentionally wrong, testing CI gate
+        assertEquals("170.315 (a)(6)", result);
     }
 
     @Test
