@@ -52,7 +52,7 @@
               pathname="conf/tomcat-users.xml" />
 
     <!-- CHPL database connection. Values are resolved from container
-         environment variables at startup (see docker/entrypoint.sh and
+         environment variables at startup (see
          org.apache.tomcat.util.digester.PROPERTY_SOURCE in catalina.properties) -->
     <Resource name="jdbc/openchpl" auth="Container"
               type="javax.sql.DataSource"

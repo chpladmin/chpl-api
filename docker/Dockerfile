@@ -26,12 +26,10 @@ RUN mvn clean package -DskipTests
 # org.apache.tomcat.util.digester.PROPERTY_SOURCE) and the checked-in
 # environment.properties/email.properties already mark every sensitive key
 # as SECRET, relying on Spring's Environment to prefer OS environment
-# variables over those classpath files. See entrypoint.sh for the one
-# exception (the JWK signing key, which the app reads from a file path).
+# variables over those classpath files.
 #
 # Required environment variables at `docker run` time:
 #   DB_URL, DB_USERNAME, DB_PASSWORD        - jdbc/openchpl datasource
-#   JWK_KEY                                 - contents of the RSA JOSE JWK signing key
 #   plus every property marked SECRET in
 #   chpl/chpl-resources/src/main/resources/environment.properties and email.properties
 #   (e.g. SPRING_REDIS_PASSWORD, COGNITO_SECRETKEY, AZURE_CLIENTSECRET_ONC, JIRA_PASSWORD, ...)
@@ -40,15 +38,8 @@ FROM tomcat:11.0.23-jdk21
 COPY docker/tomcat-conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/tomcat-conf/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.properties
-COPY docker/entrypoint.sh /usr/local/tomcat/bin/entrypoint.sh
-RUN chmod +x /usr/local/tomcat/bin/entrypoint.sh
 
 COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
-# Path (not a secret) where the JWK key gets written by entrypoint.sh
-ENV keyLocation=/usr/local/tomcat/conf/JSONRsaJoseJWebKey.txt
-
 # Expose our custom Tomcat port
 EXPOSE 8181
-
-ENTRYPOINT ["/usr/local/tomcat/bin/entrypoint.sh"]

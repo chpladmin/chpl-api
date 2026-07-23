@@ -3,11 +3,10 @@
 `docker/Dockerfile` builds a **secret-free** image: the same image is used for
 every environment (development/qa/staging/production). Nothing sensitive is
 baked in at build time - all of it is supplied as container environment
-variables when the image is actually run. See `docker/Dockerfile`,
-`docker/tomcat-conf/`, and `docker/entrypoint.sh` for how that works
-mechanically (Tomcat's `EnvironmentPropertySource` for `server.xml`, Spring's
-`Environment` for everything else, and `entrypoint.sh` for the one exception -
-the JWK signing key, which the app reads from a file rather than a property).
+variables when the image is actually run. See `docker/Dockerfile` and
+`docker/tomcat-conf/` for how that works mechanically (Tomcat's
+`EnvironmentPropertySource` for `server.xml`, Spring's `Environment` for
+everything else).
 
 This doc lists every environment variable the image needs or accepts. It does
 **not** contain real values for any environment - only what each variable is
@@ -25,7 +24,6 @@ docker run -d --name chpl-api \
   -e DB_URL="jdbc:postgresql://<host>:5432/openchpl" \
   -e DB_USERNAME="<db-username>" \
   -e DB_PASSWORD="<db-password>" \
-  -e JWK_KEY="$(cat /path/to/JSONRsaJoseJWebKey.txt)" \
   -e chplUrlBegin="https://chpl-dev.healthit.gov" \
   -e SPRING_REDIS_HOST="<redis-host>" \
   -e SPRING_REDIS_PORT="6379" \
@@ -49,7 +47,6 @@ property.
 | `DB_URL` | JDBC URL for the `jdbc/openchpl` datasource (`server.xml`) |
 | `DB_USERNAME` | DB username (`server.xml`) |
 | `DB_PASSWORD` | DB password (`server.xml`) |
-| `JWK_KEY` | Contents of the RSA JOSE JWK signing key. `entrypoint.sh` writes this to `/usr/local/tomcat/conf/JSONRsaJoseJWebKey.txt` at container start (`keyLocation` is already set in the image - you don't need to set it). |
 
 ## Filesystem paths (need a mounted volume, not just an env var)
 
