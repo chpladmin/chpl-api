@@ -45,8 +45,29 @@ jobs:
           MAVEN_OPTS: -Xms512m -Xmx1024m
         run: mvn -B clean test --file chpl/pom.xml
 
+  # Mirrors the "Build API" job (CompileApiTask) in the same Bamboo plan, and
+  # runs the exact `mvn clean package -DskipTests` command that docker/Dockerfile's
+  # build stage runs - so a compile/packaging failure shows up here, fast,
+  # instead of partway through the (slower) Docker build.
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Compile and package
+        env:
+          MAVEN_OPTS: -Xms512m -Xmx1024m
+        run: mvn -B clean package -DskipTests --file chpl/pom.xml
+
   build-and-push:
-    needs: unit-tests
+    needs: [unit-tests, compile]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
