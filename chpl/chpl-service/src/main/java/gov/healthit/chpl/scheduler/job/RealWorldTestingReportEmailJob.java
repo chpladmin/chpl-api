@@ -151,7 +151,7 @@ public class RealWorldTestingReportEmailJob implements Job {
             RealWorldTestingReportSummary summary = RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, year);
             paragraph.append("Real World Testing for ").append(summary.getRwtEligibilityYear()).append(":<br/>")
                     .append("<ul>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing(s) for this period</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing for this period</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithdrawn(), 0)).append(" Withdrawn, no longer eligible</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalActive(), 0)).append(" Active</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>")

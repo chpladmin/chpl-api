@@ -3,10 +3,11 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport.CriterionAndSvapData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,9 +48,81 @@ public class CheckInReport {
     private String realWorldTestingValidation;
     private String apiValidation;
     private String warnings;
-    private List<CriterionAndSvapData> criterionAndSvapData;
+    private Boolean attestsG7;
+    private Boolean attestsG9;
+    private Boolean attestsG10;
 
     private ChangeRequest mostRecentAttestationChangeRequest;
     private Developer developer;
     private List<CertificationBody> certificationBodies;
+
+    public List<String> toListOfStrings() {
+        return List.of(developerName,
+                developerCode,
+                developerId.toString(),
+                submittedDate != null ? submittedDate.toString() : "",
+                published ? "Yes" : "No",
+                currentStatusName != null ? currentStatusName : "",
+                lastStatusChangeDate != null ? lastStatusChangeDate.toString() : "",
+                relevantAcbs != null ? relevantAcbs : "",
+                attestationPeriod != null ? attestationPeriod : "",
+                informationBlockingResponse != null ? informationBlockingResponse : "",
+                informationBlockingNoncompliantResponse != null ? informationBlockingNoncompliantResponse : "",
+                assurancesResponse != null ? assurancesResponse : "",
+                assurancesNoncompliantResponse != null ? assurancesNoncompliantResponse : "",
+                communicationsResponse != null ? communicationsResponse : "",
+                communicationsNoncompliantResponse != null ? communicationsNoncompliantResponse : "",
+                apiResponse != null ? apiResponse : "",
+                apiNoncompliantResponse != null ? apiNoncompliantResponse : "",
+                rwtResponse != null ? rwtResponse : "",
+                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
+                signature != null ? signature : "",
+                signatureEmail != null ? signatureEmail : "",
+                totalSurveillances != null ? totalSurveillances.toString() : "0",
+                totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "0",
+                openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "0",
+                totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "0",
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
+                assurancesValidation != null ? assurancesValidation : "",
+                apiValidation != null ? apiValidation : "",
+                realWorldTestingValidation != null ? realWorldTestingValidation : "",
+                BooleanUtils.isTrue(attestsG7) ? "TRUE" : "FALSE",
+                BooleanUtils.isTrue(attestsG9) ? "TRUE" : "FALSE",
+                BooleanUtils.isTrue(attestsG10) ? "TRUE" : "FALSE");
+    }
+
+    public static List<String> getHeaders() {
+        return List.of("Developer Name",
+                "Developer Code",
+                "Developer DBID",
+                "Change Request Submitted Date",
+                "Attestations Published?",
+                "Change Request Current Status",
+                "Change Request Last Status Change Date",
+                "ONC-ACBs",
+                "Attestations Period",
+                "Information Blocking Response",
+                "Information Blocking Optional Response",
+                "Assurances Response",
+                "Assurances Optional Response",
+                "Communications Response",
+                "Communications Optional Response",
+                "Application Programming Interfaces Response",
+                "Application Programming Interfaces Optional Response",
+                "Real World Testing Response",
+                "Real World Testing Optional Response",
+                "Submitted by Name",
+                "Submitted by Email",
+                "Total Surveillance",
+                "Total Surveillance Non-conformities",
+                "Open Surveillance Non-conformities",
+                "Total Direct Review Non-conformities",
+                "Open Direct Review Non-conformities",
+                "Has listing(s) with Assurances criteria (b)(10)",
+                "Has listing(s) with API criteria",
+                "Has listing(s) with RWT criteria",
+                "170.315 (g)(7)",
+                "170.315 (g)(9)",
+                "170.315 (g)(10)");
+    }
 }

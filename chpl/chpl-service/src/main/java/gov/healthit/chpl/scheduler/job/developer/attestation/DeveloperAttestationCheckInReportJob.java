@@ -38,10 +38,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
     private AttestationCheckinReportDAO attestationCheckinReportDAO;
 
     @Autowired
-    private CheckInReportSummaryDataCollector checkInReportSummaryDataCollector;
-
-    @Autowired
-    private CheckInReportRwtResultsDataCollector checkInReportRwtResultsDataCollector;
+    private CheckInReportSummaryDataCollector checkInReportSummaryDataCollection;
 
     @Autowired
     private CheckInReportCsvWriter checkInReportCsvWriter;
@@ -105,7 +102,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
 
                     List<CheckInReport> reportRows = getCheckInReports(acbs);
 
-                    CheckInReportSummary reportSummary = checkInReportSummaryDataCollector.collect(reportRows);
+                    CheckInReportSummary reportSummary = checkInReportSummaryDataCollection.collect(reportRows);
                     File csv = checkInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
@@ -136,8 +133,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
     private List<CheckInReport> getCheckInReports(List<CertificationBody> acbs) {
         return attestationCheckinReportDAO.getCheckinReports(attestationCheckinReportDAO.getMaxReportDate()).stream()
                 .filter(cr -> isCheckinreportValidOForAcbs(cr, acbs))
-                .peek(checkInReport -> checkInReport.setCriterionAndSvapData(checkInReportRwtResultsDataCollector.collect(checkInReport.getDeveloperId())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private boolean isCheckinreportValidOForAcbs(CheckInReport report, List<CertificationBody> acbs) {

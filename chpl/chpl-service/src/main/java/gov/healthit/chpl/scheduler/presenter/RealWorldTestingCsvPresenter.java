@@ -59,7 +59,7 @@ public class RealWorldTestingCsvPresenter {
             writer.write('\ufeff');
             csvPrinter.printRecord(generateHeaderValues());
             for (RealWorldTestingReport rwtReport : rwtReports) {
-                csvPrinter.printRecord(generateRowValue(rwtReport));
+                csvPrinter.printRecord(rwtReport);
             }
         } catch (IOException ex) {
             LOGGER.error("Could not write file " + outputFile.getName(), ex);
