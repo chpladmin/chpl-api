@@ -12,6 +12,13 @@ on:
       - staging
       - production
 
+# Publishes a floating latest-<branch> tag - without this, two runs for the
+# same branch could race and let an older commit's build finish last,
+# overwriting latest-<branch> with a stale image.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write
