@@ -11,9 +11,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
@@ -26,6 +29,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
@@ -42,19 +46,27 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
     private CertifiedProductDAO certifiedProductDAO;
+    private CertificationCriterionService criteriaService;
+    private FF4j ff4j;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
 
     public RealWorldTestingEligiblityService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
             ListingActivityUtil listingActivityUtil,
-            CertifiedProductDAO certifiedProductDAO, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
+            CertifiedProductDAO certifiedProductDAO,
+            LocalDate rwtProgramStartDate,
+            Integer rwtProgramFirstEligibilityYear,
+            CertificationCriterionService criteriaService,
+            FF4j ff4j) {
         this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
+        this.criteriaService = criteriaService;
+        this.ff4j = ff4j;
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
@@ -207,7 +219,6 @@ public class RealWorldTestingEligiblityService {
         return isListingStatusActiveAsOfEligibilityDate(listing, asOfDate)
                 && isCertificationDateBeforeEligibilityDate(listing, asOfDate)
                 && doesListingAttestToEligibleCriteria(listing, asOfDate.getYear());
-
     }
 
     private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing, Integer year) {
@@ -215,11 +226,18 @@ public class RealWorldTestingEligiblityService {
         return listing.getCertificationResults().stream()
                 .filter(result -> result.getSuccess()
                         && eligibleCriteria.stream()
-                        .filter(crit -> crit.getId().equals(result.getCriterion().getId()))
+                        .filter(crit -> crit.getId().equals(result.getCriterion().getId()) && isGCriteriaOrUsesSvap(result))
                         .findAny()
                         .isPresent())
                 .findAny()
                 .isPresent();
+    }
+
+    private boolean isGCriteriaOrUsesSvap(CertificationResult certResult) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return criteriaService.isGCriterion(certResult.getCriterion()) || !CollectionUtils.isEmpty(certResult.getSvaps());
+        }
+        return true;
     }
 
     private boolean isCertificationDateBeforeEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
