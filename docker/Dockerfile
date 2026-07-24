@@ -38,7 +38,6 @@ FROM tomcat:11.0.23-jdk21
 COPY docker/tomcat-conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/tomcat-conf/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.properties
-COPY docker/tomcat-conf/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
