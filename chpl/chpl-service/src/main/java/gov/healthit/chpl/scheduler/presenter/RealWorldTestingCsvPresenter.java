@@ -90,9 +90,9 @@ public class RealWorldTestingCsvPresenter {
         rwtResultsRequiredCriteria.stream()
             .forEach(criterion -> {
                 if (criteriaService.isGCriterion(criterion)) {
-                    results.add(Util.formatCriteriaNumber(criterion) + "SVAP");
-                } else {
                     results.add(Util.formatCriteriaNumber(criterion));
+                } else {
+                    results.add(Util.formatCriteriaNumber(criterion) + "SVAP");
                 }
         });
         return results;
