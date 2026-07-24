@@ -18,8 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tools.jackson.core.JacksonException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -51,6 +49,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Log4j2
 @Service
@@ -131,16 +130,9 @@ public class ProductManager extends SecuredManager {
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public Long create(Long developerId, Product product) throws EntityCreationException, ActivityException {
-
+    public Long create(Long developerId, Product product) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
         product.setOwner(Developer.builder().id(developerId).build());
-        Product createdProduct = null;
-        try {
-            createdProduct = createProduct(product, null);
-        } catch (Exception ex) {
-            LOGGER.error("Could not create product.", ex);
-            throw new EntityCreationException(ex);
-        }
+        Product createdProduct = createProduct(product, null);
         return createdProduct.getId();
     }
 
