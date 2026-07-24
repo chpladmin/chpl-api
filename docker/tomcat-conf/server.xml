@@ -104,7 +104,9 @@
              that are performed against this UserDatabase are immediately
              available for use by the Realm.  -->
         <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-               resourceName="UserDatabase"/>
+               resourceName="UserDatabase">
+          <CredentialHandler algorithm="md5" className="org.apache.catalina.realm.MessageDigestCredentialHandler"/>
+        </Realm>
       </Realm>
 
       <Host name="localhost"  appBase="webapps"
