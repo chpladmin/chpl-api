@@ -334,7 +334,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             brokenUrlSummaryHtml += "<li>" + UrlType.CERTIFICATION_CRITERION.getName() + ": " + brokenCertificationCriterionUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
-            brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
+            }
             brokenUrlSummaryHtml += "<li>" + UrlType.MANDATORY_DISCLOSURE.getName() + ": " + brokenMandatoryDisclosureUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.API_DOCUMENTATION.getName() + ": " + brokenApiDocumentationUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.EXPORT_DOCUMENTATION.getName() + ": " + brokenExportDocumentationUrls + "</li>";
