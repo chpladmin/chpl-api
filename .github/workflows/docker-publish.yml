@@ -14,10 +14,13 @@ on:
 
 # Publishes a floating latest-<branch> tag - without this, two runs for the
 # same branch could race and let an older commit's build finish last,
-# overwriting latest-<branch> with a stale image.
+# overwriting latest-<branch> with a stale image. cancel-in-progress is
+# false so runs queue and execute one at a time in the order they were
+# triggered, instead of a newer push cancelling a build already in
+# progress.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
