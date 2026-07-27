@@ -33,7 +33,7 @@ RUN mvn clean package -DskipTests
 #   plus every property marked SECRET in
 #   chpl/chpl-resources/src/main/resources/environment.properties and email.properties
 #   (e.g. SPRING_REDIS_PASSWORD, COGNITO_SECRETKEY, AZURE_CLIENTSECRET_ONC, JIRA_PASSWORD, ...)
-FROM tomcat:11.0.23-jdk21
+FROM tomcat:11.0.24-jdk21
 
 COPY docker/tomcat-conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/tomcat-conf/context.xml /usr/local/tomcat/conf/context.xml
