@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.developer.search.ActiveListingSearchOptions;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
@@ -53,6 +55,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private FF4j ff4j;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -176,6 +181,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     }
 
     private void processRwtPlanCountsByAcb(List<RealWorldTestingReport> reportRows) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return;
+        }
         Integer rwtEligibilityYear = LocalDate.now().getYear() + 1;
 
         if (!isDateInPlansSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {
