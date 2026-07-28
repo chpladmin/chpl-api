@@ -627,7 +627,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             queryStr += " AND cp.sedReportFileLocation = :url ";
             break;
         case REAL_WORLD_TESTING_PLANS:
-            queryStr += " AND cp.rwtPlansUrl = :url ";
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                queryStr += " AND cp.rwtPlansUrl = :url ";
+            }
             break;
         case REAL_WORLD_TESTING_RESULTS:
             queryStr += " AND cp.rwtResultsUrl = :url ";
