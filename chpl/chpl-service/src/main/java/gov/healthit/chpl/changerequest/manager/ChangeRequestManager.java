@@ -190,6 +190,10 @@ public class ChangeRequestManager {
         if (!ff4j.check(FeatureList.SERVICE_BASE_URL_LIST_CHANGE_REQUEST)
                 && changeRequest.getChangeRequestType().isSbul()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.serviceBaseUrlList.featureDisabled"));
+        } else if (ff4j.check(FeatureList.RWT_CHANGE_REQUEST)
+                && ff4j.check(FeatureList.HTI_5_ERD)
+                && changeRequest.getChangeRequestType().isRwtPlans()) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtPlans.notAllowed"));
         } else if (!ff4j.check(FeatureList.RWT_CHANGE_REQUEST)
                 && isRwtChangeRequestType(changeRequest.getChangeRequestType())) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.listingUrl.rwtUrl.featureDisabled"));
