@@ -83,9 +83,9 @@
          and responses are returned. Documentation at :
          HTTP Connector: /docs/config/http.html
          AJP  Connector: /docs/config/ajp.html
-         Define a non-SSL/TLS HTTP/1.1 Connector on port 8181
+         Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-    <Connector port="8181" protocol="HTTP/1.1"
+    <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
 

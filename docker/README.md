@@ -20,7 +20,7 @@ this one.
 
 ```sh
 docker run -d --name chpl-api \
-  -p 8181:8181 \
+  -p 8080:8080 \
   -e DB_URL="jdbc:postgresql://<host>:5432/openchpl" \
   -e DB_USERNAME="<db-username>" \
   -e DB_PASSWORD="<db-password>" \

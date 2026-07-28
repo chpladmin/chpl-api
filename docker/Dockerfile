@@ -47,5 +47,7 @@ COPY docker/tomcat-conf/user-triggers.xml /usr/local/tomcat/conf/user-triggers.x
 
 COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
-# Expose our custom Tomcat port
-EXPOSE 8181
+# Matches the port every other environment's Tomcat listens on (the real
+# dev box's server.xml, and chpl-build's start-tomcat-containers.sh, which
+# hard-codes `-p host:8080` for the docker run container-port mapping).
+EXPOSE 8080
