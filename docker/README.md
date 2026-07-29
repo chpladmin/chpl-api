@@ -1,5 +1,7 @@
 # Running the chpl-api Docker image
 
+<!-- TEMP MARKER (ONC-5395, 2026-07-29): verifying docker-publish.yml triggers on push to development. Safe to revert. -->
+
 `docker/Dockerfile` builds a **secret-free** image: the same image is used for
 every environment (development/qa/staging/production). Nothing sensitive is
 baked in at build time - all of it is supplied as container environment
