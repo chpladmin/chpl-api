@@ -331,6 +331,27 @@ public class CertificationCriterionService {
                 .collect(Collectors.toList());
     }
 
+    public boolean isGCriterion(CertificationCriterion criterion) {
+        if (criterion.getId().equals(get(Criteria2015.G_1).getId())
+                || criterion.getId().equals(get(Criteria2015.G_2).getId())
+                || criterion.getId().equals(get(Criteria2015.G_3).getId())
+                || criterion.getId().equals(get(Criteria2015.G_4).getId())
+                || criterion.getId().equals(get(Criteria2015.G_5).getId())
+                || criterion.getId().equals(get(Criteria2015.G_6_OLD).getId())
+                || criterion.getId().equals(get(Criteria2015.G_6_CURES).getId())
+                || criterion.getId().equals(get(Criteria2015.G_7).getId())
+                || criterion.getId().equals(get(Criteria2015.G_8).getId())
+                || criterion.getId().equals(get(Criteria2015.G_9_OLD).getId())
+                || criterion.getId().equals(get(Criteria2015.G_9_CURES).getId())
+                || criterion.getId().equals(get(Criteria2015.G_10).getId())
+                || criterion.getId().equals(get(Criteria2015.G_31).getId())
+                || criterion.getId().equals(get(Criteria2015.G_32).getId())
+                || criterion.getId().equals(get(Criteria2015.G_33).getId())) {
+            return true;
+        }
+        return false;
+    }
+
     public static class Criteria2015 {
         public static final String A_1 = "criterion.170_315_a_1";
         public static final String A_2 = "criterion.170_315_a_2";
