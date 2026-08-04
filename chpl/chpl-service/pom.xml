@@ -18,7 +18,7 @@
       <commonmark.version>0.27.1</commonmark.version>
       <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
       <itext.version>9.4.0</itext.version>
-      <jackson.version>3.2.0</jackson.version>
+      <jackson.version>3.2.1</jackson.version>
       <jfreechart.version>1.5.6</jfreechart.version>
       <microsoft-graph.version>6.59.0</microsoft-graph.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
