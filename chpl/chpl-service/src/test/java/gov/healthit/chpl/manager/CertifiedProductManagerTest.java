@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -145,6 +146,7 @@ public class CertifiedProductManagerTest {
                 Mockito.mock(TransactionalDeveloperBanHelper.class),
                 Mockito.mock(ChplTeamNotifier.class),
                 Mockito.mock(Environment.class),
+                Mockito.mock(FF4j.class),
                 Mockito.mock(ChplHtmlEmailBuilder.class));
     }
 
