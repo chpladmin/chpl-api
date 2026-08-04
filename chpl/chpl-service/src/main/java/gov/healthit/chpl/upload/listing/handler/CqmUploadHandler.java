@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.cqm.CQMCriterion;
 import gov.healthit.chpl.cqm.CQMResultCertification;
 import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("cqmUploadHandler")
 public class CqmUploadHandler {
@@ -117,19 +117,19 @@ public class CqmUploadHandler {
 
     private List<String> parseCqmNumbers(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.CQM_NUMBER, headingRecord, listingRecords);
+                HeadingPostHti5.CQM_NUMBER, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseCqmVersions(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.CQM_VERSION, headingRecord, listingRecords);
+                HeadingPostHti5.CQM_VERSION, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseCqmCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.CQM_CRITERIA, headingRecord, listingRecords);
+                HeadingPostHti5.CQM_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 }

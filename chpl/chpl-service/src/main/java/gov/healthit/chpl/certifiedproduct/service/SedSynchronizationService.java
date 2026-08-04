@@ -21,6 +21,8 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.sed.TestParticipant;
@@ -45,11 +47,136 @@ public class SedSynchronizationService {
         this.testParticipantDao = testParticipantDao;
     }
 
-    //TODO: Add synchronization of UCD Processes here some time in the future when
-    //that is going to regression tested.
+    public int synchronizeUcdProcesses(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing,
+            CertificationResult origCertResult,
+            CertificationResult updatedCertResult) throws EntityCreationException, EntityRetrievalException {
+        int numChanges = 0;
+        List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+        List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+        if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
+                && existingListing.getSed().getUcdProcesses().size() > 0) {
+            for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
+                boolean ucdMeetsCriteria = false;
+                for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
+                    if (ucdCriteria.getId().equals(updatedCertResult.getCriterion().getId())
+                            && origCertResult.getSed() != null && origCertResult.getSed()) {
+                        ucdMeetsCriteria = true;
+                    }
+                }
+                if (ucdMeetsCriteria) {
+                    origUcdsForCriteria.add(existingUcd);
+                }
+            }
+        }
+        if (updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null
+                && updatedListing.getSed().getUcdProcesses().size() > 0) {
+            for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
+                boolean ucdMeetsCriteria = false;
+                for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
+                    if (ucdCriteria.getId().equals(updatedCertResult.getCriterion().getId())
+                            && updatedCertResult.getSed() != null && updatedCertResult.getSed()) {
+                        ucdMeetsCriteria = true;
+                    }
+                }
+                if (ucdMeetsCriteria) {
+                    updatedUcdsForCriteria.add(updatedUcd);
+                }
+            }
+        }
+
+        numChanges += updateUcdProcesses(updatedCertResult, origUcdsForCriteria, updatedUcdsForCriteria);
+        return numChanges;
+    }
+
+    private int updateUcdProcesses(CertificationResult certResult, List<CertifiedProductUcdProcess> existingUcdProcesses,
+            List<CertifiedProductUcdProcess> updatedUcdProcesses)
+            throws EntityCreationException, EntityRetrievalException {
+        int numChanges = 0;
+        List<CertifiedProductUcdProcess> ucdToAdd = new ArrayList<CertifiedProductUcdProcess>();
+        List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which ucd processes to add
+        if (updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
+            if (existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
+                // existing listing has none, add all from the update
+                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
+                    ucdToAdd.add(updatedItem);
+                }
+            } else if (existingUcdProcesses.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
+                    boolean inExistingListing = false;
+                    for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                            ucdToUpdate.add(new CertificationResultUcdProcessPair(existingItem, updatedItem));
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        ucdToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which ucd processes to remove
+        if (existingUcdProcesses != null && existingUcdProcesses.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedUcdProcesses == null || updatedUcdProcesses.size() == 0) {
+                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedUcdProcesses.size() > 0) {
+                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
+                    boolean inUpdatedListing = false;
+                    for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = ucdToAdd.size() + idsToRemove.size();
+
+        for (CertifiedProductUcdProcess toAdd : ucdToAdd) {
+            CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
+            toAddDto.setCertificationResultId(certResult.getId());
+            toAddDto.setUcdProcessId(toAdd.getId());
+            toAddDto.setUcdProcessDetails(toAdd.getDetails());
+            certResultDao.addUcdProcessMapping(toAddDto);
+        }
+
+        for (CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
+            boolean hasChanged = false;
+            if (!Objects.equals(toUpdate.getOrig().getDetails(), toUpdate.getUpdated().getDetails())) {
+                hasChanged = true;
+            }
+            if (hasChanged) {
+                CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
+                toUpdateDto.setId(toUpdate.getOrig().getId());
+                toUpdateDto.setCertificationResultId(certResult.getId());
+                toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getId());
+                toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getDetails());
+                certResultDao.updateUcdProcessMapping(toUpdateDto);
+            }
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            certResultDao.deleteUcdProcessMapping(certResult.getId(), idToRemove);
+        }
+        return numChanges;
+    }
 
     public int synchronizeTestTasks(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing, List<TestTask> origTestTasks,
+            CertifiedProductSearchDetails updatedListing,
+            List<TestTask> origTestTasks,
             List<TestTask> newTestTasks) throws EntityCreationException, EntityRetrievalException {
 
         createNewTestTasksAndParticipants(newTestTasks);
@@ -379,5 +506,24 @@ public class SedSynchronizationService {
                             ? id.equals(idToMatch)
                             : false)
                 .findAny();
+    }
+
+
+    private static class CertificationResultUcdProcessPair {
+        private CertifiedProductUcdProcess orig;
+        private CertifiedProductUcdProcess updated;
+
+        CertificationResultUcdProcessPair(final CertifiedProductUcdProcess orig, final CertifiedProductUcdProcess updated) {
+            this.orig = orig;
+            this.updated = updated;
+        }
+
+        public CertifiedProductUcdProcess getOrig() {
+            return orig;
+        }
+
+        public CertifiedProductUcdProcess getUpdated() {
+            return updated;
+        }
     }
 }

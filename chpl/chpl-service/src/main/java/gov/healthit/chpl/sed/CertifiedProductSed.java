@@ -26,6 +26,7 @@ public class CertifiedProductSed implements Serializable {
     @Builder.Default
     private List<CertifiedProductUcdProcess> ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
 
+    @DeprecatedSedTestTaskData
     @Schema(description = "Tasks used for SED testing")
     @Builder.Default
     private List<TestTask> testTasks = new ArrayList<TestTask>();
@@ -49,9 +50,11 @@ public class CertifiedProductSed implements Serializable {
     //confirm - we have to make them "sticky" in the JSON so they are passed back in when clicking "Confirm",
     //otherwise we don't have the duplicates in the JSON and allow confirmation even if the listing had these errors.
     @Builder.Default
+    @DeprecatedSedTestTaskData
     private List<String> duplicateTestTaskIds = new ArrayList<String>();
 
     @Builder.Default
+    @DeprecatedSedTestTaskData
     private List<String> duplicateTestParticipantIds = new ArrayList<String>();
 
     public CertifiedProductSed() {

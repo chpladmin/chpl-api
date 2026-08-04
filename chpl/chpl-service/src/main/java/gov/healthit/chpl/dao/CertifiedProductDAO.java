@@ -9,11 +9,13 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -42,11 +44,14 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductDAO extends BaseDAOImpl {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public CertifiedProductDAO(ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil) {
+    public CertifiedProductDAO(ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     public Long create(CertifiedProductSearchDetails listing) throws EntityCreationException {
@@ -64,9 +69,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setIcsCode(chplProductNumberUtil.getIcsCodeAsString(listing.getChplProductNumber()));
             entity.setCertifiedDateCode(chplProductNumberUtil.getCertificationDateCode(listing.getChplProductNumber()));
             entity.setReportFileLocation(listing.getReportFileLocation());
-            entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
-            entity.setSedTestingEnd(listing.getSedTestingEndDay());
-            entity.setSedReportFileLocation(listing.getSedReportFileLocation());
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
+                entity.setSedTestingEnd(listing.getSedTestingEndDay());
+                entity.setSedReportFileLocation(listing.getSedReportFileLocation());
+            }
             entity.setProductAdditionalSoftware(listing.getProductAdditionalSoftware());
             entity.setOtherAcb(listing.getOtherAcb());
             entity.setMandatoryDisclosures(listing.getMandatoryDisclosures());

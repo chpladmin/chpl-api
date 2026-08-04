@@ -1,7 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.sed.AgeRange;
@@ -35,6 +37,9 @@ public class TestParticipantReviewerTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.roundedParticipantNumber"),  ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_PARTICIPANT_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
@@ -58,7 +63,7 @@ public class TestParticipantReviewerTest {
                 .certificationEdition("2015")
                 .build();
 
-        reviewer = new TestParticipantReviewer(errorMessageUtil);
+        reviewer = new TestParticipantReviewer(errorMessageUtil, ff4j);
     }
 
     @Test
