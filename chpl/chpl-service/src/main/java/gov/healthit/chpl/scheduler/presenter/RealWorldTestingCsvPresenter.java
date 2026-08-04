@@ -36,6 +36,7 @@ import lombok.extern.log4j.Log4j2;
 public class RealWorldTestingCsvPresenter {
     private CertificationCriterionService criteriaService;
     private List<CertificationCriterion> rwtResultsRequiredCriteria;
+    private FF4j ff4j;
 
     @Autowired
     public RealWorldTestingCsvPresenter(RealWorldTestingCriteriaService rwtCriteriaService,
@@ -43,6 +44,7 @@ public class RealWorldTestingCsvPresenter {
             CertificationCriterionComparator criteriaComparator,
             FF4j ff4j) {
         this.criteriaService = criteriaService;
+        this.ff4j = ff4j;
         Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
             rwtResultsRequiredCriteria = rwtCriteriaService.getEligibleCriteria(currentYear);
@@ -81,11 +83,15 @@ public class RealWorldTestingCsvPresenter {
         results.add("Developer Users");
         results.add("Initial RWT Year");
         results.add("ICS");
-        results.add("RWT Plans URL");
-        results.add("RWT Plans Submission Confirmed");
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            results.add("RWT Plans URL");
+            results.add("RWT Plans Submission Confirmed");
+        }
         results.add("RWT Results URL");
         results.add("RWT Results Submission Confirmed");
-        results.add("RWT Plans Message");
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            results.add("RWT Plans Message");
+        }
         results.add("RWT Results Message");
         rwtResultsRequiredCriteria.stream()
             .forEach(criterion -> {
@@ -113,11 +119,15 @@ public class RealWorldTestingCsvPresenter {
                         : "");
         results.add(rwtReport.getRwtEligibilityYear() == null ? null : rwtReport.getRwtEligibilityYear().toString());
         results.add(BooleanUtils.isTrue(rwtReport.getIcs()) ? "Yes" : "");
-        results.add(rwtReport.getRwtPlansUrl());
-        results.add(rwtReport.getRwtPlansCheckDate() == null ? null : rwtReport.getRwtPlansCheckDate().toString());
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            results.add(rwtReport.getRwtPlansUrl());
+            results.add(rwtReport.getRwtPlansCheckDate() == null ? null : rwtReport.getRwtPlansCheckDate().toString());
+        }
         results.add(rwtReport.getRwtResultsUrl());
         results.add(rwtReport.getRwtResultsCheckDate() == null ? null : rwtReport.getRwtResultsCheckDate().toString());
-        results.add(rwtReport.getRwtPlansMessage());
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            results.add(rwtReport.getRwtPlansMessage());
+        }
         results.add(rwtReport.getRwtResultsMessage());
         rwtResultsRequiredCriteria.stream()
             .forEach(criterion -> results.add(determineCriteriaReportValue(rwtReport.getCriterionAndSvapData(), criterion)));
