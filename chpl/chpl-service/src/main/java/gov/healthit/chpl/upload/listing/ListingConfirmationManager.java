@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.core.JacksonException;
-
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -53,6 +53,7 @@ import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Component
 @Log4j2
@@ -75,7 +76,7 @@ public class ListingConfirmationManager {
     private CertificationStatusEventDAO statusEventDao;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
-
+    private FF4j ff4j;
     private CertificationStatus activeStatus;
 
     @Autowired
@@ -92,7 +93,8 @@ public class ListingConfirmationManager {
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CertifiedProductDetailsManager cpDetailsManager,
             ActivityManager activityManager, CertificationResultStandardDAO certResultStandardDao,
-            CertificationResultCodeSetDAO certResultCodeSetDao) {
+            CertificationResultCodeSetDAO certResultCodeSetDao,
+            FF4j ff4j) {
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -111,6 +113,7 @@ public class ListingConfirmationManager {
         this.activityManager = activityManager;
         this.certResultStandardDao = certResultStandardDao;
         this.certResultCodeSetDao = certResultCodeSetDao;
+        this.ff4j = ff4j;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
@@ -321,6 +324,9 @@ public class ListingConfirmationManager {
     }
 
     private void saveTestTask(CertifiedProductSearchDetails listing, TestTask testTask, List<TestTask> allTestTasks) throws EntityCreationException {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return;
+        }
         List<Long> certResultIds = testTask.getCriteria().stream()
                 .map(criterion -> getCertificationResultId(listing, criterion))
                 .filter(crId -> crId != null)

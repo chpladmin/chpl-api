@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.htmlunit.BrowserVersion;
 import org.htmlunit.WebClient;
 import org.quartz.JobExecutionContext;
@@ -24,6 +25,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.datadog.api.client.ApiClient;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -49,6 +51,9 @@ public class UrlStatusDataCollector extends QuartzJob {
 
     @Autowired
     private UrlCallerAsync urlCallerAsync;
+
+    @Autowired
+    private FF4j ff4j;
 
     private ExecutorService executorService;
 
@@ -106,7 +111,11 @@ public class UrlStatusDataCollector extends QuartzJob {
     }
 
     private List<UrlType> getUrlTypesToExclude() {
-        return Stream.of(UrlType.SERVICE_BASE_URL_LIST).collect(Collectors.toList());
+        List<UrlType> exclusions = Stream.of(UrlType.SERVICE_BASE_URL_LIST).collect(Collectors.toList());
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            exclusions.add(UrlType.FULL_USABILITY_REPORT);
+        }
+        return exclusions;
     }
 
     /**

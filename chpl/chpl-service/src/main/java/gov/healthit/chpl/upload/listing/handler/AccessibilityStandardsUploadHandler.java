@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("accessibilityStandardsUploadHandler")
 public class AccessibilityStandardsUploadHandler {
@@ -35,7 +35,7 @@ public class AccessibilityStandardsUploadHandler {
 
     private List<String> parseAccessibilityStandardNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Heading.ACCESSIBILITY_STANDARD, headingRecord, listingRecords);
+                HeadingPostHti5.ACCESSIBILITY_STANDARD, headingRecord, listingRecords);
         return values;
     }
 }

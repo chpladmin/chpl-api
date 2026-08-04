@@ -14,8 +14,12 @@ import tools.jackson.databind.json.JsonMapper;
 public class CertifiedProductJsonPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private Logger logger;
 
-    private JsonMapper mapper = JsonMapper.builder().build();
+    private JsonMapper mapper;
     private JsonGenerator jGenerator = null;
+
+    public CertifiedProductJsonPresenter(JsonMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @Override
     public void open(File file) throws IOException {

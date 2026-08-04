@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.Strings;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
@@ -49,14 +51,17 @@ public class ListingMergeService {
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationResultUpToDateService certResultUpToDateService;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil,
             CertificationResultUpToDateService certResultUpToDateService,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.certResultUpToDateService = certResultUpToDateService;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     /**
@@ -102,6 +107,12 @@ public class ListingMergeService {
         updatedListing.setCountOpenNonconformities(currentListing.getCountOpenNonconformities());
         updatedListing.setCountOpenSurveillance(currentListing.getCountOpenSurveillance());
         updatedListing.setCountSurveillance(currentListing.getCountSurveillance());
+
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListing.setSedIntendedUserDescription(currentListing.getSedIntendedUserDescription());
+            updatedListing.setSedReportFileLocation(currentListing.getSedReportFileLocation());
+            updatedListing.setSedTestingEndDay(currentListing.getSedTestingEndDay());
+        }
 
         setIcsChildren(updatedListing, currentListing.getIcs());
         setIdsForQmsStandards(updatedListing, currentListing.getQmsStandards());
@@ -258,18 +269,21 @@ public class ListingMergeService {
     private void setIdsForSed(CertifiedProductSed updatedListingSed, CertifiedProductSed currListingSed) {
         //Note: We don't have a field for the internal database mapping ID between cert result -> UCD Process in
         //the listing details object. So there is nothing to fill in for UCD Process IDs.
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListingSed.setTestTasks(currListingSed.getTestTasks());
+        } else {
+            if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
+                updatedListingSed.getTestTasks().stream()
+                    .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
 
-        if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
-            updatedListingSed.getTestTasks().stream()
-                .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
+                Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
+                        .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
+                        .collect(Collectors.toSet());
 
-            Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
-                    .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
-                    .collect(Collectors.toSet());
-
-            updatedListingSed.getTestTasks().stream()
-                .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
-                .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+                updatedListingSed.getTestTasks().stream()
+                    .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
+                    .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+            }
         }
     }
 
