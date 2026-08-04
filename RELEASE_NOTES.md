@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 54.0.1
+_3 August 2026_
+
+### Bug Fixes
+* Allow products to be created with names differing in case only
+
+---
+
 ## Version 54.0.0
 _20 July 2026_
 
