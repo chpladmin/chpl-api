@@ -38,12 +38,6 @@ FROM tomcat:11.0.24-jdk21
 COPY docker/tomcat-conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/tomcat-conf/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.properties
-# Empty Quartz job-scheduling-data template. quartz.properties sets
-# org.quartz.plugin.jobInitializer.failOnFileNotFound=true for
-# jobs.xml,system-triggers.xml,user-triggers.xml - the first two ship on the
-# classpath via chpl-resources, but this one doesn't, so Quartz needs it here
-# or the app fails to start.
-COPY docker/tomcat-conf/user-triggers.xml /usr/local/tomcat/conf/user-triggers.xml
 
 COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
