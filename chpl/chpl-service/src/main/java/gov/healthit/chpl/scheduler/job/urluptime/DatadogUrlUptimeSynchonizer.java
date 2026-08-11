@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.datadog.api.client.v1.model.SyntheticsAPITestResultFull;
 import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
 import com.datadog.api.client.v1.model.SyntheticsApiTestFailureCode;
-import com.datadog.api.client.v1.model.SyntheticsTestDetails;
+import com.datadog.api.client.v1.model.SyntheticsTestDetailsWithoutSteps;
 
 import gov.healthit.chpl.datadog.OnDemandUrlCheckerManager;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
@@ -89,7 +89,7 @@ public class DatadogUrlUptimeSynchonizer {
 
     private void synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults() {
         LOGGER.info("**************** Getting Test Results from Datadog and saving it locally ****************");
-        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+        List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
@@ -136,10 +136,10 @@ public class DatadogUrlUptimeSynchonizer {
 
     private void createOrUpdateSyntheticsTest() {
         List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
-        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+        List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
         for (ServiceBaseUrlList sbu : serviceBaseUrlLists) {
-            Optional<SyntheticsTestDetails> foundSyntheticsTestDetails = findSyntheticsTestDetails(syntheticsTestDetails, sbu.getUrl());
+            Optional<SyntheticsTestDetailsWithoutSteps> foundSyntheticsTestDetails = findSyntheticsTestDetails(syntheticsTestDetails, sbu.getUrl());
             if (foundSyntheticsTestDetails.isEmpty()) {
                 datadogSyntheticsTestService.createSyntheticsTest(sbu.getDatadogFormattedUrl(), sbu.getDeveloperIds());
                 syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
@@ -156,10 +156,10 @@ public class DatadogUrlUptimeSynchonizer {
 
     private void removeUnusedDatadogSyntheticsTests() {
         List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
-        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+        List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
         List<String> syntheticsTestPublicIdsToDelete = new ArrayList<String>();
-        for (SyntheticsTestDetails std : syntheticsTestDetails) {
+        for (SyntheticsTestDetailsWithoutSteps std : syntheticsTestDetails) {
             boolean found = serviceBaseUrlLists.stream()
                     .filter(sbu -> sbu.getUrl().equals(std.getConfig().getRequest().getUrl()))
                     .findAny()
@@ -174,7 +174,7 @@ public class DatadogUrlUptimeSynchonizer {
         }
     }
 
-    private Optional<SyntheticsTestDetails> findSyntheticsTestDetails(List<SyntheticsTestDetails> syntheticsTestDetails, String url) {
+    private Optional<SyntheticsTestDetailsWithoutSteps> findSyntheticsTestDetails(List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails, String url) {
         return syntheticsTestDetails.stream()
                 .filter(std -> std.getConfig().getRequest().getUrl().equals(url))
                 .findAny();
@@ -230,7 +230,7 @@ public class DatadogUrlUptimeSynchonizer {
                         && item.getUrl().equals(value.getUrl()));
     }
 
-    private List<UrlUptimeMonitor> generateExpectedUrlIUpTimeMonitors(List<SyntheticsTestDetails> syntheticsTestDetails) {
+    private List<UrlUptimeMonitor> generateExpectedUrlIUpTimeMonitors(List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails) {
         return (List<UrlUptimeMonitor>) syntheticsTestDetails.stream()
                 .flatMap(synthTest -> getDeveloperIdsFromTags(synthTest.getTags()).stream()
                         .map(devId -> UrlUptimeMonitor.builder()
@@ -289,7 +289,7 @@ public class DatadogUrlUptimeSynchonizer {
                 .toList();
     }
 
-    private String getDatadogPublicId(List<SyntheticsTestDetails> syntheticsTestDetails, String url, Long developerId) {
+    private String getDatadogPublicId(List<SyntheticsTestDetailsWithoutSteps> syntheticsTestDetails, String url, Long developerId) {
         return syntheticsTestDetails.stream()
                 .filter(dets -> dets.getConfig().getRequest().getUrl().equals(url)
                         && getDeveloperIdsFromTags(dets.getTags()).contains(developerId))
