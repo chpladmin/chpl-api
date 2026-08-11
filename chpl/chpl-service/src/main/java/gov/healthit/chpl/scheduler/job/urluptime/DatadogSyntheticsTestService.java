@@ -20,7 +20,7 @@ import com.datadog.api.client.v1.model.SyntheticsDeleteTestsPayload;
 import com.datadog.api.client.v1.model.SyntheticsPatchTestBody;
 import com.datadog.api.client.v1.model.SyntheticsPatchTestOperation;
 import com.datadog.api.client.v1.model.SyntheticsPatchTestOperationName;
-import com.datadog.api.client.v1.model.SyntheticsTestDetails;
+import com.datadog.api.client.v1.model.SyntheticsTestDetailsWithoutSteps;
 import com.datadog.api.client.v1.model.SyntheticsTestOptions;
 import com.datadog.api.client.v1.model.SyntheticsTestOptionsHTTPVersion;
 import com.datadog.api.client.v1.model.SyntheticsTestOptionsScheduling;
@@ -63,7 +63,7 @@ public class DatadogSyntheticsTestService {
         return apiProvider;
     }
 
-    public List<SyntheticsTestDetails> getAllSyntheticsTests() {
+    public List<SyntheticsTestDetailsWithoutSteps> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();
 
