@@ -235,11 +235,11 @@ public class ListingDetailsUploadHandler {
     }
 
     private String parseRwtPlansUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(HeadingPostHti5.RWT_PLANS_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.RWT_PLANS_URL, headingRecord, listingRecords);
     }
 
     private String parseRwtPlansCheckDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(HeadingPostHti5.RWT_PLANS_CHECK_DATE, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.RWT_PLANS_CHECK_DATE, headingRecord, listingRecords);
     }
 
     private String parseRwtResultsUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {

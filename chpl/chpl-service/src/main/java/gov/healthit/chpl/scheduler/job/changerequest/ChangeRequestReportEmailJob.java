@@ -231,7 +231,9 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
             attachments.add(tempSbulFile);
         }
         if (ff4j.check(FeatureList.RWT_CHANGE_REQUEST)) {
-            attachments.add(tempRwtPlansFile);
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                attachments.add(tempRwtPlansFile);
+            }
             attachments.add(tempRwtResultsFile);
         }
         return attachments;

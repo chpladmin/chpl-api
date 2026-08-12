@@ -12,11 +12,10 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.DateUtil;
@@ -26,6 +25,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @Data
 @Builder
@@ -192,9 +193,11 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     @Schema(description = "Indicates whether the direct reviews were available when the call  was made")
     private boolean directReviewsAvailable;
 
+    @DeprecatedRwtPlansData
     @Schema(description = "URL where the listing's Real World Testing Plan is located")
     private String rwtPlansUrl;
 
+    @DeprecatedRwtPlansData
     @Schema(description = "Date the listing's Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

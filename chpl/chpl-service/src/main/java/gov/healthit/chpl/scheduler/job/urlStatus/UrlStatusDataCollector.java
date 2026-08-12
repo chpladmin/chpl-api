@@ -114,6 +114,7 @@ public class UrlStatusDataCollector extends QuartzJob {
         List<UrlType> exclusions = Stream.of(UrlType.SERVICE_BASE_URL_LIST).collect(Collectors.toList());
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
             exclusions.add(UrlType.FULL_USABILITY_REPORT);
+            exclusions.add(UrlType.REAL_WORLD_TESTING_PLANS);
         }
         return exclusions;
     }
