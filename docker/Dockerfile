@@ -52,11 +52,18 @@ COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.prop
 # -Denv build above) set
 # org.quartz.plugin.jobInitializer.fileNames=jobs.xml,system-triggers.xml,user-triggers.xml
 # with failOnFileNotFound=true; jobs.xml/system-triggers.xml ship on the
-# classpath via chpl-resources, but this one doesn't, so Quartz needs it
-# here on Tomcat's conf classpath (CATALINA_BASE/conf) or the whole Spring
-# context fails to start (production's quartz.properties doesn't reference
-# it, so it's a harmless no-op there).
-COPY docker/tomcat-conf/user-triggers.xml /usr/local/tomcat/conf/user-triggers.xml
+# classpath via chpl-resources, but this one doesn't. Quartz loads it via
+# ClassLoadHelper.getResourceAsStream (classloader lookup only - no
+# filesystem fallback, confirmed by decompiling quartz-2.5.2's
+# XMLSchedulingDataProcessor), so it must be somewhere actually on Tomcat's
+# common classloader. catalina.properties' common.loader only lists
+# ${catalina.home}/lib (as a bare directory - Tomcat adds a whole
+# directory's contents as a class repository, not just its jars, verified
+# against this image's own bootstrap.jar ClassLoaderFactory); conf/ is not
+# on any loader list. Putting it in conf/ (as a prior attempt did) silently
+# never gets found - production's quartz.properties doesn't reference this
+# file at all, so it's a harmless no-op there either way.
+COPY docker/tomcat-conf/user-triggers.xml /usr/local/tomcat/lib/user-triggers.xml
 
 COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
