@@ -55,6 +55,10 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ListingCsvDataWriter {
+    private static final int MEASURE_COL_COUNT = 4;
+    private static final int RWT_PLANS_COL_COUNT = 2;
+    private static final int SED_SUMMARY_COL_COUNT = 3;
+
     private static final int CHPL_PRODUCT_NUMBER_COL = 0;
     private static final int DEVELOPER_NAME_COL = 1;
     private static final int PRODUCT_NAME_COL = 2;
@@ -789,5 +793,16 @@ public class ListingCsvDataWriter {
 
     private String forceExcelToInterpretAsText(String value) {
         return "\t" + value + "";
+    }
+
+    private int getColIndex(int originalIndex) {
+        int colAdjustment = 0;
+        if (originalIndex > MEASURE_DOMAIN_COL) {
+            // the first 4 columns remain the same regardless of flags
+            if (ff4j.check(FeatureList.HTI_5_2027_01_01) ) {
+                colAdjustment = MEASURE_COL_COUNT;
+            }
+            return originalIndex - colAdjustment;
+        }
     }
 }
