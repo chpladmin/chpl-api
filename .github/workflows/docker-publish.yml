@@ -49,9 +49,9 @@ jobs:
         run: mvn -B clean test --file chpl/pom.xml
 
   # Mirrors the "Build API" job (CompileApiTask) in the same Bamboo plan, and
-  # runs the exact `mvn clean package -DskipTests` command that docker/Dockerfile's
-  # build stage runs - so a compile/packaging failure shows up here, fast,
-  # instead of partway through the (slower) Docker build.
+  # runs the exact `mvn clean package -DskipTests -Denv=<env>` command that
+  # docker/Dockerfile's build stage runs - so a compile/packaging failure
+  # shows up here, fast, instead of partway through the (slower) Docker build.
   compile:
     runs-on: ubuntu-latest
     steps:
@@ -64,10 +64,25 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      # Maps this branch to the same -Denv value chpl-build-common's
+      # BuildEnvironment.getMavenEnvProperty() uses for the build-from-source
+      # path in each environment. Falls back to "dev" for workflow_dispatch
+      # runs off any other branch.
+      - name: Determine Maven environment profile
+        id: envprofile
+        run: |
+          case "${{ github.ref_name }}" in
+            development) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+            qa) echo "value=qa" >> "$GITHUB_OUTPUT" ;;
+            staging) echo "value=staging" >> "$GITHUB_OUTPUT" ;;
+            production) echo "value=production" >> "$GITHUB_OUTPUT" ;;
+            *) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+          esac
+
       - name: Compile and package
         env:
           MAVEN_OPTS: -Xms512m -Xmx1024m
-        run: mvn -B clean package -DskipTests --file chpl/pom.xml
+        run: mvn -B clean package -DskipTests -Denv=${{ steps.envprofile.outputs.value }} --file chpl/pom.xml
 
   build-and-push:
     needs: [unit-tests, compile]
@@ -93,10 +108,23 @@ jobs:
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "branch=$(echo '${{ github.ref_name }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
 
+      # Same branch -> -Denv mapping as the "compile" job above, threaded
+      # into the Docker build as the MAVEN_ENV build arg.
+      - name: Determine Maven environment profile
+        id: envprofile
+        run: |
+          case "${{ github.ref_name }}" in
+            development) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+            qa) echo "value=qa" >> "$GITHUB_OUTPUT" ;;
+            staging) echo "value=staging" >> "$GITHUB_OUTPUT" ;;
+            production) echo "value=production" >> "$GITHUB_OUTPUT" ;;
+            *) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+          esac
+
       # This image contains no secrets - see docker/Dockerfile. Every environment
-      # (development/qa/staging/production) runs the exact same image; secrets are
-      # supplied as container environment variables at `docker run` time, not baked
-      # in here.
+      # runs the same image apart from the MAVEN_ENV build arg (log4j2 config);
+      # secrets are supplied as container environment variables at `docker run`
+      # time, not baked in here.
       #
       # Tags:
       #   build-<run_number> - immutable, sequential build number (github.run_number
@@ -111,6 +139,8 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
+          build-args: |
+            MAVEN_ENV=${{ steps.envprofile.outputs.value }}
           # build-push-action v6 enables these by default, which each push a
           # separate untagged provenance/SBOM manifest to GHCR alongside the
           # real image - not needed here, so turned off to keep the package

@@ -16,12 +16,21 @@ COPY chpl/chpl-resources/src chpl-resources/src
 COPY chpl/chpl-service/lombok.config chpl-service/lombok.config
 COPY chpl/chpl-service/src chpl-service/src
 
-RUN mvn clean package -DskipTests
+# Activates chpl-resources' "environment-specific" Maven profile, which layers
+# src/main/resources-${MAVEN_ENV} (log4j2 config, notably the catch-all
+# gov.healthit.chpl logger/chplserviceJson appender that Datadog's chplservice
+# service tag depends on) over the base resources. Matches the -Denv=<env>
+# flag chpl-build-common's CompileApiTask already passes for the
+# build-from-source path in every non-GHCR environment. Set via --build-arg
+# from docker-publish.yml, mapped from the branch being built.
+ARG MAVEN_ENV=dev
+RUN mvn clean package -DskipTests -Denv=${MAVEN_ENV}
 
 # Stage 2: Deploy to Tomcat
 #
-# This image contains no secrets and is identical across every environment
-# (dev/qa/stage/production). Tomcat config below only has ${ENV_VAR}
+# This image contains no secrets, and only differs across environments in
+# the -Denv build arg above (log4j2 config naming/routing). Tomcat config
+# below only has ${ENV_VAR}
 # placeholders (resolved at container startup - see catalina.properties'
 # org.apache.tomcat.util.digester.PROPERTY_SOURCE) and the checked-in
 # environment.properties/email.properties already mark every sensitive key

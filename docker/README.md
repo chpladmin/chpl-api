@@ -1,12 +1,15 @@
 # Running the chpl-api Docker image
 
 `docker/Dockerfile` builds a **secret-free** image: the same image is used for
-every environment (development/qa/staging/production). Nothing sensitive is
-baked in at build time - all of it is supplied as container environment
-variables when the image is actually run. See `docker/Dockerfile` and
-`docker/tomcat-conf/` for how that works mechanically (Tomcat's
-`EnvironmentPropertySource` for `server.xml`, Spring's `Environment` for
-everything else).
+every environment (development/qa/staging/production), apart from a
+`MAVEN_ENV` build arg (`dev`/`qa`/`staging`/`production`, set automatically by
+`.github/workflows/docker-publish.yml` from the branch being built) that
+selects which `chpl-resources/src/main/resources-${MAVEN_ENV}` logging config
+gets layered onto the WAR. Nothing sensitive is baked in at build time - all
+of it is supplied as container environment variables when the image is
+actually run. See `docker/Dockerfile` and `docker/tomcat-conf/` for how that
+works mechanically (Tomcat's `EnvironmentPropertySource` for `server.xml`,
+Spring's `Environment` for everything else).
 
 This doc lists every environment variable the image needs or accepts. It does
 **not** contain real values for any environment - only what each variable is
