@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureDomain;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.upload.listing.HeadingPostHti5;
+import gov.healthit.chpl.upload.listing.HeadingPreHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
@@ -68,25 +68,25 @@ public class MeasuresUploadHandler {
 
     private List<String> parseMeasureDomains(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                HeadingPostHti5.MEASURE_DOMAIN, headingRecord, listingRecords);
+                HeadingPreHti5.MEASURE_DOMAIN, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureRequiredTests(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                HeadingPostHti5.MEASURE_REQUIRED_TEST, headingRecord, listingRecords);
+                HeadingPreHti5.MEASURE_REQUIRED_TEST, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureTypeValues(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                HeadingPostHti5.MEASURE_TYPE, headingRecord, listingRecords);
+                HeadingPreHti5.MEASURE_TYPE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureAssociatedCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                HeadingPostHti5.MEASURE_ASSOCIATED_CRITERIA, headingRecord, listingRecords);
+                HeadingPreHti5.MEASURE_ASSOCIATED_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 
