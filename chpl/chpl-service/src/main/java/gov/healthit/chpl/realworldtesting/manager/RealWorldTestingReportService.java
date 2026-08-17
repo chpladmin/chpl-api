@@ -10,10 +10,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -45,6 +47,7 @@ public class RealWorldTestingReportService {
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private List<CertificationStatusType> withdrawnStatuses;
+    private FF4j ff4j;
 
     @Autowired
     public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO,
@@ -52,7 +55,8 @@ public class RealWorldTestingReportService {
             CertificationStatusEventsService certificationStatusEventsService,
             CertificationCriterionService criteriaService,
             RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory,
-            ResourcePermissionsFactory resourcePermissionsFactory) {
+            ResourcePermissionsFactory resourcePermissionsFactory,
+            FF4j ff4j) {
 
         this.certifiedProductDAO = certifiedProductDAO;
         this.errorMsg = errorMsg;
@@ -61,6 +65,7 @@ public class RealWorldTestingReportService {
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.ff4j = ff4j;
 
         withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
                 CertificationStatusType.WithdrawnByAcb,
@@ -78,10 +83,8 @@ public class RealWorldTestingReportService {
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
                     .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                     .filter(report -> report.getRwtEligibilityYear() != null
-                            || report.getRwtPlansCheckDate() != null
-                            || !StringUtils.isEmpty(report.getRwtPlansUrl())
-                            || report.getRwtResultsCheckDate() != null
-                            || !StringUtils.isEmpty(report.getRwtResultsUrl()))
+                            || hasPlans(report)
+                            || hasResults(report))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             logger.catching(e);
@@ -162,6 +165,20 @@ public class RealWorldTestingReportService {
                         .usesSvap(!CollectionUtils.isEmpty(certResult.getSvaps()))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private boolean hasPlans(RealWorldTestingReport report) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return false;
+        }
+
+        return report.getRwtPlansCheckDate() != null
+                || !StringUtils.isEmpty(report.getRwtPlansUrl());
+    }
+
+    private boolean hasResults(RealWorldTestingReport report) {
+        return report.getRwtResultsCheckDate() != null
+                || !StringUtils.isEmpty(report.getRwtResultsUrl());
     }
 
      private List<String> getDeveloperUsers(Developer developer) {
