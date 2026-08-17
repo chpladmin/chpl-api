@@ -98,7 +98,7 @@ public class RealWorldTestingCsvPresenter {
                 if (criteriaService.isGCriterion(criterion)) {
                     results.add(Util.formatCriteriaNumber(criterion));
                 } else {
-                    results.add(Util.formatCriteriaNumber(criterion) + "SVAP");
+                    results.add(Util.formatCriteriaNumber(criterion) + " SVAP");
                 }
         });
         return results;
