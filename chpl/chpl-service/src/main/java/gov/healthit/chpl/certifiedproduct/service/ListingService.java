@@ -71,7 +71,6 @@ public class ListingService {
 
     private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
     private ListingGraphDAO listingGraphDao;
-    private CertificationEditionDAO editionDao;
     private CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
@@ -120,7 +119,6 @@ public class ListingService {
         this.piuService = piuService;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.survManager = survManager;
-        this.editionDao = editionDao;
         this.certifiedProductTestingLabDao = certifiedProductTestingLabDao;
         this.listingGraphDao = listingGraphDao;
         this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
@@ -143,18 +141,17 @@ public class ListingService {
     }
 
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
 
-        CertifiedProductSearchDetails searchDetails = createCertifiedProductSearchDetailsWithBasicDataOnly(certifiedProductSearchResultDAO.getById(listingId));
-
-        searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
-        searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(searchDetails.getId(),
-                searchDetails.getEdition() != null ? searchDetails.getEdition().getName() : null));
-        sortSed(searchDetails);
+        listing.setCertificationResults(certificationResultService.getCertificationResults(listing));
+        listing.setCqmResults(cqmResultsService.getCqmResultDetails(listing.getId(),
+                listing.getEdition() != null ? listing.getEdition().getName() : null));
+        sortSed(listing);
 
         // get first-level parents and children
-        searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(searchDetails.getId())));
-        searchDetails.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductChildren(searchDetails.getId())));
-        return searchDetails;
+        listing.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(listing.getId())));
+        listing.getIcs().setChildren(populateRelatedCertifiedProducts(getCertifiedProductChildren(listing.getId())));
+        return listing;
     }
 
     public CertifiedProductSearchDetails createCertifiedProductSearchDetailsBasic(Long listingId) throws EntityRetrievalException {

@@ -87,7 +87,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private Boolean tryItOutEnabled;
 
     @Autowired
-    private DeprecatedResponseFieldAnnotationIntrospector deprecatedResponseFieldAnnotationIntrospector;
+    private IgnorableResponseFieldAnnotationIntrospector ignorableResponseFieldAnnotationIntrospector;
 
     @Lazy
     @Autowired
@@ -117,7 +117,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     @Primary
     public JsonMapper jsonMapper() {
         JsonMapper mapper = JsonMapper.builder()
-                .annotationIntrospector(deprecatedResponseFieldAnnotationIntrospector)
+                .annotationIntrospector(ignorableResponseFieldAnnotationIntrospector)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                         DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,

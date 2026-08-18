@@ -14,9 +14,11 @@ import java.util.stream.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes;
@@ -82,7 +84,8 @@ public class ListingCsvDataWriter {
     private static final int SED_TESTING_DATE_COL = 40;
     private static final int PARTICIPANT_START_COL = 41;
     private static final int TASK_START_COL = 50;
-    private static final int CRITERIA_START_COL = 65;
+    private static final int CRITERIA_START_COL_PRE_HTI5 = 65;
+    private static final int CRITERIA_START_COL = 38;
     private static final int ADDITIONAL_SOFTWARE_COL_COUNT = 5;
     private static final int UCD_PROCESS_COL_COUNT = 2;
     private static final int SED_TESTING_COL_COUNT = 2;
@@ -90,11 +93,14 @@ public class ListingCsvDataWriter {
     private CertificationCriteriaManager criteriaManager;
     private StandardManager standardManager;
     private DateFormat dateFormat;
+    private FF4j ff4j;
 
     @Autowired
-    public ListingCsvDataWriter(CertificationCriteriaManager criteriaManager, StandardManager standardManager) {
+    public ListingCsvDataWriter(CertificationCriteriaManager criteriaManager, StandardManager standardManager,
+            FF4j ff4j) {
         this.criteriaManager = criteriaManager;
         this.standardManager = standardManager;
+        this.ff4j = ff4j;
         this.dateFormat = new SimpleDateFormat(ListingUploadHandlerUtil.UPLOAD_DATE_FORMAT);
     }
 
@@ -121,11 +127,13 @@ public class ListingCsvDataWriter {
         addAccessibilityStandards(csvDataMatrix, listing.getAccessibilityStandards());
         csvDataMatrix[0][K1_URL_COL] = listing.getMandatoryDisclosures();
         addCqms(csvDataMatrix, listing.getCqmResults());
-        csvDataMatrix[0][SED_REPORT_URL_COL] = listing.getSedReportFileLocation();
-        csvDataMatrix[0][SED_INTENDED_USERS_COL] = listing.getSedIntendedUserDescription();
-        csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
-        addParticipants(csvDataMatrix, listing.getSed());
-        addTasks(csvDataMatrix, listing.getSed());
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            csvDataMatrix[0][SED_REPORT_URL_COL] = listing.getSedReportFileLocation();
+            csvDataMatrix[0][SED_INTENDED_USERS_COL] = listing.getSedIntendedUserDescription();
+            csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
+            addParticipants(csvDataMatrix, listing.getSed());
+            addTasks(csvDataMatrix, listing.getSed());
+        }
         addCertificationResults(csvDataMatrix, getAllAvailableCriteriaAsCertResults(listing), listing.getSed());
 
         List<List<String>> records = new ArrayList<List<String>>();
@@ -445,7 +453,7 @@ public class ListingCsvDataWriter {
     }
 
     private void addCertificationResults(String[][] csvDataMatrix, List<CertificationResult> certResults, CertifiedProductSed sed) {
-        int currCol = CRITERIA_START_COL;
+        int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? CRITERIA_START_COL_PRE_HTI5 : CRITERIA_START_COL;
         for (int i = 0; i < certResults.size(); i++) {
             int currCertResultStartCol = currCol;
             CertificationResult certResult = certResults.get(i);
@@ -652,19 +660,21 @@ public class ListingCsvDataWriter {
             }
             currCol += UCD_PROCESS_COL_COUNT;
 
-            List<TestTask> testTasks = getTestTasksForCriterion(certResult.getCriterion(), sed);
-            if (!CollectionUtils.isEmpty(testTasks)) {
-                for (int i = 0; i < testTasks.size(); i++) {
-                    int sedTestingCol = currCol;
-                    TestTask testTask = testTasks.get(i);
-                    csvDataMatrix[i][sedTestingCol++] = testTask.getFriendlyId();
-                    String participants = testTask.getTestParticipants().stream()
-                        .map(participant -> participant.getFriendlyId())
-                        .collect(Collectors.joining(";"));
-                    csvDataMatrix[i][sedTestingCol++] = participants;
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                List<TestTask> testTasks = getTestTasksForCriterion(certResult.getCriterion(), sed);
+                if (!CollectionUtils.isEmpty(testTasks)) {
+                    for (int i = 0; i < testTasks.size(); i++) {
+                        int sedTestingCol = currCol;
+                        TestTask testTask = testTasks.get(i);
+                        csvDataMatrix[i][sedTestingCol++] = testTask.getFriendlyId();
+                        String participants = testTask.getTestParticipants().stream()
+                            .map(participant -> participant.getFriendlyId())
+                            .collect(Collectors.joining(";"));
+                        csvDataMatrix[i][sedTestingCol++] = participants;
+                    }
                 }
+                currCol += SED_TESTING_COL_COUNT;
             }
-            currCol += SED_TESTING_COL_COUNT;
         }
         return currCol;
     }
