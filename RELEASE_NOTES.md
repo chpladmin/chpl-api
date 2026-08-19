@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 54.0.2
+_18 August 2026_
+
+### Bug Fixes
+* Enable programmatic access to problematic URLs
+
+### Flagged Features
+* Removed certain SED fields
+
+---
+
 ## Version 54.0.1
 _3 August 2026_
 
