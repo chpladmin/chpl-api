@@ -42,6 +42,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
 
       - name: Run unit tests
         env:
@@ -63,6 +64,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
 
       # Maps this branch to the same -Denv value chpl-build-common's
       # BuildEnvironment.getMavenEnvProperty() uses for the build-from-source
@@ -147,6 +149,12 @@ jobs:
           # version list clean.
           provenance: false
           sbom: false
+          # Persists the Dockerfile build stage's ~/.m2 cache mount (see
+          # docker/Dockerfile) to the GitHub Actions cache service, so the
+          # Maven dependency download in the Docker build itself is also
+          # reused across runs, not just in the compile/unit-tests jobs above.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ steps.meta.outputs.image }}:build-${{ github.run_number }}
             ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.sha_short }}

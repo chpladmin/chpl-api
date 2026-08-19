@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Stage 1: Build the WAR file using Maven
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
@@ -24,7 +25,11 @@ COPY chpl/chpl-service/src chpl-service/src
 # build-from-source path in every non-GHCR environment. Set via --build-arg
 # from docker-publish.yml, mapped from the branch being built.
 ARG MAVEN_ENV=dev
-RUN mvn clean package -DskipTests -Denv=${MAVEN_ENV}
+# Cache mount persists the downloaded dependency tree across builds (see
+# cache-to/cache-from: type=gha on the "Build and push" step in
+# docker-publish.yml) so repeated builds don't re-hit Maven Central for
+# every dependency.
+RUN --mount=type=cache,target=/root/.m2 mvn clean package -DskipTests -Denv=${MAVEN_ENV}
 
 # Stage 2: Deploy to Tomcat
 #
