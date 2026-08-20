@@ -11,20 +11,25 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
@@ -41,19 +46,27 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
     private CertifiedProductDAO certifiedProductDAO;
+    private CertificationCriterionService criteriaService;
+    private FF4j ff4j;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
 
     public RealWorldTestingEligiblityService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
             ListingActivityUtil listingActivityUtil,
-            CertifiedProductDAO certifiedProductDAO, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
+            CertifiedProductDAO certifiedProductDAO,
+            LocalDate rwtProgramStartDate,
+            Integer rwtProgramFirstEligibilityYear,
+            CertificationCriterionService criteriaService,
+            FF4j ff4j) {
         this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
+        this.criteriaService = criteriaService;
+        this.ff4j = ff4j;
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
@@ -113,9 +126,9 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibility getRwtEligibility(Optional<CertifiedProductSearchDetails> listing,
             RealWorldTestingEligiblityReason reason,
             Integer currentRwtEligYear) {
-        List<CertificationCriterion> attestedCriteria = new ArrayList<CertificationCriterion>();
+        List<CertificationResult> attestedCertificationResults = new ArrayList<CertificationResult>();
         if (listing != null && listing.isPresent()) {
-            attestedCriteria = listing.get().getCertificationResults().stream()
+            attestedCertificationResults = listing.get().getCertificationResults().stream()
                     //We might be getting this listing in it's original state from saved JSON.
                     //For most of CHPL before mid-2023, we saved a certification result on the listing for each criteria
                     //and used the "success" field to determine if that listing attested to that criterion.
@@ -123,13 +136,12 @@ public class RealWorldTestingEligiblityService {
                     //We still have "success" today, but it is always "true" because after mid-2023, we changed our
                     //listing details response to only include certification results for each criterion the listing attests to.
                     .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
-                    .map(certResult -> certResult.getCriterion())
                     .collect(Collectors.toList());
         }
         return RealWorldTestingEligibility.builder()
             .reason(reason)
             .eligibilityYear(currentRwtEligYear)
-            .attestedCriteria(attestedCriteria)
+            .attestedCertificationResults(attestedCertificationResults)
         .build();
     }
 
@@ -207,7 +219,6 @@ public class RealWorldTestingEligiblityService {
         return isListingStatusActiveAsOfEligibilityDate(listing, asOfDate)
                 && isCertificationDateBeforeEligibilityDate(listing, asOfDate)
                 && doesListingAttestToEligibleCriteria(listing, asOfDate.getYear());
-
     }
 
     private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing, Integer year) {
@@ -215,11 +226,18 @@ public class RealWorldTestingEligiblityService {
         return listing.getCertificationResults().stream()
                 .filter(result -> result.getSuccess()
                         && eligibleCriteria.stream()
-                        .filter(crit -> crit.getId().equals(result.getCriterion().getId()))
+                        .filter(crit -> crit.getId().equals(result.getCriterion().getId()) && isGCriteriaOrUsesSvap(result))
                         .findAny()
                         .isPresent())
                 .findAny()
                 .isPresent();
+    }
+
+    private boolean isGCriteriaOrUsesSvap(CertificationResult certResult) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return criteriaService.isGCriterion(certResult.getCriterion()) || !CollectionUtils.isEmpty(certResult.getSvaps());
+        }
+        return true;
     }
 
     private boolean isCertificationDateBeforeEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {

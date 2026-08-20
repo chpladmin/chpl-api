@@ -50,6 +50,7 @@ public class RealWorldTestingCriteriaService {
     private List<CertificationCriterion> getRwtEligibleCriteria(List<String> eligibleCriteriaKeys) {
         return eligibleCriteriaKeys.stream()
                 .map(key -> certificationCriterionService.get(key))
+                .filter(criterion -> !criterion.isRemoved())
                 .collect(Collectors.toList());
     }
 
