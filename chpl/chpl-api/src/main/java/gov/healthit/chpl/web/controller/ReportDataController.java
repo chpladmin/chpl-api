@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -432,6 +433,17 @@ public class ReportDataController {
     @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
         return reportDataManager.getDirectReviewCounts();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the ONC Direct Review report.",
+            description = "Retrieves the data used to generate the ONC Direct Review report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/direct-reviews", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<DirectReview> getDirectReviews() {
+        return reportDataManager.getDirectReviews();
     }
 
 
