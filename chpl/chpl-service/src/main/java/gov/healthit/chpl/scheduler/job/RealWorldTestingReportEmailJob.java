@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -54,6 +56,9 @@ public class RealWorldTestingReportEmailJob implements Job {
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Autowired
+    private FF4j ff4j;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -154,10 +159,12 @@ public class RealWorldTestingReportEmailJob implements Job {
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing(s) for this period</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithdrawn(), 0)).append(" Withdrawn, no longer eligible</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalActive(), 0)).append(" Active</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>");
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                paragraph.append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>");
+            }
+            paragraph.append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrlValidated(), 0)).append(" RWT results validated</li>")
                     .append("</ul>").append("<br />");
         });

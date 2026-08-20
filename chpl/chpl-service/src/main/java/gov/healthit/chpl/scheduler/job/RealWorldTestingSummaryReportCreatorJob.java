@@ -210,6 +210,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     }
 
     private void processRwtPlanCountsByAcb(List<RealWorldTestingReport> reportRows) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return;
+        }
         Integer rwtEligibilityYear = LocalDate.now().getYear() + 1;
 
         if (!isDateInPlansSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {

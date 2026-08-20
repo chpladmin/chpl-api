@@ -10,6 +10,7 @@ import com.flipkart.zjsonpatch.Jackson3JsonDiff;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.activity.ActivityExclude;
+import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.sed.DeprecatedSedTestTaskData;
 import lombok.extern.log4j.Log4j2;
@@ -44,7 +45,8 @@ public final class JSONUtils {
                         return super.hasIgnoreMarker(config, m)
                                 || m.hasAnnotation(Deprecated.class)
                                 || m.hasAnnotation(ActivityExclude.class)
-                                || isSedAndIgnorable(m);
+                                || isSedAndIgnorable(m)
+                                || isRwtAndIgnorable(m);
                     }
 
                     private boolean isSedAndIgnorable(AnnotatedMember m) {
@@ -52,6 +54,12 @@ public final class JSONUtils {
                         boolean isSedSummary = _findAnnotation(m, DeprecatedSedSummaryData.class) != null;
                         boolean isSedTestTask = _findAnnotation(m, DeprecatedSedTestTaskData.class) != null;
                         return isHti5Erd && (isSedSummary || isSedTestTask);
+                    }
+
+                    private boolean isRwtAndIgnorable(AnnotatedMember m) {
+                        boolean isHti5Erd = ff4j.check(FeatureList.HTI_5_ERD);
+                        boolean isRwtPlans = _findAnnotation(m, DeprecatedRwtPlansData.class) != null;
+                        return isHti5Erd && isRwtPlans;
                     }
                   })
                 .build();
