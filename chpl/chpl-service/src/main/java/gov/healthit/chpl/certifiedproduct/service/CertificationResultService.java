@@ -50,13 +50,6 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationResult> getCertificationResultsWithoutSed(Long listingId) throws EntityRetrievalException {
-        return getCertificationResultDetailsDTOs(listingId).stream()
-                .map(dto -> getCertificationResultWithoutSed(dto))
-                .sorted(certResultComparator)
-                .collect(Collectors.toList());
-    }
-
     private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         certificationResultDetailsDTOs = certificationResultDetailsDao.getAllCertResultsForListing(id);

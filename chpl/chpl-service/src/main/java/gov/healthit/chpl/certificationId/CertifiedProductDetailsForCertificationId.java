@@ -6,8 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.cqm.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,8 +28,8 @@ public class CertifiedProductDetailsForCertificationId {
     private String developer;
     private String classification;
     private String additionalSoftware;
-    private List<CertificationResult> certificationResults;
-    private List<CQMResultDetails> cqmResults;
+    private List<CertificationResultForCertId> certificationResults;
+    private List<CqmForCertId> cqms;
 
     public String getAdditionalSoftware() {
         try {
@@ -41,5 +40,24 @@ public class CertifiedProductDetailsForCertificationId {
             // Do nothing
         }
         return null;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    @Builder
+    public static final class CertificationResultForCertId {
+        private Long certResultId;
+        private CertificationCriterion certificationCriterion;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    @Builder
+    public static final class CqmForCertId {
+        private String cmsId;
+        private String version;
+        private String domain;
     }
 }

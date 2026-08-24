@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.codeset.CodeSetDAO;
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
@@ -30,16 +31,35 @@ public class CertificationResultUpToDateService {
     private StandardDAO standardDao;
     private CodeSetDAO codeSetDao;
     private FunctionalityTestedDAO functionatlityTestedDao;
+    private CertificationResultDAO certResultDao;
 
     @Autowired
     public CertificationResultUpToDateService(StandardDAO standardDao,
             CodeSetDAO codeSetDao,
-            FunctionalityTestedDAO functionatlityTestedDao) {
+            FunctionalityTestedDAO functionatlityTestedDao,
+            CertificationResultDAO certResultDao) {
         this.standardDao = standardDao;
         this.codeSetDao = codeSetDao;
         this.functionatlityTestedDao = functionatlityTestedDao;
+        this.certResultDao = certResultDao;
     }
 
+    // Use these methods with the certResultId parameter when the certification result is saved in the database
+    // or if you don't need to otherwise retrieve listing details but want to know if a cert result is up-to-date.
+    // They call through to a db function that calculates up-to-dateness which is very fast.
+    @Transactional
+    public boolean isUpToDate(Long certResultId, LocalDate asOfDate) {
+        return certResultDao.isUpToDate(certResultId, asOfDate);
+    }
+
+    @Transactional
+    public boolean isUpToDate(Long certResultId) {
+        return isUpToDate(certResultId, LocalDate.now());
+    }
+
+    // Use these methods with the CertificationResult object when the certification result is NOT saved in the db
+    // such as on a listing upload, or if you have to get the listing details anyway it might just make sense to use these.
+    // They have the business logic here to determine whether the cert result is up-to-date.
     @Transactional
     public boolean isUpToDate(CertificationResult certResult, LocalDate asOfDate) {
         List<StandardCriteriaMap> stdCriteriaMaps = standardDao.getAllStandardCriteriaMaps();

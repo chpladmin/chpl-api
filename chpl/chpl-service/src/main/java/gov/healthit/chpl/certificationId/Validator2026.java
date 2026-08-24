@@ -9,30 +9,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
-import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId.CertificationResultForCertId;
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
+    private CertificationResultDAO certResultDao;
     private CertificationIdYearCalculator certIdYearCalculator;
-    private CertificationResultUpToDateService certResultUpToDateService;
-
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
     private List<CertificationCriterion> upToDateCriteriaFound;
 
-    public Validator2026(CertificationCriterionService certificationCriterionService,
+    public Validator2026(CertificationResultDAO certResultDao,
             CertificationIdYearCalculator certIdYearCalculator,
-            CertificationResultUpToDateService certResultUpToDateService) {
+            CertificationCriterionService certificationCriterionService) {
+        this.certResultDao = certResultDao;
         this.certIdYearCalculator = certIdYearCalculator;
-        this.certResultUpToDateService = certResultUpToDateService;
-
         upToDateCriteriaFound = new ArrayList<CertificationCriterion>();
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
@@ -167,17 +164,14 @@ public class Validator2026 extends Validator {
         criteriaToCheckForUpdates.stream()
             .forEach(criterion -> {
                 //any one cert result for the criterion being checked must be fully up-to-date
-                List<CertificationResult> certResultsForCriterion = this.getListings().stream()
+                List<CertificationResultForCertId> certResults = this.getListings().stream()
                         .flatMap(listing -> listing.getCertificationResults().stream())
-                        .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()) && BooleanUtils.isTrue(certResult.getSuccess()))
+                        .filter(certResult -> certResult.getCertificationCriterion().getId().equals(criterion.getId()))
                         .collect(Collectors.toList());
 
-                if (!CollectionUtils.isEmpty(certResultsForCriterion)) {
-                    CertificationResult fullyUpToDateCertResultForCriterion = certResultsForCriterion.stream()
-                            //the below filter is saying "if the cert result is up-to-date with today's attributes then we don't need to check if it is up-to-date with past attributes"
-                            //but if it's NOT currently up-to-date, the check runs to see if it is at least up-to-date with the attributes
-                            //that were required at the beginning of the CMS ID creation window (9/1) because then it counts towards CMS ID
-                        .filter(certResult -> certResult.isUpToDate() || areAttributesFullyUpToDateAsOf(certResult, dayToCalculateRequiredAttributes))
+                if (!CollectionUtils.isEmpty(certResults)) {
+                    CertificationResultForCertId fullyUpToDateCertResultForCriterion = certResults.stream()
+                        .filter(certResult -> certResultDao.isUpToDate(certResult.getCertResultId(), dayToCalculateRequiredAttributes))
                         .findAny()
                         .orElse(null);
 
@@ -190,10 +184,6 @@ public class Validator2026 extends Validator {
                 }
             });
         return CollectionUtils.isEmpty(getMissingUpToDate());
-    }
-
-    private boolean areAttributesFullyUpToDateAsOf(CertificationResult certResult, LocalDate asOfDate) {
-        return certResultUpToDateService.isUpToDate(certResult, asOfDate);
     }
 
     protected boolean isCqmsValid() {

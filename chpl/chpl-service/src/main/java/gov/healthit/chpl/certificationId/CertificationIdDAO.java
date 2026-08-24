@@ -17,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId.CertificationResultForCertId;
+import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId.CqmForCertId;
+import gov.healthit.chpl.cqm.entity.CQMResultDetailsEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import jakarta.persistence.Query;
 
 @Repository("certificationIdDAO")
@@ -40,9 +42,12 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final int MAX_COUNT_ALPHAS = 3;
 
     private CertificationIdYearCalculator certIdYearCalculator;
+    private CertificationCriterionService criteriaService;
 
     @Autowired
-    public CertificationIdDAO(CertificationIdYearCalculator certIdYearCalculator) {
+    public CertificationIdDAO(CertificationCriterionService criteriaService,
+            CertificationIdYearCalculator certIdYearCalculator) {
+        this.criteriaService = criteriaService;
         this.certIdYearCalculator = certIdYearCalculator;
     }
 
@@ -151,7 +156,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
     }
 
     public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
-
         Query query = entityManager.createQuery(
                 "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ",
                 Long.class);
@@ -160,21 +164,42 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return queryResult;
     }
 
-    public List<CertificationCriterion> getCriteriaMetByListingIds(List<Long> listingIds) {
-        List<CertificationCriterionEntity> criterionEntities = new ArrayList<CertificationCriterionEntity>();
-        if (!CollectionUtils.isEmpty(listingIds)) {
-            Query query = entityManager.createQuery(
-                    "SELECT crd.certificationCriterion FROM CertificationResultDetailsEntity crd "
-                            + "WHERE crd.success = TRUE "
-                            + "AND crd.deleted = FALSE "
-                            + "AND crd.certifiedProductId IN (:listingIds)",
-                            CertificationCriterionEntity.class);
-            query.setParameter("listingIds", listingIds);
-            criterionEntities = query.getResultList();
-        }
-        return criterionEntities.stream()
-                .map(entity -> entity.toDomain())
+    public List<CertificationResultForCertId> getAllCertResultsForListing(Long listingId) {
+        Query query = entityManager.createQuery("SELECT cr.id, cr.certificationCriterionId "
+                + "FROM CertificationResultEntity cr "
+                + "WHERE cr.certifiedProductId = :listingId "
+                + "AND cr.success = true "
+                + "AND cr.deleted = false ");
+        query.setParameter("listingId", listingId);
+
+        List<Object[]> results = query.getResultList();
+        return results.stream()
+                .map(result -> CertificationResultForCertId.builder()
+                        .certResultId((Long)result[0])
+                        .certificationCriterion(criteriaService.get((Long)result[1]))
+                        .build())
                 .collect(Collectors.toList());
+    }
+
+    public List<CqmForCertId> getCqmsMetByListingId(Long listingId) {
+        List<CqmForCertId> cqmsMet = new ArrayList<CqmForCertId>();
+        Query query = entityManager.createQuery("SELECT cqm "
+                + "FROM CQMResultDetailsEntity cqm "
+                + "WHERE  certifiedProductId = :listingIds "
+                + "AND (success = true OR version IS NOT NULL) "
+                + "AND deleted = false",
+                CQMResultDetailsEntity.class);
+        query.setParameter("listingId", listingId);
+        List<CQMResultDetailsEntity> results = query.getResultList();
+        cqmsMet = results.stream()
+            .map(result -> CqmForCertId.builder()
+                    .cmsId(result.getCmsId())
+                    .domain(result.getDomain())
+                    .version(result.getVersion())
+                    .build())
+            .collect(Collectors.toList());
+
+        return cqmsMet;
     }
 
     private List<CertificationIdEntity> getAllEntities() {

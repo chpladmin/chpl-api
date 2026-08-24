@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao;
 
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,6 +152,15 @@ public class CertificationResultDAO extends BaseDAOImpl {
             dto = new CertificationResultDTO(entity);
         }
         return dto;
+    }
+
+    public boolean isUpToDate(Long certResultId, LocalDate asOfDate) {
+        String sql = "SELECT * FROM " + SCHEMA_NAME + ".is_up_to_date(:certResultId, :asOfDate);";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("certResultId", certResultId);
+        query.setParameter("asOfDate", asOfDate);
+        Boolean isUpToDate = (Boolean) query.getSingleResult();
+        return isUpToDate;
     }
 
     private CertificationResultEntity getEntityById(Long id) throws EntityRetrievalException {

@@ -1,11 +1,7 @@
 package gov.healthit.chpl.certificationId;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +22,6 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CertificationIdSearchService {
-    private static final int THREAD_POOL_SIZE = 2;
     private CertificationIdManager certificationIdManager;
     private CertifiedProductDetailsManager cpdManager;
     private CertificationIdYearCalculator certIdYearCalculator;
@@ -178,25 +173,11 @@ public class CertificationIdSearchService {
     }
 
     private List<CertifiedProductDetailsForCertificationId> getAllListingDetails(List<Long> listingIds) {
-        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        List<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>> futures = new ArrayList<CompletableFuture<Optional<CertifiedProductDetailsForCertificationId>>>();
-        listingIds.stream()
-            .forEach(listingId -> futures.add(CompletableFuture
-                    .supplyAsync(() -> getCertifiedProductDetailsForCertificationId(listingId), executorService)));
-
-        CompletableFuture<?>[] futuresArray = futures.toArray(new CompletableFuture<?>[0]);
-        CompletableFuture<List<Optional<CertifiedProductDetailsForCertificationId>>> listFuture = CompletableFuture.allOf(futuresArray)
-                .thenApply(v -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
-        List<CertifiedProductDetailsForCertificationId> listings = listFuture.join().stream()
-                .filter(opt -> opt.isPresent())
-                .map(opt -> opt.get())
-                .collect(Collectors.toList());
-        try {
-            executorService.close();
-        } catch (Exception ex) {
-            LOGGER.error("Executor service did not properly close", ex);
-        }
-        return listings;
+        return listingIds.stream()
+            .map(listingId -> getCertifiedProductDetailsForCertificationId(listingId))
+            .filter(detailsOpt -> detailsOpt != null  && detailsOpt.isPresent())
+            .map(detailsOpt -> detailsOpt.get())
+            .collect(Collectors.toList());
     }
 
     protected Optional<CertifiedProductDetailsForCertificationId> getCertifiedProductDetailsForCertificationId(Long listingId) {
