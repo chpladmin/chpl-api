@@ -185,7 +185,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         List<CqmForCertId> cqmsMet = new ArrayList<CqmForCertId>();
         Query query = entityManager.createQuery("SELECT cqm "
                 + "FROM CQMResultDetailsEntity cqm "
-                + "WHERE  certifiedProductId = :listingIds "
+                + "WHERE  certifiedProductId = :listingId "
                 + "AND (success = true OR version IS NOT NULL) "
                 + "AND deleted = false",
                 CQMResultDetailsEntity.class);

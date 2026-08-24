@@ -23,10 +23,8 @@ public class CertifiedProductDetailsForCertificationId {
     private String chplProductNumber;
     private String year;
     private Boolean curesUpdate;
-    private String practiceType;
     private String acb;
     private String developer;
-    private String classification;
     private String additionalSoftware;
     private List<CertificationResultForCertId> certificationResults;
     private List<CqmForCertId> cqms;

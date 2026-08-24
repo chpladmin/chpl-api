@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
@@ -95,18 +96,16 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductDetailsForCertificationId getCertifiedProductDetailsForCertificationId(Long id) throws EntityRetrievalException {
-        CertifiedProductDetailsDTO listing = cpDao.getDetailsById(id);
+       CertifiedProductSummaryDTO listing = cpDao.getSummaryById(id);
 
         return CertifiedProductDetailsForCertificationId.builder()
-                .acb(listing.getCertificationBodyName())
+                .acb(listing.getAcb().getName())
                 .additionalSoftware(listing.getProductAdditionalSoftware())
                 .chplProductNumber(listing.getChplProductNumber())
-                .classification(listing.getProductClassificationName())
                 .curesUpdate(listing.getCuresUpdate())
                 .developer(listing.getDeveloper().getName())
                 .id(listing.getId())
                 .product(listing.getProduct().getName())
-                .practiceType(listing.getPracticeTypeName())
                 .version(listing.getVersion().getVersion())
                 .year(listing.getYear())
                 .certificationResults(certIdDao.getAllCertResultsForListing(listing.getId()))

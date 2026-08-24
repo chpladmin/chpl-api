@@ -12,23 +12,23 @@ import org.apache.commons.collections.CollectionUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId.CertificationResultForCertId;
-import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 
 public class Validator2026 extends Validator {
-    private CertificationResultDAO certResultDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private CertificationIdYearCalculator certIdYearCalculator;
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> cpoeCriteriaOr;
     private List<CertificationCriterion> dpCriteriaOr;
     private List<CertificationCriterion> upToDateCriteriaFound;
 
-    public Validator2026(CertificationResultDAO certResultDao,
+    public Validator2026(CertificationResultUpToDateService certResultUpToDateService,
             CertificationIdYearCalculator certIdYearCalculator,
             CertificationCriterionService certificationCriterionService) {
-        this.certResultDao = certResultDao;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.certIdYearCalculator = certIdYearCalculator;
         upToDateCriteriaFound = new ArrayList<CertificationCriterion>();
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
@@ -63,6 +63,10 @@ public class Validator2026 extends Validator {
         boolean areAttributesUpToDate = areAttributesUpToDate();
         boolean isCriteriaValid = isCriteriaValid();
         return isCriteriaValid && areAttributesUpToDate;
+    }
+
+    protected String getCertIdYear() {
+        return "2026";
     }
 
     protected boolean isCriteriaValid() {
@@ -155,7 +159,7 @@ public class Validator2026 extends Validator {
         //Ex: on 9/1/2026 see whichever standards and code sets were required
         //and then we need to confirm the listings being used for cert id creation
         //have those attributes today.
-        LocalDate dayToCalculateRequiredAttributes = certIdYearCalculator.getCmsIdStartDayOfCurrentYear();
+        LocalDate dayToCalculateRequiredAttributes = certIdYearCalculator.getCmsIdStartDayOfYear(getCertIdYear());
 
         List<CertificationCriterion> criteriaToCheckForUpdates = Stream.of(requiredCriteria, cpoeCriteriaOr, dpCriteriaOr)
                 .flatMap(Collection::stream)
@@ -171,7 +175,7 @@ public class Validator2026 extends Validator {
 
                 if (!CollectionUtils.isEmpty(certResults)) {
                     CertificationResultForCertId fullyUpToDateCertResultForCriterion = certResults.stream()
-                        .filter(certResult -> certResultDao.isUpToDate(certResult.getCertResultId(), dayToCalculateRequiredAttributes))
+                        .filter(certResult -> certResultUpToDateService.isUpToDate(certResult.getCertResultId(), dayToCalculateRequiredAttributes))
                         .findAny()
                         .orElse(null);
 

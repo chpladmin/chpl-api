@@ -40,6 +40,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String mandatoryDisclosures;
+    private String productAdditionalSoftware;
     private Date creationDate;
     private Date lastModifiedDate;
     private String rwtPlansUrl;
@@ -47,7 +48,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String rwtResultsUrl;
     private LocalDate rwtResultsCheckDate;
     private Integer rwtEligibilityYear;
-
+    private String year;
 
     /**
      * Construct from entity.
@@ -79,12 +80,14 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.reportFileLocation = entity.getReportFileLocation();
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.mandatoryDisclosures = entity.getMandatoryDisclosures();
+        this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.rwtPlansUrl = entity.getRwtPlansUrl();
         this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
+        this.year = entity.getYear();
     }
 
     public CertifiedProductSummaryDTO(CertifiedProductDetailsEntity entity) {

@@ -98,7 +98,7 @@ public class ValidatorFactory {
         } else if (validatorClazz.equals(Validator2026.class)) {
             try {
                 result =  (Validator) validatorClazz.getDeclaredConstructors()[0].newInstance(
-                        certificationCriterionService, certIdYearCalculator, certResultUpToDateService);
+                        certResultUpToDateService, certIdYearCalculator, certificationCriterionService);
             } catch (Exception ex) {
                 LOGGER.error("Could not instantiate validator " + validatorClazz, ex);
             }

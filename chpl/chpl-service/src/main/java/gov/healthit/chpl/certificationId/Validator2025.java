@@ -61,6 +61,10 @@ public class Validator2025 extends Validator {
         return isCriteriaValid();
     }
 
+    protected String getCertIdYear() {
+        return "2025";
+    }
+
     protected boolean isCriteriaValid() {
         this.getCounts().setCriteriaRequired(requiredCriteria.size());
         boolean requiredCriteriaValid = true;
