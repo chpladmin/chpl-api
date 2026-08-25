@@ -87,8 +87,12 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId) throws UserRetrievalException {
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId)
+            throws UserRetrievalException, CognitoAuthenticationChallengeException {
         AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId);
+        if (authResult == null) {
+            throw new CognitoAuthenticationChallengeException();
+        }
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
