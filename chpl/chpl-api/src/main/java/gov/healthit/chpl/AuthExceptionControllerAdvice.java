@@ -12,6 +12,7 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 
 @ControllerAdvice
 public class AuthExceptionControllerAdvice {
@@ -20,6 +21,13 @@ public class AuthExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exception(final AccessDeniedException e) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse(e.getMessage() == null ? "Access Denied" : e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(CognitoAuthenticationChallengeException.class)
+    public ResponseEntity<ErrorResponse> exception(CognitoAuthenticationChallengeException e) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse(e.getMessage() == null ? "Cognito authentication failed" : e.getMessage()),
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserCreationException.class)

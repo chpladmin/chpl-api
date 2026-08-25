@@ -139,7 +139,8 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) throws UserRetrievalException {
+    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request)
+            throws UserRetrievalException, CognitoAuthenticationChallengeException {
         return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()));
     }
 }
