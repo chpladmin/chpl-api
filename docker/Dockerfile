@@ -1,41 +1,14 @@
-# syntax=docker/dockerfile:1
-# Stage 1: Build the WAR file using Maven
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
-WORKDIR /app
-
-# Copy the pom.xml files first to leverage Docker layer caching
-# This ensures that if only source code changes, dependencies are not re-downloaded
-COPY chpl/pom.xml .
-COPY chpl/chpl-api/pom.xml chpl-api/
-COPY chpl/chpl-resources/pom.xml chpl-resources/
-COPY chpl/chpl-service/pom.xml chpl-service/
-
-# Copy the rest of the project files
-COPY chpl/chpl-api/lombok.config chpl-api/lombok.config
-COPY chpl/chpl-api/src chpl-api/src
-COPY chpl/chpl-resources/src chpl-resources/src
-COPY chpl/chpl-service/lombok.config chpl-service/lombok.config
-COPY chpl/chpl-service/src chpl-service/src
-
-# Activates chpl-resources' "environment-specific" Maven profile, which layers
-# src/main/resources-${MAVEN_ENV} (log4j2 config, notably the catch-all
-# gov.healthit.chpl logger/chplserviceJson appender that Datadog's chplservice
-# service tag depends on) over the base resources. Matches the -Denv=<env>
-# flag chpl-build-common's CompileApiTask already passes for the
-# build-from-source path in every non-GHCR environment. Set via --build-arg
-# from docker-publish.yml, mapped from the branch being built.
-ARG MAVEN_ENV=dev
-# Cache mount persists the downloaded dependency tree across builds (see
-# cache-to/cache-from: type=gha on the "Build and push" step in
-# docker-publish.yml) so repeated builds don't re-hit Maven Central for
-# every dependency.
-RUN --mount=type=cache,target=/root/.m2 mvn clean package -DskipTests -Denv=${MAVEN_ENV}
-
-# Stage 2: Deploy to Tomcat
+# Deploy to Tomcat.
+#
+# The WAR is built by the "compile" job in .github/workflows/docker-publish.yml
+# (the same `mvn clean package -Denv=<env>` command this image used to run
+# itself, but with maven's ~/.m2 dependency cache already warm there) and
+# downloaded into docker/build-context/ before this build runs, so the image
+# build never needs to touch Maven Central.
 #
 # This image contains no secrets, and only differs across environments in
-# the -Denv build arg above (log4j2 config naming/routing). Tomcat config
-# below only has ${ENV_VAR}
+# the -Denv value the compile job built the WAR with (log4j2 config
+# naming/routing). Tomcat config below only has ${ENV_VAR}
 # placeholders (resolved at container startup - see catalina.properties'
 # org.apache.tomcat.util.digester.PROPERTY_SOURCE) and the checked-in
 # environment.properties/email.properties already mark every sensitive key
@@ -53,8 +26,8 @@ COPY docker/tomcat-conf/server.xml /usr/local/tomcat/conf/server.xml
 COPY docker/tomcat-conf/context.xml /usr/local/tomcat/conf/context.xml
 COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.properties
 # Empty Quartz job-scheduling-data template. Only the dev/qa/staging
-# resources-${MAVEN_ENV} quartz.properties (now actually applied - see the
-# -Denv build above) set
+# resources-${env} quartz.properties (now actually applied - see the
+# -Denv build in the compile job) set
 # org.quartz.plugin.jobInitializer.fileNames=jobs.xml,system-triggers.xml,user-triggers.xml
 # with failOnFileNotFound=true; jobs.xml/system-triggers.xml ship on the
 # classpath via chpl-resources, but this one doesn't. Quartz loads it via
@@ -70,7 +43,7 @@ COPY docker/tomcat-conf/catalina.properties /usr/local/tomcat/conf/catalina.prop
 # file at all, so it's a harmless no-op there either way.
 COPY docker/tomcat-conf/user-triggers.xml /usr/local/tomcat/lib/user-triggers.xml
 
-COPY --from=build /app/chpl-api/target/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
+COPY docker/build-context/chpl-service.war /usr/local/tomcat/webapps/chpl-service.war
 
 # Matches the port every other environment's Tomcat listens on (the real
 # dev box's server.xml, and chpl-build's start-tomcat-containers.sh, which

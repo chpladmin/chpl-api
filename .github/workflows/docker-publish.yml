@@ -50,9 +50,9 @@ jobs:
         run: mvn -B clean test --file chpl/pom.xml
 
   # Mirrors the "Build API" job (CompileApiTask) in the same Bamboo plan, and
-  # runs the exact `mvn clean package -DskipTests -Denv=<env>` command that
-  # docker/Dockerfile's build stage runs - so a compile/packaging failure
-  # shows up here, fast, instead of partway through the (slower) Docker build.
+  # builds the exact WAR docker/Dockerfile packages into the image (see the
+  # "Upload WAR" step below) - so a compile/packaging failure shows up here,
+  # fast, instead of partway through the (slower) Docker build.
   compile:
     runs-on: ubuntu-latest
     steps:
@@ -86,6 +86,16 @@ jobs:
           MAVEN_OPTS: -Xms512m -Xmx1024m
         run: mvn -B clean package -DskipTests -Denv=${{ steps.envprofile.outputs.value }} --file chpl/pom.xml
 
+      # Handed to build-and-push below, so the Docker image build doesn't
+      # need to rerun the Maven compile (which just ran here, with the
+      # setup-java ~/.m2 cache already warm) itself.
+      - name: Upload WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: chpl-service-war
+          path: chpl/chpl-api/target/chpl-service.war
+          retention-days: 1
+
   build-and-push:
     needs: [unit-tests, compile]
     runs-on: ubuntu-latest
@@ -110,23 +120,18 @@ jobs:
           echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
           echo "branch=$(echo '${{ github.ref_name }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
 
-      # Same branch -> -Denv mapping as the "compile" job above, threaded
-      # into the Docker build as the MAVEN_ENV build arg.
-      - name: Determine Maven environment profile
-        id: envprofile
-        run: |
-          case "${{ github.ref_name }}" in
-            development) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
-            qa) echo "value=qa" >> "$GITHUB_OUTPUT" ;;
-            staging) echo "value=staging" >> "$GITHUB_OUTPUT" ;;
-            production) echo "value=production" >> "$GITHUB_OUTPUT" ;;
-            *) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
-          esac
+      # Built by the "compile" job above (already -Denv'd for this branch),
+      # so this build only has to package it into Tomcat.
+      - name: Download WAR
+        uses: actions/download-artifact@v4
+        with:
+          name: chpl-service-war
+          path: docker/build-context/
 
       # This image contains no secrets - see docker/Dockerfile. Every environment
-      # runs the same image apart from the MAVEN_ENV build arg (log4j2 config);
-      # secrets are supplied as container environment variables at `docker run`
-      # time, not baked in here.
+      # runs the same image apart from the -Denv value the compile job built
+      # the WAR with (log4j2 config); secrets are supplied as container
+      # environment variables at `docker run` time, not baked in here.
       #
       # Tags:
       #   build-<run_number> - immutable, sequential build number (github.run_number
@@ -141,20 +146,12 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          build-args: |
-            MAVEN_ENV=${{ steps.envprofile.outputs.value }}
           # build-push-action v6 enables these by default, which each push a
           # separate untagged provenance/SBOM manifest to GHCR alongside the
           # real image - not needed here, so turned off to keep the package
           # version list clean.
           provenance: false
           sbom: false
-          # Persists the Dockerfile build stage's ~/.m2 cache mount (see
-          # docker/Dockerfile) to the GitHub Actions cache service, so the
-          # Maven dependency download in the Docker build itself is also
-          # reused across runs, not just in the compile/unit-tests jobs above.
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           tags: |
             ${{ steps.meta.outputs.image }}:build-${{ github.run_number }}
             ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.sha_short }}

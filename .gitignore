@@ -225,6 +225,7 @@ pip-log.txt
 .mr.developer.cfg
 
 ## CHPL specific ignores
+/docker/build-context/
 /chpl/chpl-etl/src/main/resources/log.txt
 /chpl/chpl-etl/src/main/resources/chpl.csv
 /chpl/chpl-etl/src/main/resources/chpl-hash.csv
