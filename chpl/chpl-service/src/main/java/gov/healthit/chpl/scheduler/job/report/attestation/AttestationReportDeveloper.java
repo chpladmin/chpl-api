@@ -11,5 +11,6 @@ public class AttestationReportDeveloper {
     private Long id;
     private AttestationReport attestationReport;
     private Developer developer;
+    private String developerDetailsUrl;
     private ChangeRequestStatus changeRequestStatus;
 }
