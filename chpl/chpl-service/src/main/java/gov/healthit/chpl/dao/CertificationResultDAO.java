@@ -155,9 +155,26 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     public boolean isUpToDate(Long certResultId, LocalDate asOfDate) {
+        System.out.println("Checking isUpToDate for cert result " + certResultId + " on date " + asOfDate);
         String sql = "SELECT * FROM " + SCHEMA_NAME + ".is_up_to_date(:certResultId, :asOfDate);";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("certResultId", certResultId);
+        query.setParameter("asOfDate", asOfDate);
+        Boolean isUpToDate = (Boolean) query.getSingleResult();
+        return isUpToDate;
+    }
+
+    public boolean isUpToDate(Long criterionId,
+            List<Long> certResultStandards,
+            List<Long> certResultFunctionalitiesTested,
+            List<Long> certResultCodeSets,
+            LocalDate asOfDate) {
+        String sql = "SELECT * FROM " + SCHEMA_NAME + ".is_up_to_date(:criterionId, :certResultStandards, :certResultFunctionalitiesTested, :certResultCodeSets, :asOfDate);";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("criterionId", criterionId);
+        query.setParameter("certResultStandards", certResultStandards);
+        query.setParameter("certResultFunctionalitiesTested", certResultFunctionalitiesTested);
+        query.setParameter("certResultCodeSets", certResultCodeSets);
         query.setParameter("asOfDate", asOfDate);
         Boolean isUpToDate = (Boolean) query.getSingleResult();
         return isUpToDate;

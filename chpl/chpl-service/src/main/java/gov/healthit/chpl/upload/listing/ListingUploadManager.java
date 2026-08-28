@@ -207,13 +207,17 @@ public class ListingUploadManager {
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
         listing.getCertificationResults().stream()
-            .forEach(certResult -> populateUpToDate(listing.getCertificationDay(), certResult));
+            .forEach(certResult -> populateUpToDate(certResult, listing.getCertificationDay()));
         LOGGER.debug("Populated upToDate for each certification result");
         return listing;
     }
 
-    private void populateUpToDate(LocalDate asOfDate, CertificationResult certResult) {
-        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult, asOfDate));
+    private void populateUpToDate(CertificationResult certResult, LocalDate asOfDate) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult.getCriterion().getId(),
+                certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
+                certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
+                certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList(),
+                asOfDate));
     }
 
     @Transactional

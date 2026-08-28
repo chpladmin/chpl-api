@@ -93,6 +93,9 @@ public class CertificationResultDetailsEntity {
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 
+    @Column(name = "is_up_to_date_today")
+    private Boolean isUpToDateToday;
+
     @Column(name = "deleted")
     private Boolean deleted;
 

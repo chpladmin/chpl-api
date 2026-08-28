@@ -44,6 +44,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String serviceBaseUrlList;
     private String riskManagementSummaryInformation;
     private String privacySecurityFramework;
+    private boolean isUpToDateToday;
     private CertificationCriterion criterion;
 
     private List<CertificationResultOptionalStandard> optionalStandards;
@@ -76,6 +77,8 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.riskManagementSummaryInformation = entity.getRiskManagementSummaryInformation();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
+        this.isUpToDateToday = entity.getIsUpToDateToday();
+
         if (entity.getCertificationCriterion() != null) {
             this.criterion = entity.getCertificationCriterion().toDomain();
         }

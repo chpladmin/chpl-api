@@ -48,18 +48,18 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingMergeService {
 
-    private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationResultUpToDateService certResultUpToDateService;
+    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
 
     @Autowired
-    public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil,
-            CertificationResultUpToDateService certResultUpToDateService,
+    public ListingMergeService(CertificationResultUpToDateService certResultUpToDateService,
+            ChplProductNumberUtil chplProductNumberUtil,
             ErrorMessageUtil msgUtil,
             FF4j ff4j) {
-        this.chplProductNumberUtil = chplProductNumberUtil;
         this.certResultUpToDateService = certResultUpToDateService;
+        this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
     }
@@ -529,10 +529,6 @@ public class ListingMergeService {
             }
     }
 
-    private void populateUpToDate(CertificationResult certResult) {
-        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
-    }
-
     private void setIdsForCqmResults(CQMResultDetails updatedCqmResult, CertifiedProductSearchDetails currListing) {
         if (CollectionUtils.isEmpty(currListing.getCqmResults())) {
             return;
@@ -563,5 +559,12 @@ public class ListingMergeService {
         if (matchedCurrCqmCert != null) {
             updatedCqmCert.setId(matchedCurrCqmCert.getId());
         }
+    }
+
+    private void populateUpToDate(CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDateAsOfToday(certResult.getCriterion().getId(),
+                certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
+                certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
+                certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList()));
     }
 }
