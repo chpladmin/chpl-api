@@ -563,8 +563,8 @@ public class ListingMergeService {
 
     private void populateUpToDate(CertificationResult certResult) {
         certResult.setUpToDate(certResultUpToDateService.isUpToDateAsOfToday(certResult.getCriterion().getId(),
-                certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
-                certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
-                certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList()));
+                CollectionUtils.isEmpty(certResult.getStandards()) ? null : certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getFunctionalitiesTested()) ? null : certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getCodeSets()) ? null : certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList()));
     }
 }
