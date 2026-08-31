@@ -108,6 +108,8 @@ public class CertifiedProductDetailsManager {
                 .product(listing.getProduct().getName())
                 .version(listing.getVersion().getVersion())
                 .year(listing.getYear())
+                .practiceType(listing.getPracticeType())
+                .classification(listing.getProductClassification())
                 .certificationResults(certIdDao.getAllCertResultsForListing(listing.getId()))
                 .cqms(certIdDao.getCqmsMetByListingId(listing.getId()))
                 .build();

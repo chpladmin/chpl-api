@@ -15,13 +15,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Summary information about a listing.
- * Important things are CHPL Product Number, developer + contact info,
- * product, version, and associated URLs.
- * @author kekey
- *
- */
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -41,6 +34,8 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String sedReportFileLocation;
     private String mandatoryDisclosures;
     private String productAdditionalSoftware;
+    private String productClassification;
+    private String practiceType;
     private Date creationDate;
     private Date lastModifiedDate;
     private String rwtPlansUrl;
@@ -88,6 +83,8 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
         this.year = entity.getYear();
+        this.productClassification = entity.getProductClassificationName();
+        this.practiceType = entity.getPracticeTypeName();
     }
 
     public CertifiedProductSummaryDTO(CertifiedProductDetailsEntity entity) {
@@ -125,5 +122,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
+        this.productClassification = entity.getProductClassificationName();
+        this.practiceType = entity.getPracticeTypeName();
     }
 }

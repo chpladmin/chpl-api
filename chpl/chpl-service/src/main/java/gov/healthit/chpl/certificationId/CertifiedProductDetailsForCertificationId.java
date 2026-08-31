@@ -26,6 +26,8 @@ public class CertifiedProductDetailsForCertificationId {
     private String acb;
     private String developer;
     private String additionalSoftware;
+    private String practiceType;
+    private String classification;
     private List<CertificationResultForCertId> certificationResults;
     private List<CqmForCertId> cqms;
 

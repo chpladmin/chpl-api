@@ -31,8 +31,10 @@ public class CertificationIdLookupResults implements Serializable {
         private String chplProductNumber;
         private String year;
         private Boolean curesUpdate;
+        private String practiceType;
         private String acb;
         private String vendor;
+        private String classification;
         private String additionalSoftware;
 
         public Product(CertifiedProductDetailsForCertificationId listing) {
@@ -42,8 +44,10 @@ public class CertificationIdLookupResults implements Serializable {
             this.setChplProductNumber(listing.getChplProductNumber());
             this.year = listing.getYear();
             this.curesUpdate = listing.getCuresUpdate();
+            this.practiceType = listing.getPracticeType();
             this.acb = listing.getAcb();
             this.vendor = listing.getDeveloper();
+            this.classification = listing.getClassification();
             this.additionalSoftware = listing.getAdditionalSoftware();
         }
     }

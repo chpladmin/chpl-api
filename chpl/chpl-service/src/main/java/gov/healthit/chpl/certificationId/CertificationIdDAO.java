@@ -175,8 +175,8 @@ public class CertificationIdDAO extends BaseDAOImpl {
         List<Object[]> results = query.getResultList();
         return results.stream()
                 .map(result -> CertificationResultForCertId.builder()
-                        .certResultId((Long)result[0])
-                        .certificationCriterion(criteriaService.get((Long)result[1]))
+                        .certResultId((Long) result[0])
+                        .certificationCriterion(criteriaService.get((Long) result[1]))
                         .build())
                 .collect(Collectors.toList());
     }
