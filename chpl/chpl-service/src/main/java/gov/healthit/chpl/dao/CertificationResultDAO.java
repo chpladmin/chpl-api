@@ -155,7 +155,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     public boolean isUpToDate(Long certResultId, LocalDate asOfDate) {
-        System.out.println("Checking isUpToDate for cert result " + certResultId + " on date " + asOfDate);
         String sql = "SELECT * FROM " + SCHEMA_NAME + ".is_up_to_date(:certResultId, :asOfDate);";
         Query query = entityManager.createNativeQuery(sql, Boolean.class);
         query.setParameter("certResultId", certResultId);

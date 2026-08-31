@@ -22,13 +22,11 @@ public class CertificationResultUpToDateService {
 
     @Transactional
     public boolean isUpToDate(Long certResultId, LocalDate asOfDate) {
-        System.out.println("Checking whether cert result " + certResultId + " is up to date as of " + asOfDate);
         return certResultDao.isUpToDate(certResultId, asOfDate);
     }
 
     @Transactional
     public boolean isUpToDateAsOfToday(Long certResultId) {
-        System.out.println("Checking whether cert result " + certResultId + " is up to date as of today");
         return isUpToDate(certResultId, LocalDate.now());
     }
 
