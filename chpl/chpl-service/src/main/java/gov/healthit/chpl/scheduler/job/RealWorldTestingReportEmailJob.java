@@ -1,10 +1,7 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -32,6 +29,7 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
 import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingReportSummaryCalculator;
+import gov.healthit.chpl.scheduler.presenter.RealWorldTestingCsvPresenter;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,10 +49,16 @@ public class RealWorldTestingReportEmailJob implements Job {
     private Environment env;
 
     @Autowired
+    private RealWorldTestingCsvPresenter csvPresenter;
+
+    @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Autowired
+    private FF4j ff4j;
 
     private List<Long> acbIds = new ArrayList<Long>();
 
@@ -103,7 +107,7 @@ public class RealWorldTestingReportEmailJob implements Job {
     private File generateCsvFile(JobExecutionContext context, List<RealWorldTestingReport> rows) {
         LOGGER.info("Generating CSV attachment");
         File outputFile = getOutputFile(env.getProperty("rwt.report.filename") + LocalDate.now().toString());
-        outputFile = writeToFile(rows, outputFile);
+        writeToFile(rows, outputFile);
         LOGGER.info("Completed Generating CSV attachment");
         return outputFile;
     }
@@ -120,25 +124,8 @@ public class RealWorldTestingReportEmailJob implements Job {
         return temp;
     }
 
-    private File writeToFile(List<RealWorldTestingReport> rows, File outputFile) {
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile),
-                Charset.forName("UTF-8").newEncoder());
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-            writer.write('\ufeff');
-            csvPrinter.printRecord(RealWorldTestingReport.getHeaders());
-            rows.stream()
-                    .forEach(row -> {
-                        try {
-                            csvPrinter.printRecord(row.toListOfStrings());
-                        } catch (Exception e) {
-                            LOGGER.error(e);
-                        }
-
-                    });
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
-        return outputFile;
+    private void writeToFile(List<RealWorldTestingReport> rows, File outputFile) {
+        csvPresenter.presentAsFile(rows, outputFile);
     }
 
     private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
@@ -169,13 +156,15 @@ public class RealWorldTestingReportEmailJob implements Job {
             RealWorldTestingReportSummary summary = RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, year);
             paragraph.append("Real World Testing for ").append(summary.getRwtEligibilityYear()).append(":<br/>")
                     .append("<ul>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing for this period</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing(s) for this period</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithdrawn(), 0)).append(" Withdrawn, no longer eligible</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalActive(), 0)).append(" Active</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>")
-                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>");
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                paragraph.append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>");
+            }
+            paragraph.append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
                     .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrlValidated(), 0)).append(" RWT results validated</li>")
                     .append("</ul>").append("<br />");
         });

@@ -71,7 +71,7 @@ public class QuestionableUrlReportDao extends BaseDAOImpl {
                 || report.getUrlType().equals(UrlType.EXPORT_DOCUMENTATION.getName())
                 || (!ff4j.check(FeatureList.HTI_5_ERD) && report.getUrlType().equals(UrlType.FULL_USABILITY_REPORT.getName()))
                 || report.getUrlType().equals(UrlType.MANDATORY_DISCLOSURE.getName())
-                || report.getUrlType().equals(UrlType.REAL_WORLD_TESTING_PLANS.getName())
+                || (!ff4j.check(FeatureList.HTI_5_ERD) && report.getUrlType().equals(UrlType.REAL_WORLD_TESTING_PLANS.getName()))
                 || report.getUrlType().equals(UrlType.REAL_WORLD_TESTING_RESULTS.getName())
                 || report.getUrlType().equals(UrlType.RISK_MANAGEMENT_SUMMARY_INFORMATION.getName())
                 || report.getUrlType().equals(UrlType.SERVICE_BASE_URL_LIST.getName())

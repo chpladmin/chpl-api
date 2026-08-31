@@ -5,8 +5,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.ff4j.FF4j;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
@@ -37,9 +39,12 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "AND subscriber.deleted = false ";
 
     private SubscriptionLookupUtil lookupUtil;
+    private FF4j ff4j;
 
-    public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
+    public SubscriptionDao(SubscriptionLookupUtil lookupUtil,
+            FF4j ff4j) {
         this.lookupUtil = lookupUtil;
+        this.ff4j = ff4j;
     }
 
     public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
@@ -103,6 +108,8 @@ public class SubscriptionDao extends BaseDAOImpl {
         List<SubscriptionSubject> subjectsForObjectType = getAllSubjectsForObjectType(subscribedObjectTypeId);
 
         subjectsForObjectType.stream()
+            .filter(subject -> !lookupUtil.getRwtPlansUrlChangedSubjectId().equals(subject.getId())
+                    || (!ff4j.check(FeatureList.HTI_5_ERD) && lookupUtil.getRwtPlansUrlChangedSubjectId().equals(subject.getId())))
             .forEach(subject -> createSubscriptionIfNotExists(
                     subscriberId, subscribedObjectId, subject.getId(),
                     lookupUtil.getDailyConsolidationMethodId()));

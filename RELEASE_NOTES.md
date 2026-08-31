@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 54.1.0
+_31 August 2026_
+
+### Features
+* Add report-data/direct-reviews endpoints
+
+### Bug Fixes
+* Handle null auth response if Cognito refresh token times out
+
+### Flagged Features
+* Ignore RWT Plans columns in listing upload, csv download
+* Remove access to RWT Plans URL/Check Date in API response for Listing details
+* Exclude RWT Plans from Questionable URL report calculations
+* Include different RWT criteria in report based on flag state
+
+---
+
 ## Version 54.0.2
 _18 August 2026_
 

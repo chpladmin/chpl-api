@@ -65,9 +65,17 @@ public class ListingCsvHeadingWriter {
                 HeadingPostHti5.DEVELOPER_EMAIL.getHeading(),
                 HeadingPostHti5.DEVELOPER_PHONE.getHeading(),
                 HeadingPostHti5.DEVELOPER_CONTACT_NAME.getHeading(),
-                HeadingPostHti5.SVAP_NOTICE_URL.getHeading(),
-                HeadingPostHti5.RWT_PLANS_URL.getHeading(),
-                HeadingPostHti5.RWT_PLANS_CHECK_DATE.getHeading(),
+                HeadingPostHti5.SVAP_NOTICE_URL.getHeading())
+            .collect(Collectors.toList());
+
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            headings.addAll(Stream.of(
+                    HeadingPreHti5.RWT_PLANS_URL.getHeading(),
+                    HeadingPreHti5.RWT_PLANS_CHECK_DATE.getHeading())
+                    .collect(Collectors.toList()));
+        }
+
+        headings.addAll(Stream.of(
                 HeadingPostHti5.RWT_RESULTS_URL.getHeading(),
                 HeadingPostHti5.RWT_RESULTS_CHECK_DATE.getHeading(),
                 HeadingPostHti5.TARGETED_USERS.getHeading(),
@@ -81,8 +89,8 @@ public class ListingCsvHeadingWriter {
                 HeadingPostHti5.K_1_URL.getHeading(),
                 HeadingPostHti5.CQM_NUMBER.getHeading(),
                 HeadingPostHti5.CQM_VERSION.getHeading(),
-                HeadingPostHti5.CQM_CRITERIA.getHeading()
-                ).collect(Collectors.toList());
+                HeadingPostHti5.CQM_CRITERIA.getHeading())
+                .collect(Collectors.toList()));
 
         if (!ff4j.check(FeatureList.HTI_5_ERD)) {
             headings.addAll(Stream.of(

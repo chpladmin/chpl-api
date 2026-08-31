@@ -126,7 +126,17 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     }
                     break;
                 case MANDATORY_DISCLOSURE:
+                    LOGGER.info("[" + i + "] Getting Listings with bad " + questionableUrlResult.getUrlType().getName()
+                            + " website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getListingsWithUrl(questionableUrlResult));
+                    break;
                 case REAL_WORLD_TESTING_PLANS:
+                    if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                        LOGGER.info("[" + i + "] Getting Listings with bad " + questionableUrlResult.getUrlType().getName()
+                                + " website " + questionableUrlResult.getUrl());
+                        questionableUrls.addAll(urlLookupDao.getListingsWithUrl(questionableUrlResult));
+                    }
+                    break;
                 case REAL_WORLD_TESTING_RESULTS:
                 case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
                     LOGGER.info("[" + i + "] Getting Listings with bad " + questionableUrlResult.getUrlType().getName()
@@ -343,7 +353,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             brokenUrlSummaryHtml += "<li>" + UrlType.DOCUMENTATION.getName() + ": " + brokenDocumentationUrlUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.USE_CASES.getName() + ": " + brokenUseCasesUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.RISK_MANAGEMENT_SUMMARY_INFORMATION.getName() + ": " + brokenRiskManagementSummaryInfoUrls + "</li>";
-            brokenUrlSummaryHtml += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                brokenUrlSummaryHtml += "<li>" + UrlType.REAL_WORLD_TESTING_PLANS.getName() + ": " + brokenRwtPlansUrls + "</li>";
+            }
             brokenUrlSummaryHtml += "<li>" + UrlType.REAL_WORLD_TESTING_RESULTS.getName() + ": " + brokenRwtResultsUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE.getName() + ": " + brokenSvapNoticeUrls + "</li>";
             brokenUrlSummaryHtml += "</ul>";

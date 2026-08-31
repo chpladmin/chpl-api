@@ -80,8 +80,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setIcs(listing.getIcs() == null || listing.getIcs().getInherits() == null ? Boolean.FALSE : listing.getIcs().getInherits());
             entity.setAccessibilityCertified(listing.getAccessibilityCertified());
             entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
-            entity.setRwtPlansUrl(listing.getRwtPlansUrl());
-            entity.setRwtPlansCheckDate(listing.getRwtPlansCheckDate());
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                entity.setRwtPlansUrl(listing.getRwtPlansUrl());
+                entity.setRwtPlansCheckDate(listing.getRwtPlansCheckDate());
+            }
             entity.setRwtResultsUrl(listing.getRwtResultsUrl());
             entity.setRwtResultsCheckDate(listing.getRwtResultsCheckDate());
             entity.setChplProductNumber(null);
@@ -122,8 +124,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setProductVersionId(dto.getProductVersionId());
-        entity.setRwtPlansUrl(dto.getRwtPlansUrl());
-        entity.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            entity.setRwtPlansUrl(dto.getRwtPlansUrl());
+            entity.setRwtPlansCheckDate(dto.getRwtPlansCheckDate());
+        }
         entity.setRwtResultsUrl(dto.getRwtResultsUrl());
         entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
@@ -623,7 +627,9 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             queryStr += " AND cp.sedReportFileLocation = :url ";
             break;
         case REAL_WORLD_TESTING_PLANS:
-            queryStr += " AND cp.rwtPlansUrl = :url ";
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                queryStr += " AND cp.rwtPlansUrl = :url ";
+            }
             break;
         case REAL_WORLD_TESTING_RESULTS:
             queryStr += " AND cp.rwtResultsUrl = :url ";
