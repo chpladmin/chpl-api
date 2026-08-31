@@ -7,11 +7,13 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -36,6 +38,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     private ValidationUtils validationUtil;
     private ErrorMessageUtil errorMessageUtil;
     private ResourcePermissions resourcePermissions;
+    private FF4j ff4j;
     private RequiredAndRelatedCriteriaReviewer reviewer;
 
     private CertificationCriterion a1, a2, a3, a4, a5, a6, a9, a10, a12, a13, a14, a15,
@@ -207,6 +210,8 @@ public class RequiredAndRelatedCriteriaReviewerTest {
 
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
+        ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_4_2028_01_01))).thenReturn(false);
         validationUtil = new ValidationUtils(certificationCriterionService);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_REQUIRED_ERROR_KEY), ArgumentMatchers.anyString()))
@@ -221,7 +226,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         reviewer = new RequiredAndRelatedCriteriaReviewer(certificationCriterionService, errorMessageUtil,
-                validationUtil, resourcePermissionsFactory);
+                validationUtil, resourcePermissionsFactory, ff4j);
     }
 
     @Test
@@ -849,6 +854,109 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_b3AndB4CriteriaAttestedFlagIsOn_hasNoErrors() {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_4_2028_01_01))).thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_b3CriteriaAttestedWithoutB4FlagIsOn_hasError() {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_4_2028_01_01))).thenReturn(true);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g4)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(g5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d1)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d2Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d3Cures)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d5)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d6)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d7)
+                        .success(Boolean.TRUE)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(d8)
+                        .success(Boolean.TRUE)
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, Util.formatCriteriaNumber(b3Cures), Util.formatCriteriaNumber(b4))));
     }
 
     @Test
