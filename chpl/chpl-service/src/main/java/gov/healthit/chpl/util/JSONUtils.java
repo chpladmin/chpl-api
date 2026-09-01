@@ -10,6 +10,7 @@ import com.flipkart.zjsonpatch.Jackson3JsonDiff;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.activity.ActivityExclude;
+import gov.healthit.chpl.listing.measure.DeprecatedMeasureData;
 import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.sed.DeprecatedSedTestTaskData;
@@ -46,20 +47,27 @@ public final class JSONUtils {
                                 || m.hasAnnotation(Deprecated.class)
                                 || m.hasAnnotation(ActivityExclude.class)
                                 || isSedAndIgnorable(m)
-                                || isRwtAndIgnorable(m);
+                                || isRwtAndIgnorable(m)
+                                || isMeasuresAndIgnorable(m);
                     }
 
                     private boolean isSedAndIgnorable(AnnotatedMember m) {
-                        boolean isHti5Erd = ff4j.check(FeatureList.HTI_5_ERD);
+                        boolean isFlagOn = ff4j.check(FeatureList.HTI_5_ERD);
                         boolean isSedSummary = _findAnnotation(m, DeprecatedSedSummaryData.class) != null;
                         boolean isSedTestTask = _findAnnotation(m, DeprecatedSedTestTaskData.class) != null;
-                        return isHti5Erd && (isSedSummary || isSedTestTask);
+                        return isFlagOn && (isSedSummary || isSedTestTask);
                     }
 
                     private boolean isRwtAndIgnorable(AnnotatedMember m) {
                         boolean isHti5Erd = ff4j.check(FeatureList.HTI_5_ERD);
                         boolean isRwtPlans = _findAnnotation(m, DeprecatedRwtPlansData.class) != null;
                         return isHti5Erd && isRwtPlans;
+                    }
+
+                    private boolean isMeasuresAndIgnorable(AnnotatedMember m) {
+                        boolean isFlagOn = ff4j.check(FeatureList.HTI_5_2027_01_01);
+                        boolean isMeasureField = _findAnnotation(m, DeprecatedMeasureData.class) != null;
+                        return isFlagOn && isMeasureField;
                     }
                   })
                 .build();
