@@ -1,17 +1,13 @@
 package gov.healthit.chpl.realworldtesting.domain;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
-
-import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -34,57 +30,16 @@ public class RealWorldTestingReport {
     private LocalDate rwtResultsCheckDate;
     private String rwtPlansMessage;
     private String rwtResultsMessage;
-    private Boolean attestsG7;
-    private Boolean attestsG9;
-    private Boolean attestsG10;
+    private List<CriterionAndSvapData> criterionAndSvapData;
 
-    public List<String> toListOfStrings() {
-        List<String> results = new ArrayList<String>();
-        results.add(acbName);
-        results.add(chplProductNumber);
-        results.add(currentStatus);
-        results.add(DateUtil.format(certificationDate));
-        results.add(productName);
-        results.add(productId == null ? null : productId.toString());
-        results.add(developerName);
-        results.add(developerId == null ? null : developerId.toString());
-        results.add(!CollectionUtils.isEmpty(developerUsers) ? developerUsers.stream().collect(Collectors.joining("; ")) : "");
-        results.add(rwtEligibilityYear == null ? null : rwtEligibilityYear.toString());
-        results.add(BooleanUtils.isTrue(ics) ? "Yes" : "");
-        results.add(rwtPlansUrl);
-        results.add(rwtPlansCheckDate == null ? null : rwtPlansCheckDate.toString());
-        results.add(rwtResultsUrl);
-        results.add(rwtResultsCheckDate == null ? null : rwtResultsCheckDate.toString());
-        results.add(rwtPlansMessage);
-        results.add(rwtResultsMessage);
-        results.add(BooleanUtils.isTrue(attestsG7) ? "TRUE" : "FALSE");
-        results.add(BooleanUtils.isTrue(attestsG9) ? "TRUE" : "FALSE");
-        results.add(BooleanUtils.isTrue(attestsG10) ? "TRUE" : "FALSE");
-        return results;
-    }
-
-    public static List<String> getHeaders() {
-        List<String> results = new ArrayList<String>();
-        results.add("ONC-ACB Name");
-        results.add("CHPL ID");
-        results.add("Current Status");
-        results.add("Certification Date");
-        results.add("Product Name");
-        results.add("Product DBID");
-        results.add("Developer Name");
-        results.add("Developer DBID");
-        results.add("Developer Users");
-        results.add("Initial RWT Year");
-        results.add("ICS");
-        results.add("RWT Plans URL");
-        results.add("RWT Plans Submission Confirmed");
-        results.add("RWT Results URL");
-        results.add("RWT Results Submission Confirmed");
-        results.add("RWT Plans Message");
-        results.add("RWT Results Message");
-        results.add("170.315 (g)(7)");
-        results.add("170.315 (g)(9)");
-        results.add("170.315 (g)(10)");
-        return results;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CriterionAndSvapData {
+        private CertificationCriterion criterion;
+        private boolean isAttested;
+        private boolean isGCriterion;
+        private boolean usesSvap;
     }
 }

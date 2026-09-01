@@ -72,7 +72,9 @@
                   "var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
                   "pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
@@ -84,8 +86,6 @@
                   "});\r",
                   "var expresult = pm.response.json()\r",
                   "pm.test(\"/{certifiedProductId} end point response should have all RWT fields\", function () {\r",
-                  "    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
-                  "    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
                   "    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
                   "    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
                   "});\r",
@@ -93,7 +93,9 @@
                   "    pm.expect(expresult).to.not.have.property('rwtEligibilityYear');\r",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -198,8 +200,6 @@
                   "});\r",
                   "const expresp = pm.response.json()\r",
                   "pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} end point response should have all RWT fields\", function () {\r",
-                  "    pm.expect(expresp).to.have.property('rwtPlansUrl');\r",
-                  "    pm.expect(expresp).to.have.property('rwtPlansCheckDate');\r",
                   "    pm.expect(expresp).to.have.property('rwtResultsUrl');\r",
                   "    pm.expect(expresp).to.have.property('rwtResultsCheckDate');\r",
                   "});\r",
@@ -207,7 +207,9 @@
                   "    pm.expect(expresp).to.not.have.property('rwtEligibilityYear');\r",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
@@ -217,7 +219,9 @@
                   "var chplIdtest=  pm.iterationData.get(\"newChplProductNumber\");\r",
                   "pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -492,7 +496,9 @@
                   "var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
                   "pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             },
             {
@@ -504,8 +510,6 @@
                   "});\r",
                   "var expresult = pm.response.json()\r",
                   "pm.test(\"/{chplPrefix-identifier} end point response should have all RWT fields\", function () {\r",
-                  "    pm.expect(expresult).to.have.property('rwtPlansUrl');\r",
-                  "    pm.expect(expresult).to.have.property('rwtPlansCheckDate');\r",
                   "    pm.expect(expresult).to.have.property('rwtResultsUrl');\r",
                   "    pm.expect(expresult).to.have.property('rwtResultsCheckDate');\r",
                   "});\r",
@@ -514,13 +518,13 @@
                   "});\r",
                   "pm.test(\"All RWT fields should be null for 2014/2011 listings\", function() {\r",
                   "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.rwtPlansUrl).eq(null);\r",
-                  "    pm.expect(jsonData.rwtPlansCheckDate).eq(null);\r",
                   "    pm.expect(jsonData.rwtResultsUrl).eq(null);\r",
                   "    pm.expect(jsonData.rwtResultsCheckDate).eq(null);\r",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],

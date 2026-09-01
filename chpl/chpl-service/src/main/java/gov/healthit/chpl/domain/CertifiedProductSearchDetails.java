@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
@@ -250,9 +251,11 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "All data related to safety-enhanced design for this listing.")
     private CertifiedProductSed sed = new CertifiedProductSed();
 
+    @DeprecatedRwtPlansData
     @Schema(description = "URL where the listings Real World Testing Plan is located")
     private String rwtPlansUrl;
 
+    @DeprecatedRwtPlansData
     @Schema(description = "Date the listings Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

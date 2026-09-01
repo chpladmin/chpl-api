@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -49,16 +51,19 @@ public class ListingQuestionableActivityService {
     private List<ListingActivity> listingActivities;
     private CertifiedProductDAO certifiedProductDAO;
     private Environment env;
+    private FF4j ff4j;
 
     private List<QuestionableActivityTrigger> triggerTypes;
 
     @Autowired
     ListingQuestionableActivityService(QuestionableActivityDAO questionableActivityDao, List<ListingActivity> listingActivities,
-            CertifiedProductDAO certifiedProductDAO, Environment env) {
+            CertifiedProductDAO certifiedProductDAO, Environment env,
+            FF4j ff4j) {
         this.questionableActivityDao = questionableActivityDao;
         this.listingActivities = listingActivities;
         this.certifiedProductDAO = certifiedProductDAO;
         this.env = env;
+        this.ff4j = ff4j;
 
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
@@ -73,14 +78,20 @@ public class ListingQuestionableActivityService {
             processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(FutureCertificationStatusAddedActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
+            }
             processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
+            }
             processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
+            }
             processListingActivity(AttestRemovedCriteriaActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activity, activityReason);
 
