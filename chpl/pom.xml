@@ -25,7 +25,7 @@
         <junit.version>6.1.0</junit.version>
         <log4j2.version>2.25.4</log4j2.version>
         <lombok.version>1.18.46</lombok.version>
-        <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
+        <mvn.compiler.plugin.version>3.15.0</mvn.compiler.plugin.version>
         <mvn.jar.plugin.version>3.5.0</mvn.jar.plugin.version>
         <mvn.jxr.plugin.version>3.6.0</mvn.jxr.plugin.version>
         <mvn.resources.plugin.version>3.5.0</mvn.resources.plugin.version>
