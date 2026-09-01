@@ -27,32 +27,22 @@ public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
     private CertificationResultDetailsDAO certificationResultDetailsDao;
-    private CertificationResultUpToDateService certResultUpToDateService;
     private CertificationResultComparator certResultComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules,
             CertificationResultManager certResultManager,
             CertificationResultDetailsDAO certificationResultDetailsDao,
-            CertificationResultUpToDateService certResultUpToDateService,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.certificationResultDetailsDao = certificationResultDetailsDao;
-        this.certResultUpToDateService = certResultUpToDateService;
         this.certResultComparator = certResultComparator;
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
                 .map(dto -> getCertificationResult(dto, searchDetails))
-                .sorted(certResultComparator)
-                .collect(Collectors.toList());
-    }
-
-    public List<CertificationResult> getCertificationResultsWithoutSed(Long listingId) throws EntityRetrievalException {
-        return getCertificationResultDetailsDTOs(listingId).stream()
-                .map(dto -> getCertificationResultWithoutSed(dto))
                 .sorted(certResultComparator)
                 .collect(Collectors.toList());
     }
@@ -65,19 +55,10 @@ public class CertificationResultService {
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
             CertifiedProductSearchDetails listing) {
-
         CertificationResult result = new CertificationResult(certResult, certRules);
-
         CertificationCriterion criteria = result.getCriterion();
         populateSed(certResult, listing, result, criteria);
         populateTestTasks(certResult, listing, criteria);
-        populateUpToDate(result);
-        return result;
-    }
-
-    private CertificationResult getCertificationResultWithoutSed(CertificationResultDetailsDTO certResult) {
-        CertificationResult result = new CertificationResult(certResult, certRules);
-        populateUpToDate(result);
         return result;
     }
 
@@ -125,9 +106,5 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
-    }
-
-    private void populateUpToDate(CertificationResult certResult) {
-        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
     }
 }
