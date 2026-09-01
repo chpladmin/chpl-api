@@ -6,7 +6,7 @@ import gov.healthit.chpl.codeset.CodeSetEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
-import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedEntity;
 import gov.healthit.chpl.standard.StandardEntity;
 import jakarta.persistence.Basic;
@@ -62,7 +62,7 @@ public class UpdatedCriterionStatusReportEntity extends EntityAudit {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_result_id", insertable = false, updatable = false)
-    private CertificationResultDetailsEntity certificationResult;
+    private CertificationResultEntity certificationResult;
 
     @Basic(optional = true)
     @Column(name = "standard_id")
