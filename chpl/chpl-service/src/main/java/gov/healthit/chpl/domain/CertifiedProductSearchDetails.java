@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.listing.measure.DeprecatedMeasureData;
 import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.CertifiedProductSed;
 import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
@@ -211,6 +212,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Builder.Default
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
+    @DeprecatedMeasureData
     @Schema(description = "This variable indicates if the listing utilizes automated numerator or automated measure required tests.")
     @Builder.Default
     private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
