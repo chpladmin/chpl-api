@@ -5,9 +5,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -18,16 +20,23 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 public class MeasureComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     public MeasureComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return;
+        }
+
         // checking for the addition of a removed measure.
         // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {

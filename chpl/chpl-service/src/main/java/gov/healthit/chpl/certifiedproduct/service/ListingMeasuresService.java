@@ -4,9 +4,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
@@ -22,15 +24,18 @@ public class ListingMeasuresService {
     private ListingMeasureDAO listingMeasureDAO;
     private CertificationCriterionComparator criterionComparator;
     private ListingMeasureComparator measureComparator;
+    private FF4j ff4j;
 
     @Autowired
     public ListingMeasuresService(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ListingMeasureDAO listingMeasureDAO, CertificationCriterionComparator criterionComparator) {
+            ListingMeasureDAO listingMeasureDAO, CertificationCriterionComparator criterionComparator,
+            FF4j ff4j) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingMeasureDAO = listingMeasureDAO;
         this.criterionComparator = criterionComparator;
         this.measureComparator = new ListingMeasureComparator();
+        this.ff4j = ff4j;
     }
 
     public List<ListingMeasure> getCertifiedProductMeasures(Long listingId, Boolean checkIfListingExists) throws EntityRetrievalException {
@@ -38,6 +43,11 @@ public class ListingMeasuresService {
         if (checkIfListingExists) {
             certifiedProductSearchResultDAO.getById(listingId);
         }
+
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return List.of();
+        }
+
         List<ListingMeasure> listingMeasures = listingMeasureDAO.getMeasuresByListingId(listingId);
         listingMeasures.stream()
             .forEach(listingMeasure -> {

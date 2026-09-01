@@ -228,12 +228,16 @@ public class ListingMergeService {
     }
 
     private void setIdsForMeasures(CertifiedProductSearchDetails updatedListing, List<ListingMeasure> currMeasures) {
-        if (CollectionUtils.isEmpty(currMeasures)) {
-            return;
-        }
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListing.setMeasures(currMeasures);
+        } else {
+            if (CollectionUtils.isEmpty(currMeasures)) {
+                return;
+            }
 
-        currMeasures.stream()
-            .forEach(currMeasure -> setIdInUpdatedMeasures(updatedListing.getMeasures(), currMeasure));
+            currMeasures.stream()
+                .forEach(currMeasure -> setIdInUpdatedMeasures(updatedListing.getMeasures(), currMeasure));
+        }
     }
 
     private void setIdInUpdatedMeasures(List<ListingMeasure> updatedMeasures, ListingMeasure currMeasure) {

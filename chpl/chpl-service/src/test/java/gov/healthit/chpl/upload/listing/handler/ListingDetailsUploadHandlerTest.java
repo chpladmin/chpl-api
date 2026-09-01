@@ -47,6 +47,7 @@ public class ListingDetailsUploadHandlerTest {
 
         FF4j ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_2027_01_01))).thenReturn(false);
 
         ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService, ff4j);
 
@@ -74,7 +75,8 @@ public class ListingDetailsUploadHandlerTest {
                 Mockito.mock(MeasuresUploadHandler.class),
                 Mockito.mock(SedUploadHandler.class),
                 Mockito.mock(CertificationResultUploadHandler.class),
-                handlerUtil);
+                handlerUtil,
+                ff4j);
     }
 
     @Test
