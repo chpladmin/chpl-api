@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.report.attestation;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
@@ -14,6 +15,13 @@ import jakarta.persistence.Query;
 
 @Component
 public class AttestationReportDAO extends BaseDAOImpl {
+
+    private String unformattedDeveloperDetailsUrl;
+
+    public AttestationReportDAO(@Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${developerUrlPart}") String developerUrlPart) {
+        this.unformattedDeveloperDetailsUrl = chplUrlBegin + developerUrlPart;
+    }
 
     public void insert(AttestationReport attestationReport) {
         AttestationReportEntity entity = AttestationReportEntity.builder()
@@ -75,6 +83,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
     public List<AttestationReportDeveloper> getAttestationReportDeveloperByAttestationPeriod() {
         return getAttestationReportDeveloperEntities().stream()
                 .map(entity -> entity.toDomain())
+                .peek(report -> report.setDeveloperDetailsUrl(String.format(unformattedDeveloperDetailsUrl, report.getDeveloper().getId())))
                 .toList();
     }
 
