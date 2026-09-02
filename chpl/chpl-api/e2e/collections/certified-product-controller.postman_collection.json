@@ -195,65 +195,6 @@
           "response": []
         },
         {
-          "name": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "var chplidnewtest= pm.iterationData.get(\"newChplProductNumber\");\r",
-                  "pm.environment.set(\"newChplProductNumber\",chplidnewtest);"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"/certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
-                  "    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
-                  "    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
-                  "    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "API-KEY",
-                "value": "{{apiKey}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/rest/certified_products/{{newChplProductNumber}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "rest",
-                "certified_products",
-                "{{newChplProductNumber}}"
-              ]
-            },
-            "description": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data"
-          },
-          "response": []
-        },
-        {
           "name": "GET /certified_products/{chplPrefix-identifier} end point response should have promotingInteroperabilityUserHistory data",
           "event": [
             {
@@ -2497,6 +2438,55 @@
               ]
             },
             "description": "GET /details end point returns 200 status and response should have promotingInteroperability data"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"/certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data\", function () {\r\n    var jsonData = pm.response.json();\r\n    pm.response.to.have.status(200);\r\n    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r\n    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r\n    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r\n    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/rest/certified_products/15.04.04.2315.SESD.02.00.0.170217",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "rest",
+                "certified_products",
+                "15.04.04.2315.SESD.02.00.0.170217"
+              ]
+            },
+            "description": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data"
           },
           "response": []
         }
