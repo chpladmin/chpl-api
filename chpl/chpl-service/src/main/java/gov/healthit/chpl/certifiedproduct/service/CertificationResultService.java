@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,16 +28,19 @@ public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
     private CertificationResultDetailsDAO certificationResultDetailsDao;
+    private CertificationResultUpToDateService certResultUpToDateService;
     private CertificationResultComparator certResultComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules,
             CertificationResultManager certResultManager,
             CertificationResultDetailsDAO certificationResultDetailsDao,
+            CertificationResultUpToDateService certResultUpToDateService,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.certificationResultDetailsDao = certificationResultDetailsDao;
+        this.certResultUpToDateService = certResultUpToDateService;
         this.certResultComparator = certResultComparator;
     }
 
@@ -59,6 +63,7 @@ public class CertificationResultService {
         CertificationCriterion criteria = result.getCriterion();
         populateSed(certResult, listing, result, criteria);
         populateTestTasks(certResult, listing, criteria);
+        populateUpToDateToday(result);
         return result;
     }
 
@@ -106,5 +111,9 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
+    }
+
+    private void populateUpToDateToday(CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult.getId(), LocalDate.now()));
     }
 }

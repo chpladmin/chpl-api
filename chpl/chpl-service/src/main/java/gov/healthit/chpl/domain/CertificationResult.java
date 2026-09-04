@@ -324,7 +324,6 @@ public class CertificationResult implements Serializable {
         } else {
             this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         }
-        this.setUpToDate(certResult.isUpToDateToday());
         this.criterion = certResult.getCriterion();
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
