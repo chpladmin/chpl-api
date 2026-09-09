@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,16 +117,6 @@ public class CqmResultsService {
         return groupedCqmResults.stream()
             .sorted(cqmResultComparator)
             .collect(Collectors.toList());
-    }
-
-    //When used in the context of certification id validation/creation, we don't need to query for all the CQM details.
-    //We only need the CMS ID and the domain
-    //This call needs to be as fast as possible and not get any extra data.
-    public List<CQMResultDetails> getCqmResultDetailsForCertificationId(Long listingId) {
-        //Get a flat list of all CQM results, it doesn't really matter if there are duplicates (and there will be with mulitple success versions)
-        return cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(listingId).stream()
-                .filter(cqm -> BooleanUtils.isTrue(cqm.getSuccess()) || !CollectionUtils.isEmpty(cqm.getSuccessVersions()))
-                .collect(Collectors.toList());
     }
 
     private boolean isInCqmResults(CQMCriterion cqmCriterion, List<CQMResultDetails> cqmResults) {

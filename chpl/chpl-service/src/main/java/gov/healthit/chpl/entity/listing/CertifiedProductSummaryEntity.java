@@ -70,8 +70,14 @@ public class CertifiedProductSummaryEntity extends EntityAudit {
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
 
+    @Column(name = "practice_type_name")
+    private String practiceTypeName;
+
     @Column(name = "product_classification_type_id")
     private Long productClassificationTypeId;
+
+    @Column(name = "product_classification_name")
+    private String productClassificationName;
 
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;

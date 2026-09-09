@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import jakarta.persistence.EntityManager;
 
 public class CertificationIdDaoTest {
@@ -25,7 +26,8 @@ public class CertificationIdDaoTest {
         EntityManager entityManager = Mockito.mock(EntityManager.class);
         CertificationIdYearCalculator certIdYearCalculator = Mockito.mock(CertificationIdYearCalculator.class);
         Mockito.when(certIdYearCalculator.getInitialCmsIdTransitionToAnnualFormatDay()).thenReturn(LocalDate.now().plusDays(1));
-        certIdDao = new CertificationIdDAO(certIdYearCalculator);
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        certIdDao = new CertificationIdDAO(criteriaService, certIdYearCalculator);
         certIdDao.setEntityManager(entityManager);
     }
 

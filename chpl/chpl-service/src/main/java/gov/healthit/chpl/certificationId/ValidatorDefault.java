@@ -39,5 +39,4 @@ public class ValidatorDefault extends Validator {
     protected boolean isDomainsValid() {
         return false;
     }
-
 }

@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -52,11 +51,6 @@ public class CertificationIdManager {
 
     public List<Long> getListingIdsByCertificationId(Long id) throws EntityRetrievalException {
         return certificationIdDao.getProductIdsById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CertificationCriterion> getCriteriaMetByListingIds(List<Long> listingIds) {
-        return certificationIdDao.getCriteriaMetByListingIds(listingIds);
     }
 
     @Transactional(readOnly = true)
