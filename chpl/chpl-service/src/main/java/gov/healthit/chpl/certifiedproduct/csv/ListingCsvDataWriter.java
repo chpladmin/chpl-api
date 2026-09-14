@@ -55,6 +55,10 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ListingCsvDataWriter {
+    private static final int MEASURE_COL_COUNT = 4;
+    private static final int RWT_PLANS_COL_COUNT = 2;
+    private static final int SED_COL_COUNT = 27;
+
     private static final int CHPL_PRODUCT_NUMBER_COL = 0;
     private static final int DEVELOPER_NAME_COL = 1;
     private static final int PRODUCT_NAME_COL = 2;
@@ -73,25 +77,19 @@ public class ListingCsvDataWriter {
     private static final int DEVELOPER_CONTACT_COL_START = 18;
     private static final int SVAP_NOTICE_URL_COL = 21;
     private static final int RWT_COL_START = 22;
-    private static final int TARGETED_USERS_COL = 24;
-    private static final int TARGETED_USERS_COL_PRE_HTI5 = 26;
-    private static final int QMS_STD_START_COL = 25;
-    private static final int QMS_STD_START_COL_PRE_HTI5 = 27;
-    private static final int ICS_START_COL = 28;
-    private static final int ICS_START_COL_PRE_HTI5 = 30;
-    private static final int ACCESSIBILITY_STANDARDS_START_COL = 30;
-    private static final int ACCESSIBILITY_STANDARDS_START_COL_PRE_HTI5 = 32;
-    private static final int K1_URL_COL = 32;
-    private static final int K1_URL_COL_PRE_HTI5 = 34;
-    private static final int CQM_START_COL = 33;
-    private static final int CQM_START_COL_PRE_HTI5 = 35;
+    private static final int RWT_RESULTS_START_COL = 24;
+    private static final int TARGETED_USERS_COL = 26;
+    private static final int QMS_STD_START_COL = 27;
+    private static final int ICS_START_COL = 30;
+    private static final int ACCESSIBILITY_STANDARDS_START_COL = 32;
+    private static final int K1_URL_COL = 34;
+    private static final int CQM_START_COL = 35;
     private static final int SED_REPORT_URL_COL = 38;
     private static final int SED_INTENDED_USERS_COL = 39;
     private static final int SED_TESTING_DATE_COL = 40;
     private static final int PARTICIPANT_START_COL = 41;
     private static final int TASK_START_COL = 50;
-    private static final int CRITERIA_START_COL_PRE_HTI5 = 65;
-    private static final int CRITERIA_START_COL = 36;
+    private static final int CRITERIA_START_COL = 65;
     private static final int ADDITIONAL_SOFTWARE_COL_COUNT = 5;
     private static final int UCD_PROCESS_COL_COUNT = 2;
     private static final int SED_TESTING_COL_COUNT = 2;
@@ -112,31 +110,33 @@ public class ListingCsvDataWriter {
 
     public List<List<String>> getCsvData(CertifiedProductSearchDetails listing, int numHeadings) {
         String[][] csvDataMatrix = new String[getNumberOfRows(listing)][numHeadings];
-        csvDataMatrix[0][CHPL_PRODUCT_NUMBER_COL] = listing.getChplProductNumber();
-        csvDataMatrix[0][DEVELOPER_NAME_COL] = listing.getDeveloper().getName();
-        csvDataMatrix[0][PRODUCT_NAME_COL] = listing.getProduct().getName();
-        csvDataMatrix[0][VERSION_NAME_COL] = forceExcelToInterpretAsText(listing.getVersion().getVersion());
-        addMeasureData(csvDataMatrix, listing.getMeasures());
-        csvDataMatrix[0][ACB_CERTIFICATION_ID_COL] = listing.getAcbCertificationId();
-        csvDataMatrix[0][ACB_NAME_COL] = listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString();
+        csvDataMatrix[0][getColIndex(CHPL_PRODUCT_NUMBER_COL)] = listing.getChplProductNumber();
+        csvDataMatrix[0][getColIndex(DEVELOPER_NAME_COL)] = listing.getDeveloper().getName();
+        csvDataMatrix[0][getColIndex(PRODUCT_NAME_COL)] = listing.getProduct().getName();
+        csvDataMatrix[0][getColIndex(VERSION_NAME_COL)] = forceExcelToInterpretAsText(listing.getVersion().getVersion());
+        if (!ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            addMeasureData(csvDataMatrix, listing.getMeasures());
+        }
+        csvDataMatrix[0][getColIndex(ACB_CERTIFICATION_ID_COL)] = listing.getAcbCertificationId();
+        csvDataMatrix[0][getColIndex(ACB_NAME_COL)] = listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString();
         addTestingLabs(csvDataMatrix, listing.getTestingLabs());
-        csvDataMatrix[0][CERTIFICATION_DATE_COL] = dateFormat.format(DateUtil.toDate(listing.getCertificationDay()));
+        csvDataMatrix[0][getColIndex(CERTIFICATION_DATE_COL)] = dateFormat.format(DateUtil.toDate(listing.getCertificationDay()));
         addDeveloperAddress(csvDataMatrix, listing.getDeveloper());
-        csvDataMatrix[0][DEVELOPER_WEBSITE_COL] = listing.getDeveloper().getWebsite();
-        csvDataMatrix[0][SELF_DEVELOPER_COL] = BooleanUtils.isTrue(listing.getDeveloper().getSelfDeveloper()) ? "1" : "0";
+        csvDataMatrix[0][getColIndex(DEVELOPER_WEBSITE_COL)] = listing.getDeveloper().getWebsite();
+        csvDataMatrix[0][getColIndex(SELF_DEVELOPER_COL)] = BooleanUtils.isTrue(listing.getDeveloper().getSelfDeveloper()) ? "1" : "0";
         addDeveloperContact(csvDataMatrix, listing.getDeveloper());
-        csvDataMatrix[0][SVAP_NOTICE_URL_COL] = listing.getSvapNoticeUrl();
+        csvDataMatrix[0][getColIndex(SVAP_NOTICE_URL_COL)] = listing.getSvapNoticeUrl();
         addRwtData(csvDataMatrix, listing);
         addTargetedUsers(csvDataMatrix, listing.getTargetedUsers());
         addQmsStandards(csvDataMatrix, listing.getQmsStandards());
         addIcs(csvDataMatrix, listing.getIcs());
         addAccessibilityStandards(csvDataMatrix, listing.getAccessibilityStandards());
-        csvDataMatrix[0][(!ff4j.check(FeatureList.HTI_5_ERD) ? K1_URL_COL_PRE_HTI5 : K1_URL_COL)] = listing.getMandatoryDisclosures();
+        csvDataMatrix[0][getColIndex(K1_URL_COL)] = listing.getMandatoryDisclosures();
         addCqms(csvDataMatrix, listing.getCqmResults());
         if (!ff4j.check(FeatureList.HTI_5_ERD)) {
-            csvDataMatrix[0][SED_REPORT_URL_COL] = listing.getSedReportFileLocation();
-            csvDataMatrix[0][SED_INTENDED_USERS_COL] = listing.getSedIntendedUserDescription();
-            csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
+            csvDataMatrix[0][getColIndex(SED_REPORT_URL_COL)] = listing.getSedReportFileLocation();
+            csvDataMatrix[0][getColIndex(SED_INTENDED_USERS_COL)] = listing.getSedIntendedUserDescription();
+            csvDataMatrix[0][getColIndex(SED_TESTING_DATE_COL)] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
             addParticipants(csvDataMatrix, listing.getSed());
             addTasks(csvDataMatrix, listing.getSed());
         }
@@ -295,10 +295,10 @@ public class ListingCsvDataWriter {
         }
         for (int i = 0; i < measures.size(); i++) {
             ListingMeasure measure = measures.get(i);
-            csvDataMatrix[i][MEASURE_DOMAIN_COL] = measure.getMeasure().getDomain().getName();
-            csvDataMatrix[i][MEASURE_REQUIRED_TEST_COL] = measure.getMeasure().getAbbreviation();
-            csvDataMatrix[i][MEASURE_TYPE_COL] = measure.getMeasureType().getName();
-            csvDataMatrix[i][MEASURE_ASSOCIATED_CRITERIA_COL] =
+            csvDataMatrix[i][getColIndex(MEASURE_DOMAIN_COL)] = measure.getMeasure().getDomain().getName();
+            csvDataMatrix[i][getColIndex(MEASURE_REQUIRED_TEST_COL)] = measure.getMeasure().getAbbreviation();
+            csvDataMatrix[i][getColIndex(MEASURE_TYPE_COL)] = measure.getMeasureType().getName();
+            csvDataMatrix[i][getColIndex(MEASURE_ASSOCIATED_CRITERIA_COL)] =
                     measure.getAssociatedCriteria()
                         .stream().map(crit -> Util.formatCriteriaNumber(crit))
                         .distinct()
@@ -312,7 +312,7 @@ public class ListingCsvDataWriter {
         }
         for (int i = 0; i < testingLabs.size(); i++) {
             CertifiedProductTestingLab testingLab = testingLabs.get(i);
-            csvDataMatrix[i][ATL_NAME_COL] = testingLab.getTestingLab().getName();
+            csvDataMatrix[i][getColIndex(ATL_NAME_COL)] = testingLab.getTestingLab().getName();
         }
     }
 
@@ -320,7 +320,7 @@ public class ListingCsvDataWriter {
         if (developer.getAddress() == null) {
             return;
         }
-        int col = DEVELOPER_ADDRESS_COL_START;
+        int col = getColIndex(DEVELOPER_ADDRESS_COL_START);
         csvDataMatrix[0][col++] = developer.getAddress().getLine1();
         csvDataMatrix[0][col++] = developer.getAddress().getCity();
         csvDataMatrix[0][col++] = developer.getAddress().getState();
@@ -331,14 +331,14 @@ public class ListingCsvDataWriter {
         if (developer.getContact() == null) {
             return;
         }
-        int col = DEVELOPER_CONTACT_COL_START;
+        int col = getColIndex(DEVELOPER_CONTACT_COL_START);
         csvDataMatrix[0][col++] = developer.getContact().getEmail();
         csvDataMatrix[0][col++] = developer.getContact().getPhoneNumber();
         csvDataMatrix[0][col++] = developer.getContact().getFullName();
     }
 
     private void addRwtData(String[][] csvDataMatrix, CertifiedProductSearchDetails listing) {
-        int col = RWT_COL_START;
+        int col = getColIndex(RWT_COL_START);
         if (!ff4j.check(FeatureList.HTI_5_ERD)) {
             csvDataMatrix[0][col++] = !StringUtils.isEmpty(listing.getRwtPlansUrl()) ? listing.getRwtPlansUrl() : "";
             csvDataMatrix[0][col++] = listing.getRwtPlansCheckDate() != null ? dateFormat.format(DateUtil.toDate(listing.getRwtPlansCheckDate())) : "";
@@ -348,7 +348,7 @@ public class ListingCsvDataWriter {
     }
 
     private void addTargetedUsers(String[][] csvDataMatrix, List<CertifiedProductTargetedUser> targetedUsers) {
-        int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? TARGETED_USERS_COL_PRE_HTI5 : TARGETED_USERS_COL;
+        int currCol = getColIndex(TARGETED_USERS_COL);
         for (int i = 0; i < targetedUsers.size(); i++) {
             CertifiedProductTargetedUser targetedUser = targetedUsers.get(i);
             csvDataMatrix[i][currCol] = targetedUser.getTargetedUserName();
@@ -357,7 +357,7 @@ public class ListingCsvDataWriter {
 
     private void addQmsStandards(String[][] csvDataMatrix, List<CertifiedProductQmsStandard> qmsStandards) {
         for (int i = 0; i < qmsStandards.size(); i++) {
-            int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? QMS_STD_START_COL_PRE_HTI5 : QMS_STD_START_COL;
+            int currCol = getColIndex(QMS_STD_START_COL);
             CertifiedProductQmsStandard qmsStandard = qmsStandards.get(i);
             csvDataMatrix[i][currCol++] = qmsStandard.getQmsStandardName();
             csvDataMatrix[i][currCol++] = qmsStandard.getApplicableCriteria();
@@ -367,7 +367,7 @@ public class ListingCsvDataWriter {
 
     private void addIcs(String[][] csvDataMatrix, InheritedCertificationStatus ics) {
         if (ics != null && !CollectionUtils.isEmpty(ics.getParents())) {
-            int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? ICS_START_COL_PRE_HTI5 : ICS_START_COL;
+            int currCol = getColIndex(ICS_START_COL);
             csvDataMatrix[0][currCol++] = "1";
             for (int i = 0; i < ics.getParents().size(); i++) {
                 CertifiedProduct parent = ics.getParents().get(i);
@@ -378,7 +378,7 @@ public class ListingCsvDataWriter {
 
     private void addAccessibilityStandards(String[][] csvDataMatrix, List<CertifiedProductAccessibilityStandard> accStds) {
         if (!CollectionUtils.isEmpty(accStds)) {
-            int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? ACCESSIBILITY_STANDARDS_START_COL_PRE_HTI5 : ACCESSIBILITY_STANDARDS_START_COL;
+            int currCol = getColIndex(ACCESSIBILITY_STANDARDS_START_COL);
             csvDataMatrix[0][currCol++] = "1";
             for (int i = 0; i < accStds.size(); i++) {
                 CertifiedProductAccessibilityStandard accStd = accStds.get(i);
@@ -393,7 +393,7 @@ public class ListingCsvDataWriter {
             .collect(Collectors.toList());
         for (int i = 0; i < attestedCqms.size(); i++) {
             CQMResultDetails cqm = attestedCqms.get(i);
-            int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? CQM_START_COL_PRE_HTI5 : CQM_START_COL;
+            int currCol = getColIndex(CQM_START_COL);
             csvDataMatrix[i][currCol++] = cqm.getCmsId();
             csvDataMatrix[i][currCol++] =
                     cqm.getSuccessVersions().stream().collect(Collectors.joining(";"));
@@ -411,7 +411,7 @@ public class ListingCsvDataWriter {
         List<TestParticipant> testParticipants = getAvailableUniqueTestParticipants(sed);
         for (int i = 0; i < testParticipants.size(); i++) {
             TestParticipant tp = testParticipants.get(i);
-            int col = PARTICIPANT_START_COL;
+            int col = getColIndex(PARTICIPANT_START_COL);
             if (StringUtils.isEmpty(tp.getFriendlyId())) {
                 tp.setFriendlyId("CHPL-PARTICIPANT-" + (i + 1));
                 //copy the unique id to all test participant objects that have this same database id
@@ -439,7 +439,7 @@ public class ListingCsvDataWriter {
         List<TestTask> testTasks = sed.getTestTasks();
         for (int i = 0; i < testTasks.size(); i++) {
             TestTask task = testTasks.get(i);
-            int col = TASK_START_COL;
+            int col = getColIndex(TASK_START_COL);
             if (StringUtils.isEmpty(task.getFriendlyId())) {
                 task.setFriendlyId("CHPL-TASK-" + (i + 1));
             }
@@ -462,7 +462,7 @@ public class ListingCsvDataWriter {
     }
 
     private void addCertificationResults(String[][] csvDataMatrix, List<CertificationResult> certResults, CertifiedProductSed sed) {
-        int currCol = !ff4j.check(FeatureList.HTI_5_ERD) ? CRITERIA_START_COL_PRE_HTI5 : CRITERIA_START_COL;
+        int currCol = getColIndex(CRITERIA_START_COL);
         for (int i = 0; i < certResults.size(); i++) {
             int currCertResultStartCol = currCol;
             CertificationResult certResult = certResults.get(i);
@@ -789,5 +789,24 @@ public class ListingCsvDataWriter {
 
     private String forceExcelToInterpretAsText(String value) {
         return "\t" + value + "";
+    }
+
+    private int getColIndex(int originalIndex) {
+        int colAdjustment = 0;
+        if (originalIndex >= MEASURE_DOMAIN_COL) {
+            if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+                colAdjustment = MEASURE_COL_COUNT;
+            }
+
+            if (originalIndex >= RWT_RESULTS_START_COL && ff4j.check(FeatureList.HTI_5_ERD)) {
+                colAdjustment += RWT_PLANS_COL_COUNT;
+            }
+
+            if (originalIndex >= SED_REPORT_URL_COL && ff4j.check(FeatureList.HTI_5_ERD)) {
+                colAdjustment += SED_COL_COUNT;
+            }
+        }
+
+        return originalIndex - colAdjustment;
     }
 }

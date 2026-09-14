@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -207,13 +208,17 @@ public class ListingUploadManager {
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
         listing.getCertificationResults().stream()
-            .forEach(certResult -> populateUpToDate(listing.getCertificationDay(), certResult));
+            .forEach(certResult -> populateUpToDate(certResult, listing.getCertificationDay()));
         LOGGER.debug("Populated upToDate for each certification result");
         return listing;
     }
 
-    private void populateUpToDate(LocalDate asOfDate, CertificationResult certResult) {
-        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult, asOfDate));
+    private void populateUpToDate(CertificationResult certResult, LocalDate asOfDate) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult.getCriterion().getId(),
+                CollectionUtils.isEmpty(certResult.getStandards()) ? null : certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getFunctionalitiesTested()) ? null : certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getCodeSets()) ? null : certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList(),
+                asOfDate));
     }
 
     @Transactional

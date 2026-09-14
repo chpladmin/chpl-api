@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationId.CertificationIdDAO;
 import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
@@ -30,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CertifiedProductDetailsManager {
     private CertifiedProductDAO cpDao;
+    private CertificationIdDAO certIdDao;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ListingService listingService;
     private CqmResultsService cqmResultsService;
@@ -42,6 +45,7 @@ public class CertifiedProductDetailsManager {
     @Autowired
     public CertifiedProductDetailsManager(
             CertifiedProductDAO cpDao,
+            CertificationIdDAO certIdDao,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             ListingService listingService,
             CqmResultsService cqmResultsService,
@@ -51,6 +55,7 @@ public class CertifiedProductDetailsManager {
             SharedListingStoreProvider sharedListingStoreProvider,
             ResourcePermissionsFactory resourcePermissionsFactory) {
         this.cpDao = cpDao;
+        this.certIdDao = certIdDao;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
         this.cqmResultsService = cqmResultsService;
@@ -91,24 +96,22 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductDetailsForCertificationId getCertifiedProductDetailsForCertificationId(Long id) throws EntityRetrievalException {
-        CertifiedProductDetailsDTO listing = cpDao.getDetailsById(id);
+       CertifiedProductSummaryDTO listing = cpDao.getSummaryById(id);
 
         return CertifiedProductDetailsForCertificationId.builder()
-                .acb(listing.getCertificationBodyName())
+                .acb(listing.getAcb().getName())
                 .additionalSoftware(listing.getProductAdditionalSoftware())
                 .chplProductNumber(listing.getChplProductNumber())
-                .classification(listing.getProductClassificationName())
                 .curesUpdate(listing.getCuresUpdate())
                 .developer(listing.getDeveloper().getName())
                 .id(listing.getId())
                 .product(listing.getProduct().getName())
-                .practiceType(listing.getPracticeTypeName())
                 .version(listing.getVersion().getVersion())
                 .year(listing.getYear())
-                //For cert results we need criterion, standards, code sets, and functionality tested
-                .certificationResults(certificationResultService.getCertificationResultsWithoutSed(listing.getId()))
-                //For CQMs we only need the CMS ID and the domain
-                .cqmResults(cqmResultsService.getCqmResultDetailsForCertificationId(listing.getId()))
+                .practiceType(listing.getPracticeType())
+                .classification(listing.getProductClassification())
+                .certificationResults(certIdDao.getAllCertResultsForListing(listing.getId()))
+                .cqms(certIdDao.getCqmsMetByListingId(listing.getId()))
                 .build();
     }
 

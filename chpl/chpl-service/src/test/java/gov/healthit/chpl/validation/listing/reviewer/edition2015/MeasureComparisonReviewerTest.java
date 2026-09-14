@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
@@ -31,6 +33,8 @@ public class MeasureComparisonReviewerTest {
 
     @BeforeEach
     public void before() {
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_2027_01_01))).thenReturn(false);
         resourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -41,7 +45,7 @@ public class MeasureComparisonReviewerTest {
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        reviewer = new MeasureComparisonReviewer(resourcePermissionsFactory, msgUtil);
+        reviewer = new MeasureComparisonReviewer(resourcePermissionsFactory, msgUtil, ff4j);
     }
 
     @Test

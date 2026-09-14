@@ -7,16 +7,18 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("listingMeasureDao")
@@ -37,7 +39,18 @@ public class ListingMeasureDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH allowedCC.rule "
             + "WHERE listingMeasureMap.deleted = false ";
 
+    private FF4j ff4j;
+
+    @Autowired
+    public ListingMeasureDAO(FF4j ff4j) {
+        this.ff4j = ff4j;
+    }
+
     public void createCertifiedProductMeasureMapping(Long listingId, ListingMeasure mm) throws EntityCreationException {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return;
+        }
+
         try {
             ListingMeasureEntity mmEntity = new ListingMeasureEntity();
             mmEntity.setDeleted(false);
@@ -60,6 +73,9 @@ public class ListingMeasureDAO extends BaseDAOImpl {
 
     public void updateCertifiedProductMeasureMapping(ListingMeasure toUpdate)
             throws EntityRetrievalException {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return;
+        }
 
         ListingMeasureEntity existingEntity = getEntityById(toUpdate.getId());
         if (existingEntity == null) {
@@ -136,6 +152,9 @@ public class ListingMeasureDAO extends BaseDAOImpl {
     }
 
     public void deleteCertifiedProductMeasure(Long id) throws EntityRetrievalException {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return;
+        }
 
         ListingMeasureEntity existingMeasureMap = getEntityById(id);
         if (existingMeasureMap == null) {

@@ -1,297 +1,199 @@
 {
-	"info": {
-		"name": "report-data/listing-attributes",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "GET /report-data/listing-attributes/qms-standards - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/qms-standards should retrieve the data used to generate QMS Standard Listing Attribute Summary report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"qmsStandard\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/qms-standards",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"qms-standards"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/qms-standards - 200 status and valid response"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /report-data/listing-attributes/qms-standards/listings - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/qms-standards/listings should retrieve the data used to generate QMS Standard Listing Attribute Listings report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"qmsStandard\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/qms-standards/listings",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"qms-standards",
-						"listings"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/qms-standards/listings - 200 status and valid response"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /report-data/listing-attributes/measures - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/measures should retrieve the data used to generate the Measures Listing Attribute Summary report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"measure\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"domain\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"requiredTest\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/measures",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"measures"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/measures - 200 status and valid response"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /report-data/listing-attributes/measures/listings - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/measures/listings should retrieve the data used to generate the Measures Listing Attribute Listings report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"measure\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"domain\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"requiredTest\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/measures/listings",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"measures",
-						"listings"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/measures/listings - 200 status and valid response"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /report-data/listing-attributes/accessibility-standards - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/accessibility-standards should retrieve the data used to generate the Accessibility Standard Listing Summary report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"accessibilityStandard\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/accessibility-standards",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"accessibility-standards"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/accessibility-standards - 200 status and valid response"
-			},
-			"response": []
-		},
-		{
-			"name": "GET /report-data/listing-attributes/accessibility-standards/listings - 200 status and valid response",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"/report-data/listing-attributes/accessibility-standards/listings should retrieve the data used to generate the Accessibility Standard Listing Attribute Listings report in response and return 200 status\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"accessibilityStandard\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/report-data/listing-attributes/accessibility-standards/listings",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"report-data",
-						"listing-attributes",
-						"accessibility-standards",
-						"listings"
-					]
-				},
-				"description": "GET /report-data/listing-attributes/accessibility-standards/listings - 200 status and valid response"
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "name": "report-data/listing-attributes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /report-data/listing-attributes/qms-standards - 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/listing-attributes/qms-standards should retrieve the data used to generate QMS Standard Listing Attribute Summary report in response and return 200 status\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"qmsStandard\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"name\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/listing-attributes/qms-standards",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "listing-attributes",
+            "qms-standards"
+          ]
+        },
+        "description": "GET /report-data/listing-attributes/qms-standards - 200 status and valid response"
+      },
+      "response": []
+    },
+    {
+      "name": "GET /report-data/listing-attributes/qms-standards/listings - 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/listing-attributes/qms-standards/listings should retrieve the data used to generate QMS Standard Listing Attribute Listings report in response and return 200 status\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"qmsStandard\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/listing-attributes/qms-standards/listings",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "listing-attributes",
+            "qms-standards",
+            "listings"
+          ]
+        },
+        "description": "GET /report-data/listing-attributes/qms-standards/listings - 200 status and valid response"
+      },
+      "response": []
+    },
+    {
+      "name": "GET /report-data/listing-attributes/accessibility-standards - 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/listing-attributes/accessibility-standards should retrieve the data used to generate the Accessibility Standard Listing Summary report in response and return 200 status\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"accessibilityStandard\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"name\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/listing-attributes/accessibility-standards",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "listing-attributes",
+            "accessibility-standards"
+          ]
+        },
+        "description": "GET /report-data/listing-attributes/accessibility-standards - 200 status and valid response"
+      },
+      "response": []
+    },
+    {
+      "name": "GET /report-data/listing-attributes/accessibility-standards/listings - 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/listing-attributes/accessibility-standards/listings should retrieve the data used to generate the Accessibility Standard Listing Attribute Listings report in response and return 200 status\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"accessibilityStandard\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"name\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/listing-attributes/accessibility-standards/listings",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "listing-attributes",
+            "accessibility-standards",
+            "listings"
+          ]
+        },
+        "description": "GET /report-data/listing-attributes/accessibility-standards/listings - 200 status and valid response"
+      },
+      "response": []
+    }
+  ]
 }

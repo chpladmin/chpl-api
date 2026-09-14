@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -43,6 +45,7 @@ public class ListingDetailsUploadHandler {
     private SedUploadHandler sedUploadHandler;
     private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -53,7 +56,8 @@ public class ListingDetailsUploadHandler {
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, MeasuresUploadHandler measuresUploadHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
-            ListingUploadHandlerUtil uploadUtil) {
+            ListingUploadHandlerUtil uploadUtil,
+            FF4j ff4j) {
         this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -65,6 +69,7 @@ public class ListingDetailsUploadHandler {
         this.sedUploadHandler = sedUploadHandler;
         this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -89,17 +94,23 @@ public class ListingDetailsUploadHandler {
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
                 .svapNoticeUrl(parseSvapNoticeUrl(headingRecord, listingRecords))
-                .rwtPlansUrl(parseRwtPlansUrl(headingRecord, listingRecords))
                 .userEnteredRwtPlansCheckDate(parseRwtPlansCheckDate(headingRecord, listingRecords))
                 .rwtResultsUrl(parseRwtResultsUrl(headingRecord, listingRecords))
                 .userEnteredRwtResultsCheckDate(parseRwtResultsCheckDate(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
-                .measures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords))
-                .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
-                .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
-                .sedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords))
-                .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
             .build();
+
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            listing.setSedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords));
+            listing.setSedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords));
+            listing.setSedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords));
+            listing.setSedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords));
+            listing.setRwtPlansUrl(parseRwtPlansUrl(headingRecord, listingRecords));
+        }
+
+        if (!ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            listing.setMeasures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords));
+        }
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
         if (listing.getCertificationDate() != null) {

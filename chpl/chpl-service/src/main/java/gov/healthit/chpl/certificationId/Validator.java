@@ -9,11 +9,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.certificationId.CertifiedProductDetailsForCertificationId.CqmForCertId;
 
 public abstract class Validator {
     private Set<CertificationCriterion> criteriaMet = new LinkedHashSet<CertificationCriterion>();
@@ -104,24 +103,22 @@ public abstract class Validator {
         if (!CollectionUtils.isEmpty(listings)) {
             criteriaMet = listings.stream()
                     .flatMap(listing -> listing.getCertificationResults().stream())
-                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
-                    .map(certResult -> certResult.getCriterion())
+                    .map(certResult -> certResult.getCertificationCriterion())
                     .collect(Collectors.toSet());
         }
 
         // Collect cqms and domains met
         if (!CollectionUtils.isEmpty(listings)) {
-            List<CQMResultDetails> attestedCqms = listings.stream()
-                .flatMap(listing -> listing.getCqmResults().stream())
-                .filter(cqmResult -> cqmResult.getSuccess() || !CollectionUtils.isEmpty(cqmResult.getSuccessVersions()))
+            List<CqmForCertId> attestedCqms = listings.stream()
+                .flatMap(listing -> listing.getCqms().stream())
                 .collect(Collectors.toList());
 
             cqmsMet = new LinkedHashSet<String>(attestedCqms.size());
-            for (CQMResultDetails cqmDetail : attestedCqms) {
-                cqmsMet.add(cqmDetail.getCmsId());
+            for (CqmForCertId cqm : attestedCqms) {
+                cqmsMet.add(cqm.getCmsId());
 
-                if (!StringUtils.isEmpty(cqmDetail.getDomain())) {
-                    domainsMet.add(cqmDetail.getDomain());
+                if (!StringUtils.isEmpty(cqm.getDomain())) {
+                    domainsMet.add(cqm.getDomain());
                 }
             }
         }

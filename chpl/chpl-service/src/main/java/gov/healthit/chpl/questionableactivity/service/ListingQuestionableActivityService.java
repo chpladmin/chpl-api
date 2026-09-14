@@ -87,7 +87,9 @@ public class ListingQuestionableActivityService {
             }
             processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
+            if (!ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+                processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
+            }
             processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
             if (!ff4j.check(FeatureList.HTI_5_ERD)) {
                 processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);

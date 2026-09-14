@@ -5,9 +5,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
@@ -26,17 +28,24 @@ public class MeasureValidityReviewer implements Reviewer {
     private CertificationCriterionService criteriaService;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     public MeasureValidityReviewer(CertificationCriterionService criteriaService,
-            ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+            ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.criteriaService = criteriaService;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return;
+        }
+
         // if they have attested to G1 or G2 criterion, require at least one measure of that type
         reviewG1RequiredMeasures(listing);
         reviewG2RequiredMeasures(listing);
