@@ -90,15 +90,59 @@
       "response": []
     },
     {
-      "name": "GET /search - returns 401 status and valid response",
+      "name": "GET /search - returns 200 status and valid response",
       "event": [
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
-              "var jsonData = pm.response.json();\r\n\r\npm.test(\"expect GET /search request to return 401 status and response body to not be empty\", function () {\r\n    pm.response.to.have.status(401);\r\n    pm.expect(jsonData.response).not.eq(null);\r\n});\r\n\r\npm.test(\"expect listing data fields in GET /search response\", function () {\r\n    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r\n    pm.expect(jsonData.results[0]).to.have.property('edition');\r\n    pm.expect(jsonData.results[0]).to.have.property('certificationBody');\r\n    pm.expect(jsonData.results[0]).to.have.property('acbCertificationId');\r\n    pm.expect(jsonData.results[0]).to.have.property('practiceType');\r\n    pm.expect(jsonData.results[0]).to.have.property('developer');\r\n    pm.expect(jsonData.results[0]).to.have.property('product');\r\n    pm.expect(jsonData.results[0]).to.have.property('version');\r\n    pm.expect(jsonData.results[0]).to.have.property('certificationDate');\r\n    pm.expect(jsonData.results[0]).to.have.property('certificationStatus');\r\n    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r\n    pm.expect(jsonData.results[0]).to.have.property('edition');\r\n    pm.expect(jsonData.results[0]).to.have.property('curesUpdate');\r\n    pm.expect(jsonData.results[0]).to.have.property('surveillanceCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceNonConformityCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceNonConformityCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('directReviewCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('openDirectReviewNonConformityCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('closedDirectReviewNonConformityCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceCount');\r\n    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperability');\r\n    pm.expect(jsonData.results[0]).to.have.property('mandatoryDisclosures');\r\n    pm.expect(jsonData.results[0]).to.have.property('criteriaMet');\r\n    pm.expect(jsonData.results[0]).to.have.property('cqmsMet');\r\n    pm.expect(jsonData.results[0]).to.have.property('apiDocumentation');\r\n    pm.expect(jsonData.results[0]).to.have.property('serviceBaseUrlList');\r\n    pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r\n});\r\n\r\npm.test(\"expect listing data in GET /search response\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"2015\");    \r\n    pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r\n    pm.expect(pm.response.text()).to.include(\"Active\");    \r\n});"
-            ]
+              "var jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"expect GET /search request to return 200 status and response body to not be empty\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(jsonData.response).not.eq(null);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"expect listing data fields in GET /search response\", function () {\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('edition');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('certificationBody');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('acbCertificationId');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('practiceType');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('developer');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('product');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('version');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('certificationDate');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('certificationStatus');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('edition');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('curesUpdate');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('surveillanceCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceNonConformityCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceNonConformityCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('directReviewCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('openDirectReviewNonConformityCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('closedDirectReviewNonConformityCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceCount');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperability');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('mandatoryDisclosures');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('criteriaMet');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('cqmsMet');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('apiDocumentation');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('serviceBaseUrlList');\r",
+              "    pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"expect listing data in GET /search response\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
+              "    pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -107,11 +151,13 @@
         "header": [
           {
             "key": "API-Key",
-            "value": "{{apiKey}}"
+            "value": "{{apiKey}}",
+            "type": "text"
           },
           {
             "key": "Content-Type",
-            "value": "application/json"
+            "value": "application/json",
+            "type": "text"
           }
         ],
         "url": {
