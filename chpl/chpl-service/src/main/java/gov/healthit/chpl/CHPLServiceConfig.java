@@ -136,8 +136,8 @@ public class CHPLServiceConfig implements EnvironmentAware {
 
         // Set the two below properties to true to see the generated SQL
         // Very useful for debugging
-        properties.setProperty("hibernate.show_sql", "true");
-        properties.setProperty("hibernate.format_sql", "true");
+        properties.setProperty("hibernate.show_sql", "false");
+        properties.setProperty("hibernate.format_sql", "false");
         return properties;
     }
 

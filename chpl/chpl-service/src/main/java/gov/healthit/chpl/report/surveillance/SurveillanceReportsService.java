@@ -50,6 +50,11 @@ public class SurveillanceReportsService extends SummaryStatisticsReportBaseServi
         return surveillanceDao.getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings();
     }
 
+    @Transactional
+    public List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
+        return surveillanceDao.getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings();
+    }
+
     public SurveillanceActivityCounts getSurveiilanceActivityCounts() {
         StatisticsSnapshot stats = getStatistics();
         return SurveillanceActivityCounts.builder()

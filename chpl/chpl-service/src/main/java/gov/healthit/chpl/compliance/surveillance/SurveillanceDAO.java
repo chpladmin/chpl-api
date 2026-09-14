@@ -34,6 +34,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.report.surveillance.SurveillanceByCriteria;
 import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
+import gov.healthit.chpl.report.surveillance.SurveillanceByRequirementType;
 import gov.healthit.chpl.search.entity.ListingSearchEntity;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationStatusUtil;
@@ -372,7 +373,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
                     .build());
         }
         return results;
-
     }
 
     public List<SurveillanceByCriteria> getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings() {
@@ -400,6 +400,40 @@ public class SurveillanceDAO extends BaseDAOImpl {
                     // RequirementType "id" matches the criterion ID in the db view
                     .criterion(criteriaService.get(requirementType.getId()))
                     .criterionSortOrder(criteriaService.getCriterionSortIndex(requirementType.getId()))
+                    .surveillanceId(surveillance.getId())
+                    .surveillanceStartDate(surveillance.getStartDate())
+                    .surveillanceEndDate(surveillance.getEndDate())
+                    .build());
+        }
+        return results;
+    }
+
+    public List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
+        Query query = entityManager.createQuery("SELECT DISTINCT surv, reqGroupType "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN ListingSearchEntity listing ON listing.id = surv.certifiedProductId AND listing.certificationStatus IN (:activeCertificationStatusNames) "
+                + "JOIN SurveillanceTypeEntity surveillanceType ON surv.surveillanceTypeId = surveillanceType.id "
+                + "JOIN SurveillanceRequirementEntity req ON req.surveillanceId = surv.id AND req.deleted = false "
+                + "JOIN RequirementTypeEntity reqType ON req.requirementType.id = reqType.id "
+                + "JOIN RequirementGroupTypeEntity reqGroupType ON reqType.requirementGroupType.id = reqGroupType.id "
+                + "WHERE (surv.endDate IS NULL OR surv.endDate >= :oneYearAgo) "
+                + "AND surv.deleted = false");
+
+        List<SurveillanceByRequirementType> results = new ArrayList<SurveillanceByRequirementType>();
+        List<Object[]> entities = query
+                .setParameter("oneYearAgo", LocalDate.now().minusYears(1))
+                .setParameter("activeCertificationStatusNames", CertificationStatusUtil.getActiveStatusNames())
+                .getResultList();
+
+        for (Object[] entity : entities) {
+            SurveillanceEntity surveillance = (SurveillanceEntity) entity[0];
+            RequirementGroupTypeEntity requirementType = (RequirementGroupTypeEntity) entity[1];
+            results.add(SurveillanceByRequirementType.builder()
+                    // RequirementType "id" matches the criterion ID in the db view
+                    .requirementType(RequirementGroupType.builder()
+                            .id(requirementType.getId())
+                            .name(requirementType.getName())
+                            .build())
                     .surveillanceId(surveillance.getId())
                     .surveillanceStartDate(surveillance.getStartDate())
                     .surveillanceEndDate(surveillance.getEndDate())
