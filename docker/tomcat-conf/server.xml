@@ -54,16 +54,26 @@
     <!-- CHPL database connection. Values are resolved from container
          environment variables at startup (see
          org.apache.tomcat.util.digester.PROPERTY_SOURCE in catalina.properties) -->
+    <!-- No factory attribute on purpose: Tomcat falls back to its built-in
+         DBCP2, which ships in tomcat/lib and creates the pool lazily on first
+         use. That matters because postgresql-*.jar ships only in the webapp's
+         WEB-INF/lib - the pool has to be built on a webapp thread, whose
+         context classloader can see it. Naming the tomcat-jdbc factory here
+         instead makes Tomcat build the pool eagerly during server startup,
+         under the common classloader, which cannot see WEB-INF/lib and fails
+         with "Unable to load class: org.postgresql.Driver".
+         The attribute names below are DBCP2's. Do not rename them to
+         tomcat-jdbc's maxActive/maxWait - DBCP2 has no setter for those and
+         silently falls back to its own default of maxTotal=8. -->
     <Resource name="jdbc/openchpl" auth="Container"
               type="javax.sql.DataSource"
-              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
               driverClassName="org.postgresql.Driver"
               url="${DB_URL}"
               username="${DB_USERNAME}"
               password="${DB_PASSWORD}"
-              maxActive="100"
+              maxTotal="100"
               maxIdle="30"
-              maxWait="10000" />
+              maxWaitMillis="10000" />
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
