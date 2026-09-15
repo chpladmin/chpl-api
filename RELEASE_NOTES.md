@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 54.2.0
+_14 September 2026_
+
+### Features
+* Add developerDetailsUrl to attestation report developers response
+
+### Flagged Features
+* Remove G1/G2 measures from API responses
+
+---
+
 ## Version 54.1.0
 _31 August 2026_
 
