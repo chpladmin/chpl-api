@@ -46,6 +46,9 @@ public class SurveillanceRequirementEntity extends EntityAudit {
     @Column(name = "surveillance_id")
     private Long surveillanceId;
 
+    @Column(name = "certification_criterion_id")
+    private Long criterionId;
+
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "requirement_type_id")
     private RequirementTypeEntity requirementType;
