@@ -2,7 +2,7 @@ package gov.healthit.chpl.report.surveillance;
 
 import java.time.LocalDate;
 
-import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Builder;
@@ -14,7 +14,8 @@ import tools.jackson.databind.annotation.JsonSerialize;
 @Builder
 public class SurveillanceByRequirementType {
 
-    private RequirementGroupType requirementType;
+    private RequirementType requirementType;
+    private Integer criterionSortOrder;
     private Long surveillanceId;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)

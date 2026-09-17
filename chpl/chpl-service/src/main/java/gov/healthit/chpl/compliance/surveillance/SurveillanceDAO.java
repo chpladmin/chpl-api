@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.RequirementGroupTypeEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.RequirementTypeEntity;
@@ -21,6 +22,7 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceRequirementE
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
@@ -45,6 +47,8 @@ import lombok.extern.log4j.Log4j2;
 @Repository("surveillanceDAO")
 @Log4j2
 public class SurveillanceDAO extends BaseDAOImpl {
+    private static final Long ICS_REQUIREMENT_OFFSET = 70000L;
+
     private static final String SURVEILLANCE_FULL_HQL =
             "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
@@ -409,7 +413,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     public List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
-        Query query = entityManager.createQuery("SELECT DISTINCT surv, reqGroupType "
+        Query query = entityManager.createQuery("SELECT DISTINCT surv, reqGroupType, reqType "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN ListingSearchEntity listing ON listing.id = surv.certifiedProductId AND listing.certificationStatus IN (:activeCertificationStatusNames) "
                 + "JOIN SurveillanceTypeEntity surveillanceType ON surv.surveillanceTypeId = surveillanceType.id "
@@ -427,19 +431,59 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
         for (Object[] entity : entities) {
             SurveillanceEntity surveillance = (SurveillanceEntity) entity[0];
-            RequirementGroupTypeEntity requirementType = (RequirementGroupTypeEntity) entity[1];
+            RequirementGroupTypeEntity requirementGroup = (RequirementGroupTypeEntity) entity[1];
+            RequirementTypeEntity requirementType = (RequirementTypeEntity) entity[2];
+
+            RequirementType fullReqType = buildRequirementType(requirementGroup, requirementType);
             results.add(SurveillanceByRequirementType.builder()
-                    // RequirementType "id" matches the criterion ID in the db view
-                    .requirementType(RequirementGroupType.builder()
-                            .id(requirementType.getId())
-                            .name(requirementType.getName())
-                            .build())
+                    .requirementType(fullReqType)
+                    .criterionSortOrder(isCriterion(fullReqType) ? criteriaService.getCriterionSortIndex(fullReqType.getId()) : null)
                     .surveillanceId(surveillance.getId())
                     .surveillanceStartDate(surveillance.getStartDate())
                     .surveillanceEndDate(surveillance.getEndDate())
                     .build());
         }
         return results;
+    }
+
+    private RequirementType buildRequirementType(RequirementGroupTypeEntity requirementGroup, RequirementTypeEntity requirementType) {
+        RequirementType type = RequirementType.builder()
+                .requirementGroupType(RequirementGroupType.builder()
+                        .id(requirementGroup.getId())
+                        .name(requirementGroup.getName())
+                        .build())
+                .title(requirementType.getTitle())
+                .build();
+        if (!StringUtils.isEmpty(requirementType.getNumber())) {
+            //it's a criterion, but does it have the ICS offset?
+            CertificationCriterion criterion = null;
+            if (requirementGroup.getId().equals(RequirementGroupType.INHERITED_CERTIFIED_STATUS_ID)) {
+                criterion = criteriaService.get(requirementType.getId() - ICS_REQUIREMENT_OFFSET);
+            } else {
+                criterion = criteriaService.get(requirementType.getId());
+            }
+
+            if (criterion != null) {
+                type.setCertificationEdition(CertificationEdition.builder()
+                        .id(criterion.getCertificationEditionId())
+                        .name(criterion.getCertificationEdition())
+                        .build());
+                type.setEdition(criterion.getCertificationEdition());
+                type.setEndDay(criterion.getEndDay());
+                type.setId(criterion.getId());
+                type.setNumber(criterion.getNumber());
+                type.setStartDay(criterion.getStartDay());
+            } else {
+                LOGGER.error("Unable to find criterion for requirement group ID " + requirementGroup.getId() + " and requirement type ID " + requirementType.getId());;
+            }
+        }
+        return type;
+    }
+
+    private boolean isCriterion(RequirementType type) {
+        return type.getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)
+                || (type.getRequirementGroupType().getId().equals(RequirementGroupType.INHERITED_CERTIFIED_STATUS_ID)
+                        && !StringUtils.isEmpty(type.getNumber()));
     }
 
     public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
