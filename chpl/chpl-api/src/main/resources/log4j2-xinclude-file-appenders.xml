@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  Used in deployed environments to still physically write the log files to disk -->
+<!--  Used in deployed environments: writes log files to disk AND streams the same
+     events as JSON to stdout for Datadog. Merged from the former separate
+     log4j2-xinclude-file-appenders-console.xml because Log4j2 does not merge
+     multiple sibling <Appenders> XIncludes within one Configuration - only the
+     last one processed is kept, silently dropping the rest. -->
 <Appenders>
     <RollingFile name="reportDataMethodUsage"
         fileName="${logDir}/reports/reportDataMethodUsage.log"
@@ -818,4 +822,483 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <Console name="reportDataMethodUsageJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="reportDataMethodUsage" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="chartDataCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="chartDataCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="summaryStatisticsEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="summaryStatisticsEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="summaryStatisticsCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="summaryStatisticsCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="certificationIdEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="certificationIdEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="urlStatusDataCollectorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="urlStatusDataCollectorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="questionableUrlReportGeneratorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="questionableUrlReportGeneratorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="certifiedProductDownloadableResourceCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="certifiedProductDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="g3Sed2015DownloadableResourceCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="g3Sed2015DownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="surveillanceDownloadableResourceCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="directReviewDownloadableResourceCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="directReviewDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="svapActivityDownloadableResourceCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="svapActivityDownloadableResourceCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="brokenSurveillanceRulesCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="brokenSurveillanceRulesCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="brokenSurveillanceRulesEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="brokenSurveillanceRulesEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="icsErrorsReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="icsErrorsReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="icsErrorsReportEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="icsErrorsReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="cacheStatusAgeJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cacheStatusAgeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="triggerDeveloperBanJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="triggerDeveloperBanJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="splitDeveloperJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="splitDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="joinDeveloperJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="joinDeveloperJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="apiKeyWarningEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="apiKeyWarningEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="apiKeyDeleteJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="apiKeyDeleteJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="questionableActivityEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="questionableActivityEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="pendingChangeRequestEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="pendingChangeRequestEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="directReviewCacheRefreshJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="directReviewCacheRefreshJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="cognitoUserCacheRefreshJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cognitoUserCacheRefreshJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="cacheListenerActivityJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cacheListenerActivity" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="redissonJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="redisson" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="sharedDataStoreJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="sharedDataStore" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="realWorldTestingUploadJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="realWorldTestingUrlValidationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingUrlValidationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="auditDataRetentionJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="auditDataRetentionJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="listingValidationReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingValidationReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="listingValidationReportEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingValidationReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="realWorldTestingReportEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="quarterlyReportGenerationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="quarterlyReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="annualReportGenerationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="annualReportGenerationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="userDefinedTriggersEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="userDefinedTriggersEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="inactiveDevelopersAndProductsReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="inactiveDevelopersAndProductsReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="listingUploadValidationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingUploadValidationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="surveillanceActivityReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceActivityReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="surveillanceUploadJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="surveillanceUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="promotingInteroperabilityUploadJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="promotingInteroperabilityUploadJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="deprecatedApiUsageEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="deprecatedApiUsageEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="removeCriteriaJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="removeCriteriaJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="sendEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="sendEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="changeRequestsReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="changeRequestsReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="complaintsReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="complaintsReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="subscriptionObservationsNotificationJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="subscriptionObservationsNotificationJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="subscriptionObservationNotificationsReportEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="subscriptionObservationNotificationsReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="developerAttestationReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="developerAttestationReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="developerAttestationCheckinReportJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="developerAttestationCheckinReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="messageDevelopersJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="messageDevelopersJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="listingSearchCacheRefreshJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="listingSearchCacheRefresh" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="serviceBaseUrlListUptimeCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="serviceBaseUrlListUptimeCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="serviceBaseUrlListUptimeEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="serviceBaseUrlListUptimeEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="updatedCriteriaStatusReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="updatedCriteriaStatusCreatorReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="updateCurrentCertificationStatusJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="updateCurrentCertificationStatusJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="updatedCriteriaStatusReportEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="updatedCriteriaStatusReportEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="criteriaMigrationReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="criteriaMigrationReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="cognitoMassRequirePasswordChangeJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="cognitoMassRequirePasswordChangeJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="realWorldTestingSummaryReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="realWorldTestingSummaryReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="attestationReportCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="attestationReportCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="fixDatadogUrlUptimeAssertionsJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="fixDatadogUrlUptimeAssertionsJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="fixJobDataJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="fixJobDataJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    <Console name="rwtPopulateMissingDataCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="rwtPopulateMissingDataCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
 </Appenders>
