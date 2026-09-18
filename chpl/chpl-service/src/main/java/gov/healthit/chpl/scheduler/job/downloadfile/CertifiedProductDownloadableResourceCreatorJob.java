@@ -38,6 +38,7 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.databind.json.JsonMapper;
 
 @Log4j2(topic = "certifiedProductDownloadableResourceCreatorJobLogger")
 @DisallowConcurrentExecution
@@ -64,6 +65,9 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     @Autowired
     private Environment env;
 
+    @Autowired
+    private JsonMapper jsonMapper;
+
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
         edition = null;
@@ -76,7 +80,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         initializeCertificationStatuses(jobContext);
 
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", getDownloadFileType());
-        try (CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter();
+        try (CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter(jsonMapper);
                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();) {
             initializeTempFiles();
             if (tempJsonFile != null && tempCsvDataFile != null) {

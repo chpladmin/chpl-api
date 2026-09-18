@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
@@ -28,6 +30,7 @@ public class SubscriptionObserver {
     private SubscriptionDao subscriptionDao;
     private SubscriptionObservationDao observationDao;
     private SubscriptionLookupUtil lookupUtil;
+    private FF4j ff4j;
 
     private List<SubscriptionSubjectProcessor> processors;
     private List<SubscriptionSubject> allSubjects;
@@ -35,10 +38,12 @@ public class SubscriptionObserver {
     @Autowired
     public SubscriptionObserver(SubscriptionDao subscriptionDao,
             SubscriptionObservationDao observationDao,
-            SubscriptionLookupUtil lookupUtil) {
+            SubscriptionLookupUtil lookupUtil,
+            FF4j ff4j) {
         this.subscriptionDao = subscriptionDao;
         this.observationDao = observationDao;
         this.lookupUtil = lookupUtil;
+        this.ff4j = ff4j;
         this.allSubjects = subscriptionDao.getAllSubjects();
 
         createSubscriptionSubjectProcessors();
@@ -73,7 +78,9 @@ public class SubscriptionObserver {
         this.processors.add(new CertificationStatusChangedActivityProcessor(getSubject(lookupUtil.getCertificationStatusChangedSubjectId())));
         this.processors.add(new CertificationCriteriaAddedActivityProcessor(getSubject(lookupUtil.getCertificationCriteriaAddedSubjectId())));
         this.processors.add(new CertificationCriteriaRemovedActivityProcessor(getSubject(lookupUtil.getCertificationCriteriaRemovedSubjectId())));
-        this.processors.add(new RwtPlansUrlChangedActivityProcessor(getSubject(lookupUtil.getRwtPlansUrlChangedSubjectId())));
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            this.processors.add(new RwtPlansUrlChangedActivityProcessor(getSubject(lookupUtil.getRwtPlansUrlChangedSubjectId())));
+        }
         this.processors.add(new RwtResultsUrlChangedActivityProcessor(getSubject(lookupUtil.getRwtResultsUrlChangedSubjectId())));
         this.processors.add(new ServiceBaseUrlListChangedActivityProcessor(getSubject(lookupUtil.getServiceBaseUrlListChangedSubjectId())));
     }

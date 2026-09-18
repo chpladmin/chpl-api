@@ -1,17 +1,19 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -33,7 +35,9 @@ public class DeveloperNormalizerTest {
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
             .thenReturn(Stream.of("CRITERIA_170_315_A_1__C").toList());
-        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService, ff4j);
 
         developerDao = Mockito.mock(DeveloperDAO.class);
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);

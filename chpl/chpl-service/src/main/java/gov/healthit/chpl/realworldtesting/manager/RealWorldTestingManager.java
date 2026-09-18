@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -51,15 +53,18 @@ public class RealWorldTestingManager {
     private RealWorldTestingByDeveloperDao rwtByDeveloperDao;
     private SchedulerManager schedulerManager;
     private ErrorMessageUtil errorMessageUtil;
+    private FF4j ff4j;
 
     @Autowired
     public RealWorldTestingManager(RealWorldTestingByDeveloperDao rwtByDeveloperDao,
             SchedulerManager schedulerManager,
-            ErrorMessageUtil errorMessageUtil) {
+            ErrorMessageUtil errorMessageUtil,
+            FF4j ff4j) {
 
         this.rwtByDeveloperDao = rwtByDeveloperDao;
         this.schedulerManager = schedulerManager;
         this.errorMessageUtil = errorMessageUtil;
+        this.ff4j = ff4j;
     }
 
     public List<RealWorldTestingUrlByDeveloper> getPlansUrls(Long developerId) {
@@ -159,6 +164,13 @@ public class RealWorldTestingManager {
             List<RealWorldTestingUpload> rwts = records.stream()
                     .map(rec -> createRwtUploadFromCsvRecord(rec))
                     .collect(Collectors.toList());
+
+            //only keep RESULTS upload records after HTI-5
+            if (ff4j.check(FeatureList.HTI_5_ERD)) {
+                rwts = rwts.stream()
+                    .filter(rwt -> rwt.getType().equals(RealWorldTestingType.RESULTS))
+                    .collect(Collectors.toList());
+            }
 
             return rwts;
         } catch (final IOException ioEx) {

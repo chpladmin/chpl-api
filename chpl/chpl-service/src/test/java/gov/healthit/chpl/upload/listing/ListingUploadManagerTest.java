@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -24,6 +25,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockMultipartFile;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultUpToDateService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -69,13 +71,16 @@ public class ListingUploadManagerTest {
     EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFiles();
 
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
+
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
             .thenReturn(Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_A_2__C", "CRITERIA_170_315_A_3__C",
                     "CRITERIA_170_315_A_4__C", "CRITERIA_170_315_D_4__C", "CRITERIA_170_315_D_4_Cures__C",
                     "CRITERIA_170_315_B_3_Cures__C", "CRITERIA_170_315_D_11__C", "CRITERIA_170_315_D_12_Cures__C",
                     "CRITERIA_170_315_B_3__C", "CRITERIA_170_314_B_5A__C").toList());
-        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService, ff4j);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         acbDao = Mockito.mock(CertificationBodyDAO.class);
@@ -102,7 +107,8 @@ public class ListingUploadManagerTest {
                 certDateHandler,
                 listingNormalizer,
                 listingUploadValidator,
-                uploadUtil, chplProductNumberUtil, listingUploadDao, acbDao,
+                uploadUtil, uploadHeadingUtil,
+                chplProductNumberUtil, listingUploadDao, acbDao,
                 Mockito.mock(UserDAO.class),
                 listingConfirmationManager,
                 Mockito.mock(SchedulerManager.class),

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -9,11 +9,13 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -45,6 +47,8 @@ public class MeasureReviewerTest {
 
     @BeforeEach
     public void setup() {
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_2027_01_01))).thenReturn(false);
         criterionService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criterionService.getByNumber(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(buildCriterion(1L, "170.315 (a)(1)")).collect(Collectors.toList()));
@@ -83,7 +87,7 @@ public class MeasureReviewerTest {
         Mockito.when(validationUtils.hasCert(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
             .thenCallRealMethod();
 
-        reviewer = new MeasureReviewer(validationUtils, msgUtil);
+        reviewer = new MeasureReviewer(validationUtils, msgUtil, ff4j);
     }
 
     @Test

@@ -27,7 +27,10 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.listing.measure.DeprecatedMeasureData;
+import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
@@ -72,13 +75,16 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
+    @DeprecatedSedSummaryData
     @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. "
             + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String sedReportFileLocation;
 
+    @DeprecatedSedSummaryData
     @Schema(description = "For SED testing, a description of the intended users of the Health IT")
     private String sedIntendedUserDescription;
 
+    @DeprecatedSedSummaryData
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -206,6 +212,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Builder.Default
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
+    @DeprecatedMeasureData
     @Schema(description = "This variable indicates if the listing utilizes automated numerator or automated measure required tests.")
     @Builder.Default
     private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
@@ -246,9 +253,11 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "All data related to safety-enhanced design for this listing.")
     private CertifiedProductSed sed = new CertifiedProductSed();
 
+    @DeprecatedRwtPlansData
     @Schema(description = "URL where the listings Real World Testing Plan is located")
     private String rwtPlansUrl;
 
+    @DeprecatedRwtPlansData
     @Schema(description = "Date the listings Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

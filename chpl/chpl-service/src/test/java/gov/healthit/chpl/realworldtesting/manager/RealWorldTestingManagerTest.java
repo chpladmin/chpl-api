@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -48,7 +49,9 @@ public class RealWorldTestingManagerTest {
             .thenReturn("This is an error message.");
 
         realWorldTestingManager = new RealWorldTestingManager(Mockito.mock(RealWorldTestingByDeveloperDao.class),
-                schedulerManager, errorMessageUtil);
+                schedulerManager,
+                errorMessageUtil,
+                Mockito.mock(FF4j.class));
     }
 
     @Test

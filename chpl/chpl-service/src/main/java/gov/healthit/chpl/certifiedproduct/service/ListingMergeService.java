@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.Strings;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
@@ -46,17 +48,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingMergeService {
 
-    private ChplProductNumberUtil chplProductNumberUtil;
     private CertificationResultUpToDateService certResultUpToDateService;
+    private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil,
-            CertificationResultUpToDateService certResultUpToDateService,
-            ErrorMessageUtil msgUtil) {
-        this.chplProductNumberUtil = chplProductNumberUtil;
+    public ListingMergeService(CertificationResultUpToDateService certResultUpToDateService,
+            ChplProductNumberUtil chplProductNumberUtil,
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.certResultUpToDateService = certResultUpToDateService;
+        this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     /**
@@ -102,6 +107,12 @@ public class ListingMergeService {
         updatedListing.setCountOpenNonconformities(currentListing.getCountOpenNonconformities());
         updatedListing.setCountOpenSurveillance(currentListing.getCountOpenSurveillance());
         updatedListing.setCountSurveillance(currentListing.getCountSurveillance());
+
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListing.setSedIntendedUserDescription(currentListing.getSedIntendedUserDescription());
+            updatedListing.setSedReportFileLocation(currentListing.getSedReportFileLocation());
+            updatedListing.setSedTestingEndDay(currentListing.getSedTestingEndDay());
+        }
 
         setIcsChildren(updatedListing, currentListing.getIcs());
         setIdsForQmsStandards(updatedListing, currentListing.getQmsStandards());
@@ -217,12 +228,16 @@ public class ListingMergeService {
     }
 
     private void setIdsForMeasures(CertifiedProductSearchDetails updatedListing, List<ListingMeasure> currMeasures) {
-        if (CollectionUtils.isEmpty(currMeasures)) {
-            return;
-        }
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListing.setMeasures(currMeasures);
+        } else {
+            if (CollectionUtils.isEmpty(currMeasures)) {
+                return;
+            }
 
-        currMeasures.stream()
-            .forEach(currMeasure -> setIdInUpdatedMeasures(updatedListing.getMeasures(), currMeasure));
+            currMeasures.stream()
+                .forEach(currMeasure -> setIdInUpdatedMeasures(updatedListing.getMeasures(), currMeasure));
+        }
     }
 
     private void setIdInUpdatedMeasures(List<ListingMeasure> updatedMeasures, ListingMeasure currMeasure) {
@@ -258,18 +273,21 @@ public class ListingMergeService {
     private void setIdsForSed(CertifiedProductSed updatedListingSed, CertifiedProductSed currListingSed) {
         //Note: We don't have a field for the internal database mapping ID between cert result -> UCD Process in
         //the listing details object. So there is nothing to fill in for UCD Process IDs.
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            updatedListingSed.setTestTasks(currListingSed.getTestTasks());
+        } else {
+            if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
+                updatedListingSed.getTestTasks().stream()
+                    .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
 
-        if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
-            updatedListingSed.getTestTasks().stream()
-                .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
+                Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
+                        .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
+                        .collect(Collectors.toSet());
 
-            Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
-                    .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
-                    .collect(Collectors.toSet());
-
-            updatedListingSed.getTestTasks().stream()
-                .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
-                .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+                updatedListingSed.getTestTasks().stream()
+                    .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
+                    .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+            }
         }
     }
 
@@ -515,10 +533,6 @@ public class ListingMergeService {
             }
     }
 
-    private void populateUpToDate(CertificationResult certResult) {
-        certResult.setUpToDate(certResultUpToDateService.isUpToDate(certResult));
-    }
-
     private void setIdsForCqmResults(CQMResultDetails updatedCqmResult, CertifiedProductSearchDetails currListing) {
         if (CollectionUtils.isEmpty(currListing.getCqmResults())) {
             return;
@@ -549,5 +563,12 @@ public class ListingMergeService {
         if (matchedCurrCqmCert != null) {
             updatedCqmCert.setId(matchedCurrCqmCert.getId());
         }
+    }
+
+    private void populateUpToDate(CertificationResult certResult) {
+        certResult.setUpToDate(certResultUpToDateService.isUpToDateAsOfToday(certResult.getCriterion().getId(),
+                CollectionUtils.isEmpty(certResult.getStandards()) ? null : certResult.getStandards().stream().map(std -> std.getStandard().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getFunctionalitiesTested()) ? null : certResult.getFunctionalitiesTested().stream().map(ft -> ft.getFunctionalityTested().getId()).toList(),
+                CollectionUtils.isEmpty(certResult.getCodeSets()) ? null : certResult.getCodeSets().stream().map(cs -> cs.getCodeSet().getId()).toList()));
     }
 }

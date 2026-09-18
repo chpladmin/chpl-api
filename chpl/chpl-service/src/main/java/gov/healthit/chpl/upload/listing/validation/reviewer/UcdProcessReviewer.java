@@ -63,7 +63,6 @@ public class UcdProcessReviewer implements Reviewer {
         List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
             List<CertifiedProductUcdProcess> ucdProcessesWithoutFuzzyMatchesOrIds = ucdProcesses.stream()
-                    .filter(currUcdProc -> StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
                     .filter(currUcdProc -> currUcdProc.getId() == null)
                     .collect(Collectors.toList());
 
@@ -74,7 +73,7 @@ public class UcdProcessReviewer implements Reviewer {
                         .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
                         .forEach(ucdProcWithoutId -> listing.addWarningMessage(
                                 msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
-                                        ucdProcWithoutId.getName(),
+                                        (!StringUtils.isEmpty(ucdProcWithoutId.getName()) ? ucdProcWithoutId.getName() : ucdProcWithoutId.getDetails()),
                                         ucdProcWithoutId.getCriteria().stream()
                                                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                                                 .collect(Collectors.joining(",")))));

@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("qmsUploadHandler")
 public class QmsUploadHandler {
@@ -74,19 +74,19 @@ public class QmsUploadHandler {
 
     private List<String> parseQmsStandardNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.QMS_STANDARD_NAME, headingRecord, listingRecords);
+                HeadingPostHti5.QMS_STANDARD_NAME, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseQmsApplicableCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.QMS_STANDARD_APPLICABLE_CRITERIA, headingRecord, listingRecords);
+                HeadingPostHti5.QMS_STANDARD_APPLICABLE_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseQmsModifications(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.QMS_MODIFICATION, headingRecord, listingRecords);
+                HeadingPostHti5.QMS_MODIFICATION, headingRecord, listingRecords);
         return values;
     }
 }

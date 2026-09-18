@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
+import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -80,6 +81,7 @@ public class ListingSearchResult implements Serializable {
     private CertificationCriterionSearchResultWithStringField serviceBaseUrlList;
     private CertificationCriterionSearchResultWithStringField riskManagementSummaryInformation;
     private Set<CertificationCriterionSearchResultWithLongFields> svaps;
+    @DeprecatedRwtPlansData
     private String rwtPlansUrl;
     private String rwtResultsUrl;
     private String svapNoticeUrl;

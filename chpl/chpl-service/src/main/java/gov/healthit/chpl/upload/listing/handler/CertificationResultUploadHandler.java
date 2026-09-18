@@ -19,8 +19,8 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import jakarta.validation.ValidationException;
 
 @Component("certificationResultUploadHandler")
@@ -93,61 +93,61 @@ public class CertificationResultUploadHandler {
     private Boolean parseHasAdditionalSoftware(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         Boolean result = null;
         try {
-            result = uploadUtil.parseSingleRowFieldAsBoolean(Heading.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
+            result = uploadUtil.parseSingleRowFieldAsBoolean(HeadingPostHti5.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
         } catch (Exception e) {
         }
         return result;
     }
 
     private String parseHasAdditionalSoftwareStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.HAS_ADDITIONAL_SOFTWARE, certHeadingRecord, certResultRecords);
     }
 
     private String parsePrivacyAndSecurityFramework(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.PRIVACY_AND_SECURITY, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.PRIVACY_AND_SECURITY, certHeadingRecord, certResultRecords);
     }
 
     private String parseExportDocumentation(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.EXPORT_DOCUMENTATION, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.EXPORT_DOCUMENTATION, certHeadingRecord, certResultRecords);
     }
 
     private Boolean parseAttestationAnswer(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         Boolean result = null;
         try {
-            result = uploadUtil.parseSingleRowFieldAsBoolean(Heading.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
+            result = uploadUtil.parseSingleRowFieldAsBoolean(HeadingPostHti5.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
         } catch (Exception e) {
         }
         return result;
     }
 
     private String parseAttestationAnswerStr(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.ATTESTATION_ANSWER, certHeadingRecord, certResultRecords);
     }
 
     private String parseDocumentationUrl(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.DOCUMENTATION_URL, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.DOCUMENTATION_URL, certHeadingRecord, certResultRecords);
     }
 
     private String parseUseCases(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.USE_CASES, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.USE_CASES, certHeadingRecord, certResultRecords);
     }
 
     private String parseServiceBaseUrlList(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.SERVICE_BASE_URL_LIST, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.SERVICE_BASE_URL_LIST, certHeadingRecord, certResultRecords);
     }
 
     private String parseRiskManagementSummaryInformation(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.RISK_MANAGEMENT_SUMMARY_INFORMATION, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.RISK_MANAGEMENT_SUMMARY_INFORMATION, certHeadingRecord, certResultRecords);
     }
 
     private String parseApiDocumentation(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.API_DOCUMENTATION_LINK, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.API_DOCUMENTATION_LINK, certHeadingRecord, certResultRecords);
     }
 
     private List<CertificationResultFunctionalityTested> parseFunctionalitiesTested(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         List<String> functionalitiesTestedNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Heading.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
+                HeadingPostHti5.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
         if (functionalitiesTestedNames != null && functionalitiesTestedNames.size() > 0) {
             functionalitiesTestedNames.stream().forEach(functionalityTestedName -> {
                 CertificationResultFunctionalityTested functionalityTested = CertificationResultFunctionalityTested.builder()
@@ -165,7 +165,7 @@ public class CertificationResultUploadHandler {
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
             List<String> optionalStandardNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                    Heading.OPTIONAL_STANDARD, certHeadingRecord, certResultRecords);
+                    HeadingPostHti5.OPTIONAL_STANDARD, certHeadingRecord, certResultRecords);
             if (!CollectionUtils.isEmpty(optionalStandardNames)) {
                 optionalStandardNames.stream().forEach(optionalStandardName -> {
                     CertificationResultOptionalStandard optionalStandard = CertificationResultOptionalStandard.builder()
@@ -182,7 +182,7 @@ public class CertificationResultUploadHandler {
     private List<CertificationResultSvap> parseSvaps(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
             List<String> regulatoryTextCitations = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                    Heading.SVAP_REG_TEXT, certHeadingRecord, certResultRecords);
+                    HeadingPostHti5.SVAP_REG_TEXT, certHeadingRecord, certResultRecords);
             if (!CollectionUtils.isEmpty(regulatoryTextCitations)) {
                 regulatoryTextCitations.stream().forEach(regulatoryTextCitation -> {
                     CertificationResultSvap svap = CertificationResultSvap.builder()
@@ -197,7 +197,7 @@ public class CertificationResultUploadHandler {
     private List<CertificationResultStandard> parseStandards(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
             List<String> regulatoryTextCitations = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                    Heading.STANDARD, certHeadingRecord, certResultRecords);
+                    HeadingPostHti5.STANDARD, certHeadingRecord, certResultRecords);
             if (!CollectionUtils.isEmpty(regulatoryTextCitations)) {
                 regulatoryTextCitations.stream().forEach(regulatoryTextCitation -> {
                     CertificationResultStandard standard = CertificationResultStandard.builder()
@@ -214,7 +214,7 @@ public class CertificationResultUploadHandler {
     private List<CertificationResultCodeSet> parseCodeSets(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultCodeSet> codeSets = new ArrayList<CertificationResultCodeSet>();
             List<String> codeSetsText = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                    Heading.CODE_SET, certHeadingRecord, certResultRecords);
+                    HeadingPostHti5.CODE_SET, certHeadingRecord, certResultRecords);
             if (!CollectionUtils.isEmpty(codeSetsText)) {
                 codeSetsText.stream().forEach(codeSetText -> {
                     CertificationResultCodeSet codeSet = CertificationResultCodeSet.builder()

@@ -14,6 +14,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -25,11 +26,13 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.JSONUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 public class RealWorldTestingEligibilityActivityExplorerTest {
     private ActivityDAO activityDao;
     private RealWorldTestingEligibilityActivityExplorer explorer;
     private SimpleDateFormat formatter;
+    private JSONUtils jsonUtils;
 
     @BeforeEach
     public void setup() {
@@ -37,6 +40,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
+        jsonUtils = new JSONUtils(JsonMapper.builder().build(), Mockito.mock(FF4j.class));
         explorer = new RealWorldTestingEligibilityActivityExplorer(activityDao);
     }
 
@@ -71,7 +75,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_nullAsOfDateAndOneActivityForListing_returnsOldestActivity()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO activity = ActivityDTO.builder()
@@ -96,7 +100,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_nullAsOfDateAndTwoActivitiesForListing_returnsOldestActivity()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -105,7 +109,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .rwtPlansUrl("test")
                 .build());
@@ -131,7 +135,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_AsOfDateBeforeOneActivityForListing_returnsNull()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -155,7 +159,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_AsOfDateBeforeTwoActivitiesForListing_returnsNull()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -164,7 +168,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .rwtPlansUrl("test")
                 .build());
@@ -189,7 +193,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_AsOfDateAfterOneActivityForListing_returnsActivity()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -214,7 +218,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_AsOfDateBetweenTwoActivitiesForListing_returnsEarlierActivity()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -223,7 +227,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .rwtPlansUrl("test")
                 .build());
@@ -249,7 +253,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     @Test
     public void getActivityForRwtEligibility_AsOfDateAfterTwoActivitiesForListing_returnsLatestActivity()
             throws ParseException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingConfirmActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
@@ -258,7 +262,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+        String listingUpdateActivity = jsonUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .rwtPlansUrl("test")
                 .build());

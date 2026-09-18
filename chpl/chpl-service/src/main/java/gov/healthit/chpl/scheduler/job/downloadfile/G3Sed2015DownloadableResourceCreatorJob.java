@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -59,6 +60,9 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private File tempDirectory, tempCsvFile;
     private CertificationCriterion g3;
 
+    @Autowired
+    private FF4j ff4j;
+
     public G3Sed2015DownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
     }
@@ -69,7 +73,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
         LOGGER.info("********* Starting the G3 SED 2015 Downloadable Resource Creator job. *********");
         g3 = criterionService.get(Criteria2015.G_3);
 
-        try (Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter()) {
+        try (Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter(ff4j)) {
             initializeTempFiles();
             if (tempCsvFile != null) {
                 initializeWritingToFiles(csvPresenter);

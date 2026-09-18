@@ -42,25 +42,31 @@ import tools.jackson.databind.json.JsonMapper;
 public class ActivityManager extends SecuredManager {
     private ActivityDAO activityDAO;
     private DeveloperDAO devDao;
-    private JsonMapper jsonMapper = new JsonMapper();
-    private JsonFactory factory = jsonMapper.tokenStreamFactory();
+    private JsonMapper jsonMapper;
+    private JsonFactory factory;
     private QuestionableActivityListener questionableActivityListener;
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
     private SubscriptionObserver subscriptionObserver;
     private CognitoApiWrapper cognitoApiWrapper;
+    private JSONUtils jsonUtils;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
             ChplProductNumberChangedListener chplProductNumberChangedListener,
             SubscriptionObserver subscriptionObserver,
-            CognitoApiWrapper cognitoApiWrapper) {
+            CognitoApiWrapper cognitoApiWrapper,
+            JsonMapper jsonMapper,
+            JSONUtils jsonUtils) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
         this.chplProductNumberChangedListener = chplProductNumberChangedListener;
         this.subscriptionObserver = subscriptionObserver;
         this.cognitoApiWrapper = cognitoApiWrapper;
+        this.jsonMapper = jsonMapper;
+        this.factory = this.jsonMapper.tokenStreamFactory();
+        this.jsonUtils = jsonUtils;
     }
 
     @Transactional
@@ -150,16 +156,16 @@ public class ActivityManager extends SecuredManager {
         String newDataStr = null;
 
         if (concept.equals(ActivityConcept.CERTIFIED_PRODUCT)) {
-            originalDataStr = JSONUtils.toJSONExcludingIgnoredFields(originalData);
-            newDataStr = JSONUtils.toJSONExcludingIgnoredFields(newData);
+            originalDataStr = jsonUtils.toJSONExcludingIgnoredFields(originalData);
+            newDataStr = jsonUtils.toJSONExcludingIgnoredFields(newData);
         } else {
-            originalDataStr = JSONUtils.toJSON(originalData);
-            newDataStr = JSONUtils.toJSON(newData);
+            originalDataStr = jsonUtils.toJSON(originalData);
+            newDataStr = jsonUtils.toJSON(newData);
         }
         Boolean originalMatchesNew = false;
 
         try {
-            originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
+            originalMatchesNew = jsonUtils.jsonEquals(originalDataStr, newDataStr);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             return null;

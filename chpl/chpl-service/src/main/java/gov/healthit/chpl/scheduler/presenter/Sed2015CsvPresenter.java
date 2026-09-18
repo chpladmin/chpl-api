@@ -8,11 +8,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.sed.TestParticipant;
@@ -23,7 +26,11 @@ public class Sed2015CsvPresenter extends CertifiedProductPresenter implements Au
     private Logger logger;
     private OutputStreamWriter writer = null;
     private CSVPrinter csvPrinter = null;
+    private FF4j ff4j;
 
+    public Sed2015CsvPresenter(FF4j ff4j) {
+        this.ff4j = ff4j;
+    }
     @Override
     public void open(File file) throws IOException {
         getLogger().info("Opening file, initializing CSV doc.");
@@ -71,81 +78,112 @@ public class Sed2015CsvPresenter extends CertifiedProductPresenter implements Au
         result.add("Product");
         result.add("Version");
         result.add("Certification Criteria");
-        result.add("Task Description");
-        result.add("Rating Scale");
-        result.add("Task Rating");
-        result.add("Task Rating - Standard Deviation");
-        result.add("Task Time Mean (s)");
-        result.add("Task Time - Standard Deviation (s)");
-        result.add("Task Time Deviation - Observed (s)");
-        result.add("Task Time Deviation - Optimal (s)");
-        result.add("Task Success - Mean (%)");
-        result.add("Task Success - Standard Deviation (%)");
-        result.add("Task Errors - Mean (%)");
-        result.add("Task Errors - Standard Deviation (%)");
-        result.add("Task Path Deviation - Observed (# of Steps)");
-        result.add("Task Path Deviation - Optimal (# of Steps)");
-        result.add("Occupation");
-        result.add("Education Type");
-        result.add("Product Experience (Months)");
-        result.add("Professional Experience (Months)");
-        result.add("Computer Experience (Months)");
-        result.add("Age (Years)");
-        result.add("Gender");
-        result.add("Assistive Technology Needs");
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            result.add("UCD Process Name");
+            result.add("UCD Process Details");
+        } else {
+            result.add("Task Description");
+            result.add("Rating Scale");
+            result.add("Task Rating");
+            result.add("Task Rating - Standard Deviation");
+            result.add("Task Time Mean (s)");
+            result.add("Task Time - Standard Deviation (s)");
+            result.add("Task Time Deviation - Observed (s)");
+            result.add("Task Time Deviation - Optimal (s)");
+            result.add("Task Success - Mean (%)");
+            result.add("Task Success - Standard Deviation (%)");
+            result.add("Task Errors - Mean (%)");
+            result.add("Task Errors - Standard Deviation (%)");
+            result.add("Task Path Deviation - Observed (# of Steps)");
+            result.add("Task Path Deviation - Optimal (# of Steps)");
+            result.add("Occupation");
+            result.add("Education Type");
+            result.add("Product Experience (Months)");
+            result.add("Professional Experience (Months)");
+            result.add("Computer Experience (Months)");
+            result.add("Age (Years)");
+            result.add("Gender");
+            result.add("Assistive Technology Needs");
+        }
         return result;
     }
 
     protected List<List<String>> generateRows(CertifiedProductSearchDetails listing) {
-        if (!hasTestTasks(listing)) {
-            return null;
-        }
-
-        // each row corresponds to one participant of one test task
-        // and can result in many rows for a single listing
         List<List<String>> result = new ArrayList<List<String>>();
-        for (TestTask testTask : listing.getSed().getTestTasks()) {
-            if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
-                getLogger().warn("No participants were found for listing " + listing.getChplProductNumber()
-                + " test task ID " + testTask.getId());
-            } else {
-                for (TestParticipant participant : testTask.getTestParticipants()) {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
+                return null;
+            }
+
+            listing.getSed().getUcdProcesses().stream()
+                .forEach(ucd -> {
                     List<String> row = new ArrayList<String>();
                     row.add(listing.getChplProductNumber());
                     row.add(listing.getDeveloper().getName());
                     row.add(listing.getProduct().getName());
                     row.add(listing.getVersion().getVersion());
                     StringBuffer assocCriteriaStr = new StringBuffer();
-                    for (CertificationCriterion criteria : testTask.getCriteria()) {
+                    for (CertificationCriterion criteria : ucd.getCriteria()) {
                         if (assocCriteriaStr.length() > 0) {
                             assocCriteriaStr.append(";");
                         }
                         assocCriteriaStr.append(CertificationCriterionService.formatCriteriaNumber(criteria, true));
                     }
                     row.add(assocCriteriaStr.toString());
-                    row.add(testTask.getDescription());
-                    row.add(testTask.getTaskRatingScale());
-                    row.add(String.valueOf(testTask.getTaskRating()));
-                    row.add(String.valueOf(testTask.getTaskRatingStddev()));
-                    row.add(String.valueOf(testTask.getTaskTimeAvg()));
-                    row.add(String.valueOf(testTask.getTaskTimeStddev()));
-                    row.add(String.valueOf(testTask.getTaskTimeDeviationObservedAvg()));
-                    row.add(String.valueOf(testTask.getTaskTimeDeviationOptimalAvg()));
-                    row.add(String.valueOf(testTask.getTaskSuccessAverage()));
-                    row.add(String.valueOf(testTask.getTaskSuccessStddev()));
-                    row.add(String.valueOf(testTask.getTaskErrors()));
-                    row.add(String.valueOf(testTask.getTaskErrorsStddev()));
-                    row.add(String.valueOf(testTask.getTaskPathDeviationObserved()));
-                    row.add(String.valueOf(testTask.getTaskPathDeviationOptimal()));
-                    row.add(participant.getOccupation());
-                    row.add(participant.getEducationType().getName());
-                    row.add(String.valueOf(participant.getProductExperienceMonths()));
-                    row.add(String.valueOf(participant.getProfessionalExperienceMonths()));
-                    row.add(String.valueOf(participant.getComputerExperienceMonths()));
-                    row.add(participant.getAge().getName());
-                    row.add(participant.getGender());
-                    row.add(participant.getAssistiveTechnologyNeeds());
+                    row.add(ucd.getName() == null ? "" : ucd.getName());
+                    row.add(ucd.getDetails() == null ? "" : ucd.getDetails());
                     result.add(row);
+                });
+        } else {
+            if (!hasTestTasks(listing)) {
+                return null;
+            }
+
+            // each row corresponds to one participant of one test task
+            // and can result in many rows for a single listing
+            for (TestTask testTask : listing.getSed().getTestTasks()) {
+                if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
+                    getLogger().warn("No participants were found for listing " + listing.getChplProductNumber()
+                    + " test task ID " + testTask.getId());
+                } else {
+                    for (TestParticipant participant : testTask.getTestParticipants()) {
+                        List<String> row = new ArrayList<String>();
+                        row.add(listing.getChplProductNumber());
+                        row.add(listing.getDeveloper().getName());
+                        row.add(listing.getProduct().getName());
+                        row.add(listing.getVersion().getVersion());
+                        StringBuffer assocCriteriaStr = new StringBuffer();
+                        for (CertificationCriterion criteria : testTask.getCriteria()) {
+                            if (assocCriteriaStr.length() > 0) {
+                                assocCriteriaStr.append(";");
+                            }
+                            assocCriteriaStr.append(CertificationCriterionService.formatCriteriaNumber(criteria, true));
+                        }
+                        row.add(assocCriteriaStr.toString());
+                        row.add(testTask.getDescription());
+                        row.add(testTask.getTaskRatingScale());
+                        row.add(String.valueOf(testTask.getTaskRating()));
+                        row.add(String.valueOf(testTask.getTaskRatingStddev()));
+                        row.add(String.valueOf(testTask.getTaskTimeAvg()));
+                        row.add(String.valueOf(testTask.getTaskTimeStddev()));
+                        row.add(String.valueOf(testTask.getTaskTimeDeviationObservedAvg()));
+                        row.add(String.valueOf(testTask.getTaskTimeDeviationOptimalAvg()));
+                        row.add(String.valueOf(testTask.getTaskSuccessAverage()));
+                        row.add(String.valueOf(testTask.getTaskSuccessStddev()));
+                        row.add(String.valueOf(testTask.getTaskErrors()));
+                        row.add(String.valueOf(testTask.getTaskErrorsStddev()));
+                        row.add(String.valueOf(testTask.getTaskPathDeviationObserved()));
+                        row.add(String.valueOf(testTask.getTaskPathDeviationOptimal()));
+                        row.add(participant.getOccupation());
+                        row.add(participant.getEducationType().getName());
+                        row.add(String.valueOf(participant.getProductExperienceMonths()));
+                        row.add(String.valueOf(participant.getProfessionalExperienceMonths()));
+                        row.add(String.valueOf(participant.getComputerExperienceMonths()));
+                        row.add(participant.getAge().getName());
+                        row.add(participant.getGender());
+                        row.add(participant.getAssistiveTechnologyNeeds());
+                        result.add(row);
+                    }
                 }
             }
         }

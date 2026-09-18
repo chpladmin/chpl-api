@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tools.jackson.core.JacksonException;
-
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
@@ -101,6 +101,7 @@ import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfToday
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Log4j2
 @Service("certifiedProductManager")
@@ -136,6 +137,7 @@ public class CertifiedProductManager extends SecuredManager {
     private TransactionalDeveloperBanHelper txDeveloperBanHelper;
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
+    private FF4j ff4j;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     public CertifiedProductManager() {
@@ -165,7 +167,9 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationStatusEventsService certStatusEventsService,
             TransactionalDeveloperBanHelper txDeveloperBanHelper,
             ChplTeamNotifier chplteamNotifier,
-            Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
+            Environment env,
+            FF4j ff4j,
+            ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -198,6 +202,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.txDeveloperBanHelper = txDeveloperBanHelper;
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
+        this.ff4j = ff4j;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
@@ -1074,6 +1079,9 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void updateSed(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            return;
+        }
         sedService.synchronizeTestTasks(origListing, updatedListing,
                 origListing.getSed() == null || CollectionUtils.isEmpty(origListing.getSed().getTestTasks()) ? List.of() : origListing.getSed().getTestTasks(),
                 updatedListing.getSed() == null || CollectionUtils.isEmpty(updatedListing.getSed().getTestTasks()) ? List.of() : updatedListing.getSed().getTestTasks());

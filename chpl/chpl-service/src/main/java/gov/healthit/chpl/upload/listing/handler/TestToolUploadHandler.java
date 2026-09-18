@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.TestTool;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("testToolUploadHandler")
 public class TestToolUploadHandler {
@@ -68,13 +68,13 @@ public class TestToolUploadHandler {
 
     private List<String> parseTestToolNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TEST_TOOL_NAME, certHeadingRecord, certResultRecords);
+                HeadingPostHti5.TEST_TOOL_NAME, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseTestToolVersions(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.TEST_TOOL_VERSION, certHeadingRecord, certResultRecords);
+                HeadingPostHti5.TEST_TOOL_VERSION, certHeadingRecord, certResultRecords);
         return values;
     }
 }

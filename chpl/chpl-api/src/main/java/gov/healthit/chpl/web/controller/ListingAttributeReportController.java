@@ -2,12 +2,14 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.listingattribute.AccessibilityStandardListingReport;
 import gov.healthit.chpl.report.listingattribute.AccessibilityStandardReport;
@@ -28,10 +30,13 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/report-data/listing-attributes")
 public class ListingAttributeReportController {
     private ReportDataManager reportDataManager;
+    private FF4j ff4j;
 
     @Autowired
-    public ListingAttributeReportController(ReportDataManager reportDataManager) {
+    public ListingAttributeReportController(ReportDataManager reportDataManager,
+            FF4j ff4j) {
         this.reportDataManager = reportDataManager;
+        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Retrieves the data used to generate the QMS Standard Listing Attribute Summary report.",
@@ -86,6 +91,9 @@ public class ListingAttributeReportController {
     @LogMethodUsage
     @RequestMapping(value = "/measures", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureReport> getMeasureReports() {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return List.of();
+        }
         return reportDataManager.getListingAttributeService().getMeasureReports();
     }
 
@@ -97,6 +105,9 @@ public class ListingAttributeReportController {
     @LogMethodUsage
     @RequestMapping(value = "/measures/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureListingReport> getMeasureListingReports() {
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            return List.of();
+        }
         return reportDataManager.getListingAttributeService().getMeasureListingReports();
     }
 }

@@ -915,6 +915,56 @@
         "description": "GET /report-data/surveillance-by-developer - status 200 and valid response"
       },
       "response": []
+    },
+    {
+      "name": "GET /report-data/direct-reviews - retrieve status 200 and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"/report-data/direct-reviews should retrieve status 200 and valid response\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "    pm.expect(pm.response.text()).to.include(\"created\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"developerId\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"developerName\");\r",
+              "    pm.expect(pm.response.text()).to.include(\"nonConformities\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/direct-reviews",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "direct-reviews"
+          ]
+        },
+        "description": "GET /report-data/direct-reviews - retrieve status 200 and valid response"
+      },
+      "response": []
     }
   ]
 }

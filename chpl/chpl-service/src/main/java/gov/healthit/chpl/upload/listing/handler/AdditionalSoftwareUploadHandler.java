@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("additionalSoftwareUploadHandler")
 public class AdditionalSoftwareUploadHandler {
@@ -111,43 +111,43 @@ public class AdditionalSoftwareUploadHandler {
     private Boolean parseHasAdditionalSoftware(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         Boolean result = null;
         try {
-            result = uploadUtil.parseSingleRowFieldAsBoolean(Heading.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
+            result = uploadUtil.parseSingleRowFieldAsBoolean(HeadingPostHti5.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
         } catch (Exception e) {
         }
         return result;
     }
 
     private String parseHasAdditionalSoftwareStr(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseSingleRowField(Heading.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.HAS_ADDITIONAL_SOFTWARE, certResultHeading, certResultRecords);
     }
 
     private List<String> parseListingSources(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITIONAL_SOFTWARE_LISTING, certResultHeading, certResultRecords);
+                HeadingPostHti5.ADDITIONAL_SOFTWARE_LISTING, certResultHeading, certResultRecords);
         return values;
     }
 
     private List<String> parseListingGroupings(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITIONAL_SOFTWARE_LISTING_GROUPING, certResultHeading, certResultRecords);
+                HeadingPostHti5.ADDITIONAL_SOFTWARE_LISTING_GROUPING, certResultHeading, certResultRecords);
         return values;
     }
 
     private List<String> parseNonListingSources(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITIONAL_SOFTWARE_NONLISTING, certResultHeading, certResultRecords);
+                HeadingPostHti5.ADDITIONAL_SOFTWARE_NONLISTING, certResultHeading, certResultRecords);
         return values;
     }
 
     private List<String> parseNonListingVersions(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITIONAL_SOFTWARE_NONLISTING_VERSION, certResultHeading, certResultRecords);
+                HeadingPostHti5.ADDITIONAL_SOFTWARE_NONLISTING_VERSION, certResultHeading, certResultRecords);
         return values;
     }
 
     private List<String> parseNonListingGroupings(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITIONAL_SOFTWARE_NONLISTING_GROUPING, certResultHeading, certResultRecords);
+                HeadingPostHti5.ADDITIONAL_SOFTWARE_NONLISTING_GROUPING, certResultHeading, certResultRecords);
         return values;
     }
 }

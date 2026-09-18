@@ -30,6 +30,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.util.RedisUtil;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
@@ -372,6 +373,16 @@ public class DirectReviewCachingService {
                         dr.setJiraKey(jiraKey);
                         if (dr.getStartDate() != null) {
                             drs.add(dr);
+                        }
+
+                        Developer dev = null;
+                        try {
+                            dev = developerDao.getById(dr.getDeveloperId());
+                        } catch (EntityRetrievalException ex) {
+                            LOGGER.warn("Direct review exists with developer that cannot be found: " + dr.getDeveloperId(), ex);
+                        }
+                        if (dev != null) {
+                            dr.setDeveloperName(dev.getName());
                         }
                     } catch (JacksonException ex) {
                         logger.error("Cannot map issue JSON to DirectReview class", ex);

@@ -2,7 +2,6 @@ package gov.healthit.chpl.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,7 +276,6 @@ public class CertificationCriterionService {
     public String coerceToCriterionNumberFormat(String input) {
         String formatRegex = "^\\d{3}\\.\\d{3}\\s{1}\\([a-z]{1}\\)(\\([0-9]{1,2}\\))?$";
         if (input.matches(formatRegex)) {
-            LOGGER.debug("\tMatches required format. Not changing input.");
             return input;
         }
 
@@ -333,15 +331,25 @@ public class CertificationCriterionService {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationCriterion> getUscdiCriteria() {
-        return Arrays.asList(
-                get(Criteria2015.B_1_CURES),
-                get(Criteria2015.B_2_CURES),
-                get(Criteria2015.E_1_CURES),
-                get(Criteria2015.F_5_CURES),
-                get(Criteria2015.G_6_CURES),
-                get(Criteria2015.G_9_CURES),
-                get(Criteria2015.G_10));
+    public boolean isGCriterion(CertificationCriterion criterion) {
+        if (criterion.getId().equals(get(Criteria2015.G_1).getId())
+                || criterion.getId().equals(get(Criteria2015.G_2).getId())
+                || criterion.getId().equals(get(Criteria2015.G_3).getId())
+                || criterion.getId().equals(get(Criteria2015.G_4).getId())
+                || criterion.getId().equals(get(Criteria2015.G_5).getId())
+                || criterion.getId().equals(get(Criteria2015.G_6_OLD).getId())
+                || criterion.getId().equals(get(Criteria2015.G_6_CURES).getId())
+                || criterion.getId().equals(get(Criteria2015.G_7).getId())
+                || criterion.getId().equals(get(Criteria2015.G_8).getId())
+                || criterion.getId().equals(get(Criteria2015.G_9_OLD).getId())
+                || criterion.getId().equals(get(Criteria2015.G_9_CURES).getId())
+                || criterion.getId().equals(get(Criteria2015.G_10).getId())
+                || criterion.getId().equals(get(Criteria2015.G_31).getId())
+                || criterion.getId().equals(get(Criteria2015.G_32).getId())
+                || criterion.getId().equals(get(Criteria2015.G_33).getId())) {
+            return true;
+        }
+        return false;
     }
 
     public static class Criteria2015 {

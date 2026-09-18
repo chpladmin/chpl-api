@@ -14,12 +14,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -52,6 +54,9 @@ public class RealWorldTestingUploadJob extends QuartzJob {
     private Environment env;
 
     @Autowired
+    private FF4j ff4j;
+
+    @Autowired
     private ChplEmailFactory chplEmailFactory;
 
     @SuppressWarnings("checkstyle:linelength")
@@ -68,19 +73,23 @@ public class RealWorldTestingUploadJob extends QuartzJob {
 
             // Run some basic validation on upload records that do not have any errors
             // yet...
-            rwts.stream().filter(rwt -> rwt.getValidationErrors().size() == 0)
-                    .forEach(rwt -> rwt.getValidationErrors().addAll(validateRwtUpload(rwt)));
+            rwts.stream()
+                .filter(rwt -> rwt.getType().equals(RealWorldTestingType.RESULTS) || (!ff4j.check(FeatureList.HTI_5_ERD) && rwt.getType().equals(RealWorldTestingType.PLANS)))
+                .filter(rwt -> rwt.getValidationErrors().size() == 0)
+                .forEach(rwt -> rwt.getValidationErrors().addAll(validateRwtUpload(rwt)));
 
             // Determine if there multiple Plans or Results for the same listing. These will
             // not get
             // get processed, and will have an error added to the upload record.
             rwts = markMultipleChangesForSamePlanTypeAndListing(rwts);
 
-            // Process the plans
-            List<RealWorldTestingUpload> rwtPlans = rwts.stream().filter(
-                    rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.PLANS))
-                    .collect(Collectors.toList());
-            saveRealWorldTestingUploads(rwtPlans);
+            if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+                // Process the plans
+                List<RealWorldTestingUpload> rwtPlans = rwts.stream().filter(
+                        rwt -> rwt.getValidationErrors().size() == 0 && rwt.getType().equals(RealWorldTestingType.PLANS))
+                        .collect(Collectors.toList());
+                saveRealWorldTestingUploads(rwtPlans);
+            }
 
             // Process the results
             List<RealWorldTestingUpload> rwtResults = rwts.stream().filter(
@@ -218,13 +227,15 @@ public class RealWorldTestingUploadJob extends QuartzJob {
 
     private List<RealWorldTestingUpload> markMultipleChangesForSamePlanTypeAndListing(
             List<RealWorldTestingUpload> rwts) {
-        // Find any listings that have duplicate updates - multiple Plans
-        rwts.stream()
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            // Find any listings that have duplicate updates - multiple Plans
+            rwts.stream()
                 .filter(rwt -> rwt.getValidationErrors().size() == 0
                         && rwt.getType().equals(RealWorldTestingType.PLANS))
                 .collect(Collectors.groupingBy(RealWorldTestingUpload::getChplProductNumber)).entrySet().stream()
                 .filter(lst -> lst.getValue().size() > 1).forEach(lst -> lst.getValue().stream().forEach(
                         rwt -> rwt.getValidationErrors().add("Multiple Plans found for this CHPL Product Number")));
+        }
 
         rwts.stream()
                 .filter(rwt -> rwt.getValidationErrors().size() == 0

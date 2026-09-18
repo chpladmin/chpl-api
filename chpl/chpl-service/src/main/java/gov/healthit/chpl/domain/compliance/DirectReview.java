@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import tools.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +27,9 @@ public class DirectReview implements Serializable {
     @JsonAlias("customfield_10900")
     @JsonDeserialize(using = DeveloperIdDeserializer.class)
     private Long developerId;
+
+    private String developerName;
+
 
     @JsonProperty(value = "startDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11016")

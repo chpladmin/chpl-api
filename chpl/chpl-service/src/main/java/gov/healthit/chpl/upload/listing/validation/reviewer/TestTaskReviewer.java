@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -34,6 +36,7 @@ public class TestTaskReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
     private List<CertificationCriterion> testTaskCriteria = new ArrayList<CertificationCriterion>();
 
     @Autowired
@@ -41,10 +44,12 @@ public class TestTaskReviewer {
             ValidationUtils validationUtils,
             CertificationResultRules certResultRules,
             @Value("${sedCriteria}") String testTaskCriteria,
-            ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
 
         this.testTaskCriteria = Arrays.asList(testTaskCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
@@ -52,9 +57,10 @@ public class TestTaskReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getSed() == null) {
+        if (ff4j.check(FeatureList.HTI_5_ERD) || listing.getSed() == null) {
             return;
         }
+
         reviewAllTestTaskCriteriaAreAllowed(listing);
         reviewCertResultsHaveTestTasksIfRequired(listing);
         reviewTestTaskFields(listing);

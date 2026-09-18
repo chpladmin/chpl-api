@@ -36,8 +36,11 @@ public class CertificationIdYearCalculator {
     }
 
     public LocalDate getCmsIdStartDayOfCurrentYear() {
-        String currentCertIdYear = getCurrentCertIdYear();
-        return LocalDate.parse(annualCertIdChangeMmDd + "/" + currentCertIdYear, dtFormatter);
+        return getCmsIdStartDayOfYear(getCurrentCertIdYear());
+    }
+
+    public LocalDate getCmsIdStartDayOfYear(String year) {
+        return LocalDate.parse(annualCertIdChangeMmDd + "/" + year, dtFormatter);
     }
 
     public LocalDate getStartDateOfNextCmsIdYear() {

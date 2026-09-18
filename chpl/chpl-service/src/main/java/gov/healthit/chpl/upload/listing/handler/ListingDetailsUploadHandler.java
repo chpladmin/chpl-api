@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -22,8 +24,9 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.upload.listing.HeadingPostHti5;
+import gov.healthit.chpl.upload.listing.HeadingPreHti5;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.util.DateUtil;
 import jakarta.validation.ValidationException;
 
@@ -42,6 +45,7 @@ public class ListingDetailsUploadHandler {
     private SedUploadHandler sedUploadHandler;
     private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -52,7 +56,8 @@ public class ListingDetailsUploadHandler {
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, MeasuresUploadHandler measuresUploadHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
-            ListingUploadHandlerUtil uploadUtil) {
+            ListingUploadHandlerUtil uploadUtil,
+            FF4j ff4j) {
         this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -64,6 +69,7 @@ public class ListingDetailsUploadHandler {
         this.sedUploadHandler = sedUploadHandler;
         this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -73,7 +79,7 @@ public class ListingDetailsUploadHandler {
                 .certifyingBody(parseAcb(headingRecord, listingRecords))
                 .testingLabs(parseAtls(headingRecord, listingRecords))
                 .acbCertificationId(uploadUtil.parseSingleRowField(
-                        Heading.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
+                        HeadingPostHti5.ACB_CERTIFICATION_ID, headingRecord, listingRecords))
                 .accessibilityCertified(parseAccessibilityCertified(headingRecord, listingRecords))
                 .accessibilityCertifiedStr(parseAccessibilityCertifiedStr(headingRecord, listingRecords))
                 .certificationDate(parseCertificationDateMillis(headingRecord, listingRecords))
@@ -88,17 +94,23 @@ public class ListingDetailsUploadHandler {
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
                 .svapNoticeUrl(parseSvapNoticeUrl(headingRecord, listingRecords))
-                .rwtPlansUrl(parseRwtPlansUrl(headingRecord, listingRecords))
                 .userEnteredRwtPlansCheckDate(parseRwtPlansCheckDate(headingRecord, listingRecords))
                 .rwtResultsUrl(parseRwtResultsUrl(headingRecord, listingRecords))
                 .userEnteredRwtResultsCheckDate(parseRwtResultsCheckDate(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
-                .measures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords))
-                .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
-                .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
-                .sedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords))
-                .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
             .build();
+
+        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+            listing.setSedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords));
+            listing.setSedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords));
+            listing.setSedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords));
+            listing.setSedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords));
+            listing.setRwtPlansUrl(parseRwtPlansUrl(headingRecord, listingRecords));
+        }
+
+        if (!ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            listing.setMeasures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords));
+        }
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
         if (listing.getCertificationDate() != null) {
@@ -133,7 +145,7 @@ public class ListingDetailsUploadHandler {
         String chplId = null;
         try {
             chplId = uploadUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecord, listingRecords);
+                HeadingPostHti5.UNIQUE_ID, headingRecord, listingRecords);
         } catch (ValidationException ex) { }
         return chplId;
     }
@@ -142,14 +154,14 @@ public class ListingDetailsUploadHandler {
         Boolean accessibilityCertified = null;
         try {
             accessibilityCertified = uploadUtil.parseSingleRowFieldAsBoolean(
-                    Heading.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
+                    HeadingPostHti5.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
         } catch (Exception ex) {
         }
         return accessibilityCertified;
     }
 
     private String parseAccessibilityCertifiedStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.ACCESSIBILITY_CERTIFIED, headingRecord, listingRecords);
     }
 
     private Long parseCertificationDateMillis(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
@@ -169,11 +181,11 @@ public class ListingDetailsUploadHandler {
 
     private String parseCertificationDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(
-                Heading.CERTIFICATION_DATE, headingRecord, listingRecords);
+                HeadingPostHti5.CERTIFICATION_DATE, headingRecord, listingRecords);
     }
 
     private Product parseProduct(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        String productName = uploadUtil.parseSingleRowField(Heading.PRODUCT, headingRecord, listingRecords);
+        String productName = uploadUtil.parseSingleRowField(HeadingPostHti5.PRODUCT, headingRecord, listingRecords);
         if (productName == null) {
             return null;
         }
@@ -184,7 +196,7 @@ public class ListingDetailsUploadHandler {
     }
 
     private ProductVersion parseVersion(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        String versionName = uploadUtil.parseSingleRowField(Heading.VERSION, headingRecord, listingRecords);
+        String versionName = uploadUtil.parseSingleRowField(HeadingPostHti5.VERSION, headingRecord, listingRecords);
         if (versionName == null) {
             return null;
         }
@@ -196,7 +208,7 @@ public class ListingDetailsUploadHandler {
     }
 
     private Map<String, Object> parseAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        String acbName = uploadUtil.parseSingleRowField(Heading.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+        String acbName = uploadUtil.parseSingleRowField(HeadingPostHti5.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
         if (acbName == null) {
             return null;
         }
@@ -211,7 +223,7 @@ public class ListingDetailsUploadHandler {
     private List<CertifiedProductTestingLab> parseAtls(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         List<String> atlNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Heading.TESTING_LAB_NAME, headingRecord, listingRecords);
+                HeadingPostHti5.TESTING_LAB_NAME, headingRecord, listingRecords);
         if (atlNames != null && atlNames.size() > 0) {
             atlNames.stream().forEach(atlName -> {
                 CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
@@ -226,48 +238,48 @@ public class ListingDetailsUploadHandler {
     }
 
     private String parseMandatoryDisclosures(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.K_1_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.K_1_URL, headingRecord, listingRecords);
     }
 
     private String parseSvapNoticeUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.SVAP_NOTICE_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.SVAP_NOTICE_URL, headingRecord, listingRecords);
     }
 
     private String parseRwtPlansUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.RWT_PLANS_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.RWT_PLANS_URL, headingRecord, listingRecords);
     }
 
     private String parseRwtPlansCheckDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.RWT_PLANS_CHECK_DATE, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.RWT_PLANS_CHECK_DATE, headingRecord, listingRecords);
     }
 
     private String parseRwtResultsUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.RWT_RESULTS_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.RWT_RESULTS_URL, headingRecord, listingRecords);
     }
 
     private String parseRwtResultsCheckDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.RWT_RESULTS_CHECK_DATE, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPostHti5.RWT_RESULTS_CHECK_DATE, headingRecord, listingRecords);
     }
 
     private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.SED_REPORT_URL, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_REPORT_URL, headingRecord, listingRecords);
     }
 
     private String parseSedIntendedUserDescription(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.SED_INTENDED_USERS, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_INTENDED_USERS, headingRecord, listingRecords);
     }
 
     private LocalDate parseSedTestingDay(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         LocalDate sedTestingDate = null;
         try {
             sedTestingDate = uploadUtil.parseSingleRowFieldAsLocalDate(
-                    Heading.SED_TESTING_DATE, headingRecord, listingRecords);
+                    HeadingPreHti5.SED_TESTING_DATE, headingRecord, listingRecords);
         } catch (Exception ex) {
         }
         return sedTestingDate;
     }
 
     private String parseSedTestingDayStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        return uploadUtil.parseSingleRowField(Heading.SED_TESTING_DATE, headingRecord, listingRecords);
+        return uploadUtil.parseSingleRowField(HeadingPreHti5.SED_TESTING_DATE, headingRecord, listingRecords);
     }
 }

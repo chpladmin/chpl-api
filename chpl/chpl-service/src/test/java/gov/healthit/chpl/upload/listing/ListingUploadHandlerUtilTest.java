@@ -17,16 +17,17 @@ import java.util.stream.Stream;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import jakarta.validation.ValidationException;
 
@@ -49,13 +50,15 @@ public class ListingUploadHandlerUtilTest {
         EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFile();
 
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.HTI_5_ERD))).thenReturn(false);
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
             .thenReturn(Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_A_2__C", "CRITERIA_170_315_A_3__C",
                     "CRITERIA_170_315_A_4__C", "CRITERIA_170_315_D_4__C", "CRITERIA_170_315_D_4_Cures__C",
                     "CRITERIA_170_315_B_3_Cures__C", "CRITERIA_170_315_D_11__C", "CRITERIA_170_315_D_12_Cures__C",
                     "CRITERIA_170_315_B_3__C", "CRITERIA_170_314_B_5A__C").toList());
-        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService, ff4j);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
@@ -768,7 +771,7 @@ public class ListingUploadHandlerUtilTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
 
         Exception exception = assertThrows(ValidationException.class, () -> {
-            handlerUtil.parseRequiredSingleRowField(Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+            handlerUtil.parseRequiredSingleRowField(HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         });
         assertNotNull(exception);
     }
@@ -780,7 +783,7 @@ public class ListingUploadHandlerUtilTest {
         assertNotNull(headingRecords);
         assertEquals(1, headingRecords.size());
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), new ArrayList<CSVRecord>());
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), new ArrayList<CSVRecord>());
         assertNull(chplProductNumber);
     }
 
@@ -792,7 +795,7 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(",,");
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("", chplProductNumber);
     }
@@ -805,7 +808,7 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW);
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("15.02.02.3007.A056.01.00.0.180214", chplProductNumber);
     }
@@ -818,7 +821,7 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(" extra spaces ,new,dev");
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("extra spaces", chplProductNumber);
     }
@@ -831,7 +834,7 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(" extra spaces ,new");
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("extra spaces", chplProductNumber);
     }
@@ -844,7 +847,7 @@ public class ListingUploadHandlerUtilTest {
         assertEquals(1, headingRecords.size());
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("first,second,status");
         String chplProductNumber = handlerUtil.parseRequiredSingleRowField(
-                Heading.UNIQUE_ID, headingRecords.get(0), listingRecords);
+                HeadingPreHti5.UNIQUE_ID, headingRecords.get(0), listingRecords);
         assertNotNull(chplProductNumber);
         assertEquals("first", chplProductNumber);
     }
