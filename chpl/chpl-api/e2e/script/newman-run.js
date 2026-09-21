@@ -451,6 +451,16 @@ const listingPerformanceBaselinesNoDataTests = {
   },
 };
 
+const reportDataQuestionableActivityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-questionable-activity.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-questionable-activity-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -495,6 +505,7 @@ const jobs = [
   cb => newman.run(reportDataNonConformitiesControllerTests,cb),
   cb => newman.run(listingPerformanceBaselinesDataTests,cb),
   cb => newman.run(listingPerformanceBaselinesNoDataTests,cb),
+  cb => newman.run(reportDataQuestionableActivityControllerTests,cb)
   ];
 
 const responseCallback = (err) => {
