@@ -444,7 +444,7 @@ const listingPerformanceBaselinesNoDataTests = {
   ...commonOptions,
   collection: collection_path + '/listing-performance-baselines.postman_collection.json',
   folder: 'Listing performance tests - PUT uses specific Certified Product IDs',
-  timeoutScript: 65000, // raised from Newman's default 30000ms so the 60s pre-request wait between the two PUTs doesn't hit ERR_SCRIPT_EXECUTION_TIMEOUT
+  timeoutScript: 65000,
   reporter: {
     junit: {
       export: reports_path + '/listing-performance-baselines-nodata-tests.xml',
