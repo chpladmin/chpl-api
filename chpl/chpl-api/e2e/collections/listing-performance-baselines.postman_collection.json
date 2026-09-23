@@ -136,7 +136,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var ReqBody= {\r\n        userName:pm.environment.get(\"emailADMIN\"),password:pm.environment.get(\"passwordADMIN\")\r\n    };\r\npm.sendRequest({\r\n    url: pm.environment.get(\"authurl\"),\r\n    method: \"POST\",\r\n    header: {\r\n        \"Content-Type\": \"application/json\",\r\n        \"API-KEY\": pm.environment.get(\"apiKey\")\r\n    },\r\n    body: JSON.stringify(ReqBody)\r\n}, function (err, response) {\r\n   var jsonData = response.json();\r\n   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r\n});"
+                  "console.log(\"Waiting 60 seconds before this PUT request...\");\r\nvar waitUntil = Date.now() + 60000;\r\nwhile (Date.now() < waitUntil) { /* busy-wait: this sandbox does not support async/await */ } // noprotect\r\nvar ReqBody= {\r\n        userName:pm.environment.get(\"emailADMIN\"),password:pm.environment.get(\"passwordADMIN\")\r\n    };\r\npm.sendRequest({\r\n    url: pm.environment.get(\"authurl\"),\r\n    method: \"POST\",\r\n    header: {\r\n        \"Content-Type\": \"application/json\",\r\n        \"API-KEY\": pm.environment.get(\"apiKey\")\r\n    },\r\n    body: JSON.stringify(ReqBody)\r\n}, function (err, response) {\r\n   var jsonData = response.json();\r\n   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r\n});"
                 ]
               }
             },
