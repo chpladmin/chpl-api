@@ -8,8 +8,8 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>Updated Criteria Status Report</name>
-            <group>chplJobs</group>
+            <name>realWorldTestingUrlValidationJob</name>
+            <group>chplBackgroundJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -413,22 +413,6 @@
                 <entry>
                     <key>email</key>
                     <value></value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <!-- Job fired to run validation of Real World Testing Results URL -->
-        <job>
-            <name>realWorldTestingUrlValidationJob</name>
-            <group>chplBackgroundJobs</group>
-            <description>Requests validation of an RWT Results URL from an external source. An email is sent to the user with validation results.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingUrlValidationJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
             </job-data-map>
         </job>
