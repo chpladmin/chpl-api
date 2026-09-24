@@ -78,7 +78,7 @@ public class SvapReportService {
                 .filter(cc -> cc.getStatus().equals(CriterionStatus.ACTIVE))
                 .map(cc -> {
                     CertificationCriterionWithOrder ccwo = new CertificationCriterionWithOrder(cc);
-                    ccwo.setOrder(certificationCriterionService.getCertificationResultSortIndex(cc.getId()).longValue());
+                    ccwo.setOrder(certificationCriterionService.getCriterionSortIndex(cc.getId()).longValue());
                     return ccwo;
                 })
                 .toList();
