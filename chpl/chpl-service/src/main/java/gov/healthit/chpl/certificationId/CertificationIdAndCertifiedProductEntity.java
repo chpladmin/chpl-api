@@ -2,16 +2,22 @@ package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "ehr_certification_ids_and_products")
 public class CertificationIdAndCertifiedProductEntity implements Serializable {
     private static final long serialVersionUID = -1L;
@@ -36,47 +42,18 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
-    public CertificationIdAndCertifiedProductEntity() {
+    public SimpleCertificationIdWithProducts toDomainWithProducts() {
+        return SimpleCertificationIdWithProducts.builder()
+                .certificationId(getCertificationId())
+                .created(getCreationDate())
+                .products(Stream.of(getChplProductNumber()).collect(Collectors.toList()))
+                .build();
     }
 
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Long getId() {
-        return this.id;
-
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getEhrCertificationId() {
-        return ehrCertificationId;
-    }
-
-    public void setEhrCertificationId(final Long ehrCertificationId) {
-        this.ehrCertificationId = ehrCertificationId;
-    }
-
-    public String getCertificationId() {
-        return certificationId;
-    }
-
-    public void setCertificationId(final String certificationId) {
-        this.certificationId = certificationId;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(final String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
+    public SimpleCertificationId toDomain() {
+        return SimpleCertificationId.builder()
+                .certificationId(getCertificationId())
+                .created(getCreationDate())
+                .build();
     }
 }

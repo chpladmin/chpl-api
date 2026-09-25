@@ -110,16 +110,13 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return dto;
     }
 
-    public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
-        LOGGER.debug("Starting query to get all certification ids with products.");
+    public List<SimpleCertificationIdWithProducts> getAllCertificationIdsWithProducts() {
+        LOGGER.info("Starting query to get all certification ids with products.");
         List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
-        LOGGER.debug("Completed query to get all certification ids with products.");
-        List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
-        for (CertificationIdAndCertifiedProductEntity entity : entities) {
-            CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
-            results.add(dto);
-        }
-        return results;
+        LOGGER.info("Completed query to get all certification ids with products.");
+        return entities.stream()
+                .map(entity -> entity.toDomainWithProducts())
+                .collect(Collectors.toList());
     }
 
     public CertificationIdDTO getByListings(List<Long> listingIds, String year) {
