@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -92,7 +93,7 @@ public class CertificationIdCsvCreator {
         row.add(DateUtil.format(DateUtil.toLocalDate(certificationId.getCreated().getTime())));
         if (certificationId instanceof SimpleCertificationIdWithProducts) {
             SimpleCertificationIdWithProducts certIdWithProducts = (SimpleCertificationIdWithProducts) certificationId;
-            row.add(certIdWithProducts.getProducts());
+            row.add(certIdWithProducts.getProducts().stream().collect(Collectors.joining(";")));
         }
         return row;
     }

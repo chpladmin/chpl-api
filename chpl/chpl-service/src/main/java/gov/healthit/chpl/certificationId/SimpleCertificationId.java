@@ -3,36 +3,19 @@ package gov.healthit.chpl.certificationId;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class SimpleCertificationId implements Serializable {
     private static final long serialVersionUID = 2521257609141032011L;
     private String certificationId;
     private Date created;
-
-    public SimpleCertificationId() {
-    }
-
-    public SimpleCertificationId(CertificationIdDTO dto) {
-        this.certificationId = dto.getCertificationId();
-        this.created = dto.getCreationDate();
-    }
-
-    public String getCertificationId() {
-        return certificationId;
-    }
-
-    public void setCertificationId(final String certificationId) {
-        this.certificationId = certificationId;
-    }
-
-    public Date getCreated() {
-        return Util.getNewDate(created);
-    }
-
-    public void setCreated(final Date created) {
-        this.created = Util.getNewDate(created);
-    }
 
     @Override
     public boolean equals(Object obj) {
