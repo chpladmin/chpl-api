@@ -49,7 +49,7 @@ public class CertificationIdEmailJob extends QuartzJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Complaints Report Email job *********");
+        LOGGER.info("********* Starting the Certification ID Report Email job *********");
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) context.getMergedJobDataMap().get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user provided. Report cannot continue.");
@@ -61,7 +61,7 @@ public class CertificationIdEmailJob extends QuartzJob implements Job {
                 LOGGER.catching(e);
             }
         }
-        LOGGER.info("********* Completed the Complaints Report Email job *********");
+        LOGGER.info("********* Completed the Certification ID Report Email job *********");
     }
 
     private List<SimpleCertificationId> getReportData() {
