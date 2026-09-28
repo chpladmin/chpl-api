@@ -2,6 +2,7 @@ package gov.healthit.chpl.certificationId;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,10 +113,20 @@ public class CertificationIdDAO extends BaseDAOImpl {
 
     public List<SimpleCertificationIdWithProducts> getAllCertificationIdsWithProducts() {
         LOGGER.info("Starting query to get all certification ids with products.");
-        List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
+        Query query = entityManager.createQuery("SELECT certId.certificationId, "
+                + "certId.creationDate, "
+                + "function('string_agg', certId.chplProductNumber, ';') "
+                + "FROM CertificationIdAndCertifiedProductEntity certId "
+                + "GROUP BY certId.certificationId, certId.creationDate "
+                + "ORDER BY certId.creationDate DESC");
+        List<Object[]> results = query.getResultList();
         LOGGER.info("Completed query to get all certification ids with products.");
-        return entities.stream()
-                .map(entity -> entity.toDomainWithProducts())
+        return results.stream()
+                .map(result -> SimpleCertificationIdWithProducts.builder()
+                        .certificationId((String) result[0])
+                        .created((Date) result[1])
+                        .delimitedChplProductNumbers((String) result[2])
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -299,11 +310,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
             return null;
         }
         return entityWith15CCertId.get();
-    }
-
-    private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
-        return entityManager.createQuery("from CertificationIdAndCertifiedProductEntity",
-                CertificationIdAndCertifiedProductEntity.class).getResultList();
     }
 
     private String generateCertificationIdString(String year) throws EntityCreationException {

@@ -2,8 +2,6 @@ package gov.healthit.chpl.certificationId;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -41,14 +39,6 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
 
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
-
-    public SimpleCertificationIdWithProducts toDomainWithProducts() {
-        return SimpleCertificationIdWithProducts.builder()
-                .certificationId(getCertificationId())
-                .created(getCreationDate())
-                .products(Stream.of(getChplProductNumber()).collect(Collectors.toList()))
-                .build();
-    }
 
     public SimpleCertificationId toDomain() {
         return SimpleCertificationId.builder()

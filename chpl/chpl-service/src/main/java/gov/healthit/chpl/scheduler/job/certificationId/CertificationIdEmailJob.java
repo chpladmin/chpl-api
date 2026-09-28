@@ -64,8 +64,8 @@ public class CertificationIdEmailJob extends QuartzJob implements Job {
         LOGGER.info("********* Completed the Certification ID Report Email job *********");
     }
 
-    private List<SimpleCertificationId> getReportData() {
-        List<SimpleCertificationId> certificationIds = new ArrayList<SimpleCertificationId>();
+    private List<? extends SimpleCertificationId> getReportData() {
+        List<? extends SimpleCertificationId> certificationIds = new ArrayList<SimpleCertificationId>();
         if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             LOGGER.info("Getting all certification IDs with Products...");
             certificationIds = certificationIdManager.getAllWithProducts();
@@ -77,7 +77,7 @@ public class CertificationIdEmailJob extends QuartzJob implements Job {
         return certificationIds;
     }
 
-    private void sendEmail(JobExecutionContext context, List<SimpleCertificationId> rows) throws EmailNotSentException, IOException {
+    private void sendEmail(JobExecutionContext context, List<? extends SimpleCertificationId> rows) throws EmailNotSentException, IOException {
         JWTAuthenticatedUser user = (JWTAuthenticatedUser) context.getMergedJobDataMap().get(USER_KEY);
         LOGGER.info("Sending email to: " + user.getEmail());
         chplEmailFactory.emailBuilder()
