@@ -1,11 +1,9 @@
 package gov.healthit.chpl.certificationId;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,48 +60,20 @@ public class CertificationIdManager {
             + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL)")
     @Transactional(readOnly = true)
     public List<SimpleCertificationId> getAll() {
-        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
         List<CertificationIdDTO> allCertificationIds = certificationIdDao.findAll();
-        for (CertificationIdDTO dto : allCertificationIds) {
-            results.add(new SimpleCertificationId(dto));
-        }
-        return results;
+        return allCertificationIds.stream()
+            .map(certId -> SimpleCertificationId.builder()
+                    .certificationId(certId.getCertificationId())
+                    .created(certId.getCreationDate())
+                    .build())
+            .collect(Collectors.toList());
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_ID, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL_WITH_PRODUCTS)")
     @Transactional(readOnly = true)
-    public List<SimpleCertificationId> getAllWithProducts() {
-        //the key in this map is concatenated certification id and created millis
-        //same as the hashcode and equals method use
-        Map<String, SimpleCertificationId> results = new LinkedHashMap<String, SimpleCertificationId>();
-        List<CertificationIdAndCertifiedProductDTO> allCertificationIds = certificationIdDao
-                .getAllCertificationIdsWithProducts();
-
-        for (CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
-            SimpleCertificationId cert = new SimpleCertificationId();
-            cert.setCertificationId(ehr.getCertificationId());
-            cert.setCreated(ehr.getCreationDate());
-            String key = ehr.getCertificationId() + ehr.getCreationDate().getTime();
-            if (results.containsKey(key)) {
-                SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts) results.get(key);
-                if (StringUtils.isEmpty(currResult.getProducts())) {
-                    currResult.setProducts(ehr.getChplProductNumber());
-                } else {
-                    String currProducts = currResult.getProducts();
-                    currProducts = currProducts + ";" + ehr.getChplProductNumber();
-                    currResult.setProducts(currProducts);
-                }
-            } else {
-                SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
-                currResult.setCertificationId(ehr.getCertificationId());
-                currResult.setCreated(ehr.getCreationDate());
-                currResult.setProducts(ehr.getChplProductNumber());
-                results.put(key, currResult);
-            }
-        }
-
-        return new ArrayList<SimpleCertificationId>(results.values());
+    public List<? extends SimpleCertificationId> getAllWithProducts() {
+        return certificationIdDao.getAllCertificationIdsWithProducts();
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_ID, "
