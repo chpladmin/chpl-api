@@ -1,0 +1,158 @@
+name: Publish Docker Image
+
+on:
+  workflow_dispatch: {}
+  # One workflow, shared by every environment branch: a merge into any of
+  # these triggers a build tagged latest-<that-branch>. No per-branch copies
+  # or separate workflow files to keep in sync.
+  push:
+    branches:
+      - development
+      - qa
+      - staging
+      - production
+
+# Publishes a floating latest-<branch> tag - without this, two runs for the
+# same branch could race and let an older commit's build finish last,
+# overwriting latest-<branch> with a stale image. cancel-in-progress is
+# false so runs queue and execute one at a time in the order they were
+# triggered, instead of a newer push cancelling a build already in
+# progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # Mirrors the "Run API Unit Tests" job in the Bamboo CHPL Development
+  # Deployment plan (chpl-build/chpl-build-dev): `mvn clean test` against
+  # chpl/pom.xml on JDK 21. Gates the image build so a broken build never
+  # gets published.
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run unit tests
+        env:
+          MAVEN_OPTS: -Xms512m -Xmx1024m
+        run: mvn -B clean test --file chpl/pom.xml
+
+  # Mirrors the "Build API" job (CompileApiTask) in the same Bamboo plan, and
+  # builds the exact WAR docker/Dockerfile packages into the image (see the
+  # "Upload WAR" step below) - so a compile/packaging failure shows up here,
+  # fast, instead of partway through the (slower) Docker build.
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Maps this branch to the same -Denv value chpl-build-common's
+      # BuildEnvironment.getMavenEnvProperty() uses for the build-from-source
+      # path in each environment. Falls back to "dev" for workflow_dispatch
+      # runs off any other branch.
+      - name: Determine Maven environment profile
+        id: envprofile
+        run: |
+          case "${{ github.ref_name }}" in
+            development) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+            qa) echo "value=qa" >> "$GITHUB_OUTPUT" ;;
+            staging) echo "value=staging" >> "$GITHUB_OUTPUT" ;;
+            production) echo "value=production" >> "$GITHUB_OUTPUT" ;;
+            *) echo "value=dev" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Compile and package
+        env:
+          MAVEN_OPTS: -Xms512m -Xmx1024m
+        run: mvn -B clean package -DskipTests -Denv=${{ steps.envprofile.outputs.value }} --file chpl/pom.xml
+
+      # Handed to build-and-push below, so the Docker image build doesn't
+      # need to rerun the Maven compile (which just ran here, with the
+      # setup-java ~/.m2 cache already warm) itself.
+      - name: Upload WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: chpl-service-war
+          path: chpl/chpl-api/target/chpl-service.war
+          retention-days: 1
+
+  build-and-push:
+    needs: [unit-tests, compile]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image metadata
+        id: meta
+        run: |
+          echo "image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "branch=$(echo '${{ github.ref_name }}' | tr '/' '-')" >> "$GITHUB_OUTPUT"
+
+      # Built by the "compile" job above (already -Denv'd for this branch),
+      # so this build only has to package it into Tomcat.
+      - name: Download WAR
+        uses: actions/download-artifact@v4
+        with:
+          name: chpl-service-war
+          path: docker/build-context/
+
+      # This image contains no secrets - see docker/Dockerfile. Every environment
+      # runs the same image apart from the -Denv value the compile job built
+      # the WAR with (log4j2 config); secrets are supplied as container
+      # environment variables at `docker run` time, not baked in here.
+      #
+      # Tags:
+      #   build-<run_number> - immutable, sequential build number (github.run_number
+      #                         never repeats or goes backwards for this workflow)
+      #   sha-<short-sha>    - immutable, traces back to the exact commit
+      #   latest-<branch>    - floating pointer to the most recent build from that
+      #                         branch (latest-development, latest-qa, latest-staging,
+      #                         latest-production once triggered from those branches)
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          # build-push-action v6 enables these by default, which each push a
+          # separate untagged provenance/SBOM manifest to GHCR alongside the
+          # real image - not needed here, so turned off to keep the package
+          # version list clean.
+          provenance: false
+          sbom: false
+          tags: |
+            ${{ steps.meta.outputs.image }}:build-${{ github.run_number }}
+            ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.sha_short }}
+            ${{ steps.meta.outputs.image }}:latest-${{ steps.meta.outputs.branch }}
