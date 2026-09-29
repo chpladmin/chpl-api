@@ -27,7 +27,7 @@ docker run -d --name chpl-api \
   -e DB_URL="jdbc:postgresql://<host>:5432/openchpl" \
   -e DB_USERNAME="<db-username>" \
   -e DB_PASSWORD="<db-password>" \
-  -e chplUrlBegin="https://chpl-dev.healthit.gov" \
+  -e chplUrlBegin="https://chpl.healthit.gov" \
   -e SPRING_REDIS_HOST="<redis-host>" \
   -e SPRING_REDIS_PORT="6379" \
   -e SPRING_REDIS_PASSWORD="<redis-password>" \
