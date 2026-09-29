@@ -66,7 +66,7 @@ read-only container filesystem.
 
 | Env var | Property | Purpose | Example shape |
 |---|---|---|---|
-| `chplUrlBegin` | `chplUrlBegin` | Public base URL for this environment | `https://chpl-qa.healthit.gov` |
+| `chplUrlBegin` | `chplUrlBegin` | Public base URL for this environment | `https://chpl.healthit.gov` |
 | `EMAILBUILDER_CONFIG_EMAILSUBJECTSUFFIX` | `emailBuilder.config.emailSubjectSuffix` | Tag appended to outgoing email subjects | `[QA]` |
 | `SERVER_ENVIRONMENT` | `server.environment` | `non-production` or `production` | |
 | `REPORT_ENVIRONMENT` | `report.environment` | Label used on generated reports | `DEV`, `QA`, `STAGE`, `PROD` |
