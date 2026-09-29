@@ -19,7 +19,6 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import com.datadog.api.client.ApiException;
 
-import gov.healthit.chpl.aia.AIARequestFailedException;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorResponse;
@@ -82,14 +81,6 @@ public class ApiExceptionControllerAdvice {
         LOGGER.error(e.getMessage());
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse("Direct Review information is not currently available, please check back later."),
-                HttpStatus.NO_CONTENT);
-    }
-
-    @ExceptionHandler(AIARequestFailedException.class)
-    public ResponseEntity<ErrorResponse> exception(AIARequestFailedException e) {
-        LOGGER.error(e.getMessage());
-        return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse("AIA information is not currently available, please check back later."),
                 HttpStatus.NO_CONTENT);
     }
 
