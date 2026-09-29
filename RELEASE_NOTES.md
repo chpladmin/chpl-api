@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 54.2.1
+_28 September 2026_
+
+### Maintenance updates
+* Update dependencies as per security requirements
+
+---
+
 ## Version 54.2.0
 _14 September 2026_
 
