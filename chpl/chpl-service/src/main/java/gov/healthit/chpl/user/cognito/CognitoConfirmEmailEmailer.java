@@ -18,21 +18,31 @@ import lombok.extern.log4j.Log4j2;
 public class CognitoConfirmEmailEmailer {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private ChplEmailFactory chplEmailFactory;
+    private String confirmEmailSubject;
+    private String confirmationEmailBodyParagraph1;
+    private String confirmationEmailBodyParagraph2;
     private String chplUrl;
 
     @Autowired
-    public CognitoConfirmEmailEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory, @Value("${chplUrlBegin}") String chplUrl) {
+    public CognitoConfirmEmailEmailer(ChplHtmlEmailBuilder htmlEmailBuilder,
+            ChplEmailFactory chplEmailFactory,
+            @Value("${account.conirmation.title}") String confirmEmailSubject,
+            @Value("${account.confirmation.paragraph1}") String confirmationEmailBodyParagraph1,
+            @Value("${account.confirmation.paragraph2}") String confirmationEmailBodyParagraph2,
+            @Value("${chplUrlBegin}") String chplUrl) {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
+        this.confirmEmailSubject = confirmEmailSubject;
+        this.confirmationEmailBodyParagraph1 = confirmationEmailBodyParagraph1;
+        this.confirmationEmailBodyParagraph2 = confirmationEmailBodyParagraph2;
         this.chplUrl = chplUrl;
     }
 
     public void sendConfirmationEmail(LoginCredentials credentials) throws EmailNotSentException {
         String htmlMessage = htmlEmailBuilder.initialize()
-                .heading("Confirm CHPL Account")
-                .paragraph(String.format("Please go to the <a href='%s'>CHPL</a> and login with this one-time password.", chplUrl),
-                        String.format("Email: %s<br />One-time Password: %s", credentials.getUserName(), credentials.getPassword()))
-                .paragraph("", "Your one-time password is valid for 7 days.")
+                .heading(confirmEmailSubject)
+                .paragraph(null, String.format(confirmationEmailBodyParagraph1, chplUrl, credentials.getUserName(), credentials.getPassword()))
+                .paragraph(null, confirmationEmailBodyParagraph2)
                 .footer(PublicFooter.class)
                 .build();
         LOGGER.info("Created HTML Message for " + credentials.getUserName());
