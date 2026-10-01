@@ -16,7 +16,7 @@
     </modules>
     <properties>
         <aspectj.version>1.9.25.1</aspectj.version>
-        <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
+        <checkstyle.plugin.version>3.6.0</checkstyle.plugin.version>
         <checkstyle.version>9.2.1</checkstyle.version>
         <commons.csv.version>1.14.1</commons.csv.version>
         <commons.fileupload.version>2.0.0-M4</commons.fileupload.version>
