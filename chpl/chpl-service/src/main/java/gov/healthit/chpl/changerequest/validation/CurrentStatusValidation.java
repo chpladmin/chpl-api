@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -13,7 +13,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         // A current status should really be set
-        if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
+        if (!ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())) {
             getMessages().add(getErrorMessage("changeRequest.currentStatus.notExists"));
             return false;
         }
@@ -57,11 +57,5 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
                 context.getChangeRequestStatusIds().getAcceptedStatus(),
                 context.getChangeRequestStatusIds().getRejectedStatus(),
                 context.getChangeRequestStatusIds().getPendingDeveloperActionStatus()));
-    }
-
-    private Boolean doesCurrentStatusExist(ChangeRequest cr) {
-        return cr.getCurrentStatus() != null
-                && cr.getCurrentStatus().getChangeRequestStatusType() != null
-                && cr.getCurrentStatus().getChangeRequestStatusType().getId() != null;
     }
 }
