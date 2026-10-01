@@ -12,7 +12,7 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // It's fine if it's not set... We aren't going to do anything with it.
+        // A current status should really be set
         if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
             getMessages().add(getErrorMessage("changeRequest.currentStatus.notExists"));
             return false;
