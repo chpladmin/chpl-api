@@ -14,7 +14,8 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
     public boolean isValid(ChangeRequestValidationContext context) {
         // It's fine if it's not set... We aren't going to do anything with it.
         if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
-            return true;
+            getMessages().add(getErrorMessage("changeRequest.currentStatus.notExists"));
+            return false;
         }
 
         // Make sure the current status type is is valid
@@ -26,7 +27,6 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
             getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
             return false;
         }
-
 
         Long statusTypeId = context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
         // Is this a valid status change based on the user's role?
