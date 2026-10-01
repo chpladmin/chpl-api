@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -12,9 +12,10 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        // It's fine if it's not set... We aren't going to do anything with it.
-        if (!doesCurrentStatusExist(context.getNewChangeRequest())) {
-            return true;
+        // A current status should really be set
+        if (!ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())) {
+            getMessages().add(getErrorMessage("changeRequest.currentStatus.notExists"));
+            return false;
         }
 
         // Make sure the current status type is is valid
@@ -26,7 +27,6 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
             getMessages().add(getErrorMessage("changeRequest.statusType.notExists"));
             return false;
         }
-
 
         Long statusTypeId = context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
         // Is this a valid status change based on the user's role?
@@ -57,11 +57,5 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
                 context.getChangeRequestStatusIds().getAcceptedStatus(),
                 context.getChangeRequestStatusIds().getRejectedStatus(),
                 context.getChangeRequestStatusIds().getPendingDeveloperActionStatus()));
-    }
-
-    private Boolean doesCurrentStatusExist(ChangeRequest cr) {
-        return cr.getCurrentStatus() != null
-                && cr.getCurrentStatus().getChangeRequestStatusType() != null
-                && cr.getCurrentStatus().getChangeRequestStatusType().getId() != null;
     }
 }

@@ -40,6 +40,7 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.ratelimiting.RateLimitingInterceptor;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -56,6 +57,8 @@ import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.CoercionAction;
+import tools.jackson.databind.cfg.CoercionInputShape;
 import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -127,6 +130,10 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
                 //This setting is required to force them to be a milliseconds "long" value
                 //Until we convert everything to LocalDateTime or whatever.
                 .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                //Handle empty string as null for this one specific case. I'm afraid of the global impact of setting it
+                //everywhere but we have had issues with this one thing.
+                .withCoercionConfig(ChangeRequestStatusType.class, cfg ->
+                    cfg.setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull))
                 .findAndAddModules()
                 //Jackson 3.x started detecting constructors with args in POJOs and trying to select
                 //a constructor that matches the fields they have.
