@@ -3,6 +3,7 @@ package gov.healthit.chpl;
 import java.io.IOException;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.collections.api.factory.SortedSets;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.datadog.api.client.ApiException;
 
@@ -95,12 +98,18 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(EntityRetrievalException.class)
     public ResponseEntity<ErrorResponse> exception(EntityRetrievalException e) {
         LOGGER.error(e.getMessage());
+        if (StringUtils.isEmpty(e.getMessage())) {
+            return new ResponseEntity<ErrorResponse>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserRetrievalException.class)
     public ResponseEntity<ErrorResponse> exception(UserRetrievalException e) {
         LOGGER.error(e.getMessage());
+        if (StringUtils.isEmpty(e.getMessage())) {
+            return new ResponseEntity<ErrorResponse>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
@@ -261,8 +270,18 @@ public class ApiExceptionControllerAdvice {
         }
     }
 
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ErrorResponse> notFoundException(Exception e) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> exception(Exception e) {
+        if (e instanceof org.springframework.web.ErrorResponse springErrorResponse) {
+            return new ResponseEntity<ErrorResponse>(
+                    new ErrorResponse(springErrorResponse.getBody().getDetail()),
+                    springErrorResponse.getStatusCode());
+        }
         LOGGER.error("Caught exception.", e);
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
