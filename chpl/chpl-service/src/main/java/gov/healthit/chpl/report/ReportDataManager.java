@@ -25,6 +25,7 @@ import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.questionableActivity.QuestionableActivityReportService;
 import gov.healthit.chpl.report.questionableurl.QuestionableUrlReportService;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
@@ -60,6 +61,7 @@ public class ReportDataManager {
     private CriteriaUpToDateReportService criteriaUpToDateReportService;
     private ListingAttributeReportService listingAttributeReportService;
     private QuestionableUrlReportService questionableUrlReportService;
+    private QuestionableActivityReportService questionableActivityReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
@@ -79,6 +81,7 @@ public class ReportDataManager {
             CriteriaUpToDateReportService criteriaUpToDateReportService,
             ListingAttributeReportService listingAttributeReportService,
             QuestionableUrlReportService questionableUrlReportService,
+            QuestionableActivityReportService questionableActivityReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService,
@@ -98,6 +101,7 @@ public class ReportDataManager {
         this.criteriaUpToDateReportService = criteriaUpToDateReportService;
         this.listingAttributeReportService = listingAttributeReportService;
         this.questionableUrlReportService = questionableUrlReportService;
+        this.questionableActivityReportService = questionableActivityReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
@@ -309,6 +313,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public QuestionableUrlReportService getQuestionableUrlService() {
         return questionableUrlReportService;
+    }
+
+    @Synchronized("lock")
+    public QuestionableActivityReportService getQuestionableActivityService() {
+        return questionableActivityReportService;
     }
 
     @Synchronized("lock")
