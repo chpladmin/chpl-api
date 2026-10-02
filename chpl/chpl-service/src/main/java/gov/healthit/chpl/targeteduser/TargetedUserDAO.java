@@ -1,5 +1,6 @@
 package gov.healthit.chpl.targeteduser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,8 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.targeteduser.TargetedUserWithUsage.UsageByCertificationStatus;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -67,6 +70,47 @@ public class TargetedUserDAO extends BaseDAOImpl {
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
+    }
+
+    public List<TargetedUserWithUsage> getAllWithUsage() {
+        List<TargetedUserWithUsage> results = new ArrayList<TargetedUserWithUsage>();
+        String hql = "SELECT tu.id, tu.name, cp.certificationStatus, count(cp.certificationStatus) "
+                + "FROM TargetedUserEntity tu "
+                + "LEFT OUTER JOIN CertifiedProductTargetedUserEntity cptu ON cptu.targetedUserId = tu.id AND cptu.deleted = false "
+                + "LEFT OUTER JOIN ListingSearchEntity cp ON cptu.certifiedProductId = cp.id "
+                + "WHERE tu.deleted = false "
+                + "GROUP BY tu.id, tu.name, cp.certificationStatus";
+        Query query = entityManager.createQuery(hql);
+
+        List<Object[]> entities = query.getResultList();
+        for (Object[] entity : entities) {
+            Long targetedUserId = (Long) entity[0];
+            String targetedUserName = (String) entity[1];
+            String certificationStatusName = entity[2] == null ? null : (String) entity[2];
+            Long listingCount = (Long) entity[3];
+
+            TargetedUserWithUsage result = results.stream()
+                    .filter(r -> r.getId().equals(targetedUserId))
+                    .findAny()
+                    .orElse(null);
+
+            if (result == null) {
+                result = TargetedUserWithUsage.builder()
+                            .id(targetedUserId)
+                            .name(targetedUserName)
+                            .usage(new ArrayList<UsageByCertificationStatus>())
+                        .build();
+                results.add(result);
+            }
+
+            if (!StringUtils.isBlank(certificationStatusName)) {
+                result.getUsage().add(UsageByCertificationStatus.builder()
+                        .certificationStatus(CertificationStatusType.getValue(certificationStatusName))
+                        .listingCount(listingCount)
+                        .build());
+            }
+        }
+        return results;
     }
 
     public TargetedUser findOrCreate(Long id, String name) throws EntityCreationException {

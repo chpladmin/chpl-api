@@ -20,4 +20,9 @@ public class TargetedUserManager {
     public List<TargetedUser> getAll() {
         return targetedUserDao.findAll();
     }
+
+    @Transactional
+    public List<TargetedUserWithUsage> getAllWithUsage() {
+        return targetedUserDao.getAllWithUsage();
+    }
 }
