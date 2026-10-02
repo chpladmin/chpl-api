@@ -33,7 +33,9 @@ import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorSummary
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.report.surveillance.SurveillanceByCriteria;
 import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
+import gov.healthit.chpl.report.surveillance.SurveillanceByRequirementType;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
 import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -117,6 +119,16 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         return surveillanceReportsService.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
+    }
+
+    @Synchronized("lock")
+    public List<SurveillanceByCriteria> getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings() {
+        return surveillanceReportsService.getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings();
+    }
+
+    @Synchronized("lock")
+    public List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
+        return surveillanceReportsService.getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings();
     }
 
     @Synchronized("lock")
