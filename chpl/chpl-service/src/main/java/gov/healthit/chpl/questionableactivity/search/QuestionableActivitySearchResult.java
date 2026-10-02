@@ -9,10 +9,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
@@ -20,6 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @Builder
 @AllArgsConstructor
@@ -27,8 +28,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class QuestionableActivitySearchResult implements Serializable {
     private static final long serialVersionUID = -8153861360218726537L;
-    private static final String LEVEL_LISTING = "Listing";
-    private static final String LEVEL_CRITERIA = "Certification Criteria";
     private static final String ADDED_PREFIX = "Added";
     private static final String REMOVED_PREFIX = "Removed";
 
@@ -96,7 +95,8 @@ public class QuestionableActivitySearchResult implements Serializable {
         csvFields.add(chplProductNumber);
         csvFields.add(certificationStatusName);
         csvFields.add(DateUtil.formatInEasternTime(DateUtil.fromSystemToEastern(activityDate)));
-        if (LEVEL_LISTING.equals(triggerLevel) || LEVEL_CRITERIA.equals(triggerLevel)) {
+        if (QuestionableActivityTriggerConcept.LEVEL_LISTING.equals(triggerLevel)
+                || QuestionableActivityTriggerConcept.LEVEL_CRITERIA.equals(triggerLevel)) {
             csvFields.add(listingsReportUrlPartBegin + "/" + listingId);
         } else {
             csvFields.add("");
