@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
@@ -173,13 +173,12 @@ public class CHPLServiceConfig implements EnvironmentAware {
 
     @Bean
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("errors-override");
-
-        ResourceBundleMessageSource parentMessageSource = new ResourceBundleMessageSource();
-        parentMessageSource.setBasename("errors");
-
-        messageSource.setParentMessageSource(parentMessageSource);
+        //errors-override is optional - ReloadableResourceBundleMessageSource treats a
+        //missing bundle as simply absent, where ResourceBundleMessageSource would WARN
+        //on every lookup. Basenames are consulted in order, so errors-override still
+        //takes precedence over errors.
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames("classpath:errors-override", "classpath:errors");
         messageSource.setDefaultEncoding("UTF-8");
 
         return messageSource;
