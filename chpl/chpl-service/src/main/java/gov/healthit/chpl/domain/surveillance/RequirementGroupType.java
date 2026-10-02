@@ -29,6 +29,7 @@ public class RequirementGroupType implements Serializable {
     public static final Long RWT_SUBMISSION_ID = 4L;
     public static final Long ATTESTATION_SUBMISSION_ID = 5L;
     public static final Long DEVELOPER_SUBMISSION_REQUIREMENT_ID = 6L;
+    public static final Long INHERITED_CERTIFIED_STATUS_ID = 7L;
 
     @Schema(description = "Requirement group type internal ID")
     private Long id;
