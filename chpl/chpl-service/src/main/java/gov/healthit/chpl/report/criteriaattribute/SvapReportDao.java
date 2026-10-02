@@ -197,7 +197,7 @@ public class SvapReportDao extends BaseDAOImpl {
                         .listingCountAttestingToCriteria(cc.getCount())
                         .listingCountAttestingToCriteriaAndAnySvap(lookupCountByCriteria(criteriaWithAnySvapCounts, cc.getCriterion()))
                         .certificationStatusName(certificationStatus.getName())
-                        .sortOrder(certificationCriterionService.getCertificationResultSortIndex(cc.getCriterion().getId()))
+                        .sortOrder(certificationCriterionService.getCriterionSortIndex(cc.getCriterion().getId()))
                         .build())
                 .peek(x -> LOGGER.info(x.toString()))
                 .toList();
