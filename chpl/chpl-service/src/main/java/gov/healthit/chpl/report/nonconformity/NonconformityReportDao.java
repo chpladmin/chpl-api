@@ -45,7 +45,7 @@ public class NonconformityReportDao extends BaseDAOImpl {
                                 .filter(nc -> nc.getType().getId().equals(ncType.getId()))
                                 .count())
                         .nonconformityType(ncType.toDomain())
-                        .displayOrder(certificationCriterionService.getCertificationResultSortIndex(ncType.getId()))
+                        .displayOrder(certificationCriterionService.getCriterionSortIndex(ncType.getId()))
                         .build())
             .filter(ncCount -> !ncCount.getCount().equals(0L))
             .toList();
