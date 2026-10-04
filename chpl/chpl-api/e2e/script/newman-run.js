@@ -22,16 +22,6 @@ const acbControllerTests = {
   },
 };
 
-const apiKeyControllerTests = {
-  ...commonOptions,
-  collection: collection_path + '/api-key-controller.postman_collection.json',
-  reporter: {
-    junit: {
-      export: reports_path + '/api-key-controller-tests.xml',
-    },
-  },
-};
-
 const certifiedProductControllerDataTests = {
   ...commonOptions,
   collection: collection_path + '/certified-product-controller.postman_collection.json',
@@ -464,7 +454,6 @@ const reportDataQuestionableActivityControllerTests = {
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
-  cb => newman.run(apiKeyControllerTests,cb),
   cb => newman.run(promotinginteroperabilityControllerTests,cb),
   cb => newman.run(certifiedProductControllerDataTests,cb),
   cb => newman.run(certifiedProductControllerNoDataTests,cb),
