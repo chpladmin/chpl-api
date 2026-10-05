@@ -120,12 +120,6 @@ variables can be omitted.
 | `DATADOG_APIKEY` | `datadog.apiKey` |
 | `DATADOG_APPKEY` | `datadog.appKey` |
 
-**AIA (Real World Testing validation)**
-| Env var | Property |
-|---|---|
-| `AIA_AUTHENTICATE_CLIENTSECRET` | `aia.authenticate.clientSecret` |
-| `AIA_AUTHENTICATE_CLIENTID` | `aia.authenticate.clientId` |
-
 **FF4J admin console**
 | Env var | Property |
 |---|---|
