@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.targeteduser.TargetedUser;
 import gov.healthit.chpl.targeteduser.TargetedUserManager;
-import gov.healthit.chpl.targeteduser.TargetedUserWithUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,15 +34,5 @@ public class TargetedUserController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TargetedUser> getAllTargetedUsers() {
         return targetedUserManager.getAll();
-    }
-
-    @Operation(summary = "Retrieve all current Targeted Users along with their current usage within the CHPL. ",
-            description = "Retrieve all current Targeted Users along with their current usage within the CHPL.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/usage", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TargetedUserWithUsage> getAllTargetedUsersWithUsage() {
-        return targetedUserManager.getAllWithUsage();
     }
 }
