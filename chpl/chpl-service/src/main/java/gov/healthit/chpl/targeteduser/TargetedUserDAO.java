@@ -1,6 +1,7 @@
 package gov.healthit.chpl.targeteduser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.targeteduser.TargetedUserWithUsage.UsageByCertificationStatus;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -74,7 +76,7 @@ public class TargetedUserDAO extends BaseDAOImpl {
 
     public List<TargetedUserWithUsage> getAllWithUsage() {
         List<TargetedUserWithUsage> results = new ArrayList<TargetedUserWithUsage>();
-        String hql = "SELECT tu.id, tu.name, cp.certificationStatus, count(cp.certificationStatus) "
+        String hql = "SELECT tu.id, tu.name, tu.creationDate, cp.certificationStatus, count(cp.certificationStatus) "
                 + "FROM TargetedUserEntity tu "
                 + "LEFT OUTER JOIN CertifiedProductTargetedUserEntity cptu ON cptu.targetedUserId = tu.id AND cptu.deleted = false "
                 + "LEFT OUTER JOIN ListingSearchEntity cp ON cptu.certifiedProductId = cp.id "
@@ -86,8 +88,9 @@ public class TargetedUserDAO extends BaseDAOImpl {
         for (Object[] entity : entities) {
             Long targetedUserId = (Long) entity[0];
             String targetedUserName = (String) entity[1];
-            String certificationStatusName = entity[2] == null ? null : (String) entity[2];
-            Long listingCount = (Long) entity[3];
+            Date targetedUserCreationDate = (Date) entity[2];
+            String certificationStatusName = entity[3] == null ? null : (String) entity[3];
+            Long listingCount = (Long) entity[4];
 
             TargetedUserWithUsage result = results.stream()
                     .filter(r -> r.getId().equals(targetedUserId))
@@ -98,6 +101,7 @@ public class TargetedUserDAO extends BaseDAOImpl {
                 result = TargetedUserWithUsage.builder()
                             .id(targetedUserId)
                             .name(targetedUserName)
+                            .creationDate(DateUtil.toLocalDate(targetedUserCreationDate.getTime()))
                             .usage(new ArrayList<UsageByCertificationStatus>())
                         .build();
                 results.add(result);
