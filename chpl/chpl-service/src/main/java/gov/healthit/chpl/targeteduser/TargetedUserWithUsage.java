@@ -31,12 +31,12 @@ public class TargetedUserWithUsage implements Serializable {
     public static final List<String> CSV_HEADINGS = Stream.of(
             "Name", "Created On",
             CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName(),
+            CertificationStatusType.SuspendedByAcb.getName(),
+            CertificationStatusType.TerminatedByOnc.getName(),
+            CertificationStatusType.WithdrawnByDeveloperUnderReview.getName(),
             CertificationStatusType.WithdrawnByAcb.getName(),
             CertificationStatusType.WithdrawnByDeveloper.getName(),
-            CertificationStatusType.WithdrawnByDeveloperUnderReview.getName(),
-            CertificationStatusType.TerminatedByOnc.getName(),
             CertificationStatusType.Retired.getName()
             ).toList();
 
@@ -62,12 +62,12 @@ public class TargetedUserWithUsage implements Serializable {
         csvFields.add(name);
         csvFields.add(DateUtil.format(creationDate));
         csvFields.add(getCountForStatus(CertificationStatusType.Active));
-        csvFields.add(getCountForStatus(CertificationStatusType.SuspendedByAcb));
         csvFields.add(getCountForStatus(CertificationStatusType.SuspendedByOnc));
+        csvFields.add(getCountForStatus(CertificationStatusType.SuspendedByAcb));
+        csvFields.add(getCountForStatus(CertificationStatusType.TerminatedByOnc));
+        csvFields.add(getCountForStatus(CertificationStatusType.WithdrawnByDeveloperUnderReview));
         csvFields.add(getCountForStatus(CertificationStatusType.WithdrawnByAcb));
         csvFields.add(getCountForStatus(CertificationStatusType.WithdrawnByDeveloper));
-        csvFields.add(getCountForStatus(CertificationStatusType.WithdrawnByDeveloperUnderReview));
-        csvFields.add(getCountForStatus(CertificationStatusType.TerminatedByOnc));
         csvFields.add(getCountForStatus(CertificationStatusType.Retired));
         return csvFields;
     }
