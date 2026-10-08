@@ -132,11 +132,11 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
 
     private List<CheckInReport> getCheckInReports(List<CertificationBody> acbs) {
         return attestationCheckinReportDAO.getCheckinReports(attestationCheckinReportDAO.getMaxReportDate()).stream()
-                .filter(cr -> isCheckinreportValidOForAcbs(cr, acbs))
+                .filter(cr -> isCheckInReportValidForAcbs(cr, acbs))
                 .toList();
     }
 
-    private boolean isCheckinreportValidOForAcbs(CheckInReport report, List<CertificationBody> acbs) {
+    private boolean isCheckInReportValidForAcbs(CheckInReport report, List<CertificationBody> acbs) {
         List<String> acbNames = acbs.stream()
                 .map(acb -> acb.getName())
                 .collect(Collectors.toList());
