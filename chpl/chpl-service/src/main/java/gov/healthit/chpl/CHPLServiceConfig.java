@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
@@ -173,13 +173,12 @@ public class CHPLServiceConfig implements EnvironmentAware {
 
     @Bean
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("errors-override");
-
-        ResourceBundleMessageSource parentMessageSource = new ResourceBundleMessageSource();
-        parentMessageSource.setBasename("errors");
-
-        messageSource.setParentMessageSource(parentMessageSource);
+        //errors-override is optional - ReloadableResourceBundleMessageSource treats a
+        //missing bundle as simply absent, where ResourceBundleMessageSource would WARN
+        //on every lookup. Basenames are consulted in order, so errors-override still
+        //takes precedence over errors.
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames("classpath:errors-override", "classpath:errors");
         messageSource.setDefaultEncoding("UTF-8");
 
         return messageSource;
@@ -292,41 +291,6 @@ public class CHPLServiceConfig implements EnvironmentAware {
     }
 
     @Bean
-    public RestTemplate httpsRestTemplate()
-            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
-                        .setDefaultSocketConfig(SocketConfig.custom()
-                                .setSoTimeout(getAiaRequestTimeout(), TimeUnit.MILLISECONDS)
-                                .build())
-                        .setTlsSocketStrategy(new DefaultClientTlsStrategy(
-                                SSLContexts.custom().loadTrustMaterial(TrustAllStrategy.INSTANCE).build(),
-                                NoopHostnameVerifier.INSTANCE))
-                        .build())
-                .build();
-
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setHttpClient(httpClient);
-        requestFactory.setConnectionRequestTimeout(getJiraRequestTimeout());
-
-        return new RestTemplate(requestFactory);
-    }
-
-    private int getAiaRequestTimeout() {
-        int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-        String requestTimeoutProperty = env.getProperty("aia.requestTimeoutMillis");
-        if (!StringUtils.isEmpty(requestTimeoutProperty)) {
-            try {
-                requestTimeout = Integer.parseInt(requestTimeoutProperty);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
-                        + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
-            }
-        }
-        return requestTimeout;
-    }
-
-    @Bean
     public JobFactory jobFactory() {
         QuartzJobFactory jobFactory = new QuartzJobFactory(applicationContext);
         return jobFactory;
@@ -341,5 +305,4 @@ public class CHPLServiceConfig implements EnvironmentAware {
 
         return factory;
     }
-
 }
