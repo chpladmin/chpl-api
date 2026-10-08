@@ -141,7 +141,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
                 .map(acb -> acb.getName())
                 .collect(Collectors.toList());
 
-        return Stream.of(report.getRelevantAcbs().split(";"))
+        return Stream.of(report.getRelevantAcbs().split("; "))
                 .filter(acbNames::contains)
                 .findAny()
                 .isPresent();
