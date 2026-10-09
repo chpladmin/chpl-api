@@ -16,7 +16,7 @@ import tools.jackson.databind.json.JsonMapper;
 public class DirectReviewNonConformityDeserializationTest {
 
     @Test
-    public void deserializeJson_parsesRequirement() {
+    public void deserializeJson_parsesProgramRequirements() {
         String requirementValue = "170.404(b)(2)";
         String json = "{"
                 + "\"total\": 1,"
@@ -35,8 +35,8 @@ public class DirectReviewNonConformityDeserializationTest {
 
         DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getRequirement());
-        assertEquals(requirementValue, nc.getRequirement());
+        assertNotNull(nc.getProgramReqiurements());
+        assertEquals(requirementValue, nc.getProgramReqiurements());
     }
 
     @Test
