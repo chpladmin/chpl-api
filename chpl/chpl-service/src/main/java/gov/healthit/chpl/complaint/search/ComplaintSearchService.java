@@ -383,7 +383,7 @@ public class ComplaintSearchService {
         @Override
         public int compare(Complaint complaint1, Complaint complaint2) {
             int sortFactor = descending ? -1 : 1;
-            return Strings.CS.compare(complaint1.getAcbComplaintId(), complaint2.getAcbComplaintId()) * sortFactor;
+            return Strings.CI.compare(complaint1.getAcbComplaintId(), complaint2.getAcbComplaintId()) * sortFactor;
         }
     }
 
@@ -397,7 +397,7 @@ public class ComplaintSearchService {
         @Override
         public int compare(Complaint complaint1, Complaint complaint2) {
             int sortFactor = descending ? -1 : 1;
-            return Strings.CS.compare(complaint1.getOncComplaintId(), complaint2.getOncComplaintId()) * sortFactor;
+            return Strings.CI.compare(complaint1.getOncComplaintId(), complaint2.getOncComplaintId()) * sortFactor;
         }
     }
 
@@ -414,7 +414,7 @@ public class ComplaintSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (Strings.CS.compare(complaint1.getCertificationBody().getName(),
+            return (Strings.CI.compare(complaint1.getCertificationBody().getName(),
                     complaint2.getCertificationBody().getName())) * sortFactor;
         }
     }
