@@ -424,6 +424,10 @@ const reportDataQuestionableActivityControllerTests = {
   reporter: {
     junit: {
       export: reports_path + '/report-data-questionable-activity-controller-tests.xml',
+    },
+  },
+};
+
 const listingPerformanceBaselinesDataTests = {
   ...commonOptions,
   collection: collection_path + '/listing-performance-baselines.postman_collection.json',
@@ -489,7 +493,7 @@ const jobs = [
   cb => newman.run(questionableUrlsControllerTests,cb),
   cb => newman.run(reportDataCriteriaUpToDateControllerTests,cb),
   cb => newman.run(reportDataNonConformitiesControllerTests,cb),
-  cb => newman.run(reportDataQuestionableActivityControllerTests,cb)
+  cb => newman.run(reportDataQuestionableActivityControllerTests,cb),
   cb => newman.run(listingPerformanceBaselinesDataTests,cb),
   cb => newman.run(listingPerformanceBaselinesNoDataTests,cb),
   ];
