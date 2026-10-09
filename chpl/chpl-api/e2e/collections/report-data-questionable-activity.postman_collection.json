@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "report-data/questionable-activity",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /report-data/questionable-activity - should return 200 status and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/questionable-activity should return valid response and 200 status\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"activityType\");\r\n    pm.expect(pm.response.text()).to.include(\"developer\");\r\n    pm.expect(pm.response.text()).to.include(\"activityDate\");\r\n    pm.expect(pm.response.text()).to.include(\"relatedItem\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableCookies": false,
+        "followRedirects": true,
+        "maxResponseSize": 52428800,
+        "strictSSL": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/questionable-activity",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "questionable-activity"
+          ]
+        },
+        "description": "GET /report-data/questionable-activity - should return 200 status and valid response"
+      },
+      "response": []
+    }
+  ]
+}
