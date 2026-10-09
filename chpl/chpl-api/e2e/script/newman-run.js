@@ -418,6 +418,40 @@ const reportDataCriteriaUpToDateControllerTests = {
   },
 };
 
+const reportDataQuestionableActivityControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-questionable-activity.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-questionable-activity-controller-tests.xml',
+    },
+  },
+};
+
+const listingPerformanceBaselinesDataTests = {
+  ...commonOptions,
+  collection: collection_path + '/listing-performance-baselines.postman_collection.json',
+  folder: 'Listing performance tests - GET iterates Certified Product IDs',
+  iterationData: data_path + '/certifiedproductids-test-data.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/listing-performance-baselines-tests.xml',
+    },
+  },
+};
+
+const listingPerformanceBaselinesNoDataTests = {
+  ...commonOptions,
+  collection: collection_path + '/listing-performance-baselines.postman_collection.json',
+  folder: 'Listing performance tests - PUT uses specific Certified Product IDs',
+  timeoutScript: 65000,
+  reporter: {
+    junit: {
+      export: reports_path + '/listing-performance-baselines-nodata-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -459,6 +493,9 @@ const jobs = [
   cb => newman.run(questionableUrlsControllerTests,cb),
   cb => newman.run(reportDataCriteriaUpToDateControllerTests,cb),
   cb => newman.run(reportDataNonConformitiesControllerTests,cb),
+  cb => newman.run(reportDataQuestionableActivityControllerTests,cb),
+  cb => newman.run(listingPerformanceBaselinesDataTests,cb),
+  cb => newman.run(listingPerformanceBaselinesNoDataTests,cb),
   ];
 
 const responseCallback = (err) => {

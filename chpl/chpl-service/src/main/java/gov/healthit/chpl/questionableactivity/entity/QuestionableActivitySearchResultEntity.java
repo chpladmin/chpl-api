@@ -3,15 +3,14 @@ package gov.healthit.chpl.questionableactivity.entity;
 import java.util.Date;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 import org.hibernate.annotations.Immutable;
 
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResult;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -51,9 +50,6 @@ public class QuestionableActivitySearchResultEntity {
 
     @Column(name = "activity_sso_user_id")
     private UUID ssoUserId;
-
-    //@Column(name = "user_contact_info")
-    //private String username;
 
     @Column(name = "certification_status_change_reason")
     private String certificationStatusChangeReason;
