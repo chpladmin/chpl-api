@@ -48,6 +48,12 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     CURES_UPDATE_REMOVED("Cures Update Designation Removed"),
     GAP_EDITED("GAP Status Edited");
 
+    public static final String LEVEL_LISTING = "Listing";
+    public static final String LEVEL_CRITERIA = "Certification Criteria";
+    public static final String LEVEL_DEVELOPER = "Developer";
+    public static final String LEVEL_PRODUCT = "Product";
+    public static final String LEVEL_VERSION = "Version";
+
     private final String name;
 
     QuestionableActivityTriggerConcept(String input) {

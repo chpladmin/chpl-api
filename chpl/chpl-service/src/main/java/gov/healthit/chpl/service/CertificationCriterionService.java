@@ -249,7 +249,7 @@ public class CertificationCriterionService {
     }
 
     public int sortCriteria(CertificationCriterion c1, CertificationCriterion c2) {
-        return getCertificationResultSortIndex(c1.getId()) - getCertificationResultSortIndex(c2.getId());
+        return getCriterionSortIndex(c1.getId()) - getCriterionSortIndex(c2.getId());
     }
 
     public static String formatCriteriaNumber(String number) {
@@ -313,7 +313,7 @@ public class CertificationCriterionService {
         return input;
     }
 
-    public Integer getCertificationResultSortIndex(Long criterionId) {
+    public Integer getCriterionSortIndex(Long criterionId) {
         Integer index = referenceSortingCriteriaList.indexOf(criterionId);
         if (index.equals(-1)) {
             // This is case when the criteria ID is not in the array, just make

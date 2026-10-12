@@ -31,7 +31,7 @@ public class CertificationIdCsvCreator {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<SimpleCertificationId> certificationIds) throws IOException {
+    public File createCsvFile(List<? extends SimpleCertificationId> certificationIds) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .get();
@@ -62,7 +62,7 @@ public class CertificationIdCsvCreator {
         return temp;
     }
 
-    private boolean includesProducts(List<SimpleCertificationId> certificationIds) {
+    private boolean includesProducts(List<? extends SimpleCertificationId> certificationIds) {
         return certificationIds.stream()
                 .filter(certIdObj -> certIdObj instanceof SimpleCertificationIdWithProducts)
                 .findAny().isPresent();
@@ -92,7 +92,7 @@ public class CertificationIdCsvCreator {
         row.add(DateUtil.format(DateUtil.toLocalDate(certificationId.getCreated().getTime())));
         if (certificationId instanceof SimpleCertificationIdWithProducts) {
             SimpleCertificationIdWithProducts certIdWithProducts = (SimpleCertificationIdWithProducts) certificationId;
-            row.add(certIdWithProducts.getProducts());
+            row.add(certIdWithProducts.getDelimitedChplProductNumbers());
         }
         return row;
     }

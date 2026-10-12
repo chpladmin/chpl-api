@@ -25,6 +25,7 @@ import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.questionableActivity.QuestionableActivityReportService;
 import gov.healthit.chpl.report.questionableurl.QuestionableUrlReportService;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
@@ -33,7 +34,9 @@ import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorSummary
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.report.surveillance.SurveillanceByCriteria;
 import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
+import gov.healthit.chpl.report.surveillance.SurveillanceByRequirementType;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
 import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -58,6 +61,7 @@ public class ReportDataManager {
     private CriteriaUpToDateReportService criteriaUpToDateReportService;
     private ListingAttributeReportService listingAttributeReportService;
     private QuestionableUrlReportService questionableUrlReportService;
+    private QuestionableActivityReportService questionableActivityReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
@@ -77,6 +81,7 @@ public class ReportDataManager {
             CriteriaUpToDateReportService criteriaUpToDateReportService,
             ListingAttributeReportService listingAttributeReportService,
             QuestionableUrlReportService questionableUrlReportService,
+            QuestionableActivityReportService questionableActivityReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService,
@@ -96,6 +101,7 @@ public class ReportDataManager {
         this.criteriaUpToDateReportService = criteriaUpToDateReportService;
         this.listingAttributeReportService = listingAttributeReportService;
         this.questionableUrlReportService = questionableUrlReportService;
+        this.questionableActivityReportService = questionableActivityReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
@@ -117,6 +123,16 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         return surveillanceReportsService.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
+    }
+
+    @Synchronized("lock")
+    public List<SurveillanceByCriteria> getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings() {
+        return surveillanceReportsService.getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings();
+    }
+
+    @Synchronized("lock")
+    public List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
+        return surveillanceReportsService.getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings();
     }
 
     @Synchronized("lock")
@@ -297,6 +313,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public QuestionableUrlReportService getQuestionableUrlService() {
         return questionableUrlReportService;
+    }
+
+    @Synchronized("lock")
+    public QuestionableActivityReportService getQuestionableActivityService() {
+        return questionableActivityReportService;
     }
 
     @Synchronized("lock")

@@ -965,6 +965,86 @@
         "description": "GET /report-data/direct-reviews - retrieve status 200 and valid response"
       },
       "response": []
+    },
+	{
+      "name": "GET /report-data/surveillance-by-criteria - status 200 and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/surveillance-by-criteria should retrieve status 200 and valid response\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(pm.response.text()).to.include(\"criterion\");\r\n    pm.expect(pm.response.text()).to.include(\"status\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceEndDate\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceId\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceStartDate\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/surveillance-by-criteria",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "surveillance-by-criteria"
+          ]
+        },
+        "description": "GET /report-data/surveillance-by-criteria - status 200 and valid response"
+      },
+      "response": []
+    },
+    {
+      "name": "GET /report-data/surveillance-by-requirement-type - status 200 and valid response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/surveillance-by-requirement-type should retrieve status 200 and valid response\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(pm.response.text()).to.include(\"requirementGroupType\");\r\n    pm.expect(pm.response.text()).to.include(\"startDay\");\r\n    pm.expect(pm.response.text()).to.include(\"title\");\r\n    pm.expect(pm.response.text()).to.include(\"status\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceEndDate\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceId\");\r\n    pm.expect(pm.response.text()).to.include(\"surveillanceStartDate\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/surveillance-by-requirement-type",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "surveillance-by-requirement-type"
+          ]
+        },
+        "description": "GET /report-data/surveillance-by-requirement-type - status 200 and valid response"
+      },
+      "response": []
     }
-  ]
+    ]
 }

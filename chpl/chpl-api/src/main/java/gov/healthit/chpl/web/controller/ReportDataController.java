@@ -22,7 +22,9 @@ import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.report.surveillance.SurveillanceByCriteria;
 import gov.healthit.chpl.report.surveillance.SurveillanceByDeveloper;
+import gov.healthit.chpl.report.surveillance.SurveillanceByRequirementType;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
@@ -70,6 +72,28 @@ public class ReportDataController {
     @RequestMapping(value = "/surveillance-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SurveillanceByDeveloper> getSurveillanceOpenDuringTheLastYearForActiveDevelopers() {
         return reportDataManager.getSurveillanceOpenDuringTheLastYearForActiveDevelopers();
+    }
+
+    @Operation(summary = "Retrieves the data about each surveillance including the related criterion.",
+            description = "Retrieves the data about each surveillance including the related criterion.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/surveillance-by-criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SurveillanceByCriteria> getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings() {
+        return reportDataManager.getSurveillanceByCriteriaOpenDuringTheLastYearForActiveListings();
+    }
+
+    @Operation(summary = "Retrieves the data about each surveillance including the requirement type.",
+            description = "Retrieves the data about each surveillance including the requirement type.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+    })
+    @LogMethodUsage
+    @RequestMapping(value = "/surveillance-by-requirement-type", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SurveillanceByRequirementType> getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings() {
+        return reportDataManager.getSurveillanceByRequirementTypeOpenDuringTheLastYearForActiveListings();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",

@@ -59,7 +59,7 @@ public class InvitationEmailer {
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading(accountInvitationTitle)
                 .paragraph(accountInvitationHeading, accountInvitationParagraph1)
-                .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
+                .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken(), chplUrlBegin, invitation.getInvitationToken()))
                 .paragraph(null, accountInvitationParagraph2)
                 .paragraph(null, chplEmailValediction)
                 .footer(PublicFooter.class)
