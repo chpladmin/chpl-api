@@ -3,13 +3,15 @@ package gov.healthit.chpl.changerequest.validation;
 import java.time.LocalDate;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestListingUrl;
+import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class CheckDateValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId().equals(getAcceptedStatusId(context))) {
+        if (ChangeRequestStatusService.doesCurrentStatusExist(context.getNewChangeRequest())
+                && context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId().equals(getAcceptedStatusId(context))) {
             ChangeRequestListingUrl details = (ChangeRequestListingUrl) context.getNewChangeRequest().getDetails();
             if (details.getCheckDate() == null) {
                 getMessages().add(getErrorMessage("changeRequest.listingUrl.checkDateRequired"));

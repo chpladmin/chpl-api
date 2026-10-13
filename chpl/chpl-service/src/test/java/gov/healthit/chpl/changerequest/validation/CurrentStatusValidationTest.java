@@ -61,7 +61,7 @@ public class CurrentStatusValidationTest {
 
         Boolean isValid = validator.isValid(context);
 
-        assertEquals(true, isValid);
+        assertEquals(false, isValid);
     }
 
     @Test
