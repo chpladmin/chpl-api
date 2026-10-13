@@ -7,9 +7,11 @@ import java.util.stream.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -27,15 +29,18 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
     private ValidationUtils validationUtils;
+    private FF4j ff4j;
 
     @Autowired
     public RequiredAndRelatedCriteriaReviewer(CertificationCriterionService criterionService,
             ErrorMessageUtil msgUtil, ValidationUtils validationUtils,
-            ResourcePermissionsFactory resourcePermissionsFactory) {
+            ResourcePermissionsFactory resourcePermissionsFactory,
+            FF4j ff4j) {
         super(msgUtil, resourcePermissionsFactory);
         this.criterionService = criterionService;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -47,6 +52,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         checkA4A9CriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkBCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkB11HasRequiredDependencies(listing, attestedCriteria);
+        checkB3B4RequiredDependency(listing, attestedCriteria);
         checkCCriteriaHaveRequiredDependencies(listing, attestedCriteria);
         checkE1CriterionHasRequiredDependencies(listing, attestedCriteria);
         checkE3CriterionHasRequiredDependencies(listing, attestedCriteria);
@@ -205,6 +211,24 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequiredB11",
                                     Util.formatCriteriaNumber(missingRequiredCriterion))));
+        }
+    }
+
+    private void checkB3B4RequiredDependency(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
+        if (!ff4j.check(FeatureList.HTI_4_2028_01_01)) {
+            return;
+        }
+
+        CertificationCriterion b3 = criterionService.get(Criteria2015.B_3_CURES);
+        CertificationCriterion b4 = criterionService.get(Criteria2015.B_4_HTI4);
+        boolean attestsB3 = isInList(b3, attestedCriteria);
+        boolean attestsB4 = isInList(b4, attestedCriteria);
+
+        if (attestsB3 && !attestsB4) {
+            listing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
+                            Util.formatCriteriaNumber(b3),
+                            Util.formatCriteriaNumber(b4)));
         }
     }
 
