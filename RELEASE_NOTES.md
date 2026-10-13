@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 54.3.0
+_12 October 2026_
+
+### Features
+* Create endpoint for report-data/questionable-activity
+* Add report data for surveillance-by-requirement-type
+* Add report-data endpoint to get surveillance per criteria
+
+### Bug Fixes
+* Split ACB names accounting for a space to match data collection
+* Give helpful error message for change request update without status
+* Improve formatting and links in invitation and confirmation emails
+* Reduce memory usage when emailing all certification IDs w/products
+
+---
+
 ## Version 54.2.1
 _28 September 2026_
 

@@ -152,7 +152,7 @@ public class ChangeRequestValidationService {
     private ValidationRule<ChangeRequestValidationContext> getChangeRequestUniquenessValidator(ChangeRequestType changeRequestType) {
         if (changeRequestType.getId().equals(sbulChangeRequestTypeId)
                 || changeRequestType.getId().equals(rwtPlansUrlChangeRequestTypeId)
-                || changeRequestType.getId().equals(rwtResultsUrlChangeRequestTypeId)){
+                || changeRequestType.getId().equals(rwtResultsUrlChangeRequestTypeId)) {
             return new ListingUrlChangeRequestTypeAndListingInProcessValidation();
         } else {
             return new ChangeRequestTypeInProcessValidation();
