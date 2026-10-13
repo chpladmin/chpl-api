@@ -277,7 +277,7 @@ public class ChangeRequestSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (changeRequest1.getDeveloper().getName().compareTo(changeRequest2.getDeveloper().getName())) * sortFactor;
+            return (changeRequest1.getDeveloper().getName().compareToIgnoreCase(changeRequest2.getDeveloper().getName())) * sortFactor;
         }
     }
 
@@ -305,7 +305,7 @@ public class ChangeRequestSearchService {
                     .map(acb -> acb.getName())
                     .collect(Collectors.joining(","));
             int sortFactor = descending ? -1 : 1;
-            return (changeRequest1SmushedAcbs.compareTo(changeRequest2SmushedAcbs)) * sortFactor;
+            return (changeRequest1SmushedAcbs.compareToIgnoreCase(changeRequest2SmushedAcbs)) * sortFactor;
         }
     }
 
@@ -323,7 +323,7 @@ public class ChangeRequestSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (changeRequest1.getCurrentStatus().getName().compareTo(changeRequest2.getCurrentStatus().getName())) * sortFactor;
+            return (changeRequest1.getCurrentStatus().getName().compareToIgnoreCase(changeRequest2.getCurrentStatus().getName())) * sortFactor;
         }
     }
 
@@ -341,7 +341,7 @@ public class ChangeRequestSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (changeRequest1.getChangeRequestType().getName().compareTo(changeRequest2.getChangeRequestType().getName())) * sortFactor;
+            return (changeRequest1.getChangeRequestType().getName().compareToIgnoreCase(changeRequest2.getChangeRequestType().getName())) * sortFactor;
         }
     }
 
@@ -391,7 +391,7 @@ public class ChangeRequestSearchService {
             if (ObjectUtils.anyNull(item1.getName(), item2.getName())) {
                 return 0;
             }
-            return item1.getName().compareTo(item2.getName());
+            return item1.getName().compareToIgnoreCase(item2.getName());
         }
     }
 }
