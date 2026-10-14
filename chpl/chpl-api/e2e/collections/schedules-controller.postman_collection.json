@@ -1,6 +1,6 @@
 {
 	"info": {
-		"name": "scheduler-controller",
+		"name": "schedules-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -161,6 +161,73 @@
 				"description": "Test to validate that ROLE_ONC gets 200 response from /schedules/triggers end point and the response body is not null"
 			},
 			"response": []
-		}
+		},
+		{
+      "name": "PUT /schedules/jobs - invalid email address results in status 400",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var ReqBody= {\r\n        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r\n    };\r\npm.sendRequest({\r\n    url: pm.environment.get(\"authurl\"),\r\n    method: \"POST\",\r\n    header: {\r\n        \"Content-Type\": \"application/json\",\r\n        \"API-KEY\": pm.environment.get(\"apiKey\")\r\n    },\r\n    body: JSON.stringify(ReqBody)\r\n}, function (err, response) {\r\n   var jsonData = response.json();\r\n   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"expect a 400 Bad Request response when adding an invalid email address to the Trigger Developer Ban Notification edit request\", () => {\r\n  pm.response.to.have.status(400);\r\n  var jsonData = pm.response.json();\r\n  pm.expect(pm.response.text()).to.include(\"is not a valid email address\");\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"description\":\"Send warnings to subscribers when an ONC-ACB has changed status of a listing to a state that might warrant a Developer Ban.\",\"group\":\"chplJobs\",\"jobDataMap\":{\"editableJobFields\":\"email-Subscribers\",\"authorities\":\"chpl-admin;chpl-onc\",\"email\":\"test@ainq.com,a@test\"},\"name\":\"Trigger Developer Ban Notification\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/rest/schedules/jobs",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "schedules",
+            "jobs"
+          ]
+        }
+      },
+      "response": []
+    }
 	]
 }
