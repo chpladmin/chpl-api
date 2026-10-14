@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.Strings;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,6 +24,8 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
+    public static final String STATUS_OPEN = "OPEN";
+    public static final String STATUS_CLOSED = "CLOSED";
 
     @JsonProperty(value = "developerId")
     @JsonAlias("customfield_10900")
@@ -63,4 +67,12 @@ public class DirectReview implements Serializable {
 
     @JsonIgnore
     private Set<String> errorMessages = new HashSet<String>();
+
+    public String getStatus() {
+        boolean anyOpen = nonConformities.stream()
+            .filter(nc -> Strings.CI.equals(nc.getNonConformityStatus(), DirectReviewNonConformity.STATUS_OPEN))
+            .findAny()
+            .isPresent();
+        return anyOpen ? STATUS_OPEN : STATUS_CLOSED;
+    }
 }
