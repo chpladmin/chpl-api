@@ -24,8 +24,8 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReview implements Serializable {
     private static final long serialVersionUID = 7018071377912371691L;
-    public static final String STATUS_OPEN = "OPEN";
-    public static final String STATUS_CLOSED = "CLOSED";
+    public static final String STATUS_OPEN = "Open";
+    public static final String STATUS_CLOSED = "Closed";
 
     @JsonProperty(value = "developerId")
     @JsonAlias("customfield_10900")
