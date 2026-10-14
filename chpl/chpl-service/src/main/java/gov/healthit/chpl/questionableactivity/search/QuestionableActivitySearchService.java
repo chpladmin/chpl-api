@@ -266,7 +266,7 @@ public class QuestionableActivitySearchService {
             }
 
             int sortFactor = descending ? -1 : 1;
-            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
+            return (firstToCompare.compareToIgnoreCase(secondToCompare)) * sortFactor;
         }
     }
 
@@ -288,7 +288,7 @@ public class QuestionableActivitySearchService {
             }
 
             int sortFactor = descending ? -1 : 1;
-            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
+            return (firstToCompare.compareToIgnoreCase(secondToCompare)) * sortFactor;
         }
     }
 
@@ -310,7 +310,7 @@ public class QuestionableActivitySearchService {
             }
 
             int sortFactor = descending ? -1 : 1;
-            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
+            return (firstToCompare.compareToIgnoreCase(secondToCompare)) * sortFactor;
         }
     }
 
@@ -332,7 +332,7 @@ public class QuestionableActivitySearchService {
             }
 
             int sortFactor = descending ? -1 : 1;
-            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
+            return (firstToCompare.compareToIgnoreCase(secondToCompare)) * sortFactor;
         }
     }
 }
