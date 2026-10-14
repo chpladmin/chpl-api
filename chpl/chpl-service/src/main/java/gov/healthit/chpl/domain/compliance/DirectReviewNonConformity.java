@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 @NoArgsConstructor
 @Data
@@ -29,10 +29,10 @@ public class DirectReviewNonConformity implements Serializable {
     private static final String TO_BE_DETERMINED = "To be determined";
     private static final String DEFAULT = "Unknown";
 
-    @JsonProperty(value = "requirement", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "programRequirements")
     @JsonAlias("customfield_11018")
     @JsonDeserialize(using = SimpleValueDeserializer.class)
-    private String requirement;
+    private String programReqiurements;
 
     @JsonProperty(value = "developerAssociatedListings")
     @JsonAlias("customfield_12202")
