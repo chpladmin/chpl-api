@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -43,12 +45,15 @@ import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
 public class SchedulerManager extends SecuredManager {
     private static final String AUTHORITY_DELIMITER = ";";
+    private static final String AUTHORITIES_KEY = "authorities";
+    private static final String EMAIL_DELIMITER = ",";
     private static final String ADDED = "added";
     private static final String UPDATED = "updated";
     private static final String DELETED = "deleted";
@@ -60,14 +65,17 @@ public class SchedulerManager extends SecuredManager {
 
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissionsFactory resourcePermissionsFactory;
+    private ErrorMessageUtil msgUtil;
     private ChplRepeatableTriggerChangeEmailer emailer;
 
     @Autowired
     public SchedulerManager(ChplSchedulerReference chplScheduler,
             ResourcePermissionsFactory resourcePermissionsFactory,
+            ErrorMessageUtil msgUtil,
             ChplRepeatableTriggerChangeEmailer emailer) {
         this.chplScheduler = chplScheduler;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.msgUtil = msgUtil;
         this.emailer = emailer;
     }
 
@@ -303,11 +311,16 @@ public class SchedulerManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).UPDATE_JOB)")
-    public ChplJob updateJob(ChplJob job) throws SchedulerException {
+    public ChplJob updateJob(ChplJob job) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         JobKey jobId = jobKey(job.getName(), job.getGroup());
         JobDetail oldJob = scheduler.getJobDetail(jobId);
         if (doesUserHavePermissionToJob(oldJob)) {
+            List<String> errors = validateJobData(job.getJobDataMap());
+            if (!CollectionUtils.isEmpty(errors)) {
+                throw new ValidationException(errors);
+            }
+
             JobDetail newJob = newJob(oldJob.getJobClass()).withIdentity(jobId).withDescription(oldJob.getDescription())
                     .usingJobData(job.getJobDataMap()).storeDurably(oldJob.isDurable())
                     .requestRecovery(oldJob.requestsRecovery()).build();
@@ -316,7 +329,7 @@ public class SchedulerManager extends SecuredManager {
             ChplJob newChplJob = new ChplJob(newJob);
             return newChplJob;
         } else {
-            throw new AccessDeniedException("Can not update this job");
+            throw new AccessDeniedException("Cannot update this job");
         }
     }
 
@@ -417,9 +430,9 @@ public class SchedulerManager extends SecuredManager {
 
     private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
         // Get the authorities from the job
-        if (jobDetail.getJobDataMap().containsKey("authorities")) {
+        if (jobDetail.getJobDataMap().containsKey(AUTHORITIES_KEY)) {
             List<String> authorities = new ArrayList<String>(
-                    Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
+                    Arrays.asList(jobDetail.getJobDataMap().get(AUTHORITIES_KEY).toString().split(AUTHORITY_DELIMITER)));
             return resourcePermissionsFactory.get().doesUserHaveRole(authorities);
         } else {
             // If no authorities are present, we assume there are no permissions
@@ -427,6 +440,17 @@ public class SchedulerManager extends SecuredManager {
             // and everyone has access
             return true;
         }
+    }
+
+    private List<String> validateJobData(JobDataMap jobDataMap) {
+        List<String> errors = new ArrayList<String>();
+        if (jobDataMap.get(QuartzJob.JOB_DATA_KEY_EMAIL) != null) {
+            List<String> jobEmails = Arrays.asList(jobDataMap.get(QuartzJob.JOB_DATA_KEY_EMAIL).toString().split(EMAIL_DELIMITER));
+            jobEmails.stream()
+                .filter(email -> !EmailValidator.getInstance().isValid(email))
+                .forEach(invalidEmail -> errors.add(msgUtil.getMessage("user.invitation.emailNotValid", invalidEmail)));
+        }
+        return errors;
     }
 
     private Boolean doesUserHavePermissionToTrigger(Trigger trigger) throws SchedulerException {
