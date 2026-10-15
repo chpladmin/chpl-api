@@ -129,8 +129,11 @@ warn "\${catalina.home}/lib so Quartz can find user-triggers.xml; dropping it br
 warn "Quartz at runtime with nothing failing at build time."
 for f in "${CONF_FILES[@]}"; do
     printf '\n===== %s =====\n' "$f"
-    # --strip-trailing-cr: Windows checkouts have CRLF here but the stock files are LF.
-    diff -u --strip-trailing-cr "$STOCK_DIR/$f" "$CONF_DIR/$f" || true
+    # git (not diff) because it colors portably, and only on a terminal (--color=auto).
+    # --ignore-cr-at-eol: Windows checkouts have CRLF here but the stock files are LF.
+    # Exits 1 when the files differ, which is expected here.
+    git -c core.safecrlf=false --no-pager diff --no-index --ignore-cr-at-eol --color=auto \
+        --src-prefix=stock/ --dst-prefix=ours/ -- "$STOCK_DIR/$f" "$CONF_DIR/$f" || true
 done
 
 info "Step 4: re-apply our edits onto the NEW stock files"
