@@ -452,6 +452,16 @@ const listingPerformanceBaselinesNoDataTests = {
   },
 };
 
+const searchTargetedUsersControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-targeted-users-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-targeted-users-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -496,6 +506,7 @@ const jobs = [
   cb => newman.run(reportDataQuestionableActivityControllerTests,cb),
   cb => newman.run(listingPerformanceBaselinesDataTests,cb),
   cb => newman.run(listingPerformanceBaselinesNoDataTests,cb),
+  cb => newman.run(searchTargetedUsersControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

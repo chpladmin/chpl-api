@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "search-targeted-users",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "/targeted-users/search - status 200 and correct response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/targeted-users/search endpoint returns 200 status and response body includes name & usage on listings\", function () {\r\n    pm.response.to.have.status(200);\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.response).not.eq(null);\r\n    pm.expect(pm.response.text()).to.include(\"id\");\r\n    pm.expect(pm.response.text()).to.include(\"name\");\r\n    pm.expect(pm.response.text()).to.include(\"usage\");\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/targeted-users/search",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "targeted-users",
+            "search"
+          ]
+        },
+        "description": "/targeted-users/search - status 200 and correct response"
+      },
+      "response": []
+    },
+    {
+      "name": "/targeted-users/download - status 200 and data in response",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/targeted-users/download endpoint returns 200 status and response body includes download data\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(pm.response.text()).to.include(\"Name\");\r\n    pm.expect(pm.response.text()).to.include(\"Created On\");\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/targeted-users/download",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "targeted-users",
+            "download"
+          ]
+        },
+        "description": "/targeted-users/download- status 200 and data in response"
+      },
+      "response": []
+    }
+  ]
+}
