@@ -129,7 +129,8 @@ warn "\${catalina.home}/lib so Quartz can find user-triggers.xml; dropping it br
 warn "Quartz at runtime with nothing failing at build time."
 for f in "${CONF_FILES[@]}"; do
     printf '\n===== %s =====\n' "$f"
-    diff -u "$STOCK_DIR/$f" "$CONF_DIR/$f" || true
+    # --strip-trailing-cr: Windows checkouts have CRLF here but the stock files are LF.
+    diff -u --strip-trailing-cr "$STOCK_DIR/$f" "$CONF_DIR/$f" || true
 done
 
 info "Step 4: re-apply our edits onto the NEW stock files"
