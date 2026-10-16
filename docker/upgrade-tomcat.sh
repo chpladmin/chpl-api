@@ -11,7 +11,10 @@
 #   3. chpl/chpl-service/pom.xml          tomcat-dbcp
 #   4. chpl/chpl-service/pom.xml          tomcat-catalina (provided scope)
 #
-# Requires: docker, git, sed, diff.
+# The config step compares stock Tomcat <current> with stock Tomcat <new> (the three files we
+# override are rarely touched upstream) and reports whether anything must be migrated.
+#
+# Requires: docker, git, sed, awk.
 
 set -euo pipefail
 
@@ -23,7 +26,8 @@ DOCKERFILE_LOCAL="Dockerfile"
 POM="chpl/chpl-service/pom.xml"
 CONF_DIR="docker/tomcat-conf"
 CONF_FILES=(server.xml context.xml catalina.properties)
-STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock"
+STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock"          # stock config of the NEW version
+OLD_STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock-old"   # stock config of the CURRENT version
 CONTAINER="tc-stock-$$"
 
 VERSION_RE='[0-9]+\.[0-9]+\.[0-9]+'
@@ -44,6 +48,29 @@ function pause {
 
 function cleanup { docker rm -f "$CONTAINER" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
+
+# extract_stock <tomcat-version> <dest-dir>: copies that image's stock conf/ directory out of it.
+function extract_stock {
+    local version="$1" dest="$2"
+    rm -rf "$dest"; mkdir -p "$dest"
+    docker create --name "$CONTAINER" "tomcat:${version}-jdk21" >/dev/null \
+        || die "could not create a container from tomcat:${version}-jdk21"
+    docker cp "$CONTAINER:/usr/local/tomcat/conf/." "$dest/"
+    docker rm "$CONTAINER" >/dev/null
+}
+
+# Git (not diff) because it colors portably, and only on a terminal (--color=auto).
+# --ignore-cr-at-eol: Windows checkouts have CRLF here but the stock files are LF.
+# Exits 1 when the files differ, which is expected, hence "|| true".
+# files_differ <path-a> <path-b>: quiet; succeeds only if the files differ.
+function files_differ {
+    ! git -c core.safecrlf=false --no-pager diff --no-index --quiet --ignore-cr-at-eol -- "$1" "$2"
+}
+# show_diff <label-a> <label-b> <path-a> <path-b>
+function show_diff {
+    git -c core.safecrlf=false --no-pager diff --no-index --ignore-cr-at-eol --color=auto \
+        --src-prefix="$1/" --dst-prefix="$2/" -- "$3" "$4" || true
+}
 
 # Prints the pinned version from each of the four locations, one per line, as "label=version".
 function current_pins {
@@ -112,39 +139,68 @@ if [[ "$NEW" == "$CURRENT" && "$(distinct_pin_count)" == "1" ]]; then
 fi
 
 # --------------------------------------- steps 2-4: refresh our Tomcat config
-info "Step 2: extract the stock config from tomcat:${NEW}-jdk21"
-rm -rf "$STOCK_DIR"; mkdir -p "$STOCK_DIR"
-docker create --name "$CONTAINER" "tomcat:${NEW}-jdk21" >/dev/null
-docker cp "$CONTAINER:/usr/local/tomcat/conf/." "$STOCK_DIR/"
-docker rm "$CONTAINER" >/dev/null
-echo "Stock config is in $STOCK_DIR"
+info "Step 2: extract the stock config from Tomcat $CURRENT (current) and $NEW (new)"
+extract_stock "$NEW" "$STOCK_DIR"
+if [[ "$NEW" != "$CURRENT" ]]; then
+    extract_stock "$CURRENT" "$OLD_STOCK_DIR"
+fi
+echo "Stock config for $NEW is in $STOCK_DIR"
 
-info "Step 3: diff the stock config against ours ($CONF_DIR)"
-echo "Lines starting with '-' are stock Tomcat ${NEW}; '+' are ours."
-echo "Decide for each difference whether it is ours or upstream's."
-echo "Anything upstream changed must be carried forward (catalina.properties in"
-echo "particular carries version-specific JAR scan lists)."
-warn "Do NOT revert catalina.properties' common.loader. It intentionally keeps"
-warn "\${catalina.home}/lib so Quartz can find user-triggers.xml; dropping it breaks"
-warn "Quartz at runtime with nothing failing at build time."
-for f in "${CONF_FILES[@]}"; do
-    printf '\n===== %s =====\n' "$f"
-    # git (not diff) because it colors portably, and only on a terminal (--color=auto).
-    # --ignore-cr-at-eol: Windows checkouts have CRLF here but the stock files are LF.
-    # Exits 1 when the files differ, which is expected here.
-    git -c core.safecrlf=false --no-pager diff --no-index --ignore-cr-at-eol --color=auto \
-        --src-prefix=stock/ --dst-prefix=ours/ -- "$STOCK_DIR/$f" "$CONF_DIR/$f" || true
-done
+# What matters for an upgrade is what Tomcat itself changed between the two versions,
+# not how our files differ from stock (they always differ: ours drop the commented-out examples).
+info "Step 3: compare stock Tomcat $CURRENT with stock Tomcat $NEW"
+CHANGED=()
+if [[ "$NEW" != "$CURRENT" ]]; then
+    for f in "${CONF_FILES[@]}"; do
+        if files_differ "$OLD_STOCK_DIR/$f" "$STOCK_DIR/$f"; then
+            CHANGED+=("$f")
+        fi
+    done
+fi
 
-info "Step 4: re-apply our edits onto the NEW stock files"
-echo "For a patch release this is usually a no-op; for a minor bump it rarely is."
-echo "Edit the files under $CONF_DIR now if upstream changed anything, using the"
-echo "new stock files in $STOCK_DIR as the starting point."
+if [[ "$NEW" == "$CURRENT" ]]; then
+    printf '\n\033[32m%s\033[0m\n' "NO CONFIG CHANGES to migrate: $DOCKERFILE_CI is already on Tomcat $NEW,"
+    printf '\033[32m%s\033[0m\n' "so only the other pins are being aligned."
+elif [[ ${#CHANGED[@]} -eq 0 ]]; then
+    printf '\n\033[32m%s\033[0m\n' "No new config changes in version $NEW that need to be migrated."
+    echo "server.xml, context.xml and catalina.properties are identical in Tomcat $CURRENT and $NEW,"
+    echo "so nothing in $CONF_DIR needs to change for this upgrade."
+else
+    warn ""
+    warn "CONFIG CHANGES FOUND: Tomcat $NEW changed ${#CHANGED[@]} of ${#CONF_FILES[@]} config files we override, compared with $CURRENT:"
+    warn "  ${CHANGED[*]}"
+    echo "Lines starting with '-' are Tomcat $CURRENT; '+' are Tomcat $NEW."
+    echo "Each change must be carried forward into $CONF_DIR (catalina.properties in"
+    echo "particular carries version-specific JAR scan lists)."
+    warn "Do NOT revert catalina.properties' common.loader. It intentionally keeps"
+    warn "\${catalina.home}/lib so Quartz can find user-triggers.xml; dropping it breaks"
+    warn "Quartz at runtime with nothing failing at build time."
+    for f in "${CHANGED[@]}"; do
+        printf '\n===== %s =====\n' "$f"
+        show_diff "tomcat-$CURRENT" "tomcat-$NEW" "$OLD_STOCK_DIR/$f" "$STOCK_DIR/$f"
+    done
+fi
+
 echo
-echo "The local-development image (Dockerfile) uses a developer-supplied, gitignored"
-echo "tomcat-config/ directory, so it is not checked here. Developers should refresh"
-echo "their own copy."
-pause "Done with the config?"
+if confirm "Also show how $CONF_DIR differs from stock Tomcat $NEW? (long: ours drop the commented-out examples)"; then
+    for f in "${CONF_FILES[@]}"; do
+        printf '\n===== %s =====\n' "$f"
+        show_diff "stock" "ours" "$STOCK_DIR/$f" "$CONF_DIR/$f"
+    done
+fi
+
+info "Step 4: migrate config changes"
+if [[ ${#CHANGED[@]} -eq 0 ]]; then
+    echo "Skipped: no config changes to migrate."
+else
+    echo "Edit the files under $CONF_DIR now, carrying forward each change shown above."
+    echo "The new stock files are in $STOCK_DIR if you need them as a starting point."
+    echo
+    echo "The local-development image (Dockerfile) uses a developer-supplied, gitignored"
+    echo "tomcat-config/ directory, so it is not checked here. Developers should refresh"
+    echo "their own copy."
+    pause "Done with the config?"
+fi
 
 # --------------------------------------------------------- step 5: the pins
 info "Step 5: bump the pins ($CURRENT -> $NEW)"

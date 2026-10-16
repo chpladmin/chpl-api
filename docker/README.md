@@ -147,5 +147,5 @@ if a particular deployment needs to tune something not listed above.
 
 Tomcat is pinned in four places that must stay equal: `docker/Dockerfile`, the root
 `Dockerfile`, and `tomcat-dbcp` / `tomcat-catalina` in `chpl/chpl-service/pom.xml`.
-Run `docker/upgrade-tomcat.sh [new-version]` to be walked through the upgrade (stock config
-diff, pin bump, local verification, follow-up steps).
+Run `docker/upgrade-tomcat.sh [new-version]` to be walked through the upgrade (whether Tomcat changed the config we override,
+pin bump, local verification, follow-up steps).
