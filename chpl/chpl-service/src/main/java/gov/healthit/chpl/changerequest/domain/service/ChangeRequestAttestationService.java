@@ -132,11 +132,11 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
             if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
-                cr.setDetails(getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
+                ChangeRequest updatedCr = crDAO.get(cr.getId());
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
-                        crFromDb, cr);
-                sendUpdatedDetailsEmail(cr);
+                        crFromDb, updatedCr);
+                sendUpdatedDetailsEmail(updatedCr);
                 return true;
             }
         } catch (Exception e) {
