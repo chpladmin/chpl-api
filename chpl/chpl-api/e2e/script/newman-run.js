@@ -98,12 +98,12 @@ const productVersionControllerTests = {
   },
 };
 
-const schedulerControllerTests = {
+const schedulesControllerTests = {
   ...commonOptions,
-  collection: collection_path + '/scheduler-controller.postman_collection.json',
+  collection: collection_path + '/schedules-controller.postman_collection.json',
   reporter: {
     junit: {
-      export: reports_path + '/scheduler-controller-tests.xml',
+      export: reports_path + '/schedules-controller-tests.xml',
     },
   },
 };
@@ -476,7 +476,7 @@ const jobs = [
   cb => newman.run(productVersionControllerTests,cb),
   cb => newman.run(statusControllerTests,cb),
   cb => newman.run(testinglabControllerTests,cb),
-  cb => newman.run(schedulerControllerTests,cb),
+  cb => newman.run(schedulesControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb),
   cb => newman.run(searchControllerTests,cb),
   cb => newman.run(searchActivityControllerTests,cb),
