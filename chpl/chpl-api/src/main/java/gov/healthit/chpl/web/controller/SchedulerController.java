@@ -149,7 +149,7 @@ public class SchedulerController {
             })
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true) ChplJob job)
-            throws SchedulerException {
+            throws SchedulerException, ValidationException {
         ChplJob result = schedulerManager.updateJob(job);
         ChplJobsResults results = new ChplJobsResults();
         results.getResults().add(result);
