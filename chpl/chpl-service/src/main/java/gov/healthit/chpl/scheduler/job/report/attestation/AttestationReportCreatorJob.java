@@ -72,7 +72,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
         transactionOperations.executeWithoutResult(status -> {
                 try {
                     LOGGER.info("Collecting checkin report data");
-                    List<Long> acbIds = certificationBodyManager.getAllActive().stream()
+                    List<Long> acbIds = certificationBodyManager.getAll().stream()
                             .map(CertificationBody::getId)
                             .toList();
                     List<CheckInReport> checkInReportRows = checkInReportDataCollection.collect(acbIds);
@@ -90,7 +90,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
 
                         AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
                         Map<Long, AttestationReport> attestationReportsByAcbId = new HashMap<Long, AttestationReport>();
-                        List<CertificationBody> activeAcbs = certificationBodyManager.getAllActive();
+                        List<CertificationBody> allAcbs = certificationBodyManager.getAll();
                         Map<Long, ChangeRequest> changeRequestsByDeveloperId = new HashMap<Long, ChangeRequest>();
 
                         //applicableDevelopers.forEach(developer -> {
@@ -98,7 +98,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                             LOGGER.info("Processing Developer: {} ({})", checkInReportRow.getDeveloper().getName(), checkInReportRow.getDeveloper().getId());
                             try {
 
-                                activeAcbs.forEach(acb -> {
+                                allAcbs.forEach(acb -> {
                                     if (isDeveloperManagedByAcb(checkInReportRow, acb)) {
                                        if (!attestationReportsByAcbId.containsKey(acb.getId())) {
                                            attestationReportsByAcbId.put(acb.getId(),
