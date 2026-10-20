@@ -29,6 +29,8 @@ CONF_FILES=(server.xml context.xml catalina.properties)
 STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock"          # stock config of the NEW version
 OLD_STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock-old"   # stock config of the CURRENT version
 CONTAINER="tc-stock-$$"
+WAR_BUILT="chpl/chpl-api/target/chpl-service.war"
+WAR_DEST="docker/build-context/chpl-service.war"
 
 VERSION_RE='[0-9]+\.[0-9]+\.[0-9]+'
 
@@ -217,9 +219,19 @@ echo "All four pins are $NEW."
 
 # --------------------------------------------------- step 6: local verification
 info "Step 6: verify locally"
-echo "Needs a WAR in docker/build-context/chpl-service.war (e.g. from"
-echo "'mvn clean package -DskipTests -Denv=development', copying chpl-api/target/chpl-service.war)."
-if [[ -f docker/build-context/chpl-service.war ]] && confirm "Build docker/Dockerfile now as chpl-api-test?"; then
+echo "docker/Dockerfile packages a prebuilt WAR from $WAR_DEST. CI builds it with the"
+echo "Maven command below; building it now also compiles against the new tomcat-* pom pins."
+if confirm "Build the WAR with Maven now? (same command as CI; takes several minutes)"; then
+    command -v mvn >/dev/null || die "mvn is required to build the WAR"
+    mvn -B clean package -DskipTests -Denv=dev --file chpl/pom.xml
+    [[ -f "$WAR_BUILT" ]] || die "Maven finished but $WAR_BUILT was not produced"
+    mkdir -p "$(dirname "$WAR_DEST")"
+    cp "$WAR_BUILT" "$WAR_DEST"
+elif [[ -f "$WAR_DEST" ]]; then
+    warn "Using the existing $WAR_DEST. It may predate this upgrade."
+fi
+
+if [[ -f "$WAR_DEST" ]] && confirm "Build docker/Dockerfile now as chpl-api-test?"; then
     docker build -f docker/Dockerfile -t chpl-api-test .
     cat <<EOF
 
@@ -232,6 +244,8 @@ Now run it and check the three things from the doc:
 EOF
 else
     echo "Skipped. Run it yourself before merging:"
+    echo "  mvn -B clean package -DskipTests -Denv=dev --file chpl/pom.xml"
+    echo "  mkdir -p docker/build-context && cp $WAR_BUILT $WAR_DEST"
     echo "  docker build -f docker/Dockerfile -t chpl-api-test ."
 fi
 
