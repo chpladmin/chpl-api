@@ -143,7 +143,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     }
 
     private List<CertificationBody> getAppropriateAcbs(JobExecutionContext jobContext) {
-        List<CertificationBody> acbs = certificationBodyDAO.findAllActive();
+        List<CertificationBody> acbs = certificationBodyDAO.findAll();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
             List<Long> acbsFromJob = getAcbsFromJobContext(jobContext);
             acbs = acbs.stream()
