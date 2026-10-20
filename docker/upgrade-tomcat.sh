@@ -184,7 +184,12 @@ else
 fi
 
 echo
-if confirm "Also show how $CONF_DIR differs from stock Tomcat $NEW? (long: ours drop the commented-out examples)"; then
+echo "Optional: see what we have customized. This is separate from the upgrade check above."
+echo "It compares our files in $CONF_DIR with Tomcat $NEW's own files. The output is long"
+echo "(hundreds of lines) because we deleted Tomcat's commented-out examples and added our"
+echo "own settings, and it looks the same on every upgrade, so it says nothing about whether"
+echo "Tomcat changed. In it, '-' is stock Tomcat and '+' is ours."
+if confirm "Show our customizations of the config files?"; then
     for f in "${CONF_FILES[@]}"; do
         printf '\n===== %s =====\n' "$f"
         show_diff "stock" "ours" "$STOCK_DIR/$f" "$CONF_DIR/$f"
