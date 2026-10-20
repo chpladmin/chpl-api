@@ -202,25 +202,14 @@ else
     done
 fi
 
-echo
-echo "Optional: see what we have customized. This is separate from the upgrade check above."
-echo "It compares our files in $CONF_DIR with Tomcat $NEW's own files. The output is long"
-echo "(hundreds of lines) because we deleted Tomcat's commented-out examples and added our"
-echo "own settings, and it looks the same on every upgrade, so it says nothing about whether"
-echo "Tomcat changed. In it, '-' is stock Tomcat and '+' is ours."
-if confirm "Show our customizations of the config files?"; then
-    for f in "${CONF_FILES[@]}"; do
-        printf '\n===== %s =====\n' "$f"
-        show_diff "stock" "ours" "$STOCK_DIR/$f" "$CONF_DIR/$f"
-    done
-fi
-
 info "Step 4: migrate config changes"
 if [[ ${#CHANGED[@]} -eq 0 ]]; then
     echo "Skipped: no config changes to migrate."
 else
     echo "Edit the files under $CONF_DIR now, carrying forward each change shown above."
-    echo "The new stock files are in $STOCK_DIR if you need them as a starting point."
+    echo "The new stock files are in $STOCK_DIR if you need them as a starting point. To see"
+    echo "where our overrides sit against one of them (long: ours drop the commented-out examples):"
+    echo "  git diff --no-index --ignore-cr-at-eol $CONF_DIR/server.xml $STOCK_DIR/server.xml"
     echo
     echo "The local-development image (Dockerfile) uses a developer-supplied, gitignored"
     echo "tomcat-config/ directory, so it is not checked here. Developers should refresh"
