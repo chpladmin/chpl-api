@@ -14,7 +14,7 @@
 # The config step compares stock Tomcat <current> with stock Tomcat <new> (the three files we
 # override are rarely touched upstream) and reports whether anything must be migrated.
 #
-# Requires: docker, git, sed, awk.
+# Requires: docker, git, sed, awk (and curl, to check Maven Central).
 
 set -euo pipefail
 
@@ -29,6 +29,8 @@ CONF_FILES=(server.xml context.xml catalina.properties)
 STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock"          # stock config of the NEW version
 OLD_STOCK_DIR="${TMPDIR:-/tmp}/tomcat-conf-stock-old"   # stock config of the CURRENT version
 CONTAINER="tc-stock-$$"
+MAVEN_REPO="${MAVEN_REPO:-https://repo.maven.apache.org/maven2}"
+POM_TOMCAT_ARTIFACTS=(tomcat-dbcp tomcat-catalina)
 WAR_BUILT="chpl/chpl-api/target/chpl-service.war"
 WAR_DEST="docker/build-context/chpl-service.war"
 
@@ -135,6 +137,23 @@ echo "Checking that tomcat:${NEW}-jdk21 exists on Docker Hub..."
 docker manifest inspect "tomcat:${NEW}-jdk21" >/dev/null 2>&1 \
     || die "tomcat:${NEW}-jdk21 was not found. Check https://hub.docker.com/_/tomcat"
 echo "Found."
+
+# The pom pins the same version, so the matching jars must also be on Maven Central. A Docker Hub
+# tag can appear before (or without) the Maven artifacts, and then only the Maven build fails.
+echo "Checking that the Tomcat jars exist on Maven Central..."
+if command -v curl >/dev/null; then
+    for artifact in "${POM_TOMCAT_ARTIFACTS[@]}"; do
+        url="$MAVEN_REPO/org/apache/tomcat/$artifact/$NEW/$artifact-$NEW.jar"
+        status=$(curl -s -o /dev/null -w '%{http_code}' -I --max-time 20 "$url" || true)
+        case "$status" in
+            200) echo "  Found $artifact $NEW" ;;
+            404) die "$artifact $NEW is not on Maven Central ($url). The pom would not build. Wait for the release to sync, or check the version." ;;
+            *)   warn "  Could not check $artifact $NEW (HTTP ${status:-none}); the Maven build in step 6 will tell you." ;;
+        esac
+    done
+else
+    warn "curl not found; skipping the Maven Central check."
+fi
 
 if [[ "$NEW" == "$CURRENT" && "$(distinct_pin_count)" == "1" ]]; then
     die "Already on $NEW everywhere; nothing to do."
