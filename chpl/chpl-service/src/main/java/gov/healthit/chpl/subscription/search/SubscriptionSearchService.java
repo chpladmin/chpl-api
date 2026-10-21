@@ -226,7 +226,7 @@ public class SubscriptionSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (sub1.getSubscriberEmail().compareTo(sub2.getSubscriberEmail())) * sortFactor;
+            return (sub1.getSubscriberEmail().compareToIgnoreCase(sub2.getSubscriberEmail())) * sortFactor;
         }
     }
 
@@ -261,7 +261,7 @@ public class SubscriptionSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (sub1.getSubscriberRole().compareTo(sub2.getSubscriberRole())) * sortFactor;
+            return (sub1.getSubscriberRole().compareToIgnoreCase(sub2.getSubscriberRole())) * sortFactor;
         }
     }
 }
