@@ -10,25 +10,11 @@ import jakarta.transaction.Transactional;
 
 @Component
 public class RealWorldTestingReportDataService {
-    private RealWorldTestingPlanSummaryReportDao realWorldTestingPlanSummaryReportDao;
     private RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao;
 
     @Autowired
-    public RealWorldTestingReportDataService(RealWorldTestingPlanSummaryReportDao realWorldTestingPlanSummaryReportDao,
-            RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao) {
-
-        this.realWorldTestingPlanSummaryReportDao = realWorldTestingPlanSummaryReportDao;
+    public RealWorldTestingReportDataService(RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao) {
         this.realWorldTestingResultsSummaryReportDao = realWorldTestingResultsSummaryReportDao;
-    }
-
-    @Transactional
-    public List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingPlanSummaryByAcbReports() {
-        Optional<Long> rwtYear =  realWorldTestingPlanSummaryReportDao.getMaxRealWorldTestingYearForAcbSummary();
-        if (rwtYear.isPresent()) {
-            return realWorldTestingPlanSummaryReportDao.getRealWorldTestingSummaryByAcbReportsByTestingYear(rwtYear.get());
-        } else {
-            return List.of();
-        }
     }
 
     @Transactional

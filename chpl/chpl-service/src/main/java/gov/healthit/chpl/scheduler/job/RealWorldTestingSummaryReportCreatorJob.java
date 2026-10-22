@@ -29,7 +29,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingPlanSummaryReportDao;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportDao;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReport;
@@ -43,9 +42,6 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     @Autowired
     private RealWorldTestingReportService rwtReportService;
-
-    @Autowired
-    private RealWorldTestingPlanSummaryReportDao realWorldTestingPlanSummaryReportDao;
 
     @Autowired
     private RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao;
@@ -90,7 +86,6 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
                     new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
             transactionOperations.executeWithoutResult(status -> {
-                    processRwtPlanCountsByAcb(rwtPlansReports);
                     processRwtResultsCountsByAcb(rwtResultReports);
                     processRwtResultsCountsByDeveloper(rwtResultReports);
             });
@@ -209,61 +204,6 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
         LOGGER.info("Completed gathering RWT Results submissions.");
     }
 
-    private void processRwtPlanCountsByAcb(List<RealWorldTestingReport> reportRows) {
-        if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            return;
-        }
-        Integer rwtEligibilityYear = LocalDate.now().getYear() + 1;
-
-        if (!isDateInPlansSubmissionWindow(LocalDate.now(), rwtEligibilityYear)) {
-            LOGGER.info("Outside the RWT Plan submission window.  Not collecting data.");
-            return;
-        }
-
-        List<RealWorldTestingSummaryByAcbReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReport>();
-
-        rwtReportService.getPlansStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
-            certificationBodyManager.getAllActive().forEach(acb -> {
-                Long eligibleListingCountForAcb = reportRows.stream()
-                        .filter(row -> row.getAcbName().equals(acb.getName())
-                                && row.getRwtEligibilityYear() != null
-                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
-                        .collect(Collectors.counting());
-
-                rwtSummaryReports.add(RealWorldTestingSummaryByAcbReport.builder()
-                        .realWorldTestingYear(rwtEligibilityYear.longValue())
-                        .certificationBody(acb)
-                        .checkedDate(reportDate)
-                        .checkedCount(calculatePlanCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
-                        .requiresCheckCount(eligibleListingCountForAcb)
-                        .build());
-            });
-        });
-
-        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByAcbReport::getCheckedDate)
-                .thenComparing((o1, o2) -> o1.getCertificationBody().getId().compareTo(o2.getCertificationBody().getId())));
-
-        rwtSummaryReports.forEach(value -> {
-            LOGGER.info("{} - {} - {}", value.getCheckedCount(), value.getCheckedDate(), value.getCertificationBody().getName());
-            try {
-                realWorldTestingPlanSummaryReportDao.save(value);
-            } catch (Exception e) {
-                LOGGER.error("Could not save RealWorldTestingSummaryReport: {}", value.toString(), e);
-            }
-        });
-        LOGGER.info("Completed gathering RWT Plan submissions.");
-    }
-
-    private Integer calculatePlanCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
-        return reports.stream()
-                .filter(report -> report.getAcbName().equals(acb.getName())
-                        && report.getRwtEligibilityYear() != null
-                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), checkedDate),
-                                report.getRwtPlansCheckDate()))
-                .toList()
-                .size();
-    }
-
     private Integer calculateResultsCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
         return reports.stream()
                 .filter(report -> report.getAcbName().equals(acb.getName())
@@ -282,10 +222,6 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                                 report.getRwtResultsCheckDate()))
                 .toList()
                 .size();
-    }
-
-    private boolean isDateInPlansSubmissionWindow(LocalDate dateToTest, Integer rwtYear) {
-        return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), rwtReportService.getPlansLateDate(rwtYear)), dateToTest);
     }
 
     private boolean isDateInResultsDataCollectionWindow(LocalDate dateToTest, Integer rwtYear) {
