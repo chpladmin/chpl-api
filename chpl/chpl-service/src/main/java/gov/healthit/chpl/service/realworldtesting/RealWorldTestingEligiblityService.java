@@ -126,22 +126,26 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibility getRwtEligibility(Optional<CertifiedProductSearchDetails> listing,
             RealWorldTestingEligiblityReason reason,
             Integer currentRwtEligYear) {
-        List<CertificationResult> attestedCertificationResults = new ArrayList<CertificationResult>();
+        List<Long> rwtEligibleCriteriaIds = realWorldTestingCriteriaService.getEligibleCriteria(currentRwtEligYear).stream()
+                .map(criterion -> criterion.getId())
+                .toList();
+        List<CertificationResult> attestedRwtEligibleCertificationResults = new ArrayList<CertificationResult>();
         if (listing != null && listing.isPresent()) {
-            attestedCertificationResults = listing.get().getCertificationResults().stream()
+            attestedRwtEligibleCertificationResults = listing.get().getCertificationResults().stream()
                     //We might be getting this listing in it's original state from saved JSON.
                     //For most of CHPL before mid-2023, we saved a certification result on the listing for each criteria
                     //and used the "success" field to determine if that listing attested to that criterion.
                     //If we have pulled listing JSON pre-that-time, then we must check the success field here.
                     //We still have "success" today, but it is always "true" because after mid-2023, we changed our
                     //listing details response to only include certification results for each criterion the listing attests to.
-                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
+                    .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess())
+                            && rwtEligibleCriteriaIds.contains(certResult.getCriterion().getId()))
                     .collect(Collectors.toList());
         }
         return RealWorldTestingEligibility.builder()
             .reason(reason)
             .eligibilityYear(currentRwtEligYear)
-            .attestedCertificationResults(attestedCertificationResults)
+            .attestedCertificationResults(attestedRwtEligibleCertificationResults)
         .build();
     }
 
