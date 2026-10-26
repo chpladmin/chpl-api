@@ -82,10 +82,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                     .map(acb -> acb.getId())
                     .toList();
 
-            List<RealWorldTestingReport> rwtPlansReports = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER).stream()
-                    .collect(Collectors.toList());
-
-            List<RealWorldTestingReport> rwtResultReports = rwtPlansReports.stream()
+            List<RealWorldTestingReport> rwtResultReports = rwtReportService.getRealWorldTestingReports(activeAcbIds, LOGGER).stream()
                     .filter(report -> isRwtResultsRequired(report))
                     .collect(Collectors.toList());
 

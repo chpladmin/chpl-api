@@ -126,6 +126,14 @@ public class RealWorldTestingEligiblityService {
     private RealWorldTestingEligibility getRwtEligibility(Optional<CertifiedProductSearchDetails> listing,
             RealWorldTestingEligiblityReason reason,
             Integer currentRwtEligYear) {
+        if (currentRwtEligYear == null && reason.equals(RealWorldTestingEligiblityReason.NOT_ELIGIBLE)) {
+            return RealWorldTestingEligibility.builder()
+                    .reason(reason)
+                    .eligibilityYear(currentRwtEligYear)
+                    .attestedRwtEligibleCertificationResults(new ArrayList<CertificationResult>())
+                .build();
+        }
+
         List<Long> rwtEligibleCriteriaIds = realWorldTestingCriteriaService.getEligibleCriteria(currentRwtEligYear).stream()
                 .map(criterion -> criterion.getId())
                 .toList();
@@ -145,7 +153,7 @@ public class RealWorldTestingEligiblityService {
         return RealWorldTestingEligibility.builder()
             .reason(reason)
             .eligibilityYear(currentRwtEligYear)
-            .attestedCertificationResults(attestedRwtEligibleCertificationResults)
+            .attestedRwtEligibleCertificationResults(attestedRwtEligibleCertificationResults)
         .build();
     }
 
