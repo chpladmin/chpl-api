@@ -142,3 +142,15 @@ variables can be omitted.
 sensible non-secret defaults for everything else, and can still be overridden
 the same way (env var name = property name, dots -> underscores, upper-cased)
 if a particular deployment needs to tune something not listed above.
+
+## Upgrading Tomcat
+
+Tomcat is pinned in four places that must stay equal: `docker/Dockerfile`, the root
+`Dockerfile`, and `tomcat-dbcp` / `tomcat-catalina` in `chpl/chpl-service/pom.xml`.
+The script `upgrade-tomcat.sh` lives in `chpl-documentation/scripts`. Link it into the root of
+your `chpl-api` checkout once (the link is gitignored):
+
+    ln -s ../../chpl-documentation/scripts/upgrade-tomcat.sh upgrade-tomcat.sh
+
+Then, from the `chpl-api` root, run `./upgrade-tomcat.sh [-v new-version]` to be walked through the upgrade (whether Tomcat changed the config we override,
+pin bump, local verification, follow-up steps).
