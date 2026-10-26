@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 54.4.0
+_26 October 2026_
+
+### Features
+* Make sorting be case-insensitive for search endpoints
+* Add /targeted-users/search and /download endpoints
+* Add GET /targeted-users/usage endpoint
+
+### Bug Fixes
+* Prevent invalid email address formats being added to the Trigger Developer Ban job
+* Allow retired ONC-ACB data in Updated Criteria Status reports
+* Respect retired ONC-ACBs in Pending Change Request report
+* Save all 'currentStatus' fields in attestation edit activity
+
+---
+
 ## Version 54.3.0
 _12 October 2026_
 

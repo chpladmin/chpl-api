@@ -720,7 +720,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getDerivedEdition().compareTo(listing2.getDerivedEdition())) * sortFactor;
+            return (listing1.getDerivedEdition().compareToIgnoreCase(listing2.getDerivedEdition())) * sortFactor;
         }
     }
 
@@ -738,7 +738,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getEdition().getName().compareTo(listing2.getEdition().getName())) * sortFactor;
+            return (listing1.getEdition().getName().compareToIgnoreCase(listing2.getEdition().getName())) * sortFactor;
         }
     }
 
@@ -756,7 +756,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getDeveloper().getName().compareTo(listing2.getDeveloper().getName())) * sortFactor;
+            return (listing1.getDeveloper().getName().compareToIgnoreCase(listing2.getDeveloper().getName())) * sortFactor;
         }
     }
 
@@ -774,7 +774,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getProduct().getName().compareTo(listing2.getProduct().getName())) * sortFactor;
+            return (listing1.getProduct().getName().compareToIgnoreCase(listing2.getProduct().getName())) * sortFactor;
         }
     }
 
@@ -792,7 +792,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getVersion().getName().compareTo(listing2.getVersion().getName())) * sortFactor;
+            return (listing1.getVersion().getName().compareToIgnoreCase(listing2.getVersion().getName())) * sortFactor;
         }
     }
 
@@ -826,7 +826,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getChplProductNumber().compareTo(listing2.getChplProductNumber())) * sortFactor;
+            return (listing1.getChplProductNumber().compareToIgnoreCase(listing2.getChplProductNumber())) * sortFactor;
         }
     }
 
@@ -844,7 +844,7 @@ public class ListingSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getCertificationStatus().getName().compareTo(listing2.getCertificationStatus().getName())) * sortFactor;
+            return (listing1.getCertificationStatus().getName().compareToIgnoreCase(listing2.getCertificationStatus().getName())) * sortFactor;
         }
     }
 

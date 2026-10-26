@@ -83,7 +83,7 @@ public class CriteriaUpToDateWorksheet {
 
     public void populateWithDataForAllAcbsOnDate(List<Long> acbIds, LocalDate reportDataDate, Pair<LocalDate, LocalDate> requiredByDateRange, Workbook workbook)
             throws IOException {
-        List<CertificationBody> acbs = acbDao.findAllActive().stream()
+        List<CertificationBody> acbs = acbDao.findAll().stream()
             .filter(acb -> acbIds.contains(acb.getId()))
             .collect(Collectors.toList());
         List<CriteriaUpToDateReport> reports = reportService.getAllCriteriaUpToDateReports(reportDataDate, acbs, requiredByDateRange);
