@@ -30,8 +30,11 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportDao;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportPreHti5Dao;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReportPreHti5;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.DateUtil;
@@ -42,6 +45,9 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     @Autowired
     private RealWorldTestingReportService rwtReportService;
+
+    @Autowired
+    private RealWorldTestingResultsSummaryReportPreHti5Dao realWorldTestingResultsSummaryReportPreHti5Dao;
 
     @Autowired
     private RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao;
@@ -86,8 +92,13 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             TransactionOperations transactionOperations = new TransactionTemplate(transactionManager,
                     new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
             transactionOperations.executeWithoutResult(status -> {
-                    processRwtResultsCountsByAcb(rwtResultReports);
-                    processRwtResultsCountsByDeveloper(rwtResultReports);
+                    if (ff4j.check(FeatureList.HTI_5_ERD)) {
+                        processRwtResultsCountsByAcb(rwtResultReports);
+                        processRwtResultsCountsByDeveloper(rwtResultReports);
+                    } else {
+                        processRwtResultsPreHti5CountsByAcb(rwtResultReports);
+                        processRwtResultsPreHti5CountsByDeveloper(rwtResultReports);
+                    }
             });
         } catch (Exception e) {
             LOGGER.catching(e);
@@ -115,6 +126,48 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
         }
     }
 
+    private void processRwtResultsPreHti5CountsByAcb(List<RealWorldTestingReport> reportRows) {
+        Integer rwtEligibilityYear = LocalDate.now().getYear() - 1;
+
+        if (!isDateInResultsDataCollectionWindow(LocalDate.now(), rwtEligibilityYear)) {
+            LOGGER.info("Outside the RWT Results data collection window.  Not collecting data.");
+            return;
+        }
+
+        List<RealWorldTestingSummaryByAcbReportPreHti5> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReportPreHti5>();
+
+        rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
+            certificationBodyManager.getAllActive().forEach(acb -> {
+                Long eligibleListingCountForAcb = reportRows.stream()
+                        .filter(row -> row.getAcbName().equals(acb.getName())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
+                        .collect(Collectors.counting());
+
+                rwtSummaryReports.add(RealWorldTestingSummaryByAcbReportPreHti5.builder()
+                        .realWorldTestingYear(rwtEligibilityYear.longValue())
+                        .certificationBody(acb)
+                        .checkedDate(reportDate)
+                        .checkedCount(calculateResultsCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
+                        .requiresCheckCount(eligibleListingCountForAcb)
+                        .build());
+            });
+        });
+
+        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByAcbReportPreHti5::getCheckedDate)
+                .thenComparing((o1, o2) -> o1.getCertificationBody().getId().compareTo(o2.getCertificationBody().getId())));
+
+        rwtSummaryReports.forEach(value -> {
+            LOGGER.info("{} - {} - {}", value.getCheckedCount(), value.getCheckedDate(), value.getCertificationBody().getName());
+            try {
+                realWorldTestingResultsSummaryReportPreHti5Dao.save(value);
+            } catch (Exception e) {
+                LOGGER.error("Could not save RealWorldTestingSummaryReport: {}", value.toString(), e);
+            }
+        });
+        LOGGER.info("Completed gathering RWT Results submissions.");
+    }
+
     private void processRwtResultsCountsByAcb(List<RealWorldTestingReport> reportRows) {
         Integer rwtEligibilityYear = LocalDate.now().getYear() - 1;
 
@@ -132,6 +185,18 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                                 && row.getRwtEligibilityYear() != null
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
+                Long eligibleListingWithGCriteriaCountForAcb = reportRows.stream()
+                        .filter(row -> row.getAcbName().equals(acb.getName())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate)
+                                && hasGCriterion(row))
+                        .collect(Collectors.counting());
+                Long eligibleListingWithSvapCountForAcb = reportRows.stream()
+                        .filter(row -> row.getAcbName().equals(acb.getName())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate)
+                                && hasSvap(row))
+                        .collect(Collectors.counting());
 
                 rwtSummaryReports.add(RealWorldTestingSummaryByAcbReport.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
@@ -139,6 +204,10 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                         .checkedDate(reportDate)
                         .checkedCount(calculateResultsCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
                         .requiresCheckCount(eligibleListingCountForAcb)
+                        .checkedWithGCriteriaCount(calculateResultsGCriteriaCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
+                        .checkedWithSvapCount(calculateResultsSvapCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
+                        .requiresCheckWithGCriteriaCount(eligibleListingWithGCriteriaCountForAcb)
+                        .requiresCheckWithSvapCount(eligibleListingWithSvapCountForAcb)
                         .build());
             });
         });
@@ -150,6 +219,53 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             LOGGER.info("{} - {} - {}", value.getCheckedCount(), value.getCheckedDate(), value.getCertificationBody().getName());
             try {
                 realWorldTestingResultsSummaryReportDao.save(value);
+            } catch (Exception e) {
+                LOGGER.error("Could not save RealWorldTestingSummaryReport: {}", value.toString(), e);
+            }
+        });
+        LOGGER.info("Completed gathering RWT Results submissions.");
+    }
+
+    private void processRwtResultsPreHti5CountsByDeveloper(List<RealWorldTestingReport> reportRows) {
+        Integer rwtEligibilityYear = LocalDate.now().getYear() - 1;
+
+        if (!isDateInResultsDataCollectionWindow(LocalDate.now(), rwtEligibilityYear)) {
+            LOGGER.info("Outside the RWT Results data collection window.  Not collecting data.");
+            return;
+        }
+
+        List<RealWorldTestingSummaryByDeveloperReportPreHti5> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByDeveloperReportPreHti5>();
+
+        List<DeveloperSearchResult> developersWithActiveListings = developerSearchService.getAllPagesOfSearchResults(DeveloperSearchRequest.builder()
+                .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE).collect(Collectors.toSet()))
+                .build(), LOGGER);
+
+        rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
+            developersWithActiveListings.stream().forEach(dev -> {
+                Long eligibleListingCountForDeveloper = reportRows.stream()
+                        .filter(row -> row.getDeveloperId().equals(dev.getId())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
+                        .collect(Collectors.counting());
+
+                rwtSummaryReports.add(RealWorldTestingSummaryByDeveloperReportPreHti5.builder()
+                        .realWorldTestingYear(rwtEligibilityYear.longValue())
+                        .developerId(dev.getId())
+                        .developerName(dev.getName())
+                        .checkedDate(reportDate)
+                        .checkedCount(calculateResultsCount(reportRows, rwtEligibilityYear, dev, reportDate).longValue())
+                        .requiresCheckCount(eligibleListingCountForDeveloper)
+                        .build());
+            });
+        });
+
+        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByDeveloperReportPreHti5::getCheckedDate)
+                .thenComparing((o1, o2) -> o1.getDeveloperId().compareTo(o2.getDeveloperId())));
+
+        rwtSummaryReports.forEach(value -> {
+            LOGGER.info("{} - {} - {}", value.getCheckedCount(), value.getCheckedDate(), value.getDeveloperName());
+            try {
+                realWorldTestingResultsSummaryReportPreHti5Dao.save(value);
             } catch (Exception e) {
                 LOGGER.error("Could not save RealWorldTestingSummaryReport: {}", value.toString(), e);
             }
@@ -178,6 +294,18 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                                 && row.getRwtEligibilityYear() != null
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
+                Long eligibleListingWithGCriteriaCountForDeveloper = reportRows.stream()
+                        .filter(row -> row.getDeveloperId().equals(dev.getId())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate)
+                                && hasGCriterion(row))
+                        .collect(Collectors.counting());
+                Long eligibleListingWithSvapCountForDeveloper = reportRows.stream()
+                        .filter(row -> row.getDeveloperId().equals(dev.getId())
+                                && row.getRwtEligibilityYear() != null
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate)
+                                && hasSvap(row))
+                        .collect(Collectors.counting());
 
                 rwtSummaryReports.add(RealWorldTestingSummaryByDeveloperReport.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
@@ -186,6 +314,10 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                         .checkedDate(reportDate)
                         .checkedCount(calculateResultsCount(reportRows, rwtEligibilityYear, dev, reportDate).longValue())
                         .requiresCheckCount(eligibleListingCountForDeveloper)
+                        .checkedWithGCriteriaCount(calculateResultsGCriteriaCount(reportRows, rwtEligibilityYear, dev, reportDate).longValue())
+                        .requiresCheckWithGCriteriaCount(eligibleListingWithGCriteriaCountForDeveloper)
+                        .checkedWithSvapCount(calculateResultsSvapCount(reportRows, rwtEligibilityYear, dev, reportDate).longValue())
+                        .requiresCheckWithSvapCount(eligibleListingWithSvapCountForDeveloper)
                         .build());
             });
         });
@@ -214,9 +346,67 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
                 .size();
     }
 
+    private Integer calculateResultsGCriteriaCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
+        return reports.stream()
+                .filter(report -> report.getAcbName().equals(acb.getName())
+                        && hasGCriterion(report)
+                        && report.getRwtEligibilityYear() != null
+                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
+                                report.getRwtResultsCheckDate()))
+                .toList()
+                .size();
+    }
+
+    private Integer calculateResultsSvapCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
+        return reports.stream()
+                .filter(report -> report.getAcbName().equals(acb.getName())
+                        && hasSvap(report)
+                        && report.getRwtEligibilityYear() != null
+                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
+                                report.getRwtResultsCheckDate()))
+                .toList()
+                .size();
+    }
+
+    private boolean hasGCriterion(RealWorldTestingReport report) {
+        return report.getCriterionAndSvapData().stream()
+                .filter(item -> item.isAttested() && item.isGCriterion())
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean hasSvap(RealWorldTestingReport report) {
+        return report.getCriterionAndSvapData().stream()
+                .filter(item -> item.isAttested() && item.isUsesSvap())
+                .findAny()
+                .isPresent();
+    }
+
     private Integer calculateResultsCount(List<RealWorldTestingReport> reports, Integer rwtYear, DeveloperSearchResult dev, LocalDate checkedDate) {
         return reports.stream()
                 .filter(report -> report.getDeveloperId().equals(dev.getId())
+                        && report.getRwtEligibilityYear() != null
+                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
+                                report.getRwtResultsCheckDate()))
+                .toList()
+                .size();
+    }
+
+    private Integer calculateResultsGCriteriaCount(List<RealWorldTestingReport> reports, Integer rwtYear, DeveloperSearchResult dev, LocalDate checkedDate) {
+        return reports.stream()
+                .filter(report -> report.getDeveloperId().equals(dev.getId())
+                        && hasGCriterion(report)
+                        && report.getRwtEligibilityYear() != null
+                        && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
+                                report.getRwtResultsCheckDate()))
+                .toList()
+                .size();
+    }
+
+    private Integer calculateResultsSvapCount(List<RealWorldTestingReport> reports, Integer rwtYear, DeveloperSearchResult dev, LocalDate checkedDate) {
+        return reports.stream()
+                .filter(report -> report.getDeveloperId().equals(dev.getId())
+                        && hasSvap(report)
                         && report.getRwtEligibilityYear() != null
                         && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
                                 report.getRwtResultsCheckDate()))

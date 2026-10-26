@@ -27,12 +27,20 @@ public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
                     .checkedDate(realWorldTestingSummaryReport.getCheckedDate())
                     .checkedCount(realWorldTestingSummaryReport.getCheckedCount())
                     .requiresCheckCount(realWorldTestingSummaryReport.getRequiresCheckCount())
+                    .checkedWithGCriteriaCount(realWorldTestingSummaryReport.getCheckedWithGCriteriaCount())
+                    .requiresCheckWithGCriteriaCount(realWorldTestingSummaryReport.getRequiresCheckWithGCriteriaCount())
+                    .checkedWithSvapCount(realWorldTestingSummaryReport.getCheckedWithSvapCount())
+                    .requiresCheckWithSvapCount(realWorldTestingSummaryReport.getRequiresCheckWithSvapCount())
                     .build();
 
             create(entity);
         } else {
             entity.setCheckedCount(realWorldTestingSummaryReport.getCheckedCount());
             entity.setRequiresCheckCount(realWorldTestingSummaryReport.getRequiresCheckCount());
+            entity.setCheckedWithGCriteriaCount(realWorldTestingSummaryReport.getCheckedWithGCriteriaCount());
+            entity.setRequiresCheckWithGCriteriaCount(realWorldTestingSummaryReport.getRequiresCheckWithGCriteriaCount());
+            entity.setCheckedWithSvapCount(realWorldTestingSummaryReport.getCheckedWithSvapCount());
+            entity.setRequiresCheckWithSvapCount(realWorldTestingSummaryReport.getRequiresCheckWithSvapCount());
             update(entity);
         }
     }
@@ -93,12 +101,20 @@ public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
                     .checkedDate(realWorldTestingSummaryReport.getCheckedDate())
                     .checkedCount(realWorldTestingSummaryReport.getCheckedCount())
                     .requiresCheckCount(realWorldTestingSummaryReport.getRequiresCheckCount())
+                    .checkedWithGCriteriaCount(realWorldTestingSummaryReport.getCheckedWithGCriteriaCount())
+                    .requiresCheckWithGCriteriaCount(realWorldTestingSummaryReport.getRequiresCheckWithGCriteriaCount())
+                    .checkedWithSvapCount(realWorldTestingSummaryReport.getCheckedWithSvapCount())
+                    .requiresCheckWithSvapCount(realWorldTestingSummaryReport.getRequiresCheckWithSvapCount())
                     .build();
 
             create(entity);
         } else {
             entity.setCheckedCount(realWorldTestingSummaryReport.getCheckedCount());
             entity.setRequiresCheckCount(realWorldTestingSummaryReport.getRequiresCheckCount());
+            entity.setCheckedWithGCriteriaCount(realWorldTestingSummaryReport.getCheckedWithGCriteriaCount());
+            entity.setRequiresCheckWithGCriteriaCount(realWorldTestingSummaryReport.getRequiresCheckWithGCriteriaCount());
+            entity.setCheckedWithSvapCount(realWorldTestingSummaryReport.getCheckedWithSvapCount());
+            entity.setRequiresCheckWithSvapCount(realWorldTestingSummaryReport.getRequiresCheckWithSvapCount());
             update(entity);
         }
     }
