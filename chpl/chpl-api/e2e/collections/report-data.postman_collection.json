@@ -813,6 +813,47 @@
       "response": []
     },
     {
+      "name": "GET /report-data/real-world-testing-results/summaries-by-acb - 200 status and response fields validation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/real-world-testing-results/summaries-by-acb should return status 200 and response should include RWT criteria counts with G-Criteria and SVAP by acb\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(pm.response.text()).to.include(\"certificationBody\");\r\n    pm.expect(pm.response.text()).to.include(\"requiresCheckWithSvapCount\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/real-world-testing-results/summaries-by-acb",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "real-world-testing-results",
+            "summaries-by-acb"
+          ]
+        },
+        "description": "GET /report-data/real-world-testing-results/summaries-by-acb - 200 status and response fields validation"
+      },
+      "response": []
+    },
+    {
       "name": "GET /report-data/surveillance-by-developer - status 200 and valid response",
       "event": [
         {
