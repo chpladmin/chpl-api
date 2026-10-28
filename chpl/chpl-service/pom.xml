@@ -23,7 +23,7 @@
       <microsoft-graph.version>6.59.0</microsoft-graph.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
       <poi.version>5.5.1</poi.version>
-      <postgresql.version>42.7.12</postgresql.version>
+      <postgresql.version>42.7.14</postgresql.version>
       <quartz.version>2.5.2</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
       <spring.data.redis.version>4.0.1</spring.data.redis.version>
@@ -278,7 +278,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-dbcp</artifactId>
-            <version>11.0.26</version>
+            <version>11.0.27</version>
         </dependency>
 
         <!-- Enhanced stream functions -->
@@ -362,7 +362,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
-            <version>11.0.26</version>
+            <version>11.0.27</version>
             <scope>provided</scope>
         </dependency>
 
