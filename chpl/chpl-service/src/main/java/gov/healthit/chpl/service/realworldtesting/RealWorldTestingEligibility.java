@@ -18,5 +18,5 @@ public class RealWorldTestingEligibility implements Serializable {
 
     private RealWorldTestingEligiblityReason reason;
     private Integer eligibilityYear;
-    private List<CertificationResult> attestedCertificationResults;
+    private List<CertificationResult> attestedRwtEligibleCertificationResults;
 }
