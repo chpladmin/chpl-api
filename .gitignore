@@ -282,3 +282,6 @@ update-pr.sh
 newman/
 /Servers
 Servers/
+
+# Symlink to chpl-documentation/scripts/upgrade-tomcat.sh (see docker/README.md)
+/upgrade-tomcat.sh
