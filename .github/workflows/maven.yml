@@ -15,4 +15,4 @@ jobs:
         java-version: '25'
         distribution: 'temurin'
     - name: Build with Maven
-      run: mvn -B clean package --file chpl/pom.xml
+      run: mvn -B package --file chpl/pom.xml
