@@ -21,7 +21,7 @@
         <commons.csv.version>1.14.1</commons.csv.version>
         <commons.fileupload.version>2.0.0-M4</commons.fileupload.version>
         <ff4j.version>2.1</ff4j.version>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <junit.version>6.1.0</junit.version>
         <log4j2.version>2.26.1</log4j2.version>
         <lombok.version>1.18.46</lombok.version>
