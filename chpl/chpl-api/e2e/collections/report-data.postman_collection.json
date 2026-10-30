@@ -672,59 +672,6 @@
       "response": []
     },
     {
-      "name": "GET /report-data/real-world-testing/plans - 200 status and valid response",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"/report-data/real-world-testing/plans should retrieve status 200 and valid response\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
-              "    pm.expect(pm.response.text()).to.include(\"realWorldTestingYear\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"checkedDate\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"checkedCount\");\r",
-              "    pm.expect(pm.response.text()).to.include(\"requiresCheckCount\");\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "GET",
-        "header": [
-          {
-            "key": "API-Key",
-            "value": "{{apiKey}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{url}}/rest/report-data/real-world-testing/plans",
-          "host": [
-            "{{url}}"
-          ],
-          "path": [
-            "rest",
-            "report-data",
-            "real-world-testing",
-            "plans"
-          ]
-        },
-        "description": "GET /report-data/real-world-testing/plans - 200 status and valid response"
-      },
-      "response": []
-    },
-    {
       "name": "GET /report-data/real-world-testing/results - 200 status and valid response",
       "event": [
         {
@@ -862,6 +809,47 @@
           ]
         },
         "description": "GET /report-data/real-world-testing/results-summary-by-developer - 200 status and valid response\r\n"
+      },
+      "response": []
+    },
+    {
+      "name": "GET /report-data/real-world-testing-results/summaries-by-acb - 200 status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/real-world-testing-results/summaries-by-acb should return status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/real-world-testing-results/summaries-by-acb",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "real-world-testing-results",
+            "summaries-by-acb"
+          ]
+        },
+        "description": "GET /report-data/real-world-testing-results/summaries-by-acb - 200 status"
       },
       "response": []
     },
