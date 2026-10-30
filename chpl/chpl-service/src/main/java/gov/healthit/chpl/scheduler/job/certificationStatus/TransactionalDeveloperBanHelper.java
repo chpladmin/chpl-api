@@ -126,7 +126,7 @@ public class TransactionalDeveloperBanHelper {
         jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
         triggerDeveloperBanJob.setJobDataMap(jobDataMap);
         possibleDeveloperBanTrigger.setJob(triggerDeveloperBanJob);
-        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.ONE_MINUTE_IN_MILLIS);
         try {
             possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
         } catch (Exception ex) {
