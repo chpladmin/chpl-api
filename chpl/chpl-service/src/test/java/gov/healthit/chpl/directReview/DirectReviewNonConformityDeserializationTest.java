@@ -35,8 +35,8 @@ public class DirectReviewNonConformityDeserializationTest {
 
         DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getProgramReqiurements());
-        assertEquals(requirementValue, nc.getProgramReqiurements());
+        assertNotNull(nc.getProgramRequirements());
+        assertEquals(requirementValue, nc.getProgramRequirements());
     }
 
     @Test
