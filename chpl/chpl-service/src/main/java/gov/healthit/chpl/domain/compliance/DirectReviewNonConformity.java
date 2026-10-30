@@ -32,7 +32,7 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "programRequirements")
     @JsonAlias("customfield_11018")
     @JsonDeserialize(using = SimpleValueDeserializer.class)
-    private String programReqiurements;
+    private String programRequirements;
 
     @JsonProperty(value = "developerAssociatedListings")
     @JsonAlias("customfield_12202")
