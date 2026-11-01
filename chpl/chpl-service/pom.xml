@@ -132,7 +132,7 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>3.1.0-M2</version>
+            <version>4.0.0-M1</version>
         </dependency>
 
         <!-- Microsoft Graph API librariess -->
