@@ -40,7 +40,7 @@ public class ReportMetadataDAO extends BaseDAOImpl {
     }
 
     private boolean isReportVisibleBasedOnFlag(ReportMetadataEntity report) {
-        if (!ff4j.check(FeatureList.HTI_5_ERD)) {
+        if (!ff4j.check(FeatureList.HTI_5_2027_01_01)) {
             return !report.getReportGroup().equals(FLAG_BASED_RWT_CHARTS_REPORT_GROUP)
                     || !report.getTitle().equals(RWT_RESULTS_CHART);
         }
