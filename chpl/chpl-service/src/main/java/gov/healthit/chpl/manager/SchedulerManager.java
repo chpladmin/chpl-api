@@ -59,6 +59,7 @@ public class SchedulerManager extends SecuredManager {
     private static final String DELETED = "deleted";
     public static final String DATA_DELIMITER = ",";
     public static final Integer FIVE_SECONDS_IN_MILLIS = 5000;
+    public static final Integer ONE_MINUTE_IN_MILLIS = 60000;
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
