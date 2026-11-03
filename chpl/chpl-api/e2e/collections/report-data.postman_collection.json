@@ -854,6 +854,47 @@
       "response": []
     },
     {
+      "name": "GET /report-data/real-world-testing-results/summaries-by-developer - 200 status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"/report-data/real-world-testing-results/summaries-by-developer should return status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "API-Key",
+            "value": "{{apiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{url}}/rest/report-data/real-world-testing-results/summaries-by-developer",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "rest",
+            "report-data",
+            "real-world-testing-results",
+            "summaries-by-developer"
+          ]
+        },
+        "description": "GET /report-data/real-world-testing-results/summaries-by-developer - 200 status"
+      },
+      "response": []
+    },
+    {
       "name": "GET /report-data/surveillance-by-developer - status 200 and valid response",
       "event": [
         {
