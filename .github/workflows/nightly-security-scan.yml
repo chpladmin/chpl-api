@@ -46,8 +46,10 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Resolve Maven dependencies
-        run: mvn -B -q dependency:resolve --file chpl/pom.xml
+      # test-compile (not dependency:resolve): the modules depend on each other, and sibling jars
+      # only resolve once the reactor has built them.
+      - name: Populate the Maven cache
+        run: mvn -B -q -DskipTests test-compile --file chpl/pom.xml
 
       - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
         with:
