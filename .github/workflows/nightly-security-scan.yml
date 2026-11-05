@@ -5,7 +5,7 @@
 # prints counts only; the findings leave the runner solely inside the Teams cards posted by
 # post_cards.sh. Do not add steps that print, summarize or upload scan output.
 #
-# Runbook: docs/nightly-security-scan.md
+# Runbook: docs/nightly_security_scan.md in the chpl-documentation repository
 name: Nightly security scan
 
 on:
