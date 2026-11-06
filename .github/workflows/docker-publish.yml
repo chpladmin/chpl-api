@@ -141,7 +141,7 @@ jobs:
       #                         branch (latest-development, latest-qa, latest-staging,
       #                         latest-production once triggered from those branches)
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: docker/Dockerfile
