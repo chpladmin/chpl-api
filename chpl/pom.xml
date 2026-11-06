@@ -92,7 +92,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-deploy-plugin</artifactId>
-              <version>4.0.0-beta-2</version>
+              <version>4.0.0-beta-3</version>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
