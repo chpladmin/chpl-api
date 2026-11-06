@@ -131,8 +131,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             return;
         }
 
+        LOGGER.info("Inside of RWT Results data collection window. Saving collected data.");
         List<RealWorldTestingSummaryByAcbReportPreHti5> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReportPreHti5>();
-
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
@@ -173,8 +173,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             return;
         }
 
+        LOGGER.info("Inside of RWT Results data collection window. Saving collected data.");
         List<RealWorldTestingSummaryByAcbReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReport>();
-
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
@@ -231,8 +231,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             return;
         }
 
+        LOGGER.info("Inside of RWT Results data collection window. Saving collected data.");
         List<RealWorldTestingSummaryByDeveloperReportPreHti5> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByDeveloperReportPreHti5>();
-
         List<DeveloperSearchResult> developersWithActiveListings = developerSearchService.getAllPagesOfSearchResults(DeveloperSearchRequest.builder()
                 .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE).collect(Collectors.toSet()))
                 .build(), LOGGER);
@@ -278,8 +278,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             return;
         }
 
+        LOGGER.info("Inside of RWT Results data collection window. Saving collected data.");
         List<RealWorldTestingSummaryByDeveloperReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByDeveloperReport>();
-
         List<DeveloperSearchResult> developersWithActiveListings = developerSearchService.getAllPagesOfSearchResults(DeveloperSearchRequest.builder()
                 .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE).collect(Collectors.toSet()))
                 .build(), LOGGER);
@@ -412,6 +412,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
     }
 
     private boolean isDateInResultsDataCollectionWindow(LocalDate dateToTest, Integer rwtYear) {
+        LOGGER.info("Checking whether " + dateToTest + " is between " + rwtReportService.getResultsStartDate(rwtYear) + " and " + rwtReportService.getResultsDataGatheringStopDate(rwtYear));
         return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), rwtReportService.getResultsDataGatheringStopDate(rwtYear)), dateToTest);
     }
 
