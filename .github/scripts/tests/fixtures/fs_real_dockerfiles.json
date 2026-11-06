@@ -1,0 +1,37 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": ".",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "Misconfigurations": [
+        {
+          "ID": "DS-0002",
+          "Title": "Image user should not be 'root'",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+          "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument"
+        }
+      ]
+    },
+    {
+      "Target": "docker/Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "Misconfigurations": [
+        {
+          "ID": "DS-0002",
+          "Title": "Image user should not be 'root'",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds-0002",
+          "Message": "Specify at least 1 USER command in Dockerfile with non-root user as argument"
+        }
+      ]
+    }
+  ]
+}
