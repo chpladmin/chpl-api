@@ -38,7 +38,7 @@ public class ReportMetadataController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
     @LogMethodUsage
-    @DeprecatedApiResponseFields(friendlyUrl = "/report-metadata}", httpMethod = "GET", responseClass = ReportMetadata.class)
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-metadata", httpMethod = "GET", responseClass = ReportMetadata.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ReportMetadata> getReportMetadataForUser() {
         return reportDataManager.getReportMetadata(null);

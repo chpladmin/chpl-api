@@ -29,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "real_world_testing_results_summary_by_developer_report")
 public class RealWorldTestingResultsSummaryByDeveloperReportEntity extends EntityAudit {
-    private static final long serialVersionUID = -1208758504334058121L;
+    private static final long serialVersionUID = -120875850433401021L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +52,18 @@ public class RealWorldTestingResultsSummaryByDeveloperReportEntity extends Entit
     @Column(name = "requires_check_count")
     private Long requiresCheckCount;
 
+    @Column(name = "checked_with_gcriteria_count")
+    private Long checkedWithGCriteriaCount;
+
+    @Column(name = "requires_check_with_gcriteria_count")
+    private Long requiresCheckWithGCriteriaCount;
+
+    @Column(name = "checked_with_svap_count")
+    private Long checkedWithSvapCount;
+
+    @Column(name = "requires_check_with_svap_count")
+    private Long requiresCheckWithSvapCount;
+
     public RealWorldTestingSummaryByDeveloperReport toDomain() {
         return RealWorldTestingSummaryByDeveloperReport.builder()
                 .id(id)
@@ -61,6 +73,10 @@ public class RealWorldTestingResultsSummaryByDeveloperReportEntity extends Entit
                 .checkedDate(checkedDate)
                 .checkedCount(checkedCount)
                 .requiresCheckCount(requiresCheckCount)
+                .checkedWithGCriteriaCount(checkedWithGCriteriaCount)
+                .requiresCheckWithGCriteriaCount(requiresCheckWithGCriteriaCount)
+                .checkedWithSvapCount(checkedWithSvapCount)
+                .requiresCheckWithSvapCount(requiresCheckWithSvapCount)
                 .build();
     }
 }
