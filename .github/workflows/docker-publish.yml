@@ -90,7 +90,7 @@ jobs:
       # need to rerun the Maven compile (which just ran here, with the
       # setup-java ~/.m2 cache already warm) itself.
       - name: Upload WAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: chpl-service-war
           path: chpl/chpl-api/target/chpl-service.war
