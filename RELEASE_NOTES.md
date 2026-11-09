@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 54.4.1
+_9 November 2026_
+
+### Bug Fixes
+* Set default email suffix to blank
+* Use correct date-formatting methods in developer ban email
+* Force user cache item update when user/pw edited
+
+---
+
 ## Version 54.4.0
 _26 October 2026_
 
