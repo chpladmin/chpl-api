@@ -191,6 +191,7 @@ public class CognitoApiWrapper {
                 LOGGER.error("Received Challenge {} when responding to NEW_PASSWORD_REQUIRED");
                 return null;
             }
+            getUserInfoNoCache(newPassworRequiredRequest.getUserName());
             return response.authenticationResult();
         } catch (Exception e) {
             LOGGER.error("Error responding to NEW_PASSWORD_REQUIRED challenge: {}", e.getMessage(), e);
@@ -241,6 +242,7 @@ public class CognitoApiWrapper {
         if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
             return null;
         }
+        sharedUserStoreProvider.put(user.getCognitoId().toString(), user);
         return user;
     }
 

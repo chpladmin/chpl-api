@@ -1,0 +1,84 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "ghcr.io/chpladmin/chpl-api:latest-development",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "RepoDigests": [
+      "ghcr.io/chpladmin/chpl-api@sha256:a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+    ]
+  },
+  "Results": [
+    {
+      "Target": "fake-os (ubuntu 26.04)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2099-0001",
+          "PkgName": "libexample",
+          "InstalledVersion": "2.3.1",
+          "Severity": "CRITICAL",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0001",
+          "Status": "fixed",
+          "FixedVersion": "2.3.7"
+        },
+        {
+          "VulnerabilityID": "CVE-2099-0002",
+          "PkgName": "libnofix",
+          "InstalledVersion": "1.0.0",
+          "Severity": "CRITICAL",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0002",
+          "Status": "affected"
+        },
+        {
+          "VulnerabilityID": "CVE-2099-0003",
+          "PkgName": "libhigh",
+          "InstalledVersion": "4.0",
+          "Severity": "HIGH",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0003",
+          "Status": "fixed",
+          "FixedVersion": "4.1"
+        },
+        {
+          "VulnerabilityID": "CVE-2099-0004",
+          "PkgName": "libhighnofix",
+          "InstalledVersion": "5.0",
+          "Severity": "HIGH",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0004",
+          "Status": "affected"
+        }
+      ]
+    },
+    {
+      "Target": "Java",
+      "Class": "lang-pkgs",
+      "Type": "jar",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2099-0003",
+          "PkgName": "libhigh",
+          "InstalledVersion": "4.0",
+          "Severity": "HIGH",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0003",
+          "Status": "fixed",
+          "FixedVersion": "4.1"
+        },
+        {
+          "VulnerabilityID": "CVE-2099-0005",
+          "PkgName": "org.example:jarlib",
+          "InstalledVersion": "7.1.0",
+          "Severity": "CRITICAL",
+          "Title": "Fake finding for tests",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2099-0005",
+          "Status": "fixed",
+          "FixedVersion": "7.1.9"
+        }
+      ]
+    }
+  ]
+}

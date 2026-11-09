@@ -27,7 +27,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "triggerDeveloperBanJobLogger")
@@ -184,10 +184,10 @@ public class TriggerDeveloperBanJob implements Job {
                 listing.getChplProductNumber(), // visible link
                 listing.getDeveloper().getName(),
                 MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
-                Util.getDateFormatter().format(listingChangeDate), // date of change
+                DateUtil.format(DateUtil.toLocalDate(listingChangeDate.getTime())), // date of change
                 userPerformingAction.getFullName(),
                 listing.getCurrentStatus().getStatus().getName(), // target status
-                Util.getDateFormatter().format(listing.getCurrentStatus().getEventDay()),
+                DateUtil.format(listing.getCurrentStatus().getEventDay()),
                 reasonForStatusChange, // reason for change
                 reasonForListingChange, // reason for change
                 (openSurveillanceNcs != 1 ? "were" : "was"), openSurveillanceNcs, (openSurveillanceNcs != 1 ? "ies" : "y"), // formatted counts of open
