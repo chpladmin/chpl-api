@@ -167,7 +167,8 @@ public class DeveloperController {
     }
 
     @Deprecated
-    @DeprecatedApi(friendlyUrl = "/developers/{developerId}/rwt-plans-urls", httpMethod = "GET", removalDate = "2026-12-28")
+    @DeprecatedApi(friendlyUrl = "/developers/{developerId}/rwt-plans-urls", httpMethod = "GET", removalDate = "2026-12-28",
+            message = "This endpoint will be removed.")
     @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
