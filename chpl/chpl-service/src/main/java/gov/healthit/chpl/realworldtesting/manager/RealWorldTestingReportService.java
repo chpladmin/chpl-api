@@ -146,7 +146,7 @@ public class RealWorldTestingReportService {
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
                 .rwtResultsCheckDate(listing.getRwtResultsCheckDate())
-                .criterionAndSvapData(buildCriterionAndSvapData(rwtElig.getAttestedCertificationResults()))
+                .criterionAndSvapData(buildCriterionAndSvapData(rwtElig.getAttestedRwtEligibleCertificationResults()))
                 .build();
 
         if (rwtElig.getEligibilityYear() != null) {

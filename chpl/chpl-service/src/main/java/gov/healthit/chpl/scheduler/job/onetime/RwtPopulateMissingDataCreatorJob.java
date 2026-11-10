@@ -21,8 +21,8 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportDao;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingResultsSummaryReportPreHti5Dao;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -34,7 +34,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
     private RealWorldTestingReportService rwtReportService;
 
     @Autowired
-    private RealWorldTestingResultsSummaryReportDao realWorldTestingResultsSummaryReportDao;
+    private RealWorldTestingResultsSummaryReportPreHti5Dao realWorldTestingResultsSummaryReportDao;
 
     @Autowired
     private CertificationBodyManager certificationBodyManager;
@@ -76,7 +76,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
             return;
         }
 
-        List<RealWorldTestingSummaryByAcbReport> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReport>();
+        List<RealWorldTestingSummaryByAcbReportPreHti5> rwtSummaryReports = new ArrayList<RealWorldTestingSummaryByAcbReportPreHti5>();
 
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(lastDayOfResultsSubmissionWindow.plusDays(1)).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
@@ -86,7 +86,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
-                rwtSummaryReports.add(RealWorldTestingSummaryByAcbReport.builder()
+                rwtSummaryReports.add(RealWorldTestingSummaryByAcbReportPreHti5.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
                         .certificationBody(acb)
                         .checkedDate(reportDate)
@@ -96,7 +96,7 @@ public class RwtPopulateMissingDataCreatorJob extends QuartzJob {
             });
         });
 
-        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByAcbReport::getCheckedDate)
+        rwtSummaryReports.sort(Comparator.comparing(RealWorldTestingSummaryByAcbReportPreHti5::getCheckedDate)
                 .thenComparing((o1, o2) -> o1.getCertificationBody().getId().compareTo(o2.getCertificationBody().getId())));
 
         rwtSummaryReports.forEach(value -> {
