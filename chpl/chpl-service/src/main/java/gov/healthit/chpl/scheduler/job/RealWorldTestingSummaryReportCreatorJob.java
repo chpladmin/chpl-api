@@ -374,7 +374,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     private boolean hasSvap(RealWorldTestingReport report) {
         return report.getCriterionAndSvapData().stream()
-                .filter(item -> item.isAttested() && item.isUsesSvap())
+                .filter(item -> item.isAttested() && item.isUsesSvap() && !item.isGCriterion())
                 .findAny()
                 .isPresent();
     }
