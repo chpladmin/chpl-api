@@ -730,6 +730,8 @@ public class CertifiedProductController {
         return icsManager.getIcsFamilyTree(chplProductNumber);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}",
+            httpMethod = "PUT", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Update an existing certified product.",
             description = "Updates the certified product after first validating the request. If a different "
                     + "ACB is passed in as part of the request, an ownership change will take place.  "

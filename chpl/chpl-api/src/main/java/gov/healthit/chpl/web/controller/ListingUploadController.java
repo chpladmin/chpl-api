@@ -35,8 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import tools.jackson.core.JacksonException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.ListingMergeService;
@@ -57,12 +55,14 @@ import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import tools.jackson.core.JacksonException;
 
 @Tag(name = "listing-upload", description = "Allows upload of listings.")
 @RestController
@@ -107,6 +107,8 @@ public class ListingUploadController {
         return listingUploadManager.getAllProcessingAndAvailable();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/listings/pending/{id}",
+            httpMethod = "GET", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Get the details of an uploaded listing.",
             description = "Security Restrictions: User must be authorized to view the uploaded listing "
                     + "according to ONC-ACB(s) and CHPL permissions.",
@@ -118,13 +120,15 @@ public class ListingUploadController {
         return listingUploadManager.getDetailsById(id);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/listings/pending/{id}/submitted",
+            httpMethod = "GET", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Get the listing with only the data the user put in the upload file.",
             description = "Security Restrictions: User must be authorized to view the uploaded listing "
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
+    public CertifiedProductSearchDetails geUserEnteredListing(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
         return listingUploadManager.getSubmittedListing(id);
     }
@@ -211,6 +215,8 @@ public class ListingUploadController {
                 response.getErrorMessages().size() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/listings/upload/{listingId}",
+            httpMethod = "POST", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Upload a file representing a certified product. "
             + "The listing must be one that exists in the CHPL system currently and the file may contain updates to that listing.",
             description = "Accepts a CSV file with a valid set of fields recognized as listing data. "
@@ -282,6 +288,8 @@ public class ListingUploadController {
             .collect(Collectors.toSet());
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/listings/pending/{id}",
+            httpMethod = "POST", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Confirm a previously uploaded listing.",
             description = "Creates a new live listing on the CHPL based on the listing information passed in. "
                     + "Security Restrictions: User must have either role chpl-admin or chpl-onc-acb "

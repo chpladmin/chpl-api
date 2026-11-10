@@ -85,7 +85,7 @@ public class ListingAttributeReportController {
     }
 
     @Deprecated
-    @DeprecatedApi(friendlyUrl = "report-data/listing-attributes/measures", httpMethod = "GET",
+    @DeprecatedApi(friendlyUrl = "/report-data/listing-attributes/measures", httpMethod = "GET",
             message = "This will be removed.", removalDate = "2027-01-01")
     @Operation(summary = "Retrieves the data used to generate the Measures Listing Attribute Summary report.",
             description = "Retrieves the data used to generate the Measures Listing Attribute Summary report.",
@@ -102,7 +102,7 @@ public class ListingAttributeReportController {
     }
 
     @Deprecated
-    @DeprecatedApi(friendlyUrl = "report-data/listing-attributes/measures/listings", httpMethod = "GET",
+    @DeprecatedApi(friendlyUrl = "/report-data/listing-attributes/measures/listings", httpMethod = "GET",
             message = "This will be removed.", removalDate = "2027-01-01")
     @Operation(summary = "Retrieves the data used to generate the Measures Listing Attribute Listings report.",
             description = "Retrieves the data used to generate the Measures Listing Attribute Listings report.",
