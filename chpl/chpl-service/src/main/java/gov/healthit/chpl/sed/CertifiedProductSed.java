@@ -9,6 +9,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,8 @@ public class CertifiedProductSed implements Serializable {
     @Builder.Default
     private List<CertifiedProductUcdProcess> ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @DeprecatedSedTestTaskData
     @Schema(description = "Tasks used for SED testing")
     @Builder.Default
@@ -49,12 +52,16 @@ public class CertifiedProductSed implements Serializable {
     //in order to reliably generate errors about them if the user goes through multiple rounds of editing listing and clicking
     //confirm - we have to make them "sticky" in the JSON so they are passed back in when clicking "Confirm",
     //otherwise we don't have the duplicates in the JSON and allow confirmation even if the listing had these errors.
+    @Deprecated
     @Builder.Default
     @DeprecatedSedTestTaskData
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     private List<String> duplicateTestTaskIds = new ArrayList<String>();
 
+    @Deprecated
     @Builder.Default
     @DeprecatedSedTestTaskData
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     private List<String> duplicateTestParticipantIds = new ArrayList<String>();
 
     public CertifiedProductSed() {

@@ -27,15 +27,9 @@ public class RealWorldTestingPlansUrlsByDeveloperEntity {
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
 
-    @Deprecated
-    //TODO: Remember to remove this column from the view when the field is removed.
-    @Column(name = " active_certificate_count", insertable = false, updatable = false)
-    private Long activeCertificateCount;
-
     public RealWorldTestingUrlByDeveloper toDomain() {
         return RealWorldTestingUrlByDeveloper.builder()
                 .url(rwtPlansUrl)
-                .activeCertificateCount(activeCertificateCount)
                 .build();
     }
 }

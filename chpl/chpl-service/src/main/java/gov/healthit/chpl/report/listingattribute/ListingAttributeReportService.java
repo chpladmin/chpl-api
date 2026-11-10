@@ -41,11 +41,13 @@ public class ListingAttributeReportService {
         return accessibilityStandardReportDao.getAccessibilityStandardListingReports();
     }
 
+    @Deprecated
     @Transactional
     public List<MeasureReport> getMeasureReports() {
         return measureReportDao.getMeasureReports();
     }
 
+    @Deprecated
     @Transactional
     public List<MeasureListingReport> getMeasureListingReports() {
         return measureReportDao.getMeasureListingReports();
