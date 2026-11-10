@@ -1,0 +1,92 @@
+# Nightly Trivy scan of the repository and the published chpl-api images (OCD-5545).
+#
+# THIS REPOSITORY IS PUBLIC: logs, step summaries and artifacts are readable by anyone.
+# Findings must never reach them. The scan script writes reports to files on the runner and
+# prints counts only; the findings leave the runner solely inside the Teams cards posted by
+# post_cards.sh. Do not add steps that print, summarize or upload scan output.
+#
+# Runbook: docs/nightly_security_scan.md in the chpl-documentation repository
+name: Nightly security scan
+
+on:
+  schedule:
+    # 08:00 UTC, after the nightly image builds. Scheduled runs only fire on the default branch.
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-security-scan
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  scan:
+    # Only the upstream repository is scanned, never forks.
+    if: github.repository == 'chpladmin/chpl-api'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    env:
+      # Fall back to the GitHub registry copy if the primary vulnerability DB mirror throttles.
+      TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2
+      TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Trivy resolves Maven dependencies from the local repository; without a populated one it
+      # downloads every POM from Maven Central and gets rate limited (HTTP 429).
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      # test-compile (not dependency:resolve): the modules depend on each other, and sibling jars
+      # only resolve once the reactor has built them.
+      - name: Populate the Maven cache
+        run: mvn -B -q -DskipTests test-compile --file chpl/pom.xml
+
+      - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.76.1
+
+      - name: Cache Trivy databases
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ github.run_id }}
+          restore-keys: trivy-db-
+
+      - name: Log in to GHCR
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+          GHCR_USER: ${{ github.actor }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io --username "$GHCR_USER" --password-stdin
+
+      - name: Scan
+        id: scan
+        run: |
+          status=0
+          .github/scripts/run_scans.sh || status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "out_dir=${RUNNER_TEMP}/chpl-scans" >> "$GITHUB_OUTPUT"
+          # Status 3 means a scan failed but cards were still built; anything else is a setup error.
+          [ "$status" -eq 0 ] || [ "$status" -eq 3 ]
+
+      - name: Post digest to Teams
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          OUT_DIR: ${{ steps.scan.outputs.out_dir }}
+        run: .github/scripts/post_cards.sh "$OUT_DIR/cards"
+
+      # Surface scan failures as a failed run, after the digest (with its failure section) is posted.
+      - name: Fail if any scan failed
+        if: steps.scan.outputs.status != '0'
+        run: |
+          echo "One or more scans failed; see the Teams digest" >&2
+          exit 1

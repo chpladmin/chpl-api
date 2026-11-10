@@ -1,0 +1,99 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "tomcat:11.0.26-jdk21",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "RepoDigests": [
+      "tomcat@sha256:85bca16d6dda8eec14ca205d424d9803ebee9174662dc7647fc8c07ffe560e0e"
+    ],
+    "RepoTags": [
+      "tomcat:11.0.26-jdk21"
+    ]
+  },
+  "Results": [
+    {
+      "Target": "tomcat:11.0.26-jdk21 (ubuntu 26.04)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2026-92392",
+          "PkgName": "curl",
+          "InstalledVersion": "8.18.0-1ubuntu2.7",
+          "FixedVersion": "8.18.0-1ubuntu2.8",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-92392",
+          "Title": "curl: curl: HTTP/2 upload Use-After-Free"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-111497",
+          "PkgName": "libbrotli1",
+          "InstalledVersion": "1.2.0-3build1",
+          "FixedVersion": "1.2.0-3ubuntu0.1",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-111497",
+          "Title": "brotli: Out-of-Bounds Write in Google Brotli Decoder"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-92392",
+          "PkgName": "libcurl4t64",
+          "InstalledVersion": "8.18.0-1ubuntu2.7",
+          "FixedVersion": "8.18.0-1ubuntu2.8",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-92392",
+          "Title": "curl: curl: HTTP/2 upload Use-After-Free"
+        }
+      ]
+    },
+    {
+      "Target": "usr/bin/pebble",
+      "Class": "lang-pkgs",
+      "Type": "gobinary",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2026-111943",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.7",
+          "FixedVersion": "1.26.10, 1.27.3",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-111943",
+          "Title": "crypto/x509: golang: crypto/x509: Man-in-the-middle attacks via untrusted intermediate certificates"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-78667",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.7",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-78667",
+          "Title": "net/http: golang: golang: Denial of Service via crafted HTTP Range headers"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-78669",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.7",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-78669",
+          "Title": "net/http: net/http/internal/http2: golang.org/x/net/http2: net/http: Denial of Service via excessive HTTP/2 SETTINGS frames"
+        },
+        {
+          "VulnerabilityID": "CVE-2026-97031",
+          "PkgName": "stdlib",
+          "InstalledVersion": "v1.26.7",
+          "FixedVersion": "1.26.9, 1.27.2",
+          "Status": "fixed",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-97031",
+          "Title": "crypto/tls: golang: crypto/tls: Denial of Service via multiple ECH outer extension references"
+        }
+      ]
+    }
+  ]
+}
