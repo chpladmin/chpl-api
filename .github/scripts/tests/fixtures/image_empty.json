@@ -1,0 +1,10 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "ghcr.io/chpladmin/chpl-api:latest-qa",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "RepoDigests": [
+      "ghcr.io/chpladmin/chpl-api@sha256:0f1e2d3c4b5a0f1e2d3c4b5a0f1e2d3c4b5a0f1e2d3c4b5a0f1e2d3c4b5a0f1e"
+    ]
+  }
+}

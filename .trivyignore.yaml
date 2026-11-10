@@ -1,0 +1,14 @@
+# Trivy ignore file for the nightly security scan (OCD-5545). Passed explicitly with
+# --ignorefile by .github/scripts/run_scans.sh; Trivy does not pick this file up on its own.
+#
+# Every entry needs a statement (reason and owner) and an expiry date, so a suppression is
+# revisited instead of forgotten. Remove the entry when the underlying issue is fixed.
+misconfigurations:
+  # Both Dockerfiles run the container as root. Fixing that needs a runtime and file
+  # permission review, tracked in OCD-5547.
+  - id: DS-0002
+    paths:
+      - "Dockerfile"
+      - "docker/Dockerfile"
+    expired_at: 2027-02-02
+    statement: "Container runs as root; tracked in OCD-5547. Owner: Todd Young."

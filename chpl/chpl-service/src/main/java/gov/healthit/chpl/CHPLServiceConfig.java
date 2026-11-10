@@ -64,6 +64,8 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import gov.healthit.chpl.util.ClassLoaderMessageSource;
+
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableAsync
@@ -177,7 +179,7 @@ public class CHPLServiceConfig implements EnvironmentAware {
         //missing bundle as simply absent, where ResourceBundleMessageSource would WARN
         //on every lookup. Basenames are consulted in order, so errors-override still
         //takes precedence over errors.
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ClassLoaderMessageSource();
         messageSource.setBasenames("classpath:errors-override", "classpath:errors");
         messageSource.setDefaultEncoding("UTF-8");
 
