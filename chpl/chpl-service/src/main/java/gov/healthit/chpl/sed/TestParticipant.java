@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @Data

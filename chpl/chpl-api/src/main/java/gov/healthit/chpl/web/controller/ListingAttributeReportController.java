@@ -19,6 +19,7 @@ import gov.healthit.chpl.report.listingattribute.QmsStandardListingReport;
 import gov.healthit.chpl.report.listingattribute.QmsStandardReport;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,6 +84,9 @@ public class ListingAttributeReportController {
         return reportDataManager.getListingAttributeService().getAccessibilityStandardListingReports();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "report-data/listing-attributes/measures", httpMethod = "GET",
+            message = "This will be removed.", removalDate = "2027-01-01")
     @Operation(summary = "Retrieves the data used to generate the Measures Listing Attribute Summary report.",
             description = "Retrieves the data used to generate the Measures Listing Attribute Summary report.",
             security = {
@@ -97,6 +101,9 @@ public class ListingAttributeReportController {
         return reportDataManager.getListingAttributeService().getMeasureReports();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "report-data/listing-attributes/measures/listings", httpMethod = "GET",
+            message = "This will be removed.", removalDate = "2027-01-01")
     @Operation(summary = "Retrieves the data used to generate the Measures Listing Attribute Listings report.",
             description = "Retrieves the data used to generate the Measures Listing Attribute Listings report.",
             security = {
