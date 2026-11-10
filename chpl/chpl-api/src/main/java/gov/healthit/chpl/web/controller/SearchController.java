@@ -152,7 +152,7 @@ public class SearchController {
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
-    @DeprecatedApiResponseFields(friendlyUrl = "/search",
+    @DeprecatedApiResponseFields(friendlyUrl = "/search/v3",
         httpMethod = "GET", responseClass = ListingSearchResponse.class)
     @Operation(summary = "Search the CHPL",
     description = "If paging parameters are not specified, the first 20 records are returned by default. "

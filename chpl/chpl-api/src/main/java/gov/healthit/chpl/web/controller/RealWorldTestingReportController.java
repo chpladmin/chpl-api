@@ -2,12 +2,15 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReportPreHti5;
@@ -26,16 +29,18 @@ import lombok.extern.log4j.Log4j2;
 public class RealWorldTestingReportController {
 
     private ReportDataManager reportDataManager;
+    private FF4j ff4j;
 
     @Autowired
-    public RealWorldTestingReportController(ReportDataManager reportDataManager) {
+    public RealWorldTestingReportController(ReportDataManager reportDataManager,
+            FF4j ff4j) {
         this.reportDataManager = reportDataManager;
+        this.ff4j = ff4j;
     }
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/plans", httpMethod = "GET",
-        message = "This endpoint will be removed, and there is no replacement.",
-        removalDate = "2027-01-01")
+            message = "This endpoint will be removed.", removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             description = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             security = {
@@ -43,7 +48,11 @@ public class RealWorldTestingReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<Object> getRealWorldTestingPlanSummaryByAcbReports() {
+    public @ResponseBody List<RealWorldTestingSummaryByAcbReportPreHti5> getRealWorldTestingPlanSummaryByAcbReports() {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            throw new NotImplementedException();
+        }
+
         return List.of();
     }
 
