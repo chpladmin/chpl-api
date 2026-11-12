@@ -10,6 +10,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.listing.measure.MeasureEntity;
 import jakarta.persistence.Query;
 
+@Deprecated
 @Repository
 public class MeasureReportDao extends BaseDAOImpl {
     private String unformattedListingDetailsUrl;

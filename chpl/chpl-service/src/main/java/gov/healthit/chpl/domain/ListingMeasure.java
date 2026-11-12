@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Data
