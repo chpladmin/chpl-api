@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,48 +38,37 @@ public class ServiceBaseUrlListUptimeCalculator {
 
     @Transactional(readOnly =  true)
     public List<ServiceBaseUrlListUptimeReport> calculateRowsForReport() {
-        List<ServiceBaseUrlListUptimeReport> reports = new ArrayList<ServiceBaseUrlListUptimeReport>();
+        LocalDateTime end = LocalDateTime.now().minusDays(1).with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
+        LocalDateTime currentMonthStart = end.withDayOfMonth(1).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
+        LocalDateTime pastWeekStart = LocalDateTime.now().minusWeeks(1).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
 
-        getChplUptimeMonitors().stream()
-                .forEach(monitor -> reports.add(summarize(monitor, getUrlUptimeMonitorTests(monitor.getId()))));
-        return reports;
+        Map<Long, UrlUptimeMonitorTestCounts> countsByMonitorId
+                = urlUptimeMonitorTestDAO.getTestCountsByMonitor(currentMonthStart, pastWeekStart, end);
+
+        return urlUptimeMonitorDAO.getAll().stream()
+                .map(monitor -> buildUptimeReportForMonitor(monitor, countsByMonitorId.getOrDefault(monitor.getId(),
+                        UrlUptimeMonitorTestCounts.builder().urlUptimeMonitorId(monitor.getId()).build())))
+                .collect(Collectors.toList());
     }
 
-    private List<UrlUptimeMonitor> getChplUptimeMonitors() {
-        return urlUptimeMonitorDAO.getAll();
-    }
-
-    private List<UrlUptimeMonitorTest> getUrlUptimeMonitorTests(Long chplUptimeMonitorId) {
-        return urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(chplUptimeMonitorId);
-    }
-
-    private ServiceBaseUrlListUptimeReport summarize(UrlUptimeMonitor urlUptimeMonitor, List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
+    private ServiceBaseUrlListUptimeReport buildUptimeReportForMonitor(UrlUptimeMonitor urlUptimeMonitor, UrlUptimeMonitorTestCounts counts) {
         logger.info("Summarizing data for {}", urlUptimeMonitor.getUrl());
-
-        List<UrlUptimeMonitorTest> allTestsForPastWeek = getEligibleTestsForPastWeek(urlUptimeMonitorTests);
-        List<UrlUptimeMonitorTest> allTestsForCurrentMonth = getEligibleTestsForCurrentMonth(urlUptimeMonitorTests);
 
         return ServiceBaseUrlListUptimeReport.builder()
                 .developerName(urlUptimeMonitor.getDeveloper().getName())
                 .developerId(urlUptimeMonitor.getDeveloper().getId())
                 .url(urlUptimeMonitor.getUrl())
-                .totalTestCount(Long.valueOf(urlUptimeMonitorTests.size()))
-                .totalSuccessfulTestCount(urlUptimeMonitorTests.stream()
-                        .filter(test -> test.getPassed())
-                        .count())
-                .currentMonthTestCount(Long.valueOf(allTestsForCurrentMonth.size()))
-                .currentMonthSuccessfulTestCount(allTestsForCurrentMonth.stream()
-                        .filter(test -> test.getPassed())
-                        .count())
-                .pastWeekTestCount(Long.valueOf(allTestsForPastWeek.size()))
-                .pastWeekSuccessfulTestCount(allTestsForPastWeek.stream()
-                        .filter(test -> test.getPassed())
-                        .count())
-                .applicableAcbsMap(getApplicableAcbsMap(urlUptimeMonitor))
+                .totalTestCount(counts.getTotalTestCount())
+                .totalSuccessfulTestCount(counts.getTotalSuccessfulTestCount())
+                .currentMonthTestCount(counts.getCurrentMonthTestCount())
+                .currentMonthSuccessfulTestCount(counts.getCurrentMonthSuccessfulTestCount())
+                .pastWeekTestCount(counts.getPastWeekTestCount())
+                .pastWeekSuccessfulTestCount(counts.getPastWeekSuccessfulTestCount())
+                .applicableAcbsMap(getApplicableActiveAcbsMap(urlUptimeMonitor))
                 .build();
     }
 
-    private Map<Long, Boolean> getApplicableAcbsMap(UrlUptimeMonitor urlUptimeMonitor) {
+    private Map<Long, Boolean> getApplicableActiveAcbsMap(UrlUptimeMonitor urlUptimeMonitor) {
         List<Long> acbIds = Arrays.asList(urlUptimeMonitor.getDelimitedAcbIds()
                 .split(","))
                 .stream()
@@ -95,23 +83,4 @@ public class ServiceBaseUrlListUptimeCalculator {
                         .findAny()
                         .isPresent()));
     }
-
-    private List<UrlUptimeMonitorTest> getEligibleTestsForPastWeek(List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
-        LocalDateTime end = LocalDateTime.now().minusDays(1).with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
-        LocalDateTime start = LocalDateTime.now().minusWeeks(1).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
-
-        return urlUptimeMonitorTests.stream()
-                .filter(test -> test.getCheckTime().isAfter(start) && test.getCheckTime().isBefore(end))
-                .toList();
-    }
-
-    private List<UrlUptimeMonitorTest> getEligibleTestsForCurrentMonth(List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
-        LocalDateTime end = LocalDateTime.now().minusDays(1).with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
-        LocalDateTime start = end.withDayOfMonth(1).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
-
-        return urlUptimeMonitorTests.stream()
-                .filter(test -> test.getCheckTime().isAfter(start) && test.getCheckTime().isBefore(end))
-                .toList();
-    }
-
 }
