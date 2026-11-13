@@ -51,7 +51,7 @@ import gov.healthit.chpl.servicebaseurllist.ServiceBaseUrlListByDeveloper;
 import gov.healthit.chpl.servicebaseurllist.ServiceBaseUrlListManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -166,13 +166,18 @@ public class DeveloperController {
         return sbulManager.getUrls(developerId);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/developers/{developerId}/rwt-plans-urls", httpMethod = "GET", removalDate = "2026-12-28",
+            message = "This endpoint will be removed.")
     @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{developerId}/rwt-plans-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/rwt-plans-urls", httpMethod = "GET", responseClass = RealWorldTestingUrlByDeveloper.class)
     public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtPlansUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            throw new NotImplementedException();
+        }
         return rwtManager.getPlansUrls(developerId);
     }
 
@@ -181,7 +186,6 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{developerId}/rwt-results-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/rwt-results-urls", httpMethod = "GET", responseClass = RealWorldTestingUrlByDeveloper.class)
     public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtResultsUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         return rwtManager.getResultsUrls(developerId);
     }

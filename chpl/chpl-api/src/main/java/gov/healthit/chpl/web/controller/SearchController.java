@@ -20,6 +20,7 @@ import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -42,6 +43,8 @@ public class SearchController {
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/search",
+        httpMethod = "GET", responseClass = ListingSearchResponse.class)
     @Operation(summary = "Search the CHPL",
     description = "This endpoint will always use the oldest, valid version of the "
             + "/search/vX endpoint. The current version being used is v3. For the "
@@ -149,8 +152,9 @@ public class SearchController {
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/search/v3",
+        httpMethod = "GET", responseClass = ListingSearchResponse.class)
     @Operation(summary = "Search the CHPL",
-
     description = "If paging parameters are not specified, the first 20 records are returned by default. "
             + "All parameters are optional. "
             + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects "

@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,16 +27,18 @@ import lombok.extern.log4j.Log4j2;
 public class RealWorldTestingReportController {
 
     private ReportDataManager reportDataManager;
+    private FF4j ff4j;
 
     @Autowired
-    public RealWorldTestingReportController(ReportDataManager reportDataManager) {
+    public RealWorldTestingReportController(ReportDataManager reportDataManager,
+            FF4j ff4j) {
         this.reportDataManager = reportDataManager;
+        this.ff4j = ff4j;
     }
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/plans", httpMethod = "GET",
-        message = "This endpoint will be removed, and there is no replacement.",
-        removalDate = "2027-01-01")
+            message = "This endpoint will be removed.", removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             description = "Retrieves the data used to generate the Real World Testing Plans summary by ONC-ACB report.",
             security = {
