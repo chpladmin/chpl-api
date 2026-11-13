@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReportPreHti5;
@@ -48,11 +46,7 @@ public class RealWorldTestingReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryByAcbReportPreHti5> getRealWorldTestingPlanSummaryByAcbReports() {
-        if (ff4j.check(FeatureList.HTI_5_ERD)) {
-            throw new NotImplementedException();
-        }
-
+    public @ResponseBody List<Object> getRealWorldTestingPlanSummaryByAcbReports() {
         return List.of();
     }
 
