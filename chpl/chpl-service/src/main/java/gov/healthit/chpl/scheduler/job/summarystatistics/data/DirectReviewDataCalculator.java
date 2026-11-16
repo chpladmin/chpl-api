@@ -128,7 +128,7 @@ public class DirectReviewDataCalculator {
     }
 
     private Boolean isDirectReviewOpen(DirectReview dr) {
-        return dr.getEndDate() == null;
+        return dr.getStatus().equals(DirectReview.STATUS_OPEN);
     }
 
     private Long getDirectReviewDaysOpen(DirectReview dr) {
