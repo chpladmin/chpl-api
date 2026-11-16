@@ -1,6 +1,8 @@
 # CLAUDE.md — E2E API tests
 
-Guidance for writing and running the automated end-to-end API tests in this directory. These are **Postman collections run with Newman** against a deployed CHPL API (dev/qa/stg). 
+Guidance for writing and running the automated end-to-end API tests in this directory. These are **Postman collections run with Newman** against a deployed CHPL API (dev/qa/stg).
+
+For the overall project layout and the Java unit-test conventions, see the root [`CLAUDE.md`](../../../CLAUDE.md).
 
 ## Layout
 
