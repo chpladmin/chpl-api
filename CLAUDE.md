@@ -28,14 +28,23 @@ chpl-api/                       (git root)
 │   ├── pom.xml
 │   ├── chpl-checkstyle-checks.xml
 │   ├── chpl-api/               Web layer: controllers (web/), filters, security config, rate limiting
-│   │   └── src/test/java/...   (only 1 legacy test — avoid adding tests here unless testing web-layer code)
+│   │   ├── src/test/java/...   (only 1 legacy test — avoid adding tests here unless testing web-layer code)
+│   │   └── e2e/                Postman/Newman E2E API tests (run with `yarn e2e:<env>`) — see e2e/CLAUDE.md
 │   ├── chpl-service/           Business logic: managers, DAOs, validation/reviewers, upload handlers,
 │   │   │                       normalizers, permissions, scheduler jobs, domain objects
 │   │   └── src/test/java/gov/healthit/chpl/   <-- almost all unit tests live here
 │   └── chpl-resources/         Shared properties (errors.properties, environment.properties), email templates, Quartz XML
-├── newman/                     Postman/newman E2E API tests (run with `yarn e2e:<env>`)
+├── newman/                     JUnit reports written by the E2E run (gitignored)
 └── docker/, tomcat-config/     Deployment config
 ```
+
+### Related CLAUDE.md files
+
+This file covers the Java code and its unit tests. Other directories have their own CLAUDE.md with more specific guidance. Read the relevant one before working in that area:
+
+- [`chpl/chpl-api/e2e/CLAUDE.md`](chpl/chpl-api/e2e/CLAUDE.md) — Postman/Newman E2E API tests: collection layout, iteration data, environments, `newman-run.js`, and how to run and lint them.
+
+When you add or change a controller endpoint in `chpl/chpl-api/src/main/java/.../web/`, also check whether the matching `<name>-controller.postman_collection.json` in `e2e/collections/` needs a new or updated request, following the e2e CLAUDE.md.
 
 ## Running tests
 
