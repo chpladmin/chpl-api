@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.report.ReportDataManager;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReport;
-import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReport;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReportPreHti5;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
@@ -48,14 +48,17 @@ public class RealWorldTestingReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingPlanSummaryByAcbReports() {
+    public @ResponseBody List<Object> getRealWorldTestingPlanSummaryByAcbReports() {
         if (ff4j.check(FeatureList.HTI_5_ERD)) {
             throw new NotImplementedException();
         }
-
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryByAcbReports();
+        return List.of();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/results", httpMethod = "GET",
+        message = "This endpoint will be removed. Please use /report-data/real-world-testing-results/summary-by-acb",
+        removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             description = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             security = {
@@ -63,10 +66,14 @@ public class RealWorldTestingReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/results", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryByAcbReport> getRealWorldTestingResultsSummaryByAcbReports() {
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByAcbReports();
+    public @ResponseBody List<RealWorldTestingSummaryByAcbReportPreHti5> getRealWorldTestingResultsSummaryByAcbReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByAcbReportsPreHti5();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/results-summary-by-developer", httpMethod = "GET",
+        message = "This endpoint will be removed. Please use /report-data/real-world-testing-results/summary-by-developer",
+        removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             description = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             security = {
@@ -74,7 +81,7 @@ public class RealWorldTestingReportController {
             })
     @LogMethodUsage
     @RequestMapping(value = "/results-summary-by-developer", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<RealWorldTestingSummaryByDeveloperReport> getRealWorldTestingResultsSummaryByDeveloperReports() {
-        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByDeveloperReports();
+    public @ResponseBody List<RealWorldTestingSummaryByDeveloperReportPreHti5> getRealWorldTestingResultsSummaryByDeveloperReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryByDeveloperReportsPreHti5();
     }
 }
