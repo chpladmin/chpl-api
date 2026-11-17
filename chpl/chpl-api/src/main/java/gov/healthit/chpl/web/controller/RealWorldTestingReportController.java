@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByAcbReportPreHti5;
 import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryByDeveloperReportPreHti5;
@@ -47,13 +49,16 @@ public class RealWorldTestingReportController {
     @LogMethodUsage
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<Object> getRealWorldTestingPlanSummaryByAcbReports() {
+        if (ff4j.check(FeatureList.HTI_5_ERD)) {
+            throw new NotImplementedException();
+        }
         return List.of();
     }
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/results", httpMethod = "GET",
         message = "This endpoint will be removed. Please use /report-data/real-world-testing-results/summary-by-acb",
-        removalDate = "2027-01-01")
+        removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             description = "Retrieves the data used to generate the Real World Testing Results summary by ONC-ACB report.",
             security = {
@@ -68,7 +73,7 @@ public class RealWorldTestingReportController {
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/report-data/real-world-testing/results-summary-by-developer", httpMethod = "GET",
         message = "This endpoint will be removed. Please use /report-data/real-world-testing-results/summary-by-developer",
-        removalDate = "2027-01-01")
+        removalDate = "2026-12-28")
     @Operation(summary = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             description = "Retrieves the data used to generate the Real World Testing Results summary by Developer report.",
             security = {
