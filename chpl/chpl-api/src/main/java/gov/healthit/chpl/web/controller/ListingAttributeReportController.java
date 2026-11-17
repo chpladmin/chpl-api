@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,7 +97,7 @@ public class ListingAttributeReportController {
     @RequestMapping(value = "/measures", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureReport> getMeasureReports() {
         if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
-            return List.of();
+            throw new NotImplementedException();
         }
         return reportDataManager.getListingAttributeService().getMeasureReports();
     }
@@ -113,7 +114,7 @@ public class ListingAttributeReportController {
     @RequestMapping(value = "/measures/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<MeasureListingReport> getMeasureListingReports() {
         if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
-            return List.of();
+            throw new NotImplementedException();
         }
         return reportDataManager.getListingAttributeService().getMeasureListingReports();
     }
