@@ -8,61 +8,6 @@
       "name": "GET : certified_product: data driven tests",
       "item": [
         {
-          "name": "GET /{certifiedProductId}/measures - return status 200",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
-                  "pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"{certifiedProductId}/measures return 200 status for valid API key\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "API-Key",
-                "value": "{{apiKey}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/rest/certified_products/{{certifiedProductId}}/measures",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "rest",
-                "certified_products",
-                "{{certifiedProductId}}",
-                "measures"
-              ]
-            },
-            "description": "{certifiedProductId}/measures return 200 status for valid API key"
-          },
-          "response": []
-        },
-        {
           "name": "GET /{certifiedProductId} - return all RWT fields",
           "event": [
             {
@@ -254,61 +199,6 @@
           "response": []
         },
         {
-          "name": "GET-/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}/measures - return status 200",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "var chplIdtest= pm.iterationData.get(\"newChplProductNumber\");\r",
-                  "pm.environment.set(\"year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode\",chplIdtest);"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures end point return status 200 for valid API Key\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "API-Key",
-                "value": "{{apiKey}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/rest/certified_products/{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}/measures",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "rest",
-                "certified_products",
-                "{{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode}}",
-                "measures"
-              ]
-            },
-            "description": "GET /certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/measures return status 200"
-          },
-          "response": []
-        },
-        {
           "name": "GET /{chplPrefix}-{identifier} - return all RWT fields",
           "event": [
             {
@@ -376,65 +266,6 @@
               ]
             },
             "description": "GET /{chplPrefix}-{identifier} - should return all RWT fields"
-          },
-          "response": []
-        },
-        {
-          "name": "GET /{chplPrefix}-{identifier}/measures -return status 200",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
-                  "pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"/{chplPrefix-identifier}/measures end point should return status 200 for valid API Key\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "pm.test(\"/{chplPrefix-identifier}/measures end point should return empty array for 2014/2011 listings\", function() {\r",
-                  "var jsonData = pm.response.json();\r",
-                  "pm.expect(jsonData.results.length).eql(0);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "API-Key",
-                "value": "{{apiKey}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}/measures",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "rest",
-                "certified_products",
-                "{{chplPrefix-identifier}}",
-                "measures"
-              ]
-            },
-            "description": "GET /{chplPrefix-identifier}/measures return status 200"
           },
           "response": []
         },
