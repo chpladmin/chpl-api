@@ -13,10 +13,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
 import gov.healthit.chpl.sed.CertifiedProductSed;
+import gov.healthit.chpl.sed.DeprecatedSedSummaryData;
 import gov.healthit.chpl.targeteduser.CertifiedProductTargetedUser;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -48,13 +50,22 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
             + "URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
+    @DeprecatedSedSummaryData
     @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. "
             + "Fully qualified URL which is reachable via web browser "
             + "validation and verification.")
     private String sedReportFileLocation;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
+    @DeprecatedSedSummaryData
     private String sedIntendedUserDescription;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
+    @DeprecatedSedSummaryData
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -181,6 +192,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
             + "count was valid.")
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @Schema(description = "All data related to safety-enhanced design for this listing.")
     private CertifiedProductSed sed;
 
@@ -193,10 +206,14 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     @Schema(description = "Indicates whether the direct reviews were available when the call  was made")
     private boolean directReviewsAvailable;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @DeprecatedRwtPlansData
     @Schema(description = "URL where the listing's Real World Testing Plan is located")
     private String rwtPlansUrl;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @DeprecatedRwtPlansData
     @Schema(description = "Date the listing's Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
