@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.csv.ListingCsvWriter;
@@ -49,6 +52,8 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
@@ -80,6 +85,7 @@ public class CertifiedProductController {
     private ListingValidatorFactory validatorFactory;
     private ChplProductNumberUtil chplProductNumberUtil;
     private FileUtils fileUtils;
+    private FF4j ff4j;
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
@@ -91,7 +97,8 @@ public class CertifiedProductController {
             ListingCsvWriter listingCsvWriter,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
-            FileUtils fileUtils) {
+            FileUtils fileUtils,
+            FF4j ff4j) {
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
         this.icsManager = icsManager;
@@ -101,6 +108,7 @@ public class CertifiedProductController {
         this.validatorFactory = validatorFactory;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.fileUtils = fileUtils;
+        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Get all possible certification statuses in the CHPL",
@@ -114,6 +122,8 @@ public class CertifiedProductController {
         return cpManager.getAllCertificationStatuses();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/details",
+            httpMethod = "GET", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Get all details for a specified certified product.",
             description = "Returns all information in the CHPL related to the specified certified product.",
             security = {
@@ -136,6 +146,8 @@ public class CertifiedProductController {
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/details",
+        httpMethod = "GET", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Get all details for a specified certified product.",
             description = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -175,6 +187,8 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/details",
+            httpMethod = "GET", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Get all details for a specified certified product.",
             description = "Returns all information in the CHPL related to the specified certified product.  "
                     + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
@@ -220,6 +234,8 @@ public class CertifiedProductController {
         }
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}",
+            httpMethod = "GET", responseClass = CertifiedProductSearchBasicDetails.class)
     @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             description = "Returns basic information in the CHPL related to the specified certified product.  "
@@ -254,6 +270,8 @@ public class CertifiedProductController {
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}",
+        httpMethod = "GET", responseClass = CertifiedProductSearchBasicDetails.class)
     @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             description = "Returns basic information in the CHPL related to the specified certified product.  "
@@ -300,6 +318,8 @@ public class CertifiedProductController {
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}",
+            httpMethod = "GET", responseClass = CertifiedProductSearchBasicDetails.class)
     @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
             + "all collections that are in the 'certified_products/{identifier}/details' endpoint.",
             description = "Returns basic information in the CHPL related to the specified certified product.  "
@@ -439,6 +459,9 @@ public class CertifiedProductController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/measures", httpMethod = "GET",
+            message = "This endpoint will be removed", removalDate = "2027-01-01")
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.",
             security = {
@@ -460,12 +483,16 @@ public class CertifiedProductController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            throw new NotImplementedException();
+        }
         MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(certifiedProductId, true));
-
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/measures", httpMethod = "GET",
+            message = "This endpoint will be removed", removalDate = "2027-01-01")
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
@@ -502,12 +529,19 @@ public class CertifiedProductController {
             @PathVariable("addlSoftwareCode") String addlSoftwareCode,
             @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException {
 
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            throw new NotImplementedException();
+        }
+
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
         MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(chplProductNumber));
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/measures", httpMethod = "GET",
+            message = "This endpoint will be removed", removalDate = "2027-01-01")
     @Operation(summary = "Get all of the Measures for a specified certified product based on a legacy "
             + "CHPL Product Number.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product. "
@@ -533,6 +567,10 @@ public class CertifiedProductController {
     public @ResponseBody MeasureResults getMeasuresByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
+
+        if (ff4j.check(FeatureList.HTI_5_2027_01_01)) {
+            throw new NotImplementedException();
+        }
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         MeasureResults results = new MeasureResults(cpdManager.getCertifiedProductMeasures(chplProductNumber));
@@ -692,6 +730,8 @@ public class CertifiedProductController {
         return icsManager.getIcsFamilyTree(chplProductNumber);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}",
+            httpMethod = "PUT", responseClass = CertifiedProductSearchDetails.class)
     @Operation(summary = "Update an existing certified product.",
             description = "Updates the certified product after first validating the request. If a different "
                     + "ACB is passed in as part of the request, an ownership change will take place.  "

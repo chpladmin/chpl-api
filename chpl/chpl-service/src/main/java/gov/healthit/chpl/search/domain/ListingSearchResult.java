@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.realworldtesting.DeprecatedRwtPlansData;
@@ -81,6 +82,9 @@ public class ListingSearchResult implements Serializable {
     private CertificationCriterionSearchResultWithStringField serviceBaseUrlList;
     private CertificationCriterionSearchResultWithStringField riskManagementSummaryInformation;
     private Set<CertificationCriterionSearchResultWithLongFields> svaps;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @DeprecatedRwtPlansData
     private String rwtPlansUrl;
     private String rwtResultsUrl;
