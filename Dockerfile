@@ -20,6 +20,11 @@ RUN mvn clean package -DskipTests
 
 # Stage 2: Deploy to Tomcat
 FROM tomcat:11.0.27-jdk25
+# Java4Shell (CVE-2026-114938) mitigation: turn off the vulnerable C2 Base64
+# decode intrinsic. See docker/Dockerfile for why this is JDK_JAVA_OPTIONS
+# rather than a setenv.sh. Remove once the base image ships a patched JDK.
+ARG JVM_SECURITY_OPTS="-XX:-UseBASE64Intrinsics"
+ENV JDK_JAVA_OPTIONS="${JVM_SECURITY_OPTS}"
 # Copy the custom server.xml
 COPY tomcat-config/* /usr/local/tomcat/conf
 # Copy the WAR file from the build stage
