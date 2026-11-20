@@ -276,6 +276,10 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
         CertificationCriterion e3 = criterionService.get(Criteria2015.E_3);
 
+        if (e3.isRemoved()) {
+            return;
+        }
+
         boolean hasE3Criteria = attestedCriteria.stream()
                 .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> attestedCriterion.getId().equals(e3.getId()))
@@ -328,6 +332,9 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
 
     private void checkG6RequiredDependencies(CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
         CertificationCriterion g6 = criterionService.get(Criteria2015.G_6_CURES);
+        if (g6.isRemoved()) {
+            return;
+        }
         List<CertificationCriterion> criteriaRequiringG6 = Stream.of(
                 criterionService.get(Criteria2015.B_1_OLD),
                 criterionService.get(Criteria2015.B_1_CURES),
@@ -409,7 +416,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         boolean attestsG31 = isInList(g31, attestedCriteria);
         boolean attestsJ20 = isInList(j20, attestedCriteria);
 
-        if (attestsG31 && !attestsJ20) {
+        if (attestsG31 && !g31.isRemoved() && !attestsJ20) {
             listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
                             Util.formatCriteriaNumber(g31),
@@ -424,7 +431,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         boolean attestsG33 = isInList(g33, attestedCriteria);
         boolean attestsJ21 = isInList(j21, attestedCriteria);
 
-        if (attestsG33 && !attestsJ21) {
+        if (attestsG33 && !g33.isRemoved() && !attestsJ21) {
             listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
                             Util.formatCriteriaNumber(g33),
@@ -466,7 +473,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         boolean attestsH1 = isInList(h1, attestedCriteria);
         boolean attestsB1 = isInList(b1Cures, attestedCriteria);
 
-        if (attestsH1 && !attestsB1) {
+        if (attestsH1 && !h1.isRemoved() && !attestsB1) {
             listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
                             Util.formatCriteriaNumber(h1),
