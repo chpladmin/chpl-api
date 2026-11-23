@@ -29,6 +29,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyS
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.LogMethodUsage;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -118,6 +119,8 @@ public class ReportDataController {
         return reportDataManager.getOpenSurveillanceActivityCountsByAcb();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/open-surveillance-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Listings with Open Surveillance report.",
             description = "Retrieves the data used to generate the Listings with Open Surveillance report.",
             security = {
@@ -151,6 +154,8 @@ public class ReportDataController {
         return reportDataManager.getOpenNonconformityCountsByAcb();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/open-non-conformity-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Listings with Open Non-conformity report.",
             description = "Retrieves the data used to generate the Listings with Open Non-conformity report.",
             security = {
@@ -195,6 +200,8 @@ public class ReportDataController {
         return reportDataManager.getClosedCapCountsByAcb();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/open-cap-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Listings with Open CAP report.",
             description = "Retrieves the data used to generate the Listings with Open CAP report.",
             security = {
@@ -206,6 +213,8 @@ public class ReportDataController {
         return reportDataManager.getListingsWithOpenCap();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/closed-cap-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Listings with Closed CAP report.",
             description = "Retrieves the data used to generate the Listings with Closed CAP report.",
             security = {
@@ -404,6 +413,8 @@ public class ReportDataController {
         return reportDataManager.getSuspendedListingCountsByAcb();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/active-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Active Listing by ACB report",
             description = "Retrieves the data used to generate the Active Listing by ACB report.",
             security = {
@@ -415,6 +426,8 @@ public class ReportDataController {
         return reportDataManager.getActiveListings();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/suspended-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Suspended Listings by ACB report",
             description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
             security = {
@@ -426,6 +439,8 @@ public class ReportDataController {
         return reportDataManager.getSuspendedListings();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/report-data/withdrawn-listings",
+            httpMethod = "GET", responseClass = ListingSearchResult.class)
     @Operation(summary = "Retrieves the data used to generate the Withdrawn Listings by ACB report",
             description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
             security = {

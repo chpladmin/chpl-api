@@ -24,4 +24,8 @@ public class RealWorldTestingSummaryByDeveloperReport {
 
     private Long checkedCount;
     private Long requiresCheckCount;
+    private Long checkedWithGCriteriaCount;
+    private Long requiresCheckWithGCriteriaCount;
+    private Long checkedWithSvapCount;
+    private Long requiresCheckWithSvapCount;
 }

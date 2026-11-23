@@ -19,7 +19,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 SEVERITIES = ('CRITICAL', 'HIGH')
@@ -51,6 +51,7 @@ class Finding:
     severity: str
     url: str
     label: str  # where it was found: an image tag, or the scan name for repo scans
+    published: str = ''  # CVE publish date (YYYY-MM-DD) when Trivy reports one
 
     @property
     def fixable(self):
@@ -68,6 +69,7 @@ class Group:
     severity: str
     url: str
     tags: list
+    published: str = ''
 
     @property
     def fixable(self):
@@ -76,6 +78,14 @@ class Group:
 
 def scan_label(scan):
     return scan.tag if scan.kind == 'image' and scan.tag else scan.name
+
+
+def _published(value):
+    """The YYYY-MM-DD part of a Trivy PublishedDate, or '' when absent or malformed."""
+    try:
+        return date.fromisoformat(str(value)[:10]).isoformat()
+    except ValueError:
+        return ''
 
 
 def load_findings(scan):
@@ -89,7 +99,8 @@ def load_findings(scan):
         for v in result.get('Vulnerabilities') or []:
             findings.append(Finding('vuln', v.get('VulnerabilityID', ''), v.get('PkgName', ''),
                                     v.get('InstalledVersion', ''), v.get('FixedVersion') or '',
-                                    v.get('Severity', ''), v.get('PrimaryURL') or '', label))
+                                    v.get('Severity', ''), v.get('PrimaryURL') or '', label,
+                                    _published(v.get('PublishedDate'))))
         for m in result.get('Misconfigurations') or []:
             if m.get('Status') == 'PASS':
                 continue
@@ -108,6 +119,13 @@ def _tag_sort_key(tag):
     return (1, 0, tag)
 
 
+def _group_sort_key(group):
+    """Severity first, then newest CVE first; findings with no publish date go last."""
+    published = date.fromisoformat(group.published) if group.published else None
+    newest_first = -published.toordinal() if published else 0
+    return (SEVERITIES.index(group.severity), published is None, newest_first, group.id, group.package)
+
+
 def group_findings(scans):
     """One group per (kind, id, package), listing every tag it was found in."""
     groups = {}
@@ -117,7 +135,7 @@ def group_findings(scans):
             group = groups.get(key)
             if group is None:
                 groups[key] = Group(f.kind, f.id, f.package, f.installed, f.fixed,
-                                    f.severity, f.url, [f.label])
+                                    f.severity, f.url, [f.label], f.published)
                 continue
             if f.label not in group.tags:
                 group.tags.append(f.label)
@@ -125,10 +143,11 @@ def group_findings(scans):
                 group.severity = 'CRITICAL'
             if f.fixed and not group.fixed:
                 group.fixed, group.installed = f.fixed, f.installed
+            group.published = group.published or f.published
     ordered = list(groups.values())
     for g in ordered:
         g.tags.sort(key=_tag_sort_key)
-    ordered.sort(key=lambda g: (SEVERITIES.index(g.severity), -len(g.tags), g.id, g.package))
+    ordered.sort(key=_group_sort_key)
     return ordered
 
 
@@ -188,7 +207,17 @@ def _size(blocks):
     return len(json.dumps(blocks).encode('utf-8'))
 
 
-def _finding_block(group):
+def _age(published, today):
+    """'Published 2026-08-04 (93 days ago)', or '' when the CVE has no publish date."""
+    if not published:
+        return ''
+    days = max((today - date.fromisoformat(published)).days, 0)
+    ago = 'today' if days == 0 else '1 day ago' if days == 1 else f'{days} days ago'
+    return f'Published {published} ({ago})'
+
+
+def _finding_block(group, today=None):
+    today = today or datetime.now(timezone.utc).date()
     heading = _md(_clip(group.id, 'id'))
     if group.url:
         heading = f"[{heading}]({_clip(group.url, 'url')})"
@@ -201,11 +230,12 @@ def _finding_block(group):
     else:
         detail = f'misconfiguration in {package}'
     found_in = ', '.join(_md(_clip(t, 'label')) for t in group.tags)
-    return {'type': 'Container', 'separator': True, 'items': [
-        _text(f'**{group.severity}**  {heading}', color=SEVERITY_COLORS[group.severity]),
-        _text(detail, spacing='None'),
-        _text(f'Found in: {found_in}', isSubtle=True, spacing='None'),
-    ]}
+    items = [_text(f'**{group.severity}**  {heading}', color=SEVERITY_COLORS[group.severity]),
+             _text(detail, spacing='None')]
+    if group.kind == 'vuln' and group.published:
+        items.append(_text(_age(group.published, today), isSubtle=True, spacing='None'))
+    items.append(_text(f'Found in: {found_in}', isSubtle=True, spacing='None'))
+    return {'type': 'Container', 'separator': True, 'items': items}
 
 
 def _scan_line(scan, counts):
@@ -253,7 +283,7 @@ def build_cards(scans, run_url, max_per_card=MAX_PER_CARD, max_cards=MAX_CARDS,
     elif total == 0:
         body.append(_text('No CRITICAL or HIGH findings'))
     if chunks:
-        body.append(_text('Fixable CRITICAL/HIGH findings follow, most severe first.', isSubtle=True))
+        body.append(_text('Fixable CRITICAL/HIGH findings follow: most severe first, newest CVE first within a severity.', isSubtle=True))
     if not_shown:
         body.append(_text(f'{not_shown} more not shown (fixable CRITICAL/HIGH beyond the first {shown}). '
                           'For the full list, run .github/scripts/run_scans.sh locally.',
@@ -275,7 +305,8 @@ def format_full_list(scans):
     for g in group_findings(scans):
         fix = f'fixed in {g.fixed}' if g.fixable and g.kind == 'vuln' else (
             'no fix yet' if g.kind == 'vuln' else g.kind)
-        lines.append(f'{g.severity:8} {g.id}  {g.package} {g.installed}  [{fix}]  '
+        published = f'  published {g.published}' if g.kind == 'vuln' and g.published else ''
+        lines.append(f'{g.severity:8} {g.id}  {g.package} {g.installed}  [{fix}]{published}  '
                      f'found in: {", ".join(g.tags)}')
     lines.append(f'{len(group_findings(scans))} findings')
     return '\n'.join(lines)

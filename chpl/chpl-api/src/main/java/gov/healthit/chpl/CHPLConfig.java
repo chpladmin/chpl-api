@@ -43,6 +43,7 @@ import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.ratelimiting.RateLimitingInterceptor;
+import gov.healthit.chpl.util.ClassLoaderMessageSource;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
@@ -187,7 +188,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         //missing bundle as simply absent, where ResourceBundleMessageSource would WARN
         //on every lookup. Basenames are consulted in order, so errors-override still
         //takes precedence over errors.
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ClassLoaderMessageSource();
         messageSource.setBasenames("classpath:errors-override", "classpath:errors");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;

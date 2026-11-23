@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -397,6 +398,92 @@ class PostCardsScriptTest(unittest.TestCase):
         result, _ = self.post()
         self.assertNotIn('CVE-', result.stdout + result.stderr)
         self.assertIn('HTTP 202', result.stdout)
+
+
+class PublishedDateTest(unittest.TestCase):
+    TODAY = date(2026, 11, 9)
+
+    def report(self, entries):
+        """entries: (id, severity, PublishedDate or None) -> a one-package-per-CVE image report."""
+        report = many_findings_report(0)
+        for index, (cve, severity, published) in enumerate(entries):
+            vuln = {'VulnerabilityID': cve, 'PkgName': f'pkg{index}', 'InstalledVersion': '1',
+                    'FixedVersion': '2', 'Severity': severity, 'PrimaryURL': 'https://example.invalid/x'}
+            if published:
+                vuln['PublishedDate'] = published
+            report['Results'][0]['Vulnerabilities'].append(vuln)
+        return report
+
+    def scan(self, entries, tag='development'):
+        return td.Scan(f'image:latest-{tag}', 'image', tag, 0, self.report(entries))
+
+    def order(self, scans):
+        return [g.id for g in td.group_findings(scans)]
+
+    def test_published_date_is_read_from_the_report_as_a_plain_date(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', '2026-08-04T15:16:41.443Z')])
+        self.assertEqual('2026-08-04', td.group_findings([scan])[0].published)
+
+    def test_malformed_or_missing_dates_become_empty(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', 'not a date'), ('CVE-2099-2002', 'HIGH', None)])
+        self.assertEqual(['', ''], [g.published for g in td.group_findings([scan])])
+
+    def test_within_a_severity_the_newest_cve_comes_first(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', '2026-01-01T00:00:00Z'),
+                          ('CVE-2099-2002', 'HIGH', '2026-10-01T00:00:00Z'),
+                          ('CVE-2099-2003', 'HIGH', '2026-05-01T00:00:00Z')])
+        self.assertEqual(['CVE-2099-2002', 'CVE-2099-2003', 'CVE-2099-2001'], self.order([scan]))
+
+    def test_severity_still_beats_age(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', '2026-11-01T00:00:00Z'),
+                          ('CVE-2099-2002', 'CRITICAL', '2020-01-01T00:00:00Z')])
+        self.assertEqual(['CVE-2099-2002', 'CVE-2099-2001'], self.order([scan]))
+
+    def test_findings_without_a_date_come_last_within_their_severity(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', None),
+                          ('CVE-2099-2002', 'HIGH', '2020-01-01T00:00:00Z'),
+                          ('CVE-2099-2003', 'CRITICAL', None)])
+        self.assertEqual(['CVE-2099-2003', 'CVE-2099-2002', 'CVE-2099-2001'], self.order([scan]))
+
+    def test_number_of_environments_no_longer_affects_the_order(self):
+        wide = [self.scan([('CVE-2099-2001', 'HIGH', '2020-01-01T00:00:00Z'),
+                           ('CVE-2099-2002', 'HIGH', '2026-10-01T00:00:00Z')], tag=t)
+                for t in ('development', 'qa')]
+        self.assertEqual(['CVE-2099-2002', 'CVE-2099-2001'], self.order(wide))
+
+    def test_a_date_found_in_any_environment_is_kept_for_the_group(self):
+        scans = [self.scan([('CVE-2099-2001', 'HIGH', None)], tag='development'),
+                 self.scan([('CVE-2099-2001', 'HIGH', '2026-08-04T00:00:00Z')], tag='qa')]
+        self.assertEqual('2026-08-04', td.group_findings(scans)[0].published)
+
+    def test_age_text_gives_date_and_days(self):
+        self.assertEqual('Published 2026-08-04 (97 days ago)', td._age('2026-08-04', self.TODAY))
+        self.assertEqual('Published 2026-11-08 (1 day ago)', td._age('2026-11-08', self.TODAY))
+        self.assertEqual('Published 2026-11-09 (today)', td._age('2026-11-09', self.TODAY))
+        self.assertEqual('', td._age('', self.TODAY))
+
+    def test_a_future_date_is_shown_as_today_not_negative_days(self):
+        self.assertEqual('Published 2027-01-01 (today)', td._age('2027-01-01', self.TODAY))
+
+    def test_vulnerability_card_shows_the_published_line_before_found_in(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', '2026-08-04T00:00:00Z')])
+        text = card_texts(td.build_cards([scan], run_url='https://example.invalid/run/9'))[1]
+        self.assertRegex(text, r'Published 2026-08-04 \(\d+ days ago\)\nFound in: development')
+
+    def test_card_without_a_date_has_no_published_line(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', None)])
+        text = card_texts(td.build_cards([scan], run_url='https://example.invalid/run/9'))[1]
+        self.assertNotIn('Published', text)
+
+    def test_misconfigurations_never_get_a_published_line(self):
+        cards = td.build_cards([repo_scan()], run_url='https://example.invalid/run/9')
+        text = '\n'.join(card_texts(cards)[1:])
+        self.assertIn('DS-0002', text)
+        self.assertNotIn('Published', text)
+
+    def test_full_list_includes_the_published_date(self):
+        scan = self.scan([('CVE-2099-2001', 'HIGH', '2026-08-04T00:00:00Z')])
+        self.assertIn('published 2026-08-04', td.format_full_list([scan]))
 
 
 if __name__ == '__main__':
