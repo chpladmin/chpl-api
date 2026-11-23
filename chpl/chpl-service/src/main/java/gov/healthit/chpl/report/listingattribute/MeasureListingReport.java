@@ -4,6 +4,7 @@ import gov.healthit.chpl.listing.measure.domain.SimpleMeasure;
 import lombok.Builder;
 import lombok.Data;
 
+@Deprecated
 @Data
 @Builder
 public class MeasureListingReport {
