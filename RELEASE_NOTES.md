@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 54.5.0
+_23 November 2026_
+
+### Features
+* Mark SED, RWT Plans, and Measures fields as deprecated for HTI-5
+* Deprecate RWT report-data endpoints and create new post HTI-5 API endpoints
+* Add "status" field to Direct Review objects based on Non-conformity status(es)
+* Expose programRequirements field under Direct Review Non-conformity
+
+---
+
 ## Version 54.4.1
 _9 November 2026_
 
