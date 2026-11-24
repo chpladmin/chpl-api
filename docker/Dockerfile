@@ -20,7 +20,7 @@
 #   plus every property marked SECRET in
 #   chpl/chpl-resources/src/main/resources/environment.properties and email.properties
 #   (e.g. SPRING_REDIS_PASSWORD, COGNITO_SECRETKEY, AZURE_CLIENTSECRET_ONC, JIRA_PASSWORD, ...)
-FROM tomcat:11.0.27-jdk25
+FROM tomcat:11.0.29-jdk25
 
 # Java4Shell (CVE-2026-114938) mitigation: turn off the vulnerable C2 Base64
 # decode intrinsic. Set through JDK_JAVA_OPTIONS (read by the `java` launcher
