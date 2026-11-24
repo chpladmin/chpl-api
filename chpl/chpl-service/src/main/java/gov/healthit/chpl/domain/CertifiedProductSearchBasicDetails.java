@@ -192,8 +192,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
             + "count was valid.")
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2026-12-28")
     @Schema(description = "All data related to safety-enhanced design for this listing.")
     private CertifiedProductSed sed;
 
