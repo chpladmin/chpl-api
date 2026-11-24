@@ -15,7 +15,7 @@
         <module>chpl-resources</module>
     </modules>
     <properties>
-        <aspectj.version>1.9.25.1</aspectj.version>
+        <aspectj.version>1.9.26</aspectj.version>
         <checkstyle.plugin.version>3.6.0</checkstyle.plugin.version>
         <checkstyle.version>9.2.1</checkstyle.version>
         <commons.csv.version>1.14.1</commons.csv.version>
